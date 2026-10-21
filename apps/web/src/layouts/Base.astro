@@ -149,6 +149,13 @@ const aviso = ultimo
         boton.setAttribute("aria-expanded", String(!abierto));
         menu?.classList.toggle("is-open", !abierto);
       });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && boton?.getAttribute("aria-expanded") === "true") {
+          boton.setAttribute("aria-expanded", "false");
+          menu?.classList.remove("is-open");
+          boton.focus();
+        }
+      });
     </script>
   </body>
 </html>

@@ -1,6 +1,6 @@
 ---
 import Base from "../../layouts/Base.astro";
-import { guias } from "../../lib/guias";
+import { guias, preguntas } from "../../lib/guias";
 import { fechaMedia } from "../../lib/formato";
 
 export function getStaticPaths() {
@@ -10,14 +10,20 @@ const { g } = Astro.props as { g: (typeof guias)[number] };
 const { Content } = g.md;
 const otras = guias.filter((x) => x.slug !== g.slug).slice(0, 3);
 
-const schema = {
-  "@context": "https://schema.org",
-  "@type": g.howto ? "HowTo" : "Article",
-  [g.howto ? "name" : "headline"]: g.titulo,
-  description: g.resumen,
-  dateModified: g.revisado,
-  inLanguage: "es-ES",
-};
+const schema = g.faq
+  ? {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: preguntas(g.md).map((p) => ({ "@type": "Question", name: p.q, acceptedAnswer: { "@type": "Answer", text: p.a } })),
+    }
+  : {
+      "@context": "https://schema.org",
+      "@type": g.howto ? "HowTo" : "Article",
+      [g.howto ? "name" : "headline"]: g.titulo,
+      description: g.resumen,
+      dateModified: g.revisado,
+      inLanguage: "es-ES",
+    };
 ---
 
 <Base titulo={g.titulo} descripcion={g.resumen} schema={schema}>

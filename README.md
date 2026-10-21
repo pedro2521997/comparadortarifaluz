@@ -34,7 +34,7 @@ docs              Plan, diseño y datos de validación (docs/datos)
 | M2 Comparador | Lector en el navegador (Datadis, i-DE, e-distribución, UFD, formatos genéricos, cuartohorario, Wh, hora 25 y día de 23 h, mapeo manual si no reconoce el formato). Motor 2.0TD con regulados por fecha (IVA del 10 % en 2026 incluido) y PVPC hora a hora real. Orden solo por precio; «por revisar» detrás. Extras: reparto por periodos, potencia sobrante, mover un 10 % a valle y enlace a la calculadora solar con el consumo cargado. |
 | M3 Cuánto gasta | Calculadora genérica y 27 páginas de aparato con el precio de hoy, mejor y peor franja, truco y fuente. |
 | M4 Solar | PVGIS hora a hora (con aproximación si falla) × consumo del fichero o de la factura, escenarios prudente/favorable, amortización y 25 años. Formulario después del resultado, consentimiento sin marcar, fuera de zona. Worker con D1, código `LST-AAAA-NNNN`, aviso por Telegram y panel de estados. |
-| M5 Guías | 8 guías (las de la Fase 2) con fecha de revisión, fuentes y herramienta. |
+| M5 Guías | Las 20 guías del plan con fecha de revisión, fuentes y herramienta; datos estructurados HowTo y FAQPage. |
 | Legal y transparencia | `/como-funciona/`, aviso legal, privacidad y cookies (borradores para revisión). |
 
 ## Pendiente (no se puede cerrar sin el propietario)

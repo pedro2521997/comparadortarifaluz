@@ -140,7 +140,7 @@ function pintar(kwp: number) {
   const amort = (e: typeof prudente) => (e.amortizacion === null ? "más de 25" : String(e.amortizacion));
 
   const avisoPiso = $<HTMLSelectElement>("vivienda").value === "piso"
-    ? `<div class="notice notice--warn"><p>En un piso, las placas suelen ir en la cubierta común con <strong>autoconsumo colectivo</strong>: hace falta acuerdo de la comunidad y la producción se reparte. El cálculo te sirve de orientación para tu parte.</p></div>`
+    ? `<div class="notice notice--warn"><p>En un piso, las placas suelen ir en la cubierta común con <strong>autoconsumo colectivo</strong>: hace falta acuerdo de la comunidad y la producción se reparte. El cálculo te sirve de orientación para tu parte. <a href="/guias/placas-en-un-piso/">Cómo funciona en un piso</a></p></div>`
     : "";
 
   $("resultado-solar").innerHTML = `

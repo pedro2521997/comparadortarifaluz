@@ -22,24 +22,61 @@
       "comercializadora": "Octopus Energy",
       "nombre": "Relax",
       "tipo": "fijo",
-      "potencia": { "p1": 0.0827, "p2": 0.0019 },
-      "energia": { "p1": 0.139, "p2": 0.139, "p3": 0.139 },
+      "potencia": {
+        "p1": 0.0827,
+        "p2": 0.0019
+      },
+      "energia": {
+        "p1": 0.144,
+        "p2": 0.144,
+        "p3": 0.144
+      },
       "cuota_fija_mes": 0,
       "permanencia_meses": 0,
       "servicios_obligatorios": [],
-      "url_fuente": "https://octopusenergy.es",
+      "url_fuente": "https://octopusenergy.es/tarifas",
       "fecha_comprobacion": null,
       "comision": false,
       "url_contratar": "https://octopusenergy.es",
-      "notas": "Energía según prensa de 2026; potencia estimada. Pendiente de comprobar en la web oficial."
+      "notas": "Web oficial consultada el 21/10/2026: 0,144 €/kWh y 3,60 €/kW/mes de potencia, sin dejar claro si incluye impuestos ni cómo se reparte la potencia entre P1 y P2. Pendiente de confirmar con el contrato."
+    },
+    {
+      "id": "octopus-3",
+      "comercializadora": "Octopus Energy",
+      "nombre": "Octopus 3",
+      "tipo": "periodos",
+      "potencia": {
+        "p1": 0.0827,
+        "p2": 0.0019
+      },
+      "energia": {
+        "p1": 0.185,
+        "p2": 0.134,
+        "p3": 0.129
+      },
+      "cuota_fija_mes": 0,
+      "permanencia_meses": 0,
+      "servicios_obligatorios": [],
+      "url_fuente": "https://octopusenergy.es/tarifas",
+      "fecha_comprobacion": null,
+      "comision": false,
+      "url_contratar": "https://octopusenergy.es/tarifas",
+      "notas": "Energía de la web oficial (21/10/2026); potencia estimada. Pendiente de confirmar impuestos y potencia."
     },
     {
       "id": "visalia-fijo-24h",
       "comercializadora": "Visalia",
       "nombre": "Fijo 24h",
       "tipo": "fijo",
-      "potencia": { "p1": 0.07123, "p2": 0.07123 },
-      "energia": { "p1": 0.0979, "p2": 0.0979, "p3": 0.0979 },
+      "potencia": {
+        "p1": 0.07123,
+        "p2": 0.07123
+      },
+      "energia": {
+        "p1": 0.0979,
+        "p2": 0.0979,
+        "p3": 0.0979
+      },
       "cuota_fija_mes": 0,
       "permanencia_meses": 0,
       "servicios_obligatorios": [],
@@ -54,8 +91,15 @@
       "comercializadora": "Naturgy",
       "nombre": "Tarifa Noche",
       "tipo": "periodos",
-      "potencia": { "p1": 0.0905, "p2": 0.0089 },
-      "energia": { "p1": 0.193, "p2": 0.1201, "p3": 0.085 },
+      "potencia": {
+        "p1": 0.0905,
+        "p2": 0.0089
+      },
+      "energia": {
+        "p1": 0.193,
+        "p2": 0.1201,
+        "p3": 0.085
+      },
       "cuota_fija_mes": 0,
       "permanencia_meses": 0,
       "servicios_obligatorios": [],
@@ -70,8 +114,15 @@
       "comercializadora": "Referencia",
       "nombre": "Precio fijo medio del mercado (orientativo)",
       "tipo": "fijo",
-      "potencia": { "p1": 0.0890, "p2": 0.0089 },
-      "energia": { "p1": 0.125, "p2": 0.125, "p3": 0.125 },
+      "potencia": {
+        "p1": 0.089,
+        "p2": 0.0089
+      },
+      "energia": {
+        "p1": 0.125,
+        "p2": 0.125,
+        "p3": 0.125
+      },
       "cuota_fija_mes": 0,
       "permanencia_meses": 0,
       "servicios_obligatorios": [],
@@ -86,8 +137,15 @@
       "comercializadora": "Referencia",
       "nombre": "Tres periodos medio del mercado (orientativo)",
       "tipo": "periodos",
-      "potencia": { "p1": 0.0890, "p2": 0.0089 },
-      "energia": { "p1": 0.185, "p2": 0.125, "p3": 0.090 },
+      "potencia": {
+        "p1": 0.089,
+        "p2": 0.0089
+      },
+      "energia": {
+        "p1": 0.185,
+        "p2": 0.125,
+        "p3": 0.09
+      },
       "cuota_fija_mes": 0,
       "permanencia_meses": 0,
       "servicios_obligatorios": [],
