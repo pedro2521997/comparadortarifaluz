@@ -21,8 +21,8 @@ apps/web          Astro (páginas, componentes, calculadoras en el cliente)
 apps/worker       Worker de Cloudflare: cron de precios, API de contactos, caché de PVGIS, panel y bot de Telegram
 packages/tarifa   Motor de cálculo de la factura 2.0TD, periodos, análisis (TypeScript puro, con tests)
 packages/csv      Lector de ficheros de consumo con detección automática (con tests)
-data              tarifas.json, regulados.json, festivos.json, aparatos.json, provincias.json, precios/
-scripts           fetch-precios.mjs, gen-datos.mjs, autocompletado.mjs
+data              tarifas.json (CNMC), tarifas-manuales.json, cnmc/ (bruto), regulados.json, festivos.json, aparatos.json, provincias.json, precios/
+scripts           fetch-precios.mjs, importar-cnmc.mjs, gen-datos.mjs, autocompletado.mjs
 docs              Plan, diseño y datos de validación (docs/datos)
 ```
 
@@ -31,7 +31,8 @@ docs              Plan, diseño y datos de validación (docs/datos)
 | Módulo | Estado |
 |---|---|
 | M1 Precio por horas | `/precio-luz-hoy/`, `/precio-luz-manana/`, `/precio-luz-ayer/`, archivo `/precio-luz/AAAA-MM-DD/` con datos reales (REData), bloque «mejores horas para…», gráfico accesible (precio y etiqueta en texto). Si el dato no es del día, el navegador lo vuelve a pedir y, si no está, dice «aún no publicado». |
-| M2 Comparador | Lector en el navegador (Datadis, i-DE, e-distribución, UFD, formatos genéricos, cuartohorario, Wh, hora 25 y día de 23 h, mapeo manual si no reconoce el formato). Motor 2.0TD con regulados por fecha (IVA del 10 % en 2026 incluido) y PVPC hora a hora real. Orden solo por precio; «por revisar» detrás. Extras: reparto por periodos, potencia sobrante, mover un 10 % a valle y enlace a la calculadora solar con el consumo cargado. |
+| Ranking de tarifas | `/tarifas/`: todas las tarifas ordenadas para un consumo tipo editable (consumo, perfil, potencia), generado en el build e interactivo; tabla de precios de todas las tarifas por compañía. |
+| M2 Comparador | Lector en el navegador (Datadis, i-DE, e-distribución, UFD, formatos genéricos, cuartohorario, Wh, hora 25 y día de 23 h, mapeo manual si no reconoce el formato). Motor 2.0TD con regulados por fecha (IVA del 10 % en 2026 incluido) y PVPC hora a hora real. Dos modos: fichero horario o datos de la factura (anual o por periodos, con 4 perfiles de consumo). Ranking en tabla con filtros (tipo, permanencia, servicios, online, renovable, potencia máxima), orden por columnas, promociones del primer año opcionales, detalle con desglose y letra pequeña, y exportación a CSV. Orden solo por precio; «por revisar» e incompletas detrás. Extras: reparto por periodos, potencia sobrante, mover un 10 % a valle y enlace a la calculadora solar con el consumo cargado. |
 | M3 Cuánto gasta | Calculadora genérica y 27 páginas de aparato con el precio de hoy, mejor y peor franja, truco y fuente. |
 | M4 Solar | PVGIS hora a hora (con aproximación si falla) × consumo del fichero o de la factura, escenarios prudente/favorable, amortización y 25 años. Formulario después del resultado, consentimiento sin marcar, fuera de zona. Worker con D1, código `LST-AAAA-NNNN`, aviso por Telegram y panel de estados. |
 | M5 Guías | Las 20 guías del plan con fecha de revisión, fuentes y herramienta; datos estructurados HowTo y FAQPage. |
@@ -39,7 +40,7 @@ docs              Plan, diseño y datos de validación (docs/datos)
 
 ## Pendiente (no se puede cerrar sin el propietario)
 
-- **Catálogo de tarifas:** `data/tarifas.json` es un borrador. Los precios no están comprobados y salen marcados «por revisar». Hay que reunir 20–30 tarifas con su URL y fecha.
+- **Catálogo de tarifas:** 67 tarifas oficiales de la CNMC (`npm run tarifas`, también automático los días 1 y 15 con un PR para revisar) y 12 a mano en `data/tarifas-manuales.json` (Iberdrola, Naturgy, TotalEnergies). Faltan las indexadas (Lucera, Gana Energía, Octopus Flexi…), las tarifas planas personalizadas (Holaluz) y Pepeenergy.
 - **Regulados:** todos los valores de `data/regulados.json` llevan `verificar: true`. Confirmarlos en el BOE (en especial el bono social desde el 1/7/2026 y los peajes de potencia de 2026).
 - **Prueba de las 5 facturas** (±2 %) antes de publicar el comparador, y ficheros reales anonimizados para sustituir los sintéticos de `packages/csv/test`.
 - **Instalador:** nombre, zona y tabla de €/kWp en `apps/web/src/config.ts` y `ZONA_INSTALADOR` en `apps/worker/wrangler.toml`. Hoy hay precios orientativos marcados como provisionales.

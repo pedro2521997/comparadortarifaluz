@@ -13,7 +13,8 @@
     "test": "vitest run",
     "precios": "node scripts/fetch-precios.mjs",
     "typecheck": "tsc -p tsconfig.check.json",
-    "autocompletado": "node scripts/autocompletado.mjs"
+    "autocompletado": "node scripts/autocompletado.mjs",
+    "tarifas": "node scripts/importar-cnmc.mjs"
   },
   "devDependencies": {
     "typescript": "^5.9.0",

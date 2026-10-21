@@ -1,4 +1,5 @@
-// Comparador de tarifas con el fichero de consumos. Todo ocurre en el navegador.
+// Comparador de tarifas. Dos formas de dar el consumo: el fichero horario de la distribuidora
+// (lo más preciso) o los datos de la factura con un perfil tipo. Todo ocurre en el navegador.
 
 import { leerConsumos, leerConMapeo, ocultarCups, type Mapeo, type Lectura } from "@lst/csv";
 import {
@@ -7,25 +8,33 @@ import {
   repartoPorPeriodos,
   picosDeConsumo,
   desplazarPuntaAValle,
+  generarLecturas,
+  escalarConsumo,
   type Tarifa,
   type Regulados,
   type Comparacion,
-  type Factura,
+  type TipoPerfil,
+  type PeriodoEnergia,
 } from "@lst/tarifa";
 import { cargarRango } from "../lib/precios-cliente";
-import { eur, eur2, kwh, pct, fechaCorta, num, ekwh, sumarDias } from "../lib/formato";
+import { eur, eur2, kwh, pct, fechaCorta, num, sumarDias } from "../lib/formato";
 import { guardarPerfil, perfilDesdeLecturas } from "../lib/consumo-local";
+import { marca, nombrePlan } from "../lib/ranking";
+import { montarRanking } from "./ranking-ui";
 
 interface Datos {
   tarifas: Tarifa[];
   regulados: Regulados;
   festivos: string[];
   hoy: string;
+  /** Último día con precios PVPC en el build (para el modo factura) */
+  ultimoPvpc: string;
 }
 
 const datos: Datos = JSON.parse(document.getElementById("datos-comparador")!.textContent!);
 const festivos = new Set(datos.festivos);
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+const valor = (id: string) => parseFloat(($(id) as HTMLInputElement).value.replace(",", "."));
 
 const input = $<HTMLInputElement>("fichero");
 const zona = $<HTMLLabelElement>("dropzone");
@@ -38,10 +47,67 @@ const selActual = $<HTMLSelectElement>("actual");
 const otra = $<HTMLFieldSetElement>("otra");
 const resultado = $<HTMLDivElement>("resultado");
 
-let lecturas: Lectura[] | null = null;
+let lecturasFichero: Lectura[] | null = null;
 let textoFichero = "";
+let modo: "fichero" | "factura" = "fichero";
+let ranking: ReturnType<typeof montarRanking> | null = null;
 
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+
+// ---------- Modo: fichero o factura ----------
+
+function ponerModo(m: typeof modo) {
+  modo = m;
+  for (const b of document.querySelectorAll<HTMLButtonElement>("[data-modo]")) b.setAttribute("aria-selected", String(b.dataset.modo === m));
+  $("panel-fichero").hidden = m !== "fichero";
+  $("panel-factura").hidden = m !== "factura";
+  actualizarBoton();
+}
+for (const b of document.querySelectorAll<HTMLButtonElement>("[data-modo]")) b.addEventListener("click", () => ponerModo(b.dataset.modo as typeof modo));
+
+function actualizarBoton() {
+  const listo = modo === "factura" || Boolean(lecturasFichero);
+  botonCalcular.disabled = !listo;
+  ayudaCalcular.textContent = listo
+    ? modo === "factura"
+      ? "Repartimos tu consumo en las horas del último año con un perfil tipo y los precios reales de cada hora."
+      : "El cálculo se hace en tu navegador. Tarda unos segundos si hay que traer los precios PVPC."
+    : "Primero sube tu fichero, prueba con el de ejemplo o usa los datos de tu factura.";
+}
+
+// Factura: consumo anual o por periodos
+for (const r of document.querySelectorAll<HTMLInputElement>("input[name=fact-dato]")) {
+  r.addEventListener("change", () => {
+    const porPeriodos = document.querySelector<HTMLInputElement>("input[name=fact-dato]:checked")!.value === "periodos";
+    $("fact-anual").hidden = porPeriodos;
+    $("fact-periodos").hidden = !porPeriodos;
+  });
+}
+
+function lecturasFactura(): { lecturas: Lectura[]; descripcion: string } | { error: string } {
+  const porPeriodos = document.querySelector<HTMLInputElement>("input[name=fact-dato]:checked")!.value === "periodos";
+  const tipo = $<HTMLSelectElement>("perfil").value as TipoPerfil;
+  const hasta = datos.ultimoPvpc < datos.hoy ? datos.ultimoPvpc : sumarDias(datos.hoy, -1);
+  const desde = sumarDias(hasta, -364);
+  if (porPeriodos) {
+    const p = { 1: valor("fp-p1"), 2: valor("fp-p2"), 3: valor("fp-p3") } as Record<PeriodoEnergia, number>;
+    const dias = valor("fp-dias");
+    if (![p[1], p[2], p[3]].every((x) => x >= 0) || !(p[1] + p[2] + p[3] > 0) || !(dias >= 7)) {
+      return { error: "Escribe los kWh de punta, llano y valle de tu factura y los días que cubre." };
+    }
+    const anual = ((p[1] + p[2] + p[3]) / dias) * 365;
+    return {
+      lecturas: generarLecturas({ desde, hasta, anualKwh: anual, tipo, festivos, porPeriodo: p }),
+      descripcion: `${kwh(anual)} al año estimados con tu factura (${pct(p[1] / (p[1] + p[2] + p[3]))} en punta, ${pct(p[3] / (p[1] + p[2] + p[3]))} en valle)`,
+    };
+  }
+  const anual = valor("fa-kwh");
+  if (!(anual >= 100 && anual <= 100000)) return { error: "Escribe tu consumo anual en kWh (entre 100 y 100.000)." };
+  return {
+    lecturas: generarLecturas({ desde, hasta, anualKwh: anual, tipo, festivos }),
+    descripcion: `${kwh(anual)} al año con el perfil «${$<HTMLSelectElement>("perfil").selectedOptions[0].text}»`,
+  };
+}
 
 // ---------- Lectura del fichero ----------
 
@@ -51,7 +117,7 @@ function mostrarEstado(html: string, tipo: "ok" | "warn" | "error") {
 }
 
 function aceptarLecturas(l: Lectura[], cups: string | null, desde: string, hasta: string, avisos: string[]) {
-  lecturas = l;
+  lecturasFichero = l;
   const total = l.reduce((a, x) => a + x.kwh, 0);
   const dias = Math.round((Date.parse(hasta) - Date.parse(desde)) / 86_400_000) + 1;
   const avisosHtml = avisos.length ? `<ul class="small">${avisos.map((a) => `<li>${esc(a)}</li>`).join("")}</ul>` : "";
@@ -61,16 +127,17 @@ function aceptarLecturas(l: Lectura[], cups: string | null, desde: string, hasta
     dias < 28 ? "warn" : "ok",
   );
   mapeoBox.hidden = true;
-  botonCalcular.disabled = false;
-  ayudaCalcular.textContent = "El cálculo se hace en tu navegador. Tarda unos segundos si hay que traer los precios PVPC.";
+  const sel = $<HTMLSelectElement>("analisis");
+  sel.disabled = dias <= 31;
+  actualizarBoton();
 }
 
 function procesar(texto: string) {
   textoFichero = texto;
   const r = leerConsumos(texto);
   if (r.ok) return aceptarLecturas(r.lecturas, r.cups, r.desde, r.hasta, r.avisos);
-  lecturas = null;
-  botonCalcular.disabled = true;
+  lecturasFichero = null;
+  actualizarBoton();
   if (r.cabecera) {
     mostrarEstado(`<p><strong>No reconocemos este formato automáticamente.</strong> ${esc(r.error)}</p>`, "warn");
     pedirMapeo(r.cabecera, r.muestra ?? [], r.mapeoParcial ?? {});
@@ -116,7 +183,7 @@ function leerArchivo(f: File) {
   mostrarEstado(`<p>Leyendo ${esc(f.name)}…</p>`, "ok");
   const lector = new FileReader();
   lector.onload = () => {
-    let texto = String(lector.result ?? "");
+    const texto = String(lector.result ?? "");
     // Algunos ficheros vienen en Windows-1252: si hay caracteres de reemplazo, se relee.
     if (texto.includes("�")) {
       const r2 = new FileReader();
@@ -156,6 +223,7 @@ $("ejemplo").addEventListener("click", () => {
       lineas.push(`ES0021000000000000EJ0F;${y}/${m}/${d};${String(h).padStart(2, "0")}:00;${v.toFixed(3).replace(".", ",")};Real`);
     }
   }
+  ponerModo("fichero");
   procesar(lineas.join("\n"));
   $<HTMLInputElement>("p1").value = "4.6";
   $<HTMLInputElement>("p2").value = "4.6";
@@ -164,11 +232,15 @@ $("ejemplo").addEventListener("click", () => {
 selActual.addEventListener("change", () => {
   otra.hidden = selActual.value !== "otra";
 });
+$<HTMLInputElement>("habitos").addEventListener("input", (e) => {
+  const v = Number((e.target as HTMLInputElement).value);
+  $("habitos-v").textContent = v === 0 ? "sin cambios" : `${v > 0 ? "+" : ""}${v} %`;
+});
 
 // ---------- Cálculo ----------
 
 function tarifaOtra(): Tarifa | null {
-  const v = (id: string) => parseFloat(($(id) as HTMLInputElement).value.replace(",", "."));
+  const v = (id: string) => valor(id);
   const e1 = v("o-e1");
   const p1 = v("o-p1");
   if (!Number.isFinite(e1) || !Number.isFinite(p1)) return null;
@@ -180,18 +252,49 @@ function tarifaOtra(): Tarifa | null {
     potencia: { p1, p2 }, energia: { p1: e1, p2: e2, p3: e3 },
     cuota_fija_mes: Number.isFinite(v("o-cuota")) ? v("o-cuota") : 0,
     permanencia_meses: 0, servicios_obligatorios: [], url_fuente: "", fecha_comprobacion: datos.hoy, comision: false, url_contratar: "",
+    origen: "usuario",
   };
+}
+
+/** Recorta las lecturas a los últimos N meses si se ha pedido. */
+function recortar(l: Lectura[]): Lectura[] {
+  const meses = Number($<HTMLSelectElement>("analisis").value);
+  if (!meses) return l;
+  const fin = l.reduce((a, x) => (x.fecha > a ? x.fecha : a), l[0].fecha);
+  const desde = sumarDias(fin, -Math.round(meses * 30.44) + 1);
+  return l.filter((x) => x.fecha >= desde);
 }
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
-  if (!lecturas) return;
-  const p1 = parseFloat($<HTMLInputElement>("p1").value);
-  const p2 = parseFloat($<HTMLInputElement>("p2").value);
+  let lecturas: Lectura[];
+  let descripcion: string;
+  if (modo === "factura") {
+    const r = lecturasFactura();
+    if ("error" in r) {
+      resultado.hidden = false;
+      resultado.innerHTML = `<div class="notice notice--error"><p>${esc(r.error)}</p></div>`;
+      return;
+    }
+    lecturas = r.lecturas;
+    descripcion = r.descripcion;
+  } else {
+    if (!lecturasFichero) return;
+    lecturas = recortar(lecturasFichero);
+    descripcion = "tu fichero de consumos hora a hora";
+  }
+  const habitos = Number($<HTMLInputElement>("habitos").value);
+  if (habitos) {
+    lecturas = escalarConsumo(lecturas, 1 + habitos / 100);
+    descripcion += ` con un ${habitos > 0 ? "+" : ""}${habitos} % de consumo`;
+  }
+
+  const p1 = valor("p1");
+  const p2 = valor("p2");
   if (!(p1 > 0 && p2 > 0)) return;
 
   let catalogo = [...datos.tarifas];
-  let idActual = selActual.value;
+  const idActual = selActual.value;
   if (idActual === "otra") {
     const t = tarifaOtra();
     if (!t) {
@@ -218,8 +321,9 @@ form.addEventListener("submit", async (e) => {
   }
 
   const ctx = { regulados: datos.regulados, festivos, pvpc };
-  const comparacion = compararTarifas(lecturas, catalogo, { p1, p2 }, ctx, datos.hoy);
-  pintar(comparacion, idActual, { p1, p2 }, ctx, Boolean(pvpc));
+  const potencias = { p1, p2 };
+  const lista = compararTarifas(lecturas, catalogo, potencias, ctx, datos.hoy);
+  pintar(lista, idActual, lecturas, potencias, ctx, catalogo, Boolean(pvpc), descripcion);
 
   botonCalcular.disabled = false;
   botonCalcular.textContent = "Volver a calcular";
@@ -227,114 +331,67 @@ form.addEventListener("submit", async (e) => {
   resultado.focus({ preventScroll: true });
 });
 
-function badges(c: Comparacion, esActual: boolean) {
-  const b: string[] = [];
-  if (esActual) b.push(`<span class="pill pill--canopy">Tu tarifa</span>`);
-  if (c.tarifa.tipo === "pvpc") b.push(`<span class="pill">Regulada · precio por horas</span>`);
-  else if (c.tarifa.tipo === "fijo") b.push(`<span class="pill">Precio único</span>`);
-  else b.push(`<span class="pill">3 periodos</span>`);
-  if (c.porRevisar && c.tarifa.id !== "otra") b.push(`<span class="pill pill--aviso">Precio por revisar</span>`);
-  if (c.tarifa.comision) b.push(`<span class="pill pill--aviso">Enlace con comisión</span>`);
-  return b.join("");
-}
-
-function desglose(f: Factura) {
-  const fila = (t: string, v: number) => `<tr><td>${t}</td><td class="r num">${eur2(v)}</td></tr>`;
-  return `<table class="desglose"><tbody>
-    ${fila("Potencia", f.potencia)}
-    ${fila("Energía", f.energia)}
-    ${f.cuotaFija ? fila("Cuota fija", f.cuotaFija) : ""}
-    ${fila("Financiación del bono social", f.bonoSocial)}
-    ${fila("Impuesto eléctrico", f.iee)}
-    ${fila("Alquiler del contador", f.alquiler)}
-    ${fila("IVA", f.iva)}
-    <tr class="total"><td>Total</td><td class="r num">${eur2(f.total)}</td></tr>
-  </tbody></table>`;
-}
-
-function letraPequena(t: Tarifa) {
-  const items = [
-    t.permanencia_meses ? `Permanencia de ${t.permanencia_meses} meses.` : "Sin permanencia.",
-    t.servicios_obligatorios.length ? `Servicios obligatorios: ${t.servicios_obligatorios.map(esc).join(", ")}.` : "Sin servicios obligatorios.",
-    t.tipo !== "pvpc" && t.energia ? `Energía: ${ekwh(t.energia.p1)}${t.tipo === "periodos" ? ` punta, ${ekwh(t.energia.p2)} llano, ${ekwh(t.energia.p3)} valle` : ""}. Potencia: ${num(t.potencia!.p1, 4)} €/kW·día P1, ${num(t.potencia!.p2, 4)} P2.` : "",
-    t.notas ? esc(t.notas) : "",
-    t.url_fuente ? `Fuente: <a href="${esc(t.url_fuente)}" rel="noopener">${esc(new URL(t.url_fuente).hostname)}</a> · ${t.fecha_comprobacion ? `comprobado el ${fechaCorta(t.fecha_comprobacion)}` : "<strong>sin comprobar todavía</strong>"}.` : "",
-  ].filter(Boolean);
-  return `<ul class="small">${items.map((i) => `<li>${i}</li>`).join("")}</ul>`;
-}
-
-function pintar(lista: Comparacion[], idActual: string, potencias: { p1: number; p2: number }, ctx: Parameters<typeof calcularFactura>[3], hayPvpc: boolean) {
+function pintar(
+  lista: Comparacion[],
+  idActual: string,
+  lecturas: Lectura[],
+  potencias: { p1: number; p2: number },
+  ctx: Parameters<typeof calcularFactura>[3],
+  catalogo: Tarifa[],
+  hayPvpc: boolean,
+  descripcion: string,
+) {
   const actual = lista.find((c) => c.tarifa.id === idActual) ?? null;
+  // La mejor alternativa: la más barata con el precio comprobado (las "por revisar" van detrás).
   const mejor = lista.find((c) => c.tarifa.id !== idActual) ?? lista[0];
   const f0 = lista[0].factura;
-  const avisoRevisar = mejor.porRevisar && mejor.tarifa.id !== "otra"
-    ? `<p class="notice notice--warn small" style="margin-bottom:16px">Ojo: el precio de <strong>${esc(mejor.tarifa.nombre)}</strong> aún no lo hemos comprobado en la web de la comercializadora. Confírmalo antes de contratar.</p>`
-    : "";
   const anual = (x: number) => (x / f0.dias) * 365;
   const mensual = (x: number) => (x / f0.dias) * 30.4;
+  const nombre = (t: Tarifa) => `${esc(marca(t.comercializadora))} · ${esc(nombrePlan(t.nombre))}`;
+  const avisoRevisar = mejor.porRevisar && mejor.tarifa.id !== "otra"
+    ? `<p class="notice notice--warn small" style="margin-bottom:16px">Ojo: el precio de <strong>${nombre(mejor.tarifa)}</strong> lleva más de 45 días sin comprobar. Confírmalo antes de contratar.</p>`
+    : "";
 
   let cabecera: string;
   if (actual && mejor.factura.total < actual.factura.total) {
     const ahorro = actual.factura.total - mejor.factura.total;
     cabecera = `<p class="answer">Ahorrarías <strong>${eur(anual(ahorro))}</strong> al año</p>
-      <p class="lead">Con <strong>${esc(mejor.tarifa.comercializadora)} · ${esc(mejor.tarifa.nombre)}</strong> habrías pagado ${eur2(mejor.factura.total)} entre el ${fechaCorta(f0.desde)} y el ${fechaCorta(f0.hasta)}, ${eur2(ahorro)} menos que con tu tarifa (${eur2(actual.factura.total)}).</p>`;
+      <p class="lead">Con <strong>${nombre(mejor.tarifa)}</strong> habrías pagado ${eur2(mejor.factura.total)} entre el ${fechaCorta(f0.desde)} y el ${fechaCorta(f0.hasta)}, ${eur2(ahorro)} menos que con tu tarifa (${eur2(actual.factura.total)}).</p>`;
   } else if (actual) {
     cabecera = `<p class="answer">Tu tarifa ya es <strong>la más barata</strong> de las que comparamos</p>
       <p class="lead">Con tu consumo habrías pagado ${eur2(actual.factura.total)} entre el ${fechaCorta(f0.desde)} y el ${fechaCorta(f0.hasta)}. Revisa los extras de abajo: aún puedes ahorrar cambiando hábitos o potencia.</p>`;
   } else {
     cabecera = `<p class="answer">La más barata para ti: <strong>${eur(anual(mejor.factura.total))}</strong> al año</p>
-      <p class="lead">Con <strong>${esc(mejor.tarifa.comercializadora)} · ${esc(mejor.tarifa.nombre)}</strong> habrías pagado ${eur2(mejor.factura.total)} entre el ${fechaCorta(f0.desde)} y el ${fechaCorta(f0.hasta)} (unos ${eur(mensual(mejor.factura.total))} al mes).</p>`;
+      <p class="lead">Con <strong>${nombre(mejor.tarifa)}</strong> habrías pagado ${eur2(mejor.factura.total)} entre el ${fechaCorta(f0.desde)} y el ${fechaCorta(f0.hasta)} (unos ${eur(mensual(mejor.factura.total))} al mes).</p>`;
   }
-
-  const ranking = lista.map((c, i) => {
-    const esActual = c.tarifa.id === idActual;
-    const dif = actual && !esActual ? c.factura.total - actual.factura.total : null;
-    const difHtml = dif === null ? "" : `<span class="tar__dif ${dif > 0 ? "tar__dif--mas" : "tar__dif--menos"}">${dif > 0 ? "+" : "−"}${eur(Math.abs(anual(dif)))}/año</span>`;
-    const contratar = c.tarifa.url_contratar && !esActual
-      ? `<p style="margin-top:12px"><a class="btn btn--ghost btn--small" href="${esc(c.tarifa.url_contratar)}" rel="noopener${c.tarifa.comision ? " sponsored" : ""}" target="_blank">Contratar en la web de ${esc(c.tarifa.comercializadora)}</a>${c.tarifa.comision ? ` <span class="caption">Enlace con comisión: si contratas, nos pagan. No cambia el orden.</span>` : ""}</p>`
-      : "";
-    return `<li class="tar ${esActual ? "tar--actual" : ""}">
-      <div class="tar__top">
-        <span class="tar__pos" aria-label="Posición ${i + 1}">${i + 1}</span>
-        <div><div class="tar__nombre">${esc(c.tarifa.nombre)}</div><div class="tar__com">${esc(c.tarifa.comercializadora)}</div><div class="tar__badges">${badges(c, esActual)}</div></div>
-        <div class="tar__total"><strong>${eur2(c.factura.total)}</strong><span>en ${c.factura.dias} días · ${eur(anual(c.factura.total))}/año</span><br/>${difHtml}</div>
-      </div>
-      <details><summary>Ver el cálculo y la letra pequeña</summary>
-        <div class="tar__detalle">${desglose(c.factura)}<div>${letraPequena(c.tarifa)}${c.factura.avisos.length ? `<ul class="small">${c.factura.avisos.map((a) => `<li>${esc(a)}</li>`).join("")}</ul>` : ""}</div></div>
-        ${contratar}
-      </details>
-    </li>`;
-  }).join("");
 
   // ---------- Extras con los mismos datos ----------
-  const l = lecturas!;
-  const rep = repartoPorPeriodos(l, festivos);
-  const picos = picosDeConsumo(l);
+  const rep = repartoPorPeriodos(lecturas, festivos);
+  const picos = picosDeConsumo(lecturas);
   const sobra = potencias.p1 > picos.sugerida + 0.3;
-  // €/kW·día de P1 + P2 de la tarifa de referencia (con la PVPC, los peajes regulados).
-  const pot = (actual?.tarifa ?? mejor.tarifa).potencia ?? datos.regulados.pvpc_potencia_eur_kw_dia[datos.regulados.pvpc_potencia_eur_kw_dia.length - 1];
-  const precioPotencia = pot.p1 + pot.p2;
   const tarifaBase = actual?.tarifa ?? mejor.tarifa;
   const base = actual?.factura ?? mejor.factura;
+  const pot = tarifaBase.potencia ?? datos.regulados.pvpc_potencia_eur_kw_dia[datos.regulados.pvpc_potencia_eur_kw_dia.length - 1];
+  const precioPotencia = pot.p1 + pot.p2;
   let desplazarHtml: string;
   if (tarifaBase.tipo === "fijo") {
-    const porPeriodos = lista.find((c) => c.tarifa.tipo !== "fijo");
-    desplazarHtml = `<p>Con un precio único da igual a qué hora consumas. ${porPeriodos ? `Si movieras consumo a las horas valle, te interesaría una tarifa por periodos o la PVPC.` : ""}</p>`;
+    desplazarHtml = `<p>Con un precio único da igual a qué hora consumas. Si puedes mover consumo a la noche, mira en la tabla las tarifas de 3 periodos o la PVPC.</p>`;
   } else {
-    const movido = calcularFactura(desplazarPuntaAValle(l, festivos, 0.1), tarifaBase, potencias, ctx);
+    const movido = calcularFactura(desplazarPuntaAValle(lecturas, festivos, 0.1), tarifaBase, potencias, ctx);
     const ahorro = base.total - movido.total;
-    desplazarHtml = `<p class="answer" style="font-size:32px"><strong>${eur(anual(ahorro))}</strong> al año</p><p class="muted">Lo que ahorrarías con <strong>${esc(tarifaBase.nombre)}</strong> si pasaras un 10 % del consumo de las horas punta (10–14 h y 18–22 h) a la madrugada: poner la lavadora o el lavavajillas con inicio diferido, por ejemplo.</p>`;
+    desplazarHtml = `<p class="answer" style="font-size:32px"><strong>${eur(anual(ahorro))}</strong> al año</p><p class="muted">Lo que ahorrarías con <strong>${nombre(tarifaBase)}</strong> si pasaras un 10 % del consumo de las horas punta (10–14 h y 18–22 h) a la madrugada.</p>`;
   }
 
-  // Perfil para la calculadora solar (solo en este navegador).
-  const perfil = perfilDesdeLecturas(l);
-  const precioEnergia = base.energia / Math.max(1, base.kwh);
-  guardarPerfil({ ...perfil, precioEnergia, guardado: new Date().toISOString() });
+  const desdeFichero = modo === "fichero";
+  if (desdeFichero) {
+    const perfil = perfilDesdeLecturas(lecturas);
+    guardarPerfil({ ...perfil, precioEnergia: base.energia / Math.max(1, base.kwh), guardado: new Date().toISOString() });
+  }
 
   const extras = `
   <div class="extras grid grid--3">
     <div class="card stack" style="--stack:12px">
-      <span class="eyebrow">Tu reparto por periodos</span>
+      <span class="eyebrow">${desdeFichero ? "Tu reparto por periodos" : "Reparto que hemos supuesto"}</span>
       <h3>¿Cuándo consumes?</h3>
       <div class="reparto" role="img" aria-label="Punta ${pct(rep.porcentaje[1])}, llano ${pct(rep.porcentaje[2])}, valle ${pct(rep.porcentaje[3])}">
         <span class="r-p1" style="width:${rep.porcentaje[1] * 100}%">${rep.porcentaje[1] > 0.12 ? pct(rep.porcentaje[1]) : ""}</span>
@@ -350,10 +407,11 @@ function pintar(lista: Comparacion[], idActual: string, potencias: { p1: number;
     </div>
     <div class="card stack" style="--stack:12px">
       <span class="eyebrow">Potencia contratada</span>
-      <h3>${sobra ? "Parece que te sobra potencia" : "Tu potencia parece ajustada"}</h3>
+      ${desdeFichero ? `<h3>${sobra ? "Parece que te sobra potencia" : "Tu potencia parece ajustada"}</h3>
       <p>Tu hora de más consumo fue el ${fechaCorta(picos.maximo.fecha)} a las ${String(picos.maximo.hora).padStart(2, "0")}:00, con una media de <strong>${num(picos.maximo.kw, 2)} kW</strong>. Tienes contratados ${num(potencias.p1, 2)} kW.</p>
       ${sobra ? `<p>Podrías mirar bajar a unos <strong>${num(picos.sugerida, 1)} kW</strong>, lo que ahorraría unos <strong>${eur((potencias.p1 - picos.sugerida) * precioPotencia * 365 * 1.27)}</strong> al año en el término de potencia.</p>` : ""}
-      <p class="small muted">Ojo: el fichero da la media de cada hora; los picos de unos segundos (horno + lavadora + vitro) son mayores. Por eso dejamos un 30 % de margen. <a href="/guias/potencia-contratada/">Cómo saber si te sobra potencia</a></p>
+      <p class="small muted">El fichero da la media de cada hora; los picos de unos segundos son mayores. Por eso dejamos un 30 % de margen. <a href="/guias/potencia-contratada/">Cómo saber si te sobra potencia</a></p>`
+      : `<h3>Cada kW cuesta unos ${eur(precioPotencia * 365 * 1.27)} al año</h3><p>Con tu fichero de consumos te diríamos si te sobra potencia. <a href="/guias/descargar-consumo-datadis/">Cómo descargarlo</a></p>`}
     </div>
     <div class="card stack" style="--stack:12px">
       <span class="eyebrow">Mover consumo a la noche</span>
@@ -365,9 +423,9 @@ function pintar(lista: Comparacion[], idActual: string, potencias: { p1: number;
     <div>
       <span class="eyebrow eyebrow--violet">Placas solares</span>
       <h3 style="margin-top:8px">¿Te compensan las placas con este consumo?</h3>
-      <p class="muted" style="margin-top:8px">Hemos guardado tu perfil de consumo (${kwh(perfil.anualKwh)} al año) <strong>solo en este navegador</strong> para que la calculadora lo use hora a hora.</p>
+      <p class="muted" style="margin-top:8px">${desdeFichero ? `Hemos guardado tu perfil de consumo <strong>solo en este navegador</strong> para que la calculadora lo use hora a hora.` : "Con tu fichero de consumos el cálculo solar es mucho más preciso."}</p>
     </div>
-    <a class="btn" href="/placas-solares/?consumo=fichero">Calcular con mi consumo</a>
+    <a class="btn" href="/placas-solares/${desdeFichero ? "?consumo=fichero" : ""}">Calcular mis placas</a>
   </div>`;
 
   resultado.innerHTML = `
@@ -375,11 +433,16 @@ function pintar(lista: Comparacion[], idActual: string, potencias: { p1: number;
       <span class="eyebrow">Resultado</span>
       ${cabecera}
       ${avisoRevisar}
-      <p class="caption">Estimación con tu consumo real, los precios de cada tarifa sin impuestos y los impuestos vigentes cada día. No es una oferta vinculante. ${hayPvpc ? "" : "<strong>No hemos podido traer los precios PVPC, así que la tarifa regulada no aparece.</strong>"} <a href="/como-funciona/">Cómo lo calculamos</a></p>
+      <p class="caption">Calculado con ${esc(descripcion)}, los precios de cada tarifa sin impuestos ni promociones y los impuestos vigentes cada día. Es una estimación, no una oferta vinculante. ${hayPvpc ? "" : "<strong>No hemos podido traer los precios PVPC, así que la tarifa regulada no aparece.</strong>"} <a href="/como-funciona/">Cómo lo calculamos</a></p>
     </div>
-    <h2 style="margin-top:48px;font-size:32px">Todas las tarifas, de más barata a más cara</h2>
-    <p class="muted" style="margin-top:8px">Ordenadas solo por lo que habrías pagado. Las tarifas con el precio por revisar van al final hasta que las comprobamos.</p>
-    <ol class="ranking">${ranking}</ol>
-    <h2 style="margin-top:64px;font-size:32px">Lo que dice tu fichero</h2>
+    <h2 class="res-h2">Ranking de ${lista.length} tarifas para tu consumo</h2>
+    <p class="muted">Ordenadas por lo que habrías pagado. Filtra, reordena por columnas o abre el detalle de cada una.</p>
+    <div id="ranking"></div>
+    <h2 class="res-h2">Lo que dice ${desdeFichero ? "tu fichero" : "tu consumo"}</h2>
     ${extras}`;
+
+  ranking = montarRanking($("ranking"), { lecturas, potencias, ctx, tarifas: catalogo, hoy: datos.hoy, idActual: actual ? idActual : null });
+  void ranking;
 }
+
+ponerModo("fichero");

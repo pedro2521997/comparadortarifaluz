@@ -33,6 +33,7 @@ export const AMAZON_TAG: string | null = null;
 export const NAV = [
   { href: "/precio-luz-hoy/", texto: "Precio de hoy" },
   { href: "/comparador/", texto: "Comparador" },
+  { href: "/tarifas/", texto: "Ranking" },
   { href: "/cuanto-gasta/", texto: "Cuánto gasta" },
   { href: "/placas-solares/", texto: "Placas solares" },
   { href: "/guias/", texto: "Guías" },

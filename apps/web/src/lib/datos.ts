@@ -1,6 +1,7 @@
 // Acceso a /data en tiempo de build (solo servidor).
 
 import tarifasJson from "../../../../data/tarifas.json";
+import tarifasManualesJson from "../../../../data/tarifas-manuales.json";
 import reguladosJson from "../../../../data/regulados.json";
 import festivosJson from "../../../../data/festivos.json";
 import aparatosJson from "../../../../data/aparatos.json";
@@ -35,7 +36,9 @@ export interface Aparato {
   fuente: { nombre: string; url: string };
 }
 
-export const tarifas = tarifasJson.tarifas as Tarifa[];
+/** Catálogo completo: PVPC + tarifas importadas de la CNMC + tarifas añadidas a mano. */
+export const tarifas = [...tarifasJson.tarifas, ...tarifasManualesJson.tarifas] as Tarifa[];
+export const catalogoActualizado = tarifasJson.actualizado as string;
 export const regulados = reguladosJson as unknown as Regulados;
 export const festivos = festivosJson.fechas;
 export const aparatos = aparatosJson.aparatos as Aparato[];

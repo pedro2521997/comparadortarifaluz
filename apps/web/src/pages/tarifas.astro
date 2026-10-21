@@ -1,0 +1,279 @@
+---
+// Ranking público de todas las tarifas con un consumo tipo editable. Se calcula en el build
+// (contenido indexable) y el navegador lo recalcula cuando cambias el consumo o la potencia.
+import Base from "../layouts/Base.astro";
+import { tarifas, regulados, festivos, dias, catalogoActualizado } from "../lib/datos";
+import { hoyMadrid, sumarDias, fechaMedia, fechaCorta, num } from "../lib/formato";
+import { compararTarifas, generarLecturas, PERFILES } from "@lst/tarifa";
+import { aFilas, tablaRanking, marca, nombrePlan } from "../lib/ranking";
+
+const hoy = hoyMadrid();
+const ultimoPvpc = [...dias].reverse().find((d) => d.fecha <= hoy)?.fecha ?? hoy;
+const desde = sumarDias(ultimoPvpc, -364);
+const pvpc = Object.fromEntries(dias.filter((d) => d.fecha >= desde && d.fecha <= ultimoPvpc).map((d) => [d.fecha, d.precios as number[]]));
+const fest = new Set(festivos);
+
+const DEF = { anual: 3000, p1: 4.6, p2: 4.6, perfil: "estandar" as const };
+const lecturas = generarLecturas({ desde, hasta: ultimoPvpc, anualKwh: DEF.anual, tipo: DEF.perfil, festivos: fest });
+const lista = compararTarifas(lecturas, tarifas, { p1: DEF.p1, p2: DEF.p2 }, { regulados, festivos: fest, pvpc }, hoy);
+const filas = aFilas(lista, null);
+const tablaInicial = tablaRanking(filas.slice(0, 25), { referencia: "la más barata", orden: "total", asc: true, hoy });
+const mejor = filas[0];
+const comercializadoras = new Set(tarifas.map((t) => marca(t.comercializadora)));
+
+// Tabla de precios de todas las tarifas, agrupada por comercializadora.
+const porMarca = [...comercializadoras].sort((a, b) => a.localeCompare(b, "es")).map((m) => ({
+  marca: m,
+  tarifas: tarifas.filter((t) => marca(t.comercializadora) === m),
+}));
+const n = (x: number, d: number) => num(x, d);
+const datos = { tarifas, regulados, festivos, hoy, ultimoPvpc, def: DEF };
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  name: "Ranking de tarifas de luz 2.0TD",
+  description: `Precio anual estimado de ${tarifas.length} tarifas de luz de ${comercializadoras.size} comercializadoras para un hogar tipo de ${DEF.anual} kWh al año y ${DEF.p1} kW.`,
+  dateModified: catalogoActualizado,
+  creator: { "@type": "Organization", name: "LuzSinTrampa" },
+  isBasedOn: "https://comparador.cnmc.gob.es/",
+};
+---
+
+<Base
+  titulo={`Ranking de tarifas de luz: ${tarifas.length} tarifas ordenadas por precio`}
+  descripcion={`Las ${tarifas.length} tarifas de luz de ${comercializadoras.size} comercializadoras, ordenadas por lo que pagarías al año. Cambia tu consumo y tu potencia para recalcular. Datos del comparador oficial de la CNMC.`}
+  schema={schema}
+>
+  <section class="hero hero--compacto">
+    <div class="wrap">
+      <span class="eyebrow">Ranking de tarifas</span>
+      <h1>Todas las tarifas de luz, ordenadas por lo que pagarías</h1>
+      <p class="lead">
+        {tarifas.length} tarifas de {comercializadoras.size} comercializadoras calculadas hora a hora con los precios del último año. Para un hogar de {num(DEF.anual)} kWh y {num(DEF.p1, 1)} kW, la más barata es <strong>{marca(mejor.tarifa.comercializadora)} · {nombrePlan(mejor.tarifa.nombre)}</strong>: unos {num(mejor.anual)} € al año.
+      </p>
+      <p class="caption" style="margin-top:12px">Catálogo actualizado el {fechaMedia(catalogoActualizado)} · Precios PVPC del {fechaCorta(desde)} al {fechaCorta(ultimoPvpc)}</p>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="wrap">
+      <form id="perfil-form" class="card perfil-form" onsubmit="return false">
+        <div class="field">
+          <label for="t-anual">Consumo al año</label>
+          <input id="t-anual" type="number" inputmode="numeric" min="300" max="50000" step="100" value={DEF.anual} />
+          <span class="hint">kWh</span>
+        </div>
+        <div class="field">
+          <label for="t-perfil">Cuándo consumes</label>
+          <select id="t-perfil">
+            {Object.entries(PERFILES).map(([k, p]) => <option value={k}>{p.nombre}</option>)}
+          </select>
+        </div>
+        <div class="field">
+          <label for="t-p1">Potencia P1</label>
+          <input id="t-p1" type="number" inputmode="decimal" min="1" max="15" step="0.05" value={DEF.p1} />
+          <span class="hint">kW</span>
+        </div>
+        <div class="field">
+          <label for="t-p2">Potencia P2</label>
+          <input id="t-p2" type="number" inputmode="decimal" min="1" max="15" step="0.05" value={DEF.p2} />
+          <span class="hint">kW</span>
+        </div>
+        <div class="perfil-form__cta">
+          <a class="btn btn--mint" href="/comparador/">Calcular con mi fichero</a>
+        </div>
+      </form>
+
+      <div id="ranking" class="ranking-pub" aria-live="polite">
+        <p class="rk-resumen" style="margin:16px 0 12px"><strong>{filas.length}</strong> tarifas · {comercializadoras.size} comercializadoras · 365 días · {num(DEF.anual)} kWh · potencia {num(DEF.p1, 2)} / {num(DEF.p2, 2)} kW</p>
+        <div set:html={tablaInicial} />
+        <p class="center" style="margin-top:16px"><a class="btn btn--ghost" href="#precios">Ver los precios de todas las tarifas</a></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--white" id="precios">
+    <div class="wrap">
+      <span class="eyebrow">Tabla de precios</span>
+      <h2 style="margin:12px 0 8px">Precios de todas las tarifas, compañía a compañía</h2>
+      <p class="muted" style="max-width:70ch">Precios sin impuestos. Energía en €/kWh (punta · llano · valle) y potencia en €/kW y día (P1 · P2). Las tarifas con promoción muestran el precio estable, sin el descuento temporal.</p>
+      <div class="field" style="max-width:360px;margin:20px 0">
+        <label for="filtro-precios">Filtrar por compañía o tarifa</label>
+        <input id="filtro-precios" type="search" autocomplete="off" placeholder="Ej.: Iberdrola, 3 periodos…" />
+      </div>
+      <div class="table-wrap precios-wrap">
+        <table class="precios">
+          <caption class="sr-only">Precios de todas las tarifas por comercializadora</caption>
+          <thead>
+            <tr>
+              <th scope="col">Comercializadora</th>
+              <th scope="col">Tarifa</th>
+              <th scope="col">Tipo</th>
+              <th scope="col" class="r">Energía €/kWh</th>
+              <th scope="col" class="r">Potencia €/kW·día</th>
+              <th scope="col">Condiciones</th>
+              <th scope="col">Fuente</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              porMarca.flatMap((g) =>
+                g.tarifas.map((t, i) => (
+                  <tr data-texto={`${g.marca} ${t.nombre} ${t.tipo === "fijo" ? "precio unico 24 h" : t.tipo === "periodos" ? "3 periodos" : "pvpc regulada"}`.toLowerCase()}>
+                    <th scope="row" class:list={["precios__marca", { "precios__marca--rep": i > 0 }]}>{g.marca}</th>
+                    <td>{nombrePlan(t.nombre)}</td>
+                    <td>{t.tipo === "fijo" ? "Precio único" : t.tipo === "periodos" ? "3 periodos" : "Regulada"}</td>
+                    <td class="r num">
+                      {t.energia ? (t.tipo === "fijo" ? n(t.energia.p1, 4) : `${n(t.energia.p1, 4)} · ${n(t.energia.p2, 4)} · ${n(t.energia.p3, 4)}`) : "Hora a hora"}
+                    </td>
+                    <td class="r num">{t.potencia ? `${n(t.potencia.p1, 4)} · ${n(t.potencia.p2, 4)}` : `${n(regulados.pvpc_potencia_eur_kw_dia.at(-1)!.p1, 4)} · ${n(regulados.pvpc_potencia_eur_kw_dia.at(-1)!.p2, 4)}`}</td>
+                    <td class="small">
+                      {[
+                        t.permanencia_meses ? "Permanencia" : "Sin permanencia",
+                        t.servicio_mes ? `Servicio ${num(t.servicio_mes, 2)} €/mes` : t.info?.servicio_sin_precio ? "Servicio obligatorio" : null,
+                        t.info?.descuento_energia ? `−${Math.round(t.info.descuento_energia.pct * 100)} % ${t.info.descuento_energia.meses} meses` : null,
+                        t.info?.potencia_max_kw ? `Hasta ${num(t.info.potencia_max_kw)} kW` : null,
+                      ].filter(Boolean).join(" · ")}
+                    </td>
+                    <td class="small">
+                      <a href={t.url_fuente} rel="noopener" target="_blank">{t.origen === "cnmc" ? "CNMC" : t.origen === "regulada" ? "REE/BOE" : "Web oficial"}</a>
+                      {t.fecha_comprobacion ? ` · ${fechaCorta(t.fecha_comprobacion)}` : ""}
+                    </td>
+                  </tr>
+                )),
+              )
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap wrap--narrow prose">
+      <h2>De dónde salen estas tarifas</h2>
+      <p>
+        La mayoría vienen del <a href="https://comparador.cnmc.gob.es/" rel="noopener">comparador oficial de la CNMC</a>, donde las comercializadoras registran sus ofertas. Para no depender de cómo escribe cada una sus precios, pedimos a la CNMC el cálculo de cada oferta con varios consumos y potencias y despejamos el precio exacto de la energía y de la potencia. Usamos el precio estable, sin las promociones del primer año, y sumamos los servicios obligatorios (mantenimiento, asistencia) cuando la oferta los exige.
+      </p>
+      <p>
+        Algunas compañías grandes no publican sus ofertas allí. Las de Iberdrola, Naturgy y TotalEnergies las hemos copiado de sus webs oficiales, con el enlace y la fecha.
+      </p>
+      <h3>Lo que todavía no está</h3>
+      <ul>
+        <li><strong>Tarifas indexadas al mercado</strong> (Lucera, Gana Energía, Octopus Flexi, Plan Ahora de TotalEnergies…): su precio depende de una fórmula con el mercado mayorista y las estamos incorporando.</li>
+        <li><strong>Tarifas planas personalizadas</strong> (Holaluz, Naturgy Tarifa Plana): la cuota depende de tu historial y no se puede comparar sin pedirles un presupuesto.</li>
+        <li><strong>Pepeenergy</strong> y otras webs que no muestran los precios sin pasar por su calculadora.</li>
+      </ul>
+      <p>Las tarifas con el precio sin comprobar desde hace más de 45 días, o con un servicio obligatorio sin precio publicado, van al final del ranking. <a href="/como-funciona/">Cómo funciona el comparador</a></p>
+    </div>
+  </section>
+
+  <script type="application/json" id="datos-tarifas" set:html={JSON.stringify(datos)} />
+</Base>
+
+<script>
+  import { generarLecturas, type Regulados, type Tarifa, type TipoPerfil } from "@lst/tarifa";
+  import { cargarRango } from "../lib/precios-cliente";
+  import { sumarDias } from "../lib/formato";
+  import { montarRanking } from "../scripts/ranking-ui";
+
+  interface Datos {
+    tarifas: Tarifa[];
+    regulados: Regulados;
+    festivos: string[];
+    hoy: string;
+    ultimoPvpc: string;
+  }
+  const datos: Datos = JSON.parse(document.getElementById("datos-tarifas")!.textContent!);
+  const festivos = new Set(datos.festivos);
+  const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+  const v = (id: string) => parseFloat($<HTMLInputElement>(id).value.replace(",", "."));
+  const hasta = datos.ultimoPvpc;
+  const desde = sumarDias(hasta, -364);
+
+  const entrada = (pvpc: Record<string, number[]>) => {
+    const anual = Math.min(50000, Math.max(300, v("t-anual") || 3000));
+    const p1 = Math.min(15, Math.max(1, v("t-p1") || 4.6));
+    const p2 = Math.min(15, Math.max(1, v("t-p2") || p1));
+    return {
+      lecturas: generarLecturas({ desde, hasta, anualKwh: anual, tipo: $<HTMLSelectElement>("t-perfil").value as TipoPerfil, festivos }),
+      potencias: { p1, p2 },
+      ctx: { regulados: datos.regulados, festivos, pvpc },
+      tarifas: datos.tarifas,
+      hoy: datos.hoy,
+    };
+  };
+
+  cargarRango(desde, hasta).then((pvpc) => {
+    const ranking = montarRanking($("ranking"), entrada(pvpc));
+    let t: number | undefined;
+    $("perfil-form").addEventListener("input", () => {
+      clearTimeout(t);
+      t = window.setTimeout(() => ranking.actualizar(entrada(pvpc)), 300);
+    });
+  });
+
+  // Filtro de la tabla de precios
+  const filtro = $<HTMLInputElement>("filtro-precios");
+  filtro.addEventListener("input", () => {
+    const q = filtro.value.trim().toLowerCase();
+    for (const tr of document.querySelectorAll<HTMLTableRowElement>(".precios tbody tr")) {
+      tr.classList.toggle("oculta", Boolean(q) && !tr.dataset.texto!.includes(q));
+    }
+  });
+</script>
+
+<style>
+  .perfil-form {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: end;
+  }
+  @media (min-width: 900px) {
+    .perfil-form {
+      grid-template-columns: 1.2fr 1.6fr 1fr 1fr auto;
+    }
+  }
+  .perfil-form__cta {
+    grid-column: 1 / -1;
+  }
+  @media (min-width: 900px) {
+    .perfil-form__cta {
+      grid-column: auto;
+    }
+  }
+  .ranking-pub {
+    margin-top: 24px;
+  }
+  .precios-wrap {
+    max-height: 80vh;
+  }
+  .precios {
+    min-width: 900px;
+    font-size: 14px;
+  }
+  .precios thead th {
+    position: sticky;
+    top: 0;
+    background: var(--color-sheet-white);
+    z-index: 1;
+  }
+  .precios__marca {
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--color-bark);
+    vertical-align: top;
+  }
+  /* La compañía se repite en cada fila (para filtrar y para lectores de pantalla), pero se atenúa. */
+  .precios__marca--rep {
+    color: var(--color-slate);
+    font-weight: 400;
+  }
+  :global(.precios tr.oculta) {
+    display: none;
+  }
+</style>

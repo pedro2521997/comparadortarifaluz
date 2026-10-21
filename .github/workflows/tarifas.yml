@@ -1,0 +1,38 @@
+# Día 1 y 15 de cada mes: vuelve a importar las ofertas del comparador oficial de la CNMC.
+# Abre un PR con los cambios para revisarlos antes de publicarlos (los precios afectan al ranking).
+name: Catálogo de tarifas (CNMC)
+
+on:
+  schedule:
+    - cron: "0 6 1,15 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  importar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run tarifas
+      - run: npm test
+      - name: Abrir PR con el catálogo nuevo
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "luzsintrampa-bot"
+          git config user.email "bot@luzsintrampa.es"
+          git diff --quiet data/tarifas.json && exit 0
+          rama="tarifas-$(date +%F)"
+          git checkout -b "$rama"
+          git add data/tarifas.json data/cnmc
+          git commit -m "Catálogo de tarifas CNMC $(date +%F)"
+          git push origin "$rama"
+          gh pr create --title "Catálogo de tarifas CNMC $(date +%F)" --body "Importación automática del comparador oficial de la CNMC. Revisa las diferencias de precios antes de fusionar."

@@ -29,7 +29,9 @@ const periodo = (d: string, h: string | null) => `${fechaCorta(d)} – ${h ? fec
         <li><strong>Las tarifas sin acuerdo se muestran igual</strong>, con enlace directo a la web de la comercializadora.</li>
         <li><strong>Cada tarifa lleva su fuente y la fecha en que la comprobamos.</strong> Si han pasado más de 45 días o aún no la hemos comprobado, se marca como «precio por revisar» y va detrás de las comprobadas. Revisamos el catálogo el día 1 de cada mes y siempre que cambia la regulación.</li>
       </ol>
-      <p>Ahora mismo el catálogo tiene {tarifas.length} tarifas y está en construcción: la mayoría aparecen como «por revisar» hasta que comprobemos sus precios en la web oficial de cada comercializadora.</p>
+      <p>
+        El catálogo tiene {tarifas.length} tarifas. La mayoría vienen del <a href="https://comparador.cnmc.gob.es/" rel="noopener">comparador oficial de la CNMC</a>: pedimos a la CNMC el cálculo de cada oferta con varios consumos y potencias y despejamos el precio exacto de la energía y la potencia, sin depender de cómo lo redacta cada comercializadora. Usamos el precio estable, sin promociones del primer año, y sumamos los servicios obligatorios (mantenimiento, asistencia) cuando la oferta los exige. Si una oferta exige un servicio sin precio publicado, va al final. Las compañías que no publican en la CNMC (Iberdrola, Naturgy, TotalEnergies) las copiamos de su web oficial, con enlace y fecha. <a href="/tarifas/">Ver el ranking completo</a>
+      </p>
 
       <h2 id="dinero">Cómo ganamos dinero</h2>
       <p>La web es gratuita. Se financia así, por orden de importancia:</p>

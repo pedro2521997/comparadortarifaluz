@@ -22,6 +22,8 @@ export interface Tarifa {
   /** €/kWh */
   energia: { p1: number; p2: number; p3: number } | null;
   cuota_fija_mes: number;
+  /** Servicio obligatorio (mantenimiento, asistencia…) en €/mes sin IVA. Lleva IVA pero no impuesto eléctrico. */
+  servicio_mes?: number;
   permanencia_meses: number;
   servicios_obligatorios: string[];
   url_fuente: string;
@@ -29,6 +31,35 @@ export interface Tarifa {
   comision: boolean;
   url_contratar: string;
   notas?: string;
+  /** "cnmc" (importada del comparador oficial), "manual" (web de la comercializadora) o "regulada" */
+  origen?: string;
+  info?: InfoTarifa;
+}
+
+/** Datos adicionales de una tarifa: condiciones, promociones y particularidades del cálculo. */
+export interface InfoTarifa {
+  cnmc_id?: number;
+  /** La comercializadora no factura aparte la financiación del bono social. */
+  incluye_bono_social?: boolean;
+  /** Periodos elegidos por el cliente (p. ej. "10 horas"): el cálculo con periodos 2.0TD es aproximado. */
+  horario_propio?: boolean;
+  verde?: boolean;
+  servicios_adicionales?: boolean;
+  penalizacion?: string | null;
+  validez?: string | null;
+  limitaciones?: string | null;
+  potencia_max_kw?: number | null;
+  consumo_max_kwh?: number | null;
+  revision?: string | null;
+  condiciones_revision?: string | null;
+  contratacion?: { internet: boolean; telefono: boolean; oficina: boolean };
+  url_contrato?: string | null;
+  /** Exige un servicio cuyo precio no se publica: el total está incompleto. */
+  servicio_sin_precio?: boolean;
+  /** Ahorro del primer año según la CNMC (€ con impuestos, perfil de la CNMC). */
+  promo_primer_anio_eur?: number;
+  /** Descuento sobre la energía durante los primeros meses. */
+  descuento_energia?: { pct: number; meses: number } | null;
 }
 
 export interface Potencias {
@@ -44,6 +75,8 @@ export interface Contexto {
   festivos: ReadonlySet<string>;
   /** Necesario solo para tarifas PVPC. */
   pvpc?: PreciosPorHora;
+  /** Aplicar las promociones del primer año (descuentos temporales). Por defecto, no: se compara el precio estable. */
+  promociones?: boolean;
 }
 
 export interface Factura {
@@ -56,11 +89,15 @@ export interface Factura {
   potencia: number;
   energia: number;
   cuotaFija: number;
+  /** Servicios obligatorios (sin IVA) */
+  servicios: number;
   bonoSocial: number;
   iee: number;
   alquiler: number;
   baseIva: number;
   iva: number;
+  /** Promociones del primer año descontadas (€, impuestos incluidos); 0 si no se aplican. */
+  promociones: number;
   total: number;
   /** Horas sin precio PVPC que se han valorado con la media del periodo. */
   horasSinPrecio: number;
@@ -109,8 +146,12 @@ export function calcularFactura(lecturas: Lectura[], tarifa: Tarifa, potencias: 
   }
 
   const kwhPorPeriodo: Record<PeriodoEnergia, number> = { 1: 0, 2: 0, 3: 0 };
+  let servicios = 0;
   let kwh = 0, potencia = 0, energia = 0, cuotaFija = 0, bonoSocial = 0, iee = 0, alquiler = 0, iva = 0;
   let horasSinPrecio = 0;
+  const descuento = ctx.promociones ? tarifa.info?.descuento_energia ?? null : null;
+  const diasDescuento = descuento ? descuento.meses * 30.44 : 0;
+  const cobraBono = !tarifa.info?.incluye_bono_social;
 
   for (let i = 0; i < dias; i++) {
     const fecha = sumarDias(desde, i);
@@ -136,6 +177,7 @@ export function calcularFactura(lecturas: Lectura[], tarifa: Tarifa, potencias: 
       }
     }
     kwh += kwhDia;
+    if (descuento && i < diasDescuento) energiaDia *= 1 - descuento.pct;
 
     const precioPot = tarifa.tipo === "pvpc"
       ? vigenteEn(ctx.regulados.pvpc_potencia_eur_kw_dia, fecha)
@@ -143,6 +185,7 @@ export function calcularFactura(lecturas: Lectura[], tarifa: Tarifa, potencias: 
     if (!precioPot.exacto) avisos.add("Hay días sin precio de potencia PVPC vigente; se ha usado el más cercano.");
     const potenciaDia = potencias.p1 * precioPot.valor.p1 + potencias.p2 * precioPot.valor.p2;
     const cuotaDia = (tarifa.cuota_fija_mes * 12) / 365;
+    const servicioDia = ((tarifa.servicio_mes ?? 0) * 12) / 365;
 
     const bono = vigenteEn(ctx.regulados.bono_social_eur_dia, fecha);
     const ieeV = vigenteEn(ctx.regulados.iee, fecha);
@@ -152,16 +195,18 @@ export function calcularFactura(lecturas: Lectura[], tarifa: Tarifa, potencias: 
       avisos.add("Parte del periodo queda fuera de las fechas de impuestos que tenemos; se han usado los valores más cercanos.");
     }
 
+    const bonoDia = cobraBono ? bono.valor.valor : 0;
     const ieeDia = Math.max(
-      ieeV.valor.valor * (potenciaDia + energiaDia + bono.valor.valor),
+      ieeV.valor.valor * (potenciaDia + energiaDia + bonoDia),
       (kwhDia / 1000) * ieeV.valor.minimo_eur_mwh,
     );
-    const baseDia = potenciaDia + energiaDia + cuotaDia + bono.valor.valor + ieeDia + alq.valor.valor;
+    const baseDia = potenciaDia + energiaDia + cuotaDia + bonoDia + ieeDia + alq.valor.valor + servicioDia;
 
     potencia += potenciaDia;
     energia += energiaDia;
     cuotaFija += cuotaDia;
-    bonoSocial += bono.valor.valor;
+    servicios += servicioDia;
+    bonoSocial += bonoDia;
     iee += ieeDia;
     alquiler += alq.valor.valor;
     iva += baseDia * ivaV.valor.valor;
@@ -173,7 +218,13 @@ export function calcularFactura(lecturas: Lectura[], tarifa: Tarifa, potencias: 
   const huecos = dias * 24 - lecturas.length;
   if (huecos > 24) avisos.add(`Al fichero le faltan unas ${huecos} horas de consumo: el total puede quedarse corto.`);
 
-  const baseIva = potencia + energia + cuotaFija + bonoSocial + iee + alquiler;
+  const baseIva = potencia + energia + cuotaFija + bonoSocial + iee + alquiler + servicios;
+  if (tarifa.info?.servicio_sin_precio) avisos.add("Exige contratar un servicio cuyo precio no se publica: el total real será mayor.");
+  // Promoción global del primer año que da la CNMC: se reparte por días (máximo un año).
+  const promociones = ctx.promociones && tarifa.info?.promo_primer_anio_eur ? (tarifa.info.promo_primer_anio_eur * Math.min(dias, 365)) / 365 : 0;
+  if (descuento) avisos.add(`Incluye el ${Math.round(descuento.pct * 100)} % de descuento en la energía durante ${descuento.meses} meses.`);
+  if (promociones) avisos.add(`Incluye ${r2(promociones)} € de promoción del primer año.`);
+  if (tarifa.info?.horario_propio) avisos.add("Esta tarifa tiene horas baratas elegidas por el cliente: el cálculo con los periodos 2.0TD es aproximado.");
   return {
     tarifaId: tarifa.id,
     desde,
@@ -184,12 +235,14 @@ export function calcularFactura(lecturas: Lectura[], tarifa: Tarifa, potencias: 
     potencia: r2(potencia),
     energia: r2(energia),
     cuotaFija: r2(cuotaFija),
+    servicios: r2(servicios),
     bonoSocial: r2(bonoSocial),
     iee: r2(iee),
     alquiler: r2(alquiler),
     baseIva: r2(baseIva),
     iva: r2(iva),
-    total: r2(baseIva + iva),
+    promociones: r2(promociones),
+    total: r2(baseIva + iva - promociones),
     horasSinPrecio,
     avisos: [...avisos],
   };
@@ -211,6 +264,8 @@ export interface Comparacion {
   tarifa: Tarifa;
   factura: Factura;
   porRevisar: boolean;
+  /** El total no incluye algún coste obligatorio sin precio publicado. */
+  incompleta: boolean;
 }
 
 /**
@@ -228,7 +283,13 @@ export function compararTarifas(
   const resultados: Comparacion[] = [];
   for (const tarifa of tarifas) {
     if (tarifa.tipo === "pvpc" && !ctx.pvpc) continue;
-    resultados.push({ tarifa, factura: calcularFactura(lecturas, tarifa, potencias, ctx), porRevisar: porRevisar(tarifa, hoy) });
+    resultados.push({
+      tarifa,
+      factura: calcularFactura(lecturas, tarifa, potencias, ctx),
+      porRevisar: porRevisar(tarifa, hoy),
+      incompleta: Boolean(tarifa.info?.servicio_sin_precio),
+    });
   }
-  return resultados.sort((a, b) => Number(a.porRevisar) - Number(b.porRevisar) || a.factura.total - b.factura.total);
+  const detras = (c: Comparacion) => Number(c.porRevisar || c.incompleta);
+  return resultados.sort((a, b) => detras(a) - detras(b) || a.factura.total - b.factura.total);
 }

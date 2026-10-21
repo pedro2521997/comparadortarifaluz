@@ -114,3 +114,23 @@ describe("análisis", () => {
     expect(nivelesDelDia(precios)[10]).toBe("cara");
   });
 });
+
+describe("perfiles y promociones", () => {
+  it("el perfil sintético suma el consumo pedido y respeta el reparto de la factura", async () => {
+    const { generarLecturas } = await import("../src/index");
+    const l = generarLecturas({ desde: "2025-10-01", hasta: "2026-09-30", anualKwh: 3500, tipo: "estandar", festivos, porPeriodo: { 1: 1000, 2: 1000, 3: 1500 } });
+    expect(l).toHaveLength(365 * 24);
+    expect(l.reduce((a, x) => a + x.kwh, 0)).toBeCloseTo(3500, 0);
+    const rep = repartoPorPeriodos(l, festivos);
+    expect(rep.kwh[3]).toBeCloseTo(1500, 0);
+  });
+
+  it("descuenta la promoción solo si se pide y no cobra el bono social si va incluido", () => {
+    const conPromo: Tarifa = { ...fija, info: { descuento_energia: { pct: 0.5, meses: 12 }, incluye_bono_social: true } };
+    const lect = mesPlano("2026-10-01", 31);
+    const sin = calcularFactura(lect, conPromo, { p1: 3.3, p2: 3.3 }, ctx);
+    const con = calcularFactura(lect, conPromo, { p1: 3.3, p2: 3.3 }, { ...ctx, promociones: true });
+    expect(sin.bonoSocial).toBe(0);
+    expect(con.energia).toBeCloseTo(sin.energia / 2, 2);
+  });
+});

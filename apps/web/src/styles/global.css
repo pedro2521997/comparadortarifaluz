@@ -1,6 +1,7 @@
 /* LuzSinTrampa — estilos globales sobre el sistema de diseño de docs/DESIGN.md (Arcadia). */
 @import "@fontsource-variable/dm-sans";
 @import "./tokens.css";
+@import "./ranking.css";
 
 *,
 *::before,
