@@ -8,7 +8,7 @@ compatibility_date = "2026-10-01"
 directory = "../web/dist"
 binding = "ASSETS"
 not_found_handling = "404-page"
-run_worker_first = ["/api/*", "/panel*"]
+run_worker_first = ["/api/*", "/panel*", "/__scheduled"]
 
 # Red Eléctrica publica el día siguiente por la tarde [verificar hora exacta, ~20:15 Madrid].
 # Cada 15 minutos de 18:00 a 22:45 UTC hasta conseguirlo (cubre horario de verano e invierno).
