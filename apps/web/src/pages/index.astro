@@ -1,0 +1,324 @@
+---
+import Base from "../layouts/Base.astro";
+import AvisoDiario from "../components/AvisoDiario.astro";
+import { dias } from "../lib/datos";
+import { resumen, niveles, mejorFranja } from "../lib/grafico";
+import { hoyMadrid, fechaLarga, ekwh, hh, franja } from "../lib/formato";
+import { guias } from "../lib/guias";
+
+const hoy = hoyMadrid();
+const dia = [...dias].reverse().find((d) => d.fecha <= hoy)!;
+const r = resumen(dia.precios);
+const niv = niveles(dia.precios);
+const max = r.max.p;
+const lavadora = mejorFranja(dia.precios, 2);
+const destacadas = guias.slice(0, 6);
+
+const herramientas = [
+  { href: "/comparador/", eyebrow: "La herramienta estrella", t: "Compara tarifas con tu fichero", d: "Sube el consumo hora a hora de tu distribuidora y mira cuánto habrías pagado con cada tarifa. Se calcula en tu navegador.", cta: "Comparar mi tarifa" },
+  { href: "/precio-luz-hoy/", eyebrow: "Cada día", t: "Precio de la luz por horas", d: "El PVPC de hoy y de mañana con las mejores horas para la lavadora, el horno o cargar el coche.", cta: "Ver el precio de hoy" },
+  { href: "/cuanto-gasta/", eyebrow: "25 aparatos", t: "Cuánto gasta cada aparato", d: "Aire acondicionado, termo, horno, coche eléctrico… lo que cuesta al mes con el precio de hoy.", cta: "Calcular un aparato" },
+  { href: "/placas-solares/", eyebrow: "Autoconsumo", t: "¿Te compensan las placas?", d: "Producción real de tu zona cruzada con tu consumo hora a hora. En rangos, sin promesas.", cta: "Calcular mis placas" },
+];
+---
+
+<Base titulo="LuzSinTrampa: paga menos luz con tus propios datos">
+  <section class="hero portada">
+    <div class="orbes" aria-hidden="true">
+      <span class="orbe" style="width:56px;height:56px;right:6%;top:48px"></span>
+      <span class="orbe orbe--mint" style="width:24px;height:24px;right:12%;top:170px"></span>
+      <span class="orbe orbe--lav" style="width:40px;height:40px;left:5%;top:200px"></span>
+    </div>
+    <div class="wrap center">
+      <span class="eyebrow">Tu factura, sin letra pequeña</span>
+      <h1 class="portada__t">Paga menos luz con tus propios datos</h1>
+      <p class="lead">Tu fichero de consumos, tu código postal, tu aparato y el precio real de hoy. Respuestas personales, no medias genéricas.</p>
+      <div class="btn-row">
+        <a class="btn btn--mint" href="/comparador/">Compara tu tarifa con tu fichero</a>
+        <a class="btn btn--ghost" href="/precio-luz-hoy/">Precio de la luz hoy</a>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <a class="panel" href="/precio-luz-hoy/" aria-label={`Precio de la luz del ${fechaLarga(dia.fecha)}: ver hora a hora`}>
+        <div class="panel__rail" aria-hidden="true">
+          <span></span><span></span><span></span><span></span>
+        </div>
+        <div class="panel__body">
+          <div class="panel__cab">
+            <span class="eyebrow">Precio de la luz · {fechaLarga(dia.fecha)}</span>
+            <span class="pill">PVPC sin impuestos</span>
+          </div>
+          <div class="panel__stats">
+            <div class="stat"><span class="stat__label">Hora más barata</span><span class="stat__value">{hh(r.min.h)}</span><span class="stat__sub num">{ekwh(r.min.p)}</span></div>
+            <div class="stat"><span class="stat__label">Hora más cara</span><span class="stat__value">{hh(r.max.h)}</span><span class="stat__sub num">{ekwh(r.max.p)}</span></div>
+            <div class="stat"><span class="stat__label">Lavadora</span><span class="stat__value panel__v">{lavadora ? franja(lavadora.inicio, 2) : "—"}</span><span class="stat__sub">la mejor franja de 2 horas</span></div>
+          </div>
+          <div class="columnas" aria-hidden="true">
+            {
+              dia.precios.map((p, h) => (
+                <div class="columnas__c">
+                  <span class={`columnas__b columnas__b--${niv[h] ?? "nula"}`} style={`height:${p === null ? 0 : Math.max(4, (p / max) * 100)}%`} />
+                  <span class="columnas__h">{h % 3 === 0 ? String(h).padStart(2, "0") : ""}</span>
+                </div>
+              ))
+            }
+          </div>
+          <p class="panel__pie">Ver las 24 horas con su precio →</p>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="center stack" style="--stack:12px;margin-bottom:48px">
+        <span class="eyebrow">Herramientas</span>
+        <h2>Cuatro preguntas, cuatro respuestas con números</h2>
+      </div>
+      <div class="grid grid--2">
+        {
+          herramientas.map((h, i) => (
+            <a class:list={["card card--link card--roomy herr", { "herr--star": i === 0 }]} href={h.href}>
+              <span class:list={["eyebrow", { "eyebrow--violet": i === 3 }]}>{h.eyebrow}</span>
+              <h3 class="herr__t">{h.t}</h3>
+              <p class="muted">{h.d}</p>
+              <span class="arrow">{h.cta} →</span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--white">
+    <div class="wrap grid grid--2 confianza">
+      <div class="stack" style="--stack:16px">
+        <span class="eyebrow eyebrow--violet">Por qué fiarte</span>
+        <h2>El comparador ordena solo por precio</h2>
+        <p class="lead">Si una tarifa nos paga comisión, lo decimos con una etiqueta y no sube ni un puesto. Las que no tienen acuerdo salen igual, con su enlace directo.</p>
+        <p><a class="btn btn--ghost" href="/como-funciona/">Cómo funciona y cómo ganamos dinero</a></p>
+      </div>
+      <ul class="promesas">
+        <li><strong>Tu fichero no sale de tu ordenador.</strong> El cálculo se hace en tu navegador; no lo subimos a ningún servidor.</li>
+        <li><strong>Fuentes y fecha junto a cada dato.</strong> Precios de Red Eléctrica, radiación de la Comisión Europea, impuestos con su fecha de vigencia.</li>
+        <li><strong>Estimaciones honestas.</strong> Te damos rangos y te contamos cómo lo calculamos. Si un precio no está comprobado, lo verás marcado.</li>
+        <li><strong>Primero el resultado.</strong> Nunca te pedimos datos personales para ver un cálculo.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="guias-cab">
+        <div class="stack" style="--stack:12px">
+          <span class="eyebrow">Guías</span>
+          <h2>Entiende tu factura en cinco minutos</h2>
+        </div>
+        <a class="btn btn--ghost" href="/guias/">Todas las guías</a>
+      </div>
+      <div class="grid grid--3">
+        {
+          destacadas.map((g) => (
+            <a class="card card--link" href={`/guias/${g.slug}/`}>
+              <h3 class="guia__t">{g.titulo}</h3>
+              <p class="muted small">{g.resumen}</p>
+              <span class="arrow">Leer →</span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <AvisoDiario />
+</Base>
+
+<style>
+  .portada {
+    position: relative;
+    overflow: hidden;
+    padding-bottom: 64px;
+  }
+  .portada .orbes {
+    position: absolute;
+    inset: 0;
+    display: none;
+  }
+  @media (min-width: 1100px) {
+    .portada .orbes {
+      display: block;
+    }
+  }
+  .portada__t {
+    max-width: 16ch;
+    margin-inline: auto;
+  }
+  .portada .lead {
+    margin-inline: auto;
+  }
+  .panel {
+    display: flex;
+    margin: 56px auto 0;
+    max-width: 960px;
+    background: var(--color-sheet-white);
+    border: 1px solid var(--color-sage-mist);
+    border-radius: var(--radius-cards);
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+  }
+  .panel:hover {
+    border-color: var(--color-canopy);
+  }
+  .panel__rail {
+    display: none;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+    padding: 24px 0;
+    width: 64px;
+    background: var(--color-canopy);
+  }
+  .panel__rail span {
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+  }
+  .panel__rail span:first-child {
+    background: var(--color-mint-pulse);
+    border-color: var(--color-mint-pulse);
+  }
+  @media (min-width: 720px) {
+    .panel__rail {
+      display: flex;
+    }
+  }
+  .panel__body {
+    flex: 1;
+    min-width: 0;
+    padding: 24px;
+  }
+  @media (min-width: 720px) {
+    .panel__body {
+      padding: 32px 40px;
+    }
+  }
+  .panel__cab {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .panel__stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 20px;
+  }
+  .panel__stats .stat:last-child {
+    grid-column: 1 / -1;
+  }
+  @media (min-width: 640px) {
+    .panel__stats {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .panel__stats .stat:last-child {
+      grid-column: auto;
+    }
+  }
+  .panel__stats .stat {
+    background: var(--color-cream-paper);
+    border: 0;
+    padding: 16px;
+  }
+  .panel__v {
+    font-size: 20px !important;
+  }
+  .columnas {
+    display: grid;
+    grid-template-columns: repeat(24, minmax(0, 1fr));
+    gap: 3px;
+    height: 140px;
+    margin-top: 24px;
+    align-items: end;
+  }
+  .columnas__c {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    height: 100%;
+  }
+  .columnas__b {
+    display: block;
+    border-radius: 3px 3px 0 0;
+  }
+  .columnas__b--barata {
+    background: var(--color-mint-pulse);
+  }
+  .columnas__b--normal {
+    background: var(--color-sage-mist);
+  }
+  .columnas__b--cara {
+    background: var(--color-orb-violet);
+  }
+  .columnas__h {
+    font-size: 10px;
+    color: var(--color-slate);
+    height: 14px;
+    margin-top: 4px;
+  }
+  .panel__pie {
+    margin-top: 16px;
+    font-weight: 500;
+    color: var(--color-canopy);
+  }
+  .herr {
+    min-height: 260px;
+  }
+  .herr__t {
+    font-size: 28px;
+    font-weight: 300;
+    color: var(--color-ink);
+    letter-spacing: -0.01em;
+  }
+  .herr--star {
+    border-color: var(--color-canopy);
+  }
+  .confianza {
+    gap: 48px;
+    align-items: center;
+  }
+  .promesas {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 16px;
+  }
+  .promesas li {
+    padding: 20px 24px;
+    border: 1px solid var(--color-sage-mist);
+    border-radius: var(--radius-cards);
+    background: var(--color-cream-paper);
+  }
+  .promesas strong {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+  .guias-cab {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 24px;
+    margin-bottom: 40px;
+  }
+  .guia__t {
+    font-size: 20px;
+  }
+</style>

@@ -1,0 +1,274 @@
+---
+// Calculadora de cuánto gasta un aparato. Valores típicos editables; precio de hoy (PVPC) o tu precio fijo.
+import type { Aparato } from "../lib/datos";
+import { dias, factorImpuestos } from "../lib/datos";
+import { hoyMadrid } from "../lib/formato";
+
+interface Props {
+  aparato?: Aparato;
+}
+const { aparato } = Astro.props;
+const hoy = hoyMadrid();
+const ultimo = dias[dias.length - 1];
+// Último día publicado hasta hoy (no el de mañana) como dato inicial; el navegador lo refresca.
+const diaBase = [...dias].reverse().find((d) => d.fecha <= hoy) ?? ultimo;
+const tipo = aparato?.tipo ?? "potencia";
+const config = {
+  tipo,
+  ventana: aparato?.ventana_h ?? 1,
+  desplazable: aparato?.desplazable ?? true,
+  factor: factorImpuestos(hoy),
+  fecha: diaBase.fecha,
+  precios: diaBase.precios,
+};
+const id = aparato?.slug ?? "generico";
+---
+
+<div class="calc card card--roomy" data-calc={JSON.stringify(config)}>
+  <form class="calc__form" onsubmit="return false">
+    <fieldset class="calc__modo">
+      <legend class="label">¿Qué dato tienes?</legend>
+      <div class="seg">
+        <label><input type="radio" name={`modo-${id}`} value="potencia" checked={tipo === "potencia"} /> Potencia (W)</label>
+        <label><input type="radio" name={`modo-${id}`} value="ciclo" checked={tipo === "ciclo"} /> kWh por uso</label>
+        <label><input type="radio" name={`modo-${id}`} value="continuo" checked={tipo === "continuo"} /> kWh al año (etiqueta)</label>
+      </div>
+    </fieldset>
+
+    <div class="form-grid form-grid--3">
+      <div class="field" data-modo="potencia">
+        <label for={`w-${id}`}>Potencia</label>
+        <input id={`w-${id}`} name="w" type="number" min="1" step="1" inputmode="numeric" value={aparato?.potencia_w ?? 1000} />
+        <span class="hint">vatios (W) de consumo eléctrico</span>
+      </div>
+      <div class="field" data-modo="potencia">
+        <label for={`h-${id}`}>Horas al día</label>
+        <input id={`h-${id}`} name="h" type="number" min="0.1" max="24" step="0.25" inputmode="decimal" value={aparato?.horas_dia ?? 2} />
+      </div>
+      <div class="field" data-modo="potencia">
+        <label for={`d-${id}`}>Días al mes</label>
+        <input id={`d-${id}`} name="d" type="number" min="1" max="31" step="1" inputmode="numeric" value={aparato?.dias_mes ?? 30} />
+      </div>
+      <div class="field" data-modo="ciclo">
+        <label for={`k-${id}`}>kWh por uso</label>
+        <input id={`k-${id}`} name="k" type="number" min="0.01" step="0.01" inputmode="decimal" value={aparato?.kwh_ciclo ?? 1} />
+        <span class="hint">un lavado, una carga…</span>
+      </div>
+      <div class="field" data-modo="ciclo">
+        <label for={`u-${id}`}>Usos a la semana</label>
+        <input id={`u-${id}`} name="u" type="number" min="0" max="50" step="1" inputmode="numeric" value={aparato?.ciclos_semana ?? 4} />
+      </div>
+      <div class="field" data-modo="continuo">
+        <label for={`a-${id}`}>kWh al año</label>
+        <input id={`a-${id}`} name="a" type="number" min="1" step="1" inputmode="numeric" value={aparato?.kwh_anual ?? 250} />
+        <span class="hint">cifra grande de la etiqueta energética</span>
+      </div>
+    </div>
+
+    <div class="form-grid form-grid--2">
+      <div class="field">
+        <label for={`t-${id}`}>Tu tarifa</label>
+        <select id={`t-${id}`} name="t">
+          <option value="pvpc">PVPC: precio de hoy hora a hora</option>
+          <option value="fijo">Precio fijo: escribo mi precio</option>
+        </select>
+      </div>
+      <div class="field" data-tarifa="fijo" hidden>
+        <label for={`p-${id}`}>Tu precio de la energía</label>
+        <input id={`p-${id}`} name="p" type="number" min="0.01" step="0.001" inputmode="decimal" value="0.13" />
+        <span class="hint">€/kWh sin impuestos (en tu factura)</span>
+      </div>
+    </div>
+  </form>
+
+  <div class="calc__res" aria-live="polite">
+    <p class="eyebrow">Te cuesta</p>
+    <p class="answer"><strong data-out="mes">—</strong> al mes</p>
+    <p class="calc__det" data-out="detalle"></p>
+    <div class="calc__comp" data-out="comparacion"></div>
+    <p class="caption" data-out="fuente"></p>
+  </div>
+</div>
+
+<script>
+  import { cargarDia } from "../lib/precios-cliente";
+  import { mejorFranja } from "../lib/grafico";
+  import { eur2, kwh, ekwh, franja, hoyMadrid, fechaCorta, num } from "../lib/formato";
+
+  interface Config {
+    tipo: "potencia" | "ciclo" | "continuo";
+    ventana: number;
+    desplazable: boolean;
+    factor: number;
+    fecha: string;
+    precios: (number | null)[];
+  }
+
+  for (const raiz of document.querySelectorAll<HTMLElement>("[data-calc]")) {
+    const cfg: Config = JSON.parse(raiz.dataset.calc!);
+    const form = raiz.querySelector("form")!;
+    const out = (k: string) => raiz.querySelector<HTMLElement>(`[data-out="${k}"]`)!;
+    const val = (n: string) => parseFloat((form.elements.namedItem(n) as HTMLInputElement).value.replace(",", ".")) || 0;
+    const modo = () => (form.querySelector<HTMLInputElement>("input[type=radio]:checked")?.value ?? "potencia") as Config["tipo"];
+
+    function calcular() {
+      const m = modo();
+      for (const el of raiz.querySelectorAll<HTMLElement>("[data-modo]")) el.hidden = el.dataset.modo !== m;
+      const tarifa = (form.elements.namedItem("t") as HTMLSelectElement).value;
+      raiz.querySelector<HTMLElement>('[data-tarifa="fijo"]')!.hidden = tarifa !== "fijo";
+
+      // kWh de un uso, usos al mes y horas que dura cada uso
+      let kwhUso: number, usosMes: number, horasUso: number, queEsUso: string;
+      if (m === "potencia") {
+        horasUso = val("h");
+        kwhUso = (val("w") / 1000) * horasUso;
+        usosMes = val("d");
+        queEsUso = "cada día de uso";
+      } else if (m === "ciclo") {
+        kwhUso = val("k");
+        usosMes = (val("u") * 52) / 12;
+        horasUso = cfg.ventana;
+        queEsUso = "cada uso";
+      } else {
+        kwhUso = val("a") / 365;
+        usosMes = 30.4;
+        horasUso = 24;
+        queEsUso = "cada día";
+      }
+      const kwhMes = kwhUso * usosMes;
+
+      const validos = cfg.precios.filter((p): p is number => p !== null);
+      const media = validos.reduce((a, b) => a + b, 0) / validos.length;
+      const precio = tarifa === "fijo" ? val("p") : media;
+      const coste = (k: number, p: number) => k * p * cfg.factor;
+
+      out("mes").textContent = eur2(coste(kwhMes, precio));
+      out("detalle").innerHTML = `${kwh(kwhMes)} al mes · <strong>${eur2(coste(kwhUso, precio))}</strong> ${queEsUso} (${kwh(kwhUso)}) · ${eur2(coste(kwhMes * 12, precio))} al año`;
+
+      // Comparación de horas: solo tiene sentido con PVPC y aparatos que se pueden mover de hora.
+      const comp = out("comparacion");
+      const ventana = Math.max(1, Math.min(6, Math.round(horasUso) || cfg.ventana));
+      if (tarifa === "pvpc" && m !== "continuo" && ventana <= 6) {
+        const barata = mejorFranja(cfg.precios, ventana);
+        const cara = mejorFranja(cfg.precios, ventana, true);
+        if (barata && cara) {
+          const kB = coste(kwhUso, barata.media);
+          const kC = coste(kwhUso, cara.media);
+          comp.innerHTML = `<div class="calc__horas">
+            <div><span class="eyebrow">Mejor hora hoy</span><strong>${franja(barata.inicio, ventana)}</strong><span>${eur2(kB)} ${queEsUso}</span></div>
+            <div><span class="eyebrow eyebrow--violet">Peor hora hoy</span><strong>${franja(cara.inicio, ventana)}</strong><span>${eur2(kC)} ${queEsUso}</span></div>
+          </div>
+          <p class="small">${cfg.desplazable ? `Usarlo en la mejor franja en lugar de la peor ahorra <strong>${eur2((kC - kB) * usosMes)}</strong> al mes.` : `Este aparato no suele poder elegir hora, pero si puedes adelantarlo o retrasarlo, la diferencia es de ${eur2(kC - kB)} ${queEsUso}.`}</p>`;
+        } else comp.innerHTML = "";
+      } else comp.innerHTML = "";
+
+      out("fuente").innerHTML =
+        tarifa === "pvpc"
+          ? `Con el PVPC del ${fechaCorta(cfg.fecha)} (media ${ekwh(media)} sin impuestos) más impuesto eléctrico e IVA (×${num(cfg.factor, 3)}). No incluye la potencia contratada, que pagas igual uses o no el aparato.`
+          : `Con tu precio de ${ekwh(precio)} más impuesto eléctrico e IVA (×${num(cfg.factor, 3)}). No incluye la potencia contratada.`;
+    }
+
+    form.addEventListener("input", calcular);
+    form.addEventListener("change", calcular);
+    calcular();
+
+    // Refresca con el precio de hoy si el del build es de otro día.
+    const hoy = hoyMadrid();
+    if (cfg.fecha !== hoy) {
+      cargarDia(hoy).then((p) => {
+        if (p) {
+          cfg.precios = p;
+          cfg.fecha = hoy;
+          calcular();
+          document.dispatchEvent(new CustomEvent("precios-hoy", { detail: p }));
+        }
+      });
+    }
+  }
+</script>
+
+<style>
+  .calc {
+    display: grid;
+    gap: 32px;
+  }
+  @media (min-width: 960px) {
+    .calc {
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+      gap: 48px;
+    }
+  }
+  .calc__form {
+    display: grid;
+    gap: 24px;
+    align-content: start;
+  }
+  .calc__modo {
+    border: 0;
+    padding: 0;
+    margin: 0;
+  }
+  .seg {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .seg label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 8px 14px;
+    border: 1px solid var(--color-pale-sage);
+    border-radius: var(--radius-buttons);
+    cursor: pointer;
+    font-size: 15px;
+  }
+  .seg label:has(input:checked) {
+    border-color: var(--color-canopy);
+    background: #f2f7f5;
+    font-weight: 500;
+  }
+  .seg input {
+    accent-color: var(--color-canopy);
+  }
+  [hidden] {
+    display: none !important;
+  }
+  .calc__res {
+    background: var(--color-cream-paper);
+    border-radius: var(--radius-cards);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-self: start;
+  }
+  .calc__res .answer {
+    margin: 0;
+  }
+  .calc__det {
+    color: var(--color-slate);
+  }
+  .calc__comp :global(.calc__horas) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .calc__comp :global(.calc__horas > div) {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background: var(--color-sheet-white);
+    border: 1px solid var(--color-sage-mist);
+    border-radius: var(--radius-buttons);
+    padding: 12px;
+    font-size: 14px;
+  }
+  .calc__comp :global(.calc__horas strong) {
+    font-size: 16px;
+    font-weight: 500;
+  }
+</style>

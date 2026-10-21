@@ -1,0 +1,50 @@
+---
+// Archivo histórico: una página por día con datos reales. Nunca se generan páginas vacías.
+import Base from "../../layouts/Base.astro";
+import PrecioDia from "../../components/PrecioDia.astro";
+import { dias, type DiaPrecios } from "../../lib/datos";
+import { fechaLarga, fechaCorta, sumarDias, ekwh } from "../../lib/formato";
+import { resumen } from "../../lib/grafico";
+
+export function getStaticPaths() {
+  return dias.map((dia) => ({ params: { fecha: dia.fecha }, props: { dia } }));
+}
+
+const { dia } = Astro.props as { dia: DiaPrecios };
+const r = resumen(dia.precios);
+const fechas = new Set(dias.map((d) => d.fecha));
+const anterior = sumarDias(dia.fecha, -1);
+const siguiente = sumarDias(dia.fecha, 1);
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  name: `Precio de la luz PVPC por horas, ${fechaLarga(dia.fecha)}`,
+  description: `Precio horario del PVPC 2.0TD del ${fechaLarga(dia.fecha)}: media ${ekwh(r.media)}, mínimo ${ekwh(r.min.p)}, máximo ${ekwh(r.max.p)}.`,
+  temporalCoverage: dia.fecha,
+  creator: { "@type": "Organization", name: "Red Eléctrica" },
+  isAccessibleForFree: true,
+};
+---
+
+<Base
+  titulo={`Precio de la luz el ${fechaCorta(dia.fecha)} por horas`}
+  descripcion={`Precio de la luz PVPC del ${fechaLarga(dia.fecha)}: hora más barata ${String(r.min.h).padStart(2, "0")}:00 (${ekwh(r.min.p)}), media ${ekwh(r.media)}.`}
+  schema={schema}
+>
+  <section class="hero hero--compacto">
+    <div class="wrap">
+      <p class="breadcrumbs"><a href="/precio-luz/">Archivo de precios</a> / {fechaCorta(dia.fecha)}</p>
+      <h1>Precio de la luz del {fechaLarga(dia.fecha)}</h1>
+      <div class="btn-row">
+        {fechas.has(anterior) && <a class="btn btn--ghost btn--small" href={`/precio-luz/${anterior}/`}>← {fechaCorta(anterior)}</a>}
+        {fechas.has(siguiente) && <a class="btn btn--ghost btn--small" href={`/precio-luz/${siguiente}/`}>{fechaCorta(siguiente)} →</a>}
+        <a class="btn btn--ghost btn--small" href="/precio-luz-hoy/">Hoy</a>
+      </div>
+    </div>
+  </section>
+  <section class="section section--tight">
+    <div class="wrap">
+      <PrecioDia fecha={dia.fecha} modo="archivo" />
+    </div>
+  </section>
+</Base>

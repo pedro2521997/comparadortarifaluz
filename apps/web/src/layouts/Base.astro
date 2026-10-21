@@ -1,0 +1,154 @@
+---
+import "../styles/global.css";
+import "../styles/componentes.css";
+import Logo from "../components/Logo.astro";
+import { SITIO, NAV, TELEGRAM_URL } from "../config";
+import { dias } from "../lib/datos";
+import { frase } from "../lib/grafico";
+import { fechaCorta, hoyMadrid } from "../lib/formato";
+
+interface Props {
+  titulo: string;
+  descripcion?: string;
+  /** JSON-LD opcional */
+  schema?: Record<string, unknown> | Record<string, unknown>[];
+  noindex?: boolean;
+}
+const { titulo, descripcion = SITIO.descripcion, schema, noindex = false } = Astro.props;
+const canonical = new URL(Astro.url.pathname, SITIO.url).href;
+const tituloCompleto = titulo.includes(SITIO.nombre) ? titulo : `${titulo} · ${SITIO.nombre}`;
+const ruta = Astro.url.pathname;
+
+// Barra de aviso: el último día publicado, siempre con su fecha para no presentar un dato viejo como nuevo.
+const ultimo = dias[dias.length - 1];
+const aviso = ultimo
+  ? {
+      texto: `${fechaCorta(ultimo.fecha)}: ${frase(ultimo.precios)}`,
+      fecha: ultimo.fecha,
+      href: ultimo.fecha > hoyMadrid() ? "/precio-luz-manana/" : `/precio-luz/${ultimo.fecha}/`,
+    }
+  : null;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{tituloCompleto}</title>
+    <meta name="description" content={descripcion} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#104336" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_ES" />
+    <meta property="og:site_name" content={SITIO.nombre} />
+    <meta property="og:title" content={tituloCompleto} />
+    <meta property="og:description" content={descripcion} />
+    <meta property="og:url" content={canonical} />
+    {schema && <script type="application/ld+json" set:html={JSON.stringify(schema)} />}
+  </head>
+  <body>
+    <a class="skip-link" href="#contenido">Saltar al contenido</a>
+    {
+      aviso && (
+        <div class="anuncio">
+          <a class="wrap anuncio__in" href={aviso.href} data-aviso-fecha={aviso.fecha}>
+            <span>{aviso.texto}</span>
+            <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      )
+    }
+    <header class="nav">
+      <div class="wrap nav__in">
+        <a href="/" class="nav__logo" aria-label={`${SITIO.nombre}, inicio`}>
+          <Logo />
+        </a>
+        <nav aria-label="Principal" class="nav__links" id="menu">
+          <ul>
+            {
+              NAV.map((n) => (
+                <li>
+                  <a href={n.href} aria-current={ruta.startsWith(n.href) ? "page" : undefined}>
+                    {n.texto}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+          <a class="btn btn--small nav__cta" href="/comparador/">Compara tu tarifa</a>
+        </nav>
+        <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="menu">
+          <span class="sr-only">Menú</span>
+          <span class="nav__burger" aria-hidden="true"></span>
+        </button>
+      </div>
+    </header>
+
+    <main id="contenido">
+      <slot />
+    </main>
+
+    <footer class="pie">
+      <div class="wrap">
+        <div class="pie__grid">
+          <div class="pie__marca">
+            <Logo blanco />
+            <p>Pagar menos luz con tus datos y el precio real de hoy. Sin letra pequeña.</p>
+            <p class="pie__neutral">
+              El comparador ordena solo por precio. Si una tarifa nos paga comisión, lo decimos y no sube en la lista.
+              <a href="/como-funciona/">Cómo funciona</a>
+            </p>
+          </div>
+          <div>
+            <p class="pie__titulo">Herramientas</p>
+            <ul>
+              <li><a href="/precio-luz-hoy/">Precio de la luz hoy</a></li>
+              <li><a href="/precio-luz-manana/">Precio de la luz mañana</a></li>
+              <li><a href="/precio-luz-ayer/">Precio de la luz ayer</a></li>
+              <li><a href="/precio-luz/">Archivo de precios</a></li>
+              <li><a href="/comparador/">Comparador con tu fichero</a></li>
+              <li><a href="/cuanto-gasta/">Cuánto gasta cada aparato</a></li>
+              <li><a href="/placas-solares/">Calculadora de placas solares</a></li>
+            </ul>
+          </div>
+          <div>
+            <p class="pie__titulo">Aprende</p>
+            <ul>
+              <li><a href="/guias/">Todas las guías</a></li>
+              <li><a href="/guias/periodos-2-0td/">Punta, llano y valle</a></li>
+              <li><a href="/guias/descargar-consumo-datadis/">Descargar tu consumo</a></li>
+              <li><a href="/guias/potencia-contratada/">Potencia contratada</a></li>
+              {TELEGRAM_URL && <li><a href={TELEGRAM_URL}>Canal de Telegram</a></li>}
+            </ul>
+          </div>
+          <div>
+            <p class="pie__titulo">Transparencia</p>
+            <ul>
+              <li><a href="/como-funciona/">Cómo funciona y cómo ganamos dinero</a></li>
+              <li><a href="/aviso-legal/">Aviso legal</a></li>
+              <li><a href="/privacidad/">Privacidad</a></li>
+              <li><a href="/cookies/">Cookies</a></li>
+            </ul>
+          </div>
+        </div>
+        <p class="pie__legal">
+          Los cálculos son estimaciones, no ofertas vinculantes. Precios de la luz: Red Eléctrica (REData).
+          © {new Date().getFullYear()} {SITIO.nombre}
+        </p>
+      </div>
+    </footer>
+
+    <script>
+      const boton = document.querySelector<HTMLButtonElement>(".nav__toggle");
+      const menu = document.getElementById("menu");
+      boton?.addEventListener("click", () => {
+        const abierto = boton.getAttribute("aria-expanded") === "true";
+        boton.setAttribute("aria-expanded", String(!abierto));
+        menu?.classList.toggle("is-open", !abierto);
+      });
+    </script>
+  </body>
+</html>

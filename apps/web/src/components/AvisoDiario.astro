@@ -1,0 +1,22 @@
+---
+import { TELEGRAM_URL } from "../config";
+---
+
+<section class="section section--white">
+  <div class="wrap wrap--narrow center stack" style="--stack:16px">
+    <span class="eyebrow eyebrow--violet">Aviso diario</span>
+    <h2>Las horas baratas de mañana, cada tarde en tu móvil</h2>
+    <p class="lead">
+      Un mensaje al día en Telegram: «Mañana, la hora más barata es de 14:00 a 16:00 (0,080 €/kWh). Evita de 20:00 a 22:00». Nada más.
+    </p>
+    <div class="btn-row">
+      {
+        TELEGRAM_URL ? (
+          <a class="btn btn--mint" href={TELEGRAM_URL}>Unirme al canal de Telegram</a>
+        ) : (
+          <span class="pill pill--aviso">Canal de Telegram: muy pronto</span>
+        )
+      }
+    </div>
+  </div>
+</section>

@@ -1,0 +1,89 @@
+---
+import Base from "../../layouts/Base.astro";
+import CalculadoraAparato from "../../components/CalculadoraAparato.astro";
+import { aparatos, kwhMesAparato } from "../../lib/datos";
+import { kwh } from "../../lib/formato";
+
+const grupos = [...new Set(aparatos.map((a) => a.grupo))].map((g) => ({ nombre: g, lista: aparatos.filter((a) => a.grupo === g) }));
+---
+
+<Base
+  titulo="Cuánto gasta cada aparato en luz, con el precio de hoy"
+  descripcion="Calcula cuánto te cuesta al mes el aire acondicionado, la lavadora, el horno o cargar el coche con el precio de la luz de hoy, y a qué hora te sale más barato."
+>
+  <section class="hero hero--compacto">
+    <div class="wrap">
+      <span class="eyebrow">Cuánto gasta</span>
+      <h1>¿Cuánto te cuesta encender eso?</h1>
+      <p class="lead">Pon la potencia o el consumo de la etiqueta y cuántas horas lo usas. Te decimos lo que cuesta con el precio de la luz de hoy y a qué hora sale más barato.</p>
+    </div>
+  </section>
+  <section class="section section--tight">
+    <div class="wrap">
+      <CalculadoraAparato />
+    </div>
+  </section>
+  <section class="section section--white">
+    <div class="wrap stack" style="--stack:40px">
+      <div>
+        <span class="eyebrow">Aparato por aparato</span>
+        <h2 style="margin-top:12px">Valores típicos ya cargados</h2>
+      </div>
+      {
+        grupos.map((g) => (
+          <div>
+            <h3 class="grupo">{g.nombre}</h3>
+            <ul class="aparatos">
+              {g.lista.map((a) => (
+                <li>
+                  <a href={`/cuanto-gasta/${a.slug}/`}>
+                    <span class="aparatos__n">{a.nombre}</span>
+                    <span class="aparatos__k">≈ {kwh(kwhMesAparato(a))}/mes</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+</Base>
+
+<style>
+  .grupo {
+    margin-bottom: 16px;
+  }
+  .aparatos {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+  .aparatos a {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    min-height: 56px;
+    padding: 12px 16px;
+    border: 1px solid var(--color-sage-mist);
+    border-radius: var(--radius-buttons);
+    text-decoration: none;
+    color: var(--color-bark);
+    background: var(--color-sheet-white);
+  }
+  .aparatos a:hover {
+    border-color: var(--color-canopy);
+  }
+  .aparatos__n {
+    font-weight: 500;
+  }
+  .aparatos__k {
+    font-size: 13px;
+    color: var(--color-slate);
+    white-space: nowrap;
+  }
+</style>

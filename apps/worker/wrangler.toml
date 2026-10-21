@@ -1,0 +1,33 @@
+# Worker de LuzSinTrampa: sirve la web estática (apps/web/dist) y las rutas /api/*.
+# Cuenta de Cloudflare NUEVA y separada de la web existente (ver docs/LuzSinTrampa.md §8).
+name = "luzsintrampa"
+main = "src/index.ts"
+compatibility_date = "2026-10-01"
+
+[assets]
+directory = "../web/dist"
+binding = "ASSETS"
+not_found_handling = "404-page"
+run_worker_first = ["/api/*", "/panel*"]
+
+# Red Eléctrica publica el día siguiente por la tarde [verificar hora exacta, ~20:15 Madrid].
+# Cada 15 minutos de 18:00 a 22:45 UTC hasta conseguirlo (cubre horario de verano e invierno).
+[triggers]
+crons = ["*/15 18-22 * * *"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "luzsintrampa"
+database_id = "PENDIENTE"
+
+[vars]
+# Prefijos de CP de la zona del instalador (mismo valor que apps/web/src/config.ts)
+ZONA_INSTALADOR = "28,45,19"
+
+# Secretos (npx wrangler secret put NOMBRE), nunca en el código:
+#   ESIOS_TOKEN          token de ESIOS (opcional; sin él se usa REData, que es pública)
+#   TELEGRAM_BOT_TOKEN   bot que publica en el canal
+#   TELEGRAM_CANAL       @canal o id del canal público
+#   TELEGRAM_AVISOS      chat del instalador para avisarle de cada contacto nuevo
+#   PANEL_USUARIO        usuario del panel de contactos
+#   PANEL_CLAVE          contraseña del panel de contactos

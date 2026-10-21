@@ -1,0 +1,38 @@
+# Cada tarde, cuando Red Eléctrica ya ha publicado el precio de mañana: descarga precios,
+# pasa los tests, construye la web (archivo histórico incluido) y la despliega.
+# El Worker (cron) es quien publica en Telegram y sirve /api/precios en tiempo real;
+# este build solo genera las páginas estáticas con datos.
+name: Build diario
+
+on:
+  schedule:
+    - cron: "45 19 * * *" # 21:45 Madrid en verano, 20:45 en invierno
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run precios -- 45
+      - run: npm test
+      - run: npm run build
+      - name: Desplegar en Cloudflare
+        run: npx wrangler deploy
+        working-directory: apps/worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Guardar los precios nuevos en el repositorio
+        run: |
+          git config user.name "luzsintrampa-bot"
+          git config user.email "bot@luzsintrampa.es"
+          git add data/precios
+          git diff --cached --quiet || (git commit -m "Precios PVPC $(date +%F)" && git push)

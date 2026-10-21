@@ -1,0 +1,119 @@
+---
+import Base from "../../layouts/Base.astro";
+import CalculadoraAparato from "../../components/CalculadoraAparato.astro";
+import { aparatos, articulo, dias, factorImpuestos, kwhMesAparato, kwhUsoAparato, type Aparato } from "../../lib/datos";
+import { mejoresHoras, resumen } from "../../lib/grafico";
+import { eur2, kwh, num, hoyMadrid, fechaCorta } from "../../lib/formato";
+import { AMAZON_TAG } from "../../config";
+
+export function getStaticPaths() {
+  return aparatos.map((aparato) => ({ params: { slug: aparato.slug }, props: { aparato } }));
+}
+
+const { aparato } = Astro.props as { aparato: Aparato };
+const hoy = hoyMadrid();
+const dia = [...dias].reverse().find((d) => d.fecha <= hoy)!;
+const r = resumen(dia.precios);
+const factor = factorImpuestos(hoy);
+const costeMes = kwhMesAparato(aparato) * r.media * factor;
+const costeUso = kwhUsoAparato(aparato) * r.media * factor;
+const nombreMin = aparato.nombre.charAt(0).toLowerCase() + aparato.nombre.slice(1);
+const unidadRango = aparato.tipo === "potencia" ? "W" : aparato.tipo === "ciclo" ? "kWh por uso" : "kWh al año";
+const usoTexto = aparato.tipo === "ciclo" ? "cada uso" : aparato.tipo === "continuo" ? "al día" : "cada día de uso";
+const relacionados = aparatos.filter((a) => a.grupo === aparato.grupo && a.slug !== aparato.slug).slice(0, 4);
+
+const faq = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: `¿Cuánto gasta ${articulo(aparato)} ${nombreMin}?`,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: `Con valores típicos, unos ${num(kwhMesAparato(aparato), 1)} kWh al mes. Con el PVPC del ${fechaCorta(dia.fecha)} son unos ${eur2(costeMes)} al mes, impuestos incluidos. ${aparato.nota}`,
+      },
+    },
+  ],
+};
+---
+
+<Base
+  titulo={`Cuánto gasta ${articulo(aparato)} ${nombreMin}: coste con el precio de hoy`}
+  descripcion={`${aparato.nombre}: unos ${eur2(costeMes)} al mes con el precio de la luz de hoy. Calcula tu caso, mira las horas más baratas para usarlo y un truco para gastar menos.`}
+  schema={faq}
+>
+  <section class="hero hero--compacto">
+    <div class="wrap">
+      <p class="breadcrumbs"><a href="/cuanto-gasta/">Cuánto gasta</a> / {aparato.nombre}</p>
+      <h1>¿Cuánto gasta {articulo(aparato)} {nombreMin}?</h1>
+      <p class="lead">
+        Con valores típicos, <strong>{eur2(costeMes)} al mes</strong> ({eur2(costeUso)} {usoTexto}) con el precio de la luz del {fechaCorta(dia.fecha)}. Cambia los valores para tu caso.
+      </p>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="wrap">
+      <CalculadoraAparato aparato={aparato} />
+      <p class="caption" style="margin-top:16px">
+        Valor típico: {aparato.nota} Rango habitual: {num(aparato.rango[0], 2)}–{num(aparato.rango[1], 2)} {unidadRango}.
+        Fuente: <a href={aparato.fuente.url} rel="noopener">{aparato.fuente.nombre}</a>.
+      </p>
+    </div>
+  </section>
+
+  <section class="section section--white">
+    <div class="wrap grid grid--2" style="gap:48px">
+      <div class="stack" style="--stack:16px">
+        <span class="eyebrow">Truco para gastar menos</span>
+        <h2 style="font-size:32px">{aparato.truco.split(":")[0].split(".")[0]}.</h2>
+        <p class="lead">{aparato.truco}</p>
+      </div>
+      <div class="stack" style="--stack:16px">
+        <span class="eyebrow">Mide tu dato real</span>
+        <h2 style="font-size:32px">Un enchufe medidor te dice lo que gasta el tuyo</h2>
+        <p class="muted">
+          Los valores típicos sirven para hacerse una idea, pero cada aparato es distinto. Un enchufe medidor de consumo (unos 10–20 €) te dice los kWh reales de tu {nombreMin} en unos días.
+        </p>
+        {AMAZON_TAG === null && <p class="caption">Pronto recomendaremos modelos concretos. Si incluimos enlaces de afiliado, lo indicaremos.</p>}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <span class="eyebrow">Precio de hoy</span>
+      <h2 style="margin:12px 0 24px">Las mejores horas del {fechaCorta(dia.fecha)}</h2>
+      <div id="mejores-horas" set:html={mejoresHoras(dia.precios)} />
+      <p class="btn-row" style="margin-top:24px"><a class="btn btn--ghost" href="/precio-luz-hoy/">Ver el precio hora a hora</a></p>
+    </div>
+  </section>
+
+  {
+    relacionados.length > 0 && (
+      <section class="section section--white section--tight">
+        <div class="wrap">
+          <h2 style="font-size:28px;margin-bottom:16px">Más en {aparato.grupo.toLowerCase()}</h2>
+          <div class="grid grid--4">
+            {relacionados.map((a) => (
+              <a class="card card--link" href={`/cuanto-gasta/${a.slug}/`}>
+                <strong>{a.nombre}</strong>
+                <span class="caption">≈ {kwh(kwhMesAparato(a))} al mes</span>
+                <span class="arrow">Calcular →</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+</Base>
+
+<script>
+  import { mejoresHoras } from "../../lib/grafico";
+  document.addEventListener("precios-hoy", (e) => {
+    const el = document.getElementById("mejores-horas");
+    if (el) el.innerHTML = mejoresHoras((e as CustomEvent).detail);
+  });
+</script>

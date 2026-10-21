@@ -1,0 +1,26 @@
+---
+import Base from "../layouts/Base.astro";
+import PrecioDia from "../components/PrecioDia.astro";
+import { hoyMadrid, fechaLarga, sumarDias } from "../lib/formato";
+
+const ayer = sumarDias(hoyMadrid(), -1);
+---
+
+<Base titulo="Precio de la luz ayer por horas (PVPC)" descripcion="Precio de la luz de ayer hora a hora, con datos de Red Eléctrica, para comprobar tu factura o comparar con hoy.">
+  <section class="hero hero--compacto">
+    <div class="wrap">
+      <span class="eyebrow">Precio de la luz ayer</span>
+      <h1>Precio de la luz ayer, <span data-fecha-texto>{fechaLarga(ayer)}</span></h1>
+      <p class="lead">Útil para comprobar lo que te costó la lavadora o el coche de anoche.</p>
+      <div class="btn-row">
+        <a class="btn btn--ghost" href="/precio-luz-hoy/">Precio de hoy</a>
+        <a class="btn btn--ghost" href="/precio-luz/">Archivo de precios</a>
+      </div>
+    </div>
+  </section>
+  <section class="section section--tight">
+    <div class="wrap">
+      <PrecioDia fecha={ayer} modo="ayer" />
+    </div>
+  </section>
+</Base>

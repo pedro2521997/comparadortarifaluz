@@ -1,0 +1,65 @@
+---
+// Precio de un día. En "hoy" y "mañana" el navegador comprueba que el dato del build sigue siendo
+// el del día que toca; si no, lo vuelve a pedir y, si no está, dice "aún no publicado".
+import { preciosDe } from "../lib/datos";
+import { bloquePrecios, bloqueNoPublicado } from "../lib/bloque-precios";
+
+interface Props {
+  fecha: string;
+  modo: "hoy" | "manana" | "ayer" | "archivo";
+}
+const { fecha, modo } = Astro.props;
+const dia = preciosDe(fecha);
+const html = dia ? bloquePrecios(fecha, dia.precios) : bloqueNoPublicado(fecha, modo === "manana");
+---
+
+<div class="precio-dia" data-modo={modo} data-fecha={fecha} aria-live="polite">
+  <div data-contenido set:html={html} />
+</div>
+
+<script>
+  import { cargarDia } from "../lib/precios-cliente";
+  import { bloquePrecios, bloqueNoPublicado } from "../lib/bloque-precios";
+  import { hoyMadrid, horaMadrid, sumarDias, fechaLarga } from "../lib/formato";
+
+  for (const raiz of document.querySelectorAll<HTMLElement>(".precio-dia")) {
+    const modo = raiz.dataset.modo;
+    if (modo === "archivo") continue;
+    const contenido = raiz.querySelector<HTMLElement>("[data-contenido]")!;
+    const hoy = hoyMadrid();
+    const objetivo = modo === "hoy" ? hoy : sumarDias(hoy, modo === "manana" ? 1 : -1);
+    const ahora = modo === "hoy" ? horaMadrid() : null;
+
+    // Actualiza también los títulos que llevan la fecha.
+    for (const el of document.querySelectorAll<HTMLElement>("[data-fecha-texto]")) el.textContent = fechaLarga(objetivo);
+
+    cargarDia(objetivo).then((precios) => {
+      contenido.innerHTML = precios ? bloquePrecios(objetivo, precios, ahora) : bloqueNoPublicado(objetivo, modo === "manana");
+      raiz.dataset.fecha = objetivo;
+    });
+  }
+</script>
+
+<style is:global>
+  .precio-dia .stats {
+    margin-bottom: 8px;
+  }
+  .precio-dia .h-sec {
+    font-size: var(--text-heading-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-bark);
+    letter-spacing: 0.01em;
+    margin: 48px 0 16px;
+  }
+  .precio-dia .leyenda {
+    margin-bottom: 12px;
+  }
+  .precio-dia .fuente {
+    margin-top: 16px;
+  }
+  @media (min-width: 720px) and (max-width: 1023px) {
+    .precio-dia .grid--4 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>

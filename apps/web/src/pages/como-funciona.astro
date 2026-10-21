@@ -1,0 +1,85 @@
+---
+import Base from "../layouts/Base.astro";
+import { regulados, tarifas } from "../lib/datos";
+import { fechaCorta, num } from "../lib/formato";
+
+const filasIva = regulados.iva.map((v) => ({ desde: v.vigente_desde, hasta: v.vigente_hasta, valor: `${num(v.valor * 100)} %` }));
+const filasBono = regulados.bono_social_eur_dia.map((v) => ({ desde: v.vigente_desde, hasta: v.vigente_hasta, valor: `${num(v.valor, 6)} €/día` }));
+const iee = regulados.iee[regulados.iee.length - 1];
+const alquiler = regulados.alquiler_contador_eur_dia[regulados.alquiler_contador_eur_dia.length - 1];
+const pvpcPot = regulados.pvpc_potencia_eur_kw_dia[regulados.pvpc_potencia_eur_kw_dia.length - 1];
+const periodo = (d: string, h: string | null) => `${fechaCorta(d)} – ${h ? fechaCorta(h) : "hoy"}`;
+---
+
+<Base titulo="Cómo funciona LuzSinTrampa y cómo ganamos dinero" descripcion="Las reglas del comparador, cómo calculamos la factura, de dónde salen los datos y cómo se financia la web. Sin letra pequeña.">
+  <section class="hero hero--compacto">
+    <div class="wrap wrap--narrow">
+      <span class="eyebrow">Transparencia</span>
+      <h1>Cómo funciona y cómo ganamos dinero</h1>
+      <p class="lead">Una web que dice «sin trampa» tiene que enseñar sus cuentas. Aquí están las reglas que seguimos y cómo calculamos cada cifra.</p>
+    </div>
+  </section>
+
+  <section class="section section--white section--tight">
+    <div class="wrap wrap--narrow prose">
+      <h2 id="reglas">Las reglas del comparador</h2>
+      <ol>
+        <li><strong>El orden es siempre por coste estimado</strong> con tu consumo. Nada más.</li>
+        <li><strong>Si una tarifa nos paga comisión</strong> cuando contratas, lleva la etiqueta «Enlace con comisión». No sube ni un puesto.</li>
+        <li><strong>Las tarifas sin acuerdo se muestran igual</strong>, con enlace directo a la web de la comercializadora.</li>
+        <li><strong>Cada tarifa lleva su fuente y la fecha en que la comprobamos.</strong> Si han pasado más de 45 días o aún no la hemos comprobado, se marca como «precio por revisar» y va detrás de las comprobadas. Revisamos el catálogo el día 1 de cada mes y siempre que cambia la regulación.</li>
+      </ol>
+      <p>Ahora mismo el catálogo tiene {tarifas.length} tarifas y está en construcción: la mayoría aparecen como «por revisar» hasta que comprobemos sus precios en la web oficial de cada comercializadora.</p>
+
+      <h2 id="dinero">Cómo ganamos dinero</h2>
+      <p>La web es gratuita. Se financia así, por orden de importancia:</p>
+      <ol>
+        <li><strong>Estudios de placas solares.</strong> Si en la calculadora solar pides un estudio y das tu consentimiento, enviamos tu contacto a un instalador colaborador. Si acabas firmando una instalación, el instalador nos paga una comisión. Tú no pagas nada más por ello.</li>
+        <li><strong>Enlaces con comisión de comercializadoras</strong>, cuando existan programas que lo permitan. Siempre etiquetados.</li>
+        <li><strong>Enlaces de afiliado a productos</strong> (por ejemplo, enchufes medidores), siempre indicados.</li>
+        <li><strong>Publicidad</strong>, solo cuando haya tráfico suficiente, y nunca dentro de los resultados de las calculadoras.</li>
+      </ol>
+
+      <h2 id="factura">Cómo calculamos una factura</h2>
+      <p>Para cada tarifa y cada día del periodo de tu fichero (tarifa 2.0TD, hasta 15 kW):</p>
+      <ul>
+        <li><strong>Potencia</strong> = (kW en P1 × precio P1 + kW en P2 × precio P2) × días.</li>
+        <li><strong>Energía</strong> = kWh de cada hora × precio de su periodo (punta, llano o valle). Con la PVPC, kWh de cada hora × precio de esa hora publicado por Red Eléctrica.</li>
+        <li><strong>Financiación del bono social</strong> = importe por día vigente.</li>
+        <li><strong>Impuesto eléctrico</strong> = {num(iee.valor * 100, 8)} % × (potencia + energía + bono social), con un mínimo de {num(iee.minimo_eur_mwh, 2)} € por MWh.</li>
+        <li><strong>Alquiler del contador</strong> = {num(alquiler.valor, 5)} € por día (contador monofásico).</li>
+        <li><strong>IVA</strong> = el tipo vigente ese día sobre todo lo anterior.</li>
+      </ul>
+      <p>Para la PVPC, la potencia se calcula con los peajes, cargos y margen regulados: {num(pvpcPot.p1, 6)} €/kW·día en P1 y {num(pvpcPot.p2, 6)} €/kW·día en P2.</p>
+      <p>Antes de publicar el comparador comprobamos el cálculo con facturas reales: el total tiene que coincidir con un margen de ±2 %.</p>
+
+      <h2 id="impuestos">Impuestos y regulados, con su fecha</h2>
+      <p>Los impuestos cambian. Por eso guardamos cada valor con su fecha de inicio y fin, y cada día de tu fichero se calcula con el que tocaba.</p>
+      <h3>IVA de la electricidad</h3>
+      <table>
+        <thead><tr><th>Periodo</th><th class="r">Tipo</th></tr></thead>
+        <tbody>{filasIva.map((f) => <tr><td>{periodo(f.desde, f.hasta)}</td><td class="r">{f.valor}</td></tr>)}</tbody>
+      </table>
+      <h3>Financiación del bono social</h3>
+      <table>
+        <thead><tr><th>Periodo</th><th class="r">Importe</th></tr></thead>
+        <tbody>{filasBono.map((f) => <tr><td>{periodo(f.desde, f.hasta)}</td><td class="r">{f.valor}</td></tr>)}</tbody>
+      </table>
+      <p class="small">Valores pendientes de confirmar con el BOE antes del lanzamiento. Si ves un error, escríbenos.</p>
+
+      <h2 id="datos">De dónde salen los datos</h2>
+      <ul>
+        <li><strong>Precio de la luz por horas:</strong> Red Eléctrica, indicador PVPC 2.0TD (peajes y cargos incluidos, sin impuestos). Si un día aún no está publicado, lo decimos; nunca mostramos datos de otro día como si fueran nuevos.</li>
+        <li><strong>Producción solar:</strong> PVGIS 5.3, de la Comisión Europea (Centro Común de Investigación), hora a hora para tu zona.</li>
+        <li><strong>Consumo de los aparatos:</strong> etiqueta energética europea (EPREL), IDAE y fichas de fabricantes. Cada página indica su fuente.</li>
+        <li><strong>Tarifas:</strong> la web oficial de cada comercializadora, con la fecha de comprobación.</li>
+      </ul>
+
+      <h2 id="privacidad">Tu fichero de consumos no sale de tu ordenador</h2>
+      <p>El comparador lee el fichero y hace todos los cálculos <strong>en tu navegador</strong>. No lo enviamos a ningún servidor. Para la calculadora solar guardamos un resumen de tu consumo (medias por mes y hora) <strong>solo en tu navegador</strong>, y puedes borrarlo con un botón.</p>
+
+      <h2 id="estimaciones">Son estimaciones</h2>
+      <p>Todos los resultados son <strong>estimaciones</strong>, no ofertas vinculantes. Las tarifas pueden cambiar, tu consumo futuro no será igual al pasado y un instalador tiene que ver tu tejado para darte una cifra cerrada. Por eso damos rangos y te contamos cómo calculamos cada número.</p>
+    </div>
+  </section>
+</Base>

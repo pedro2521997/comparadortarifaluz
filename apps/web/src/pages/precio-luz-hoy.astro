@@ -1,0 +1,45 @@
+---
+import Base from "../layouts/Base.astro";
+import PrecioDia from "../components/PrecioDia.astro";
+import AvisoDiario from "../components/AvisoDiario.astro";
+import { hoyMadrid, fechaLarga, sumarDias } from "../lib/formato";
+import { preciosDe } from "../lib/datos";
+
+const hoy = hoyMadrid();
+const hayManana = preciosDe(sumarDias(hoy, 1)) !== null;
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  name: `Precio de la luz PVPC por horas, ${fechaLarga(hoy)}`,
+  description: "Precio horario del PVPC 2.0TD (peajes y cargos incluidos, sin impuestos) publicado por Red Eléctrica.",
+  temporalCoverage: hoy,
+  creator: { "@type": "Organization", name: "Red Eléctrica" },
+  license: "https://www.ree.es/es/apidatos",
+  isAccessibleForFree: true,
+};
+---
+
+<Base
+  titulo="Precio de la luz hoy por horas (PVPC)"
+  descripcion="Precio de la luz de hoy hora a hora, las horas más baratas para poner la lavadora, el lavavajillas o cargar el coche, con datos de Red Eléctrica."
+  schema={schema}
+>
+  <section class="hero hero--compacto">
+    <div class="wrap">
+      <span class="eyebrow">Precio de la luz hoy</span>
+      <h1>Precio de la luz hoy, <span data-fecha-texto>{fechaLarga(hoy)}</span></h1>
+      <p class="lead">Tarifa regulada (PVPC) hora a hora. Si tienes precio fijo, esto no cambia lo que pagas, pero te dice cuándo hay más presión en la red.</p>
+      <div class="btn-row">
+        <a class="btn btn--ghost" href="/precio-luz-manana/">{hayManana ? "Ya está el precio de mañana" : "Precio de mañana"}</a>
+        <a class="btn btn--ghost" href="/precio-luz-ayer/">Ayer</a>
+        <a class="btn btn--ghost" href="/precio-luz/">Días anteriores</a>
+      </div>
+    </div>
+  </section>
+  <section class="section section--tight">
+    <div class="wrap">
+      <PrecioDia fecha={hoy} modo="hoy" />
+    </div>
+  </section>
+  <AvisoDiario />
+</Base>

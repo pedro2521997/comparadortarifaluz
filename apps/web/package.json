@@ -1,0 +1,17 @@
+{
+  "name": "@lst/web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "@fontsource-variable/dm-sans": "^5.3.0",
+    "@lst/csv": "*",
+    "@lst/tarifa": "*",
+    "astro": "^7.4.2"
+  }
+}

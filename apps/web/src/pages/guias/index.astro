@@ -1,0 +1,39 @@
+---
+import Base from "../../layouts/Base.astro";
+import { guias } from "../../lib/guias";
+import { fechaCorta } from "../../lib/formato";
+---
+
+<Base titulo="Guías para entender y bajar la factura de la luz" descripcion="Guías cortas con ejemplos en euros: periodos, potencia, PVPC o mercado libre, cómo descargar tu consumo, cambiar de compañía, bono social y más.">
+  <section class="hero hero--compacto">
+    <div class="wrap">
+      <span class="eyebrow">Guías</span>
+      <h1>Todo lo que rodea a tu factura, sin relleno</h1>
+      <p class="lead">Cada guía termina en una herramienta o en una decisión. Con fuentes oficiales y la fecha de la última revisión.</p>
+    </div>
+  </section>
+  <section class="section section--tight">
+    <div class="wrap grid grid--3">
+      {
+        guias.map((g) => (
+          <a class="card card--link" href={`/guias/${g.slug}/`}>
+            <h2 class="g__t">{g.titulo}</h2>
+            <p class="muted small">{g.resumen}</p>
+            <span class="caption">Revisada el {fechaCorta(g.revisado)}</span>
+            <span class="arrow">Leer →</span>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+</Base>
+
+<style>
+  .g__t {
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--color-bark);
+    letter-spacing: 0;
+    line-height: 1.3;
+  }
+</style>

@@ -1,0 +1,104 @@
+---
+import Base from "../../layouts/Base.astro";
+import { dias } from "../../lib/datos";
+import { nombreMes, ekwh, eur2 } from "../../lib/formato";
+import { resumen } from "../../lib/grafico";
+
+// Agrupado por meses, del más reciente al más antiguo.
+const porMes = new Map<string, typeof dias>();
+for (const d of [...dias].reverse()) {
+  const mes = d.fecha.slice(0, 7);
+  porMes.set(mes, [...(porMes.get(mes) ?? []), d]);
+}
+const meses = [...porMes.entries()].map(([mes, lista]) => {
+  const medias = lista.map((d) => resumen(d.precios).media);
+  return { mes, lista, media: medias.reduce((a, b) => a + b, 0) / medias.length };
+});
+const dia = (f: string) => Number(f.slice(8));
+---
+
+<Base titulo="Archivo del precio de la luz por días" descripcion="Precio de la luz PVPC de cada día, hora a hora, con datos de Red Eléctrica.">
+  <section class="hero hero--compacto">
+    <div class="wrap">
+      <span class="eyebrow">Archivo</span>
+      <h1>Precio de la luz, día a día</h1>
+      <p class="lead">Cada día con su precio hora a hora. Solo hay página para los días con datos publicados por Red Eléctrica.</p>
+    </div>
+  </section>
+  <section class="section section--tight">
+    <div class="wrap stack" style="--stack:40px">
+      {
+        meses.map((m) => (
+          <div class="mes">
+            <div class="mes__cab">
+              <h2 class="mes__titulo">{nombreMes(m.mes)}</h2>
+              <span class="caption">Media del mes: {ekwh(m.media)}</span>
+            </div>
+            <ul class="mes__dias">
+              {m.lista.map((d) => {
+                const r = resumen(d.precios);
+                return (
+                  <li>
+                    <a href={`/precio-luz/${d.fecha}/`}>
+                      <span class="mes__d">{dia(d.fecha)}</span>
+                      <span class="mes__p num">{eur2(r.media).replace(" €", "")}</span>
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ))
+      }
+      <p class="caption">Cifras de cada casilla: precio medio del día en €/kWh, sin impuestos.</p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .mes__cab {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .mes__titulo {
+    font-size: var(--text-heading-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-bark);
+  }
+  .mes__titulo::first-letter {
+    text-transform: uppercase;
+  }
+  .mes__dias {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+    gap: 8px;
+  }
+  .mes__dias a {
+    display: flex;
+    flex-direction: column;
+    padding: 10px 12px;
+    background: var(--color-sheet-white);
+    border: 1px solid var(--color-sage-mist);
+    border-radius: var(--radius-buttons);
+    text-decoration: none;
+    color: var(--color-bark);
+  }
+  .mes__dias a:hover {
+    border-color: var(--color-canopy);
+  }
+  .mes__d {
+    font-weight: var(--font-weight-medium);
+    font-size: 18px;
+  }
+  .mes__p {
+    font-size: 13px;
+    color: var(--color-slate);
+  }
+</style>

@@ -1,0 +1,564 @@
+{
+ "_nota": "Valores típicos editables por el usuario. Cada cifra lleva su fuente. Revisar con EPREL en la Fase 3.",
+ "aparatos": [
+  {
+   "slug": "aire-acondicionado",
+   "nombre": "Aire acondicionado",
+   "grupo": "Clima",
+   "tipo": "potencia",
+   "potencia_w": 900,
+   "rango": [
+    500,
+    1500
+   ],
+   "horas_dia": 6,
+   "dias_mes": 30,
+   "ventana_h": 3,
+   "desplazable": false,
+   "nota": "Consumo eléctrico medio de un split de 3.000 frigorías en modo frío con inverter (no la potencia frigorífica).",
+   "truco": "Cada grado que bajas el termostato por debajo de 26 °C sube el consumo alrededor de un 7 %. Cierra persianas en las horas de sol y usa el modo ventilador por la noche.",
+   "fuente": {
+    "nombre": "IDAE, Guía práctica de la energía",
+    "url": "https://www.idae.es/publicaciones/guia-practica-de-la-energia-consumo-eficiente-y-responsable"
+   }
+  },
+  {
+   "slug": "bomba-de-calor",
+   "nombre": "Bomba de calor (calefacción)",
+   "grupo": "Clima",
+   "tipo": "potencia",
+   "potencia_w": 800,
+   "rango": [
+    500,
+    1500
+   ],
+   "horas_dia": 6,
+   "dias_mes": 30,
+   "ventana_h": 3,
+   "desplazable": false,
+   "nota": "Consumo eléctrico medio de un split en modo calor; da 3–4 kWh de calor por cada kWh de luz.",
+   "truco": "Mantén 19–20 °C y no la apagues y enciendas a cada rato: el arranque es lo que más gasta.",
+   "fuente": {
+    "nombre": "IDAE, Guía práctica de la energía",
+    "url": "https://www.idae.es/publicaciones/guia-practica-de-la-energia-consumo-eficiente-y-responsable"
+   }
+  },
+  {
+   "slug": "radiador-de-aceite",
+   "nombre": "Radiador de aceite",
+   "grupo": "Clima",
+   "tipo": "potencia",
+   "potencia_w": 1500,
+   "rango": [
+    1000,
+    2500
+   ],
+   "horas_dia": 4,
+   "dias_mes": 30,
+   "ventana_h": 2,
+   "desplazable": false,
+   "nota": "Potencia media con termostato; a máxima potencia puede llegar a 2.500 W.",
+   "truco": "Úsalo solo en la habitación ocupada y con la puerta cerrada. Para calentar toda la casa, una bomba de calor gasta unas tres veces menos.",
+   "fuente": {
+    "nombre": "Fichas técnicas de fabricantes (rango habitual del mercado)",
+    "url": "https://eprel.ec.europa.eu/"
+   }
+  },
+  {
+   "slug": "calefactor",
+   "nombre": "Calefactor",
+   "grupo": "Clima",
+   "tipo": "potencia",
+   "potencia_w": 2000,
+   "rango": [
+    1000,
+    2200
+   ],
+   "horas_dia": 2,
+   "dias_mes": 30,
+   "ventana_h": 1,
+   "desplazable": false,
+   "nota": "Potencia nominal en posición alta.",
+   "truco": "Es para ratos cortos, como el baño antes de ducharte. Para horas seguidas sale mucho más caro que cualquier otra opción.",
+   "fuente": {
+    "nombre": "Fichas técnicas de fabricantes (rango habitual del mercado)",
+    "url": "https://eprel.ec.europa.eu/"
+   }
+  },
+  {
+   "slug": "estufa-infrarrojos",
+   "nombre": "Estufa de infrarrojos",
+   "grupo": "Clima",
+   "tipo": "potencia",
+   "potencia_w": 1200,
+   "rango": [
+    400,
+    2000
+   ],
+   "horas_dia": 3,
+   "dias_mes": 30,
+   "ventana_h": 2,
+   "desplazable": false,
+   "nota": "Potencia media de un panel o estufa de cuarzo doméstica.",
+   "truco": "Calienta a la persona, no el aire: colócala cerca y apuntando a donde estás sentado.",
+   "fuente": {
+    "nombre": "Fichas técnicas de fabricantes (rango habitual del mercado)",
+    "url": "https://eprel.ec.europa.eu/"
+   }
+  },
+  {
+   "slug": "termo-electrico",
+   "nombre": "Termo eléctrico",
+   "grupo": "Agua caliente",
+   "tipo": "potencia",
+   "potencia_w": 1500,
+   "rango": [
+    1200,
+    2000
+   ],
+   "horas_dia": 3,
+   "dias_mes": 30,
+   "ventana_h": 3,
+   "desplazable": true,
+   "nota": "Horas de resistencia encendida al día para un hogar de 2–3 personas con un termo de 80 litros.",
+   "truco": "Ponle un temporizador para que caliente en las horas valle (de 0 a 8 h) y baja el termostato a 55–60 °C.",
+   "fuente": {
+    "nombre": "IDAE, Guía práctica de la energía",
+    "url": "https://www.idae.es/publicaciones/guia-practica-de-la-energia-consumo-eficiente-y-responsable"
+   }
+  },
+  {
+   "slug": "lavadora",
+   "nombre": "Lavadora",
+   "grupo": "Lavado",
+   "tipo": "ciclo",
+   "kwh_ciclo": 0.9,
+   "rango": [
+    0.4,
+    1.5
+   ],
+   "ciclos_semana": 4,
+   "ventana_h": 2,
+   "desplazable": true,
+   "nota": "Un ciclo a 40 °C; a 90 °C puede pasar de 1,5 kWh y en frío baja de 0,4 kWh.",
+   "truco": "El 80 % del gasto es calentar agua: lavar a 30 °C o en frío reduce a la mitad lo que gasta la lavadora.",
+   "fuente": {
+    "nombre": "Etiqueta energética europea (EPREL)",
+    "url": "https://eprel.ec.europa.eu/"
+   }
+  },
+  {
+   "slug": "secadora",
+   "nombre": "Secadora",
+   "grupo": "Lavado",
+   "tipo": "ciclo",
+   "kwh_ciclo": 2.5,
+   "rango": [
+    1.2,
+    4.5
+   ],
+   "ciclos_semana": 3,
+   "ventana_h": 2,
+   "desplazable": true,
+   "nota": "Ciclo completo de una secadora de condensación; las de bomba de calor rondan 1,2–1,5 kWh.",
+   "truco": "Centrifuga a 1.200 rpm o más antes de secar y limpia el filtro cada vez.",
+   "fuente": {
+    "nombre": "Etiqueta energética europea (EPREL)",
+    "url": "https://eprel.ec.europa.eu/"
+   }
+  },
+  {
+   "slug": "lavavajillas",
+   "nombre": "Lavavajillas",
+   "grupo": "Cocina",
+   "tipo": "ciclo",
+   "kwh_ciclo": 1,
+   "rango": [
+    0.6,
+    1.5
+   ],
+   "ciclos_semana": 5,
+   "ventana_h": 2,
+   "desplazable": true,
+   "nota": "Programa eco con carga completa.",
+   "truco": "El programa eco tarda más pero gasta menos. Ponlo lleno y con inicio diferido a la hora barata.",
+   "fuente": {
+    "nombre": "Etiqueta energética europea (EPREL)",
+    "url": "https://eprel.ec.europa.eu/"
+   }
+  },
+  {
+   "slug": "horno",
+   "nombre": "Horno eléctrico",
+   "grupo": "Cocina",
+   "tipo": "potencia",
+   "potencia_w": 2000,
+   "rango": [
+    1500,
+    3500
+   ],
+   "horas_dia": 0.75,
+   "dias_mes": 12,
+   "ventana_h": 1,
+   "desplazable": true,
+   "nota": "Potencia media durante el uso: la resistencia no está encendida todo el tiempo.",
+   "truco": "No lo abras durante el horneado y apágalo 5–10 minutos antes: el calor que queda termina el trabajo.",
+   "fuente": {
+    "nombre": "Fichas técnicas de fabricantes (rango habitual del mercado)",
+    "url": "https://eprel.ec.europa.eu/"
+   }
+  },
+  {
+   "slug": "placa-induccion",
+   "nombre": "Placa de inducción",
+   "grupo": "Cocina",
+   "tipo": "potencia",
+   "potencia_w": 1500,
+   "rango": [
+    1000,
+    3500
+   ],
+   "horas_dia": 1,
+   "dias_mes": 30,
+   "ventana_h": 1,
+   "desplazable": false,
+   "nota": "Una o dos zonas a potencia media.",
+   "truco": "Tapa las ollas y usa recipientes del tamaño de la zona: hierve antes y gasta menos.",
+   "fuente": {
+    "nombre": "Fichas técnicas de fabricantes (rango habitual del mercado)",
+    "url": "https://eprel.ec.europa.eu/"
+   }
+  },
+  {
+   "slug": "vitroceramica",
+   "nombre": "Vitrocerámica",
+   "grupo": "Cocina",
+   "tipo": "potencia",
+   "potencia_w": 1800,
+   "rango": [
+    1200,
+    3000
+   ],
+   "horas_dia": 1,
+   "dias_mes": 30,
+   "ventana_h": 1,
+   "desplazable": false,
+   "nota": "Una o dos zonas a potencia media; gasta en torno a un 20–30 % más que la inducción.",
+   "truco": "Apágala unos minutos antes de terminar: la placa sigue caliente.",
+   "fuente": {
+    "nombre": "IDAE, Guía práctica de la energía",
+    "url": "https://www.idae.es/publicaciones/guia-practica-de-la-energia-consumo-eficiente-y-responsable"
+   }
+  },
+  {
+   "slug": "microondas",
+   "nombre": "Microondas",
+   "grupo": "Cocina",
+   "tipo": "potencia",
+   "potencia_w": 1000,
+   "rango": [
+    700,
+    1300
+   ],
+   "horas_dia": 0.25,
+   "dias_mes": 30,
+   "ventana_h": 1,
+   "desplazable": false,
+   "nota": "Consumo eléctrico real; la potencia de cocción anunciada suele ser menor.",
+   "truco": "Para calentar raciones pequeñas gasta menos que el horno o la placa.",
+   "fuente": {
+    "nombre": "Fichas técnicas de fabricantes (rango habitual del mercado)",
+    "url": "https://eprel.ec.europa.eu/"
+   }
+  },
+  {
+   "slug": "freidora-de-aire",
+   "nombre": "Freidora de aire",
+   "grupo": "Cocina",
+   "tipo": "potencia",
+   "potencia_w": 1400,
+   "rango": [
+    1000,
+    2000
+   ],
+   "horas_dia": 0.5,
+   "dias_mes": 15,
+   "ventana_h": 1,
+   "desplazable": false,
+   "nota": "Potencia media durante el uso.",
+   "truco": "Para raciones pequeñas gasta bastante menos que el horno porque calienta un espacio mucho más pequeño.",
+   "fuente": {
+    "nombre": "Fichas técnicas de fabricantes (rango habitual del mercado)",
+    "url": "https://eprel.ec.europa.eu/"
+   }
+  },
+  {
+   "slug": "nevera",
+   "nombre": "Nevera (frigorífico combi)",
+   "grupo": "Cocina",
+   "tipo": "continuo",
+   "kwh_anual": 250,
+   "rango": [
+    150,
+    450
+   ],
+   "ventana_h": 1,
+   "desplazable": false,
+   "nota": "Consumo anual de la etiqueta energética de un combi de 1,85 m.",
+   "truco": "Ponla a 4–5 °C, deja espacio detrás para que respire y no metas comida caliente.",
+   "fuente": {
+    "nombre": "Etiqueta energética europea (EPREL)",
+    "url": "https://eprel.ec.europa.eu/"
+   }
+  },
+  {
+   "slug": "congelador",
+   "nombre": "Congelador",
+   "grupo": "Cocina",
+   "tipo": "continuo",
+   "kwh_anual": 220,
+   "rango": [
+    150,
+    350
+   ],
+   "ventana_h": 1,
+   "desplazable": false,
+   "nota": "Consumo anual de la etiqueta de un congelador medio.",
+   "truco": "Mantenlo a −18 °C y descongélalo si se forma más de medio centímetro de hielo.",
+   "fuente": {
+    "nombre": "Etiqueta energética europea (EPREL)",
+    "url": "https://eprel.ec.europa.eu/"
+   }
+  },
+  {
+   "slug": "televisor",
+   "nombre": "Televisor",
+   "grupo": "Ocio y oficina",
+   "tipo": "potencia",
+   "potencia_w": 100,
+   "rango": [
+    50,
+    200
+   ],
+   "horas_dia": 4,
+   "dias_mes": 30,
+   "ventana_h": 1,
+   "desplazable": false,
+   "nota": "LED de 55 pulgadas con brillo normal.",
+   "truco": "El modo de imagen «vívido» o «tienda» puede doblar el consumo. Usa el modo estándar o eco.",
+   "fuente": {
+    "nombre": "Etiqueta energética europea (EPREL)",
+    "url": "https://eprel.ec.europa.eu/"
+   }
+  },
+  {
+   "slug": "consola",
+   "nombre": "Videoconsola",
+   "grupo": "Ocio y oficina",
+   "tipo": "potencia",
+   "potencia_w": 200,
+   "rango": [
+    50,
+    230
+   ],
+   "horas_dia": 2,
+   "dias_mes": 30,
+   "ventana_h": 1,
+   "desplazable": false,
+   "nota": "Consola de sobremesa actual mientras juegas.",
+   "truco": "Desactiva el reposo con «encendido instantáneo»: consume todo el día aunque no juegues.",
+   "fuente": {
+    "nombre": "Fichas técnicas de fabricantes (rango habitual del mercado)",
+    "url": "https://eprel.ec.europa.eu/"
+   }
+  },
+  {
+   "slug": "ordenador",
+   "nombre": "Ordenador de sobremesa",
+   "grupo": "Ocio y oficina",
+   "tipo": "potencia",
+   "potencia_w": 150,
+   "rango": [
+    60,
+    500
+   ],
+   "horas_dia": 8,
+   "dias_mes": 22,
+   "ventana_h": 1,
+   "desplazable": false,
+   "nota": "Torre de oficina con monitor; un equipo para juegos puede pasar de 400 W.",
+   "truco": "Activa la suspensión a los 15 minutos sin uso; un portátil gasta entre 3 y 5 veces menos.",
+   "fuente": {
+    "nombre": "Fichas técnicas de fabricantes (rango habitual del mercado)",
+    "url": "https://eprel.ec.europa.eu/"
+   }
+  },
+  {
+   "slug": "router",
+   "nombre": "Router wifi",
+   "grupo": "Ocio y oficina",
+   "tipo": "potencia",
+   "potencia_w": 10,
+   "rango": [
+    6,
+    20
+   ],
+   "horas_dia": 24,
+   "dias_mes": 30,
+   "ventana_h": 1,
+   "desplazable": false,
+   "nota": "Router de fibra encendido todo el día.",
+   "truco": "Gasta poco pero no se apaga nunca. Apagarlo de noche apenas ahorra; no merece la pena si te da problemas.",
+   "fuente": {
+    "nombre": "Fichas técnicas de fabricantes (rango habitual del mercado)",
+    "url": "https://eprel.ec.europa.eu/"
+   }
+  },
+  {
+   "slug": "deshumidificador",
+   "nombre": "Deshumidificador",
+   "grupo": "Clima",
+   "tipo": "potencia",
+   "potencia_w": 250,
+   "rango": [
+    150,
+    500
+   ],
+   "horas_dia": 8,
+   "dias_mes": 30,
+   "ventana_h": 3,
+   "desplazable": true,
+   "nota": "Deshumidificador de compresor de 12–20 litros al día.",
+   "truco": "Ponle el higrostato al 50–55 %: por debajo no aporta nada y sigue gastando.",
+   "fuente": {
+    "nombre": "Fichas técnicas de fabricantes (rango habitual del mercado)",
+    "url": "https://eprel.ec.europa.eu/"
+   }
+  },
+  {
+   "slug": "cargador-coche-electrico",
+   "nombre": "Cargador de coche eléctrico",
+   "grupo": "Movilidad",
+   "tipo": "potencia",
+   "potencia_w": 3700,
+   "rango": [
+    2300,
+    7400
+   ],
+   "horas_dia": 2,
+   "dias_mes": 30,
+   "ventana_h": 3,
+   "desplazable": true,
+   "nota": "Cargador de pared monofásico a 16 A; 2 horas al día son unos 40 km.",
+   "truco": "Carga de madrugada (periodo valle) y con una tarifa de tres periodos: cargar a las 20:00 puede costar más del doble.",
+   "fuente": {
+    "nombre": "Fichas técnicas de fabricantes (rango habitual del mercado)",
+    "url": "https://eprel.ec.europa.eu/"
+   }
+  },
+  {
+   "slug": "patinete-electrico",
+   "nombre": "Patinete eléctrico",
+   "grupo": "Movilidad",
+   "tipo": "ciclo",
+   "kwh_ciclo": 0.45,
+   "rango": [
+    0.3,
+    0.8
+   ],
+   "ciclos_semana": 3,
+   "ventana_h": 3,
+   "desplazable": true,
+   "nota": "Carga completa de una batería de 36 V y 10–15 Ah.",
+   "truco": "Gasta muy poco; donde más ahorras es cuidando la batería: no la dejes al 0 % ni cargando días enteros.",
+   "fuente": {
+    "nombre": "Fichas técnicas de fabricantes (rango habitual del mercado)",
+    "url": "https://eprel.ec.europa.eu/"
+   }
+  },
+  {
+   "slug": "plancha",
+   "nombre": "Plancha",
+   "grupo": "Lavado",
+   "tipo": "potencia",
+   "potencia_w": 1500,
+   "rango": [
+    1000,
+    2600
+   ],
+   "horas_dia": 1,
+   "dias_mes": 6,
+   "ventana_h": 1,
+   "desplazable": true,
+   "nota": "Potencia media con el termostato cortando de vez en cuando.",
+   "truco": "Plancha mucha ropa de una vez: calentarla varias veces a la semana es lo que más gasta.",
+   "fuente": {
+    "nombre": "Fichas técnicas de fabricantes (rango habitual del mercado)",
+    "url": "https://eprel.ec.europa.eu/"
+   }
+  },
+  {
+   "slug": "aire-acondicionado-portatil",
+   "nombre": "Aire acondicionado portátil",
+   "grupo": "Clima",
+   "tipo": "potencia",
+   "potencia_w": 1100,
+   "rango": [
+    800,
+    1500
+   ],
+   "horas_dia": 6,
+   "dias_mes": 30,
+   "ventana_h": 3,
+   "desplazable": false,
+   "nota": "Consumo eléctrico medio de un portátil de 9.000 BTU con el tubo de salida por la ventana; suele ser menos eficiente que un split.",
+   "truco": "Sella bien el hueco de la ventana por donde sale el tubo: si entra aire caliente, el aparato trabaja el doble.",
+   "fuente": {
+    "nombre": "Fichas técnicas de fabricantes (rango habitual del mercado)",
+    "url": "https://eprel.ec.europa.eu/"
+   }
+  },
+  {
+   "slug": "hervidor",
+   "nombre": "Hervidor de agua",
+   "grupo": "Cocina",
+   "tipo": "potencia",
+   "potencia_w": 2000,
+   "rango": [
+    1500,
+    3000
+   ],
+   "horas_dia": 0.1,
+   "dias_mes": 30,
+   "ventana_h": 1,
+   "desplazable": false,
+   "nota": "Unos 3 minutos al día para hervir un litro.",
+   "truco": "Hierve solo el agua que vas a usar: calentar un litro de más cada día es tirar unos kWh al mes.",
+   "fuente": {
+    "nombre": "Fichas técnicas de fabricantes (rango habitual del mercado)",
+    "url": "https://eprel.ec.europa.eu/"
+   }
+  },
+  {
+   "slug": "ventilador",
+   "nombre": "Ventilador",
+   "grupo": "Clima",
+   "tipo": "potencia",
+   "potencia_w": 45,
+   "rango": [
+    20,
+    70
+   ],
+   "horas_dia": 8,
+   "dias_mes": 30,
+   "ventana_h": 1,
+   "desplazable": false,
+   "nota": "Ventilador de pie a velocidad media.",
+   "truco": "Gasta unas veinte veces menos que un aire acondicionado. Combinado con el aire, te deja subir el termostato 2–3 grados.",
+   "fuente": {
+    "nombre": "Fichas técnicas de fabricantes (rango habitual del mercado)",
+    "url": "https://eprel.ec.europa.eu/"
+   }
+  }
+ ]
+}

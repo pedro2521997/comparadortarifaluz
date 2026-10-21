@@ -1,0 +1,21 @@
+{
+  "_nota": "Valores regulados con fechas de vigencia. Todo lo marcado con verificar:true debe confirmarse en el BOE/CNMC antes de publicar. vigente_hasta null = sigue vigente.",
+  "iva": [
+    { "valor": 0.21, "vigente_desde": "2025-01-01", "vigente_hasta": "2026-03-21", "fuente": "https://www.boe.es", "verificar": true },
+    { "valor": 0.10, "vigente_desde": "2026-03-22", "vigente_hasta": "2026-05-31", "fuente": "https://www.endesa.com/es/blog/blog-de-endesa/luz/iva-luz-gas-vuelve-21-junio-2026-actua-antes", "verificar": true, "nota": "IVA reducido temporal; confirmar en el BOE las condiciones (potencia contratada máxima)." },
+    { "valor": 0.21, "vigente_desde": "2026-06-01", "vigente_hasta": null, "fuente": "https://www.endesa.com/es/blog/blog-de-endesa/luz/iva-luz-gas-vuelve-21-junio-2026-actua-antes", "verificar": true }
+  ],
+  "iee": [
+    { "valor": 0.0511269632, "minimo_eur_mwh": 0.5, "vigente_desde": "2025-01-01", "vigente_hasta": null, "fuente": "https://www.endesa.com/es/te-ayudamos/sobre-tu-factura/impuestos-luz-gas", "verificar": true }
+  ],
+  "bono_social_eur_dia": [
+    { "valor": 0.019068, "vigente_desde": "2025-01-01", "vigente_hasta": "2026-06-30", "fuente": "https://www.ocu.org/vivienda-y-energia/gas-luz/noticias/financiacion-bono-social-2026", "verificar": true, "nota": "0,58 €/mes" },
+    { "valor": 0.024658, "vigente_desde": "2026-07-01", "vigente_hasta": null, "fuente": "https://www.ocu.org/vivienda-y-energia/gas-luz/noticias/financiacion-bono-social-2026", "verificar": true, "nota": "0,75 €/mes tras el recálculo de la CNMC (RDL 7/2026). Confirmar fecha exacta de aplicación." }
+  ],
+  "alquiler_contador_eur_dia": [
+    { "valor": 0.02663, "vigente_desde": "2025-01-01", "vigente_hasta": null, "fuente": "https://www.boe.es", "verificar": true, "nota": "Contador monofásico con telegestión, 0,81 €/mes" }
+  ],
+  "pvpc_potencia_eur_kw_dia": [
+    { "p1": 0.082329, "p2": 0.0019, "vigente_desde": "2026-01-01", "vigente_hasta": null, "fuente": "https://selectra.es/energia/info/que-es/pvpc", "verificar": true, "nota": "Peajes y cargos 2026 (P1 0,0738; P2 0,0019) + margen de comercialización 3,113 €/kW·año en P1." }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "name": "luzsintrampa",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w @lst/web",
+    "build": "npm run build -w @lst/web",
+    "preview": "npm run preview -w @lst/web",
+    "test": "vitest run",
+    "precios": "node scripts/fetch-precios.mjs",
+    "typecheck": "tsc -p tsconfig.check.json",
+    "autocompletado": "node scripts/autocompletado.mjs"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.0",
+    "vitest": "^5.0.5"
+  }
+}

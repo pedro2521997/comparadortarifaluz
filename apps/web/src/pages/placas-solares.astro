@@ -1,0 +1,183 @@
+---
+import Base from "../layouts/Base.astro";
+import { provincias } from "../lib/datos";
+import { INSTALADOR } from "../config";
+
+const datos = { provincias, instalador: INSTALADOR };
+---
+
+<Base
+  titulo="Calculadora de placas solares con tu consumo real"
+  descripcion="Calcula cuánto ahorrarías con placas solares en tu tejado: producción hora a hora de tu zona (PVGIS) cruzada con tu consumo real. Resultado en rangos, sin promesas."
+>
+  <section class="hero hero--compacto">
+    <div class="wrap">
+      <span class="eyebrow eyebrow--violet">Calculadora solar</span>
+      <h1>¿Te compensan las placas solares?</h1>
+      <p class="lead">
+        Cruzamos hora a hora lo que producirían unas placas en tu zona con lo que consumes tú. El resultado sale en rangos, del escenario prudente al favorable, nunca una cifra que parezca una promesa.
+      </p>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="wrap solar">
+      <form id="form-solar" class="card card--roomy stack" style="--stack:24px">
+        <div id="origen-consumo"></div>
+
+        <div class="form-grid form-grid--2">
+          <div class="field">
+            <label for="cp">Código postal</label>
+            <input id="cp" type="text" inputmode="numeric" pattern="[0-9]{5}" maxlength="5" autocomplete="postal-code" required placeholder="28001" />
+            <span class="hint" id="cp-ayuda">Para saber cuánto sol hay en tu zona.</span>
+          </div>
+          <div class="field" id="campo-factura">
+            <label for="factura">Lo que pagas de luz al mes, de media</label>
+            <input id="factura" type="number" min="10" max="1000" step="1" inputmode="numeric" value="80" />
+            <span class="hint">€ con impuestos. Mejor si subes tu fichero en el <a href="/comparador/">comparador</a>.</span>
+          </div>
+        </div>
+
+        <div class="form-grid form-grid--3">
+          <div class="field">
+            <label for="vivienda">Vivienda</label>
+            <select id="vivienda">
+              <option value="unifamiliar">Casa unifamiliar</option>
+              <option value="adosado">Adosado o pareado</option>
+              <option value="piso">Piso</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="tejado">Tejado útil</label>
+            <input id="tejado" type="number" min="5" max="500" step="1" inputmode="numeric" value="30" />
+            <span class="hint">m² sin sombras</span>
+          </div>
+          <div class="field">
+            <label for="orientacion">Orientación del tejado</label>
+            <select id="orientacion">
+              <option value="0">Sur</option>
+              <option value="-45">Sureste</option>
+              <option value="45">Suroeste</option>
+              <option value="-90">Este</option>
+              <option value="90">Oeste</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="inclinacion">Inclinación</label>
+            <select id="inclinacion">
+              <option value="10">Casi plano (10°)</option>
+              <option value="20">Poca (20°)</option>
+              <option value="30" selected>Normal (30°)</option>
+              <option value="40">Mucha (40°)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="precio">Tu precio de la energía</label>
+            <input id="precio" type="number" min="0.03" max="0.5" step="0.001" inputmode="decimal" value="0.13" />
+            <span class="hint">€/kWh sin impuestos</span>
+          </div>
+          <div class="field">
+            <label for="excedente">Pago por excedentes</label>
+            <input id="excedente" type="number" min="0" max="0.3" step="0.001" inputmode="decimal" value="0.06" />
+            <span class="hint">€/kWh que te descuentan por lo que viertes</span>
+          </div>
+        </div>
+
+        <label class="check"><input id="teletrabajo" type="checkbox" /> <span>Hay alguien en casa durante el día (teletrabajo, jubilados…). Se consume más con sol.</span></label>
+
+        <details>
+          <summary>Ayudas y bonificaciones</summary>
+          <div class="stack small" style="--stack:12px;padding-top:8px">
+            <p>Hay deducciones en el IRPF por obras de eficiencia energética y muchos ayuntamientos bonifican el IBI y el ICIO por instalar placas. Dependen de tu municipio y de cada año, así que <strong>no las sumamos</strong> salvo que tú lo indiques.</p>
+            <ul>
+              <li><a href="https://sede.agenciatributaria.gob.es/" rel="noopener">Agencia Tributaria: deducciones por eficiencia energética</a> (comprueba la vigencia)</li>
+              <li>Bonificaciones de IBI e ICIO: en las ordenanzas fiscales de tu ayuntamiento.</li>
+            </ul>
+            <div class="field" style="max-width:280px">
+              <label for="ayudas">Ayudas que sabes que te corresponden (€)</label>
+              <input id="ayudas" type="number" min="0" step="50" inputmode="numeric" value="0" />
+            </div>
+          </div>
+        </details>
+
+        <div>
+          <button class="btn btn--mint" type="submit" id="calcular-solar">Calcular mi ahorro</button>
+        </div>
+      </form>
+
+      <div id="resultado-solar" hidden tabindex="-1" aria-live="polite"></div>
+      <div id="estudio" hidden></div>
+    </div>
+  </section>
+
+  <script type="application/json" id="datos-solar" set:html={JSON.stringify(datos)} />
+</Base>
+
+<script>
+  import "../scripts/solar";
+</script>
+
+<style is:global>
+  .solar {
+    display: grid;
+    gap: 48px;
+    max-width: 960px;
+  }
+  #resultado-solar:focus {
+    outline: none;
+  }
+  .solar-res {
+    display: grid;
+    gap: 24px;
+  }
+  .rango {
+    display: grid;
+    gap: 12px;
+  }
+  @media (min-width: 720px) {
+    .rango {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  .meses {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 4px;
+    align-items: end;
+    height: 160px;
+    margin-top: 16px;
+  }
+  .meses__m {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    height: 100%;
+    gap: 2px;
+    position: relative;
+  }
+  .meses__barras {
+    display: flex;
+    gap: 2px;
+    align-items: flex-end;
+    width: 100%;
+    height: calc(100% - 20px);
+  }
+  .meses__barras span {
+    flex: 1;
+    border-radius: 3px 3px 0 0;
+  }
+  .b-prod {
+    background: var(--color-mint-pulse);
+  }
+  .b-cons {
+    background: var(--color-orb-violet);
+  }
+  .meses__l {
+    font-size: 11px;
+    color: var(--color-slate);
+  }
+  .estudio-card {
+    border: 2px solid var(--color-canopy);
+  }
+</style>

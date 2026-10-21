@@ -1,0 +1,31 @@
+---
+import Base from "../layouts/Base.astro";
+import PrecioDia from "../components/PrecioDia.astro";
+import AvisoDiario from "../components/AvisoDiario.astro";
+import { hoyMadrid, fechaLarga, sumarDias } from "../lib/formato";
+
+const manana = sumarDias(hoyMadrid(), 1);
+---
+
+<Base
+  titulo="Precio de la luz mañana por horas (PVPC)"
+  descripcion="Precio de la luz de mañana hora a hora en cuanto lo publica Red Eléctrica, con las mejores horas para la lavadora, el horno o cargar el coche."
+>
+  <section class="hero hero--compacto">
+    <div class="wrap">
+      <span class="eyebrow">Precio de la luz mañana</span>
+      <h1>Precio de la luz mañana, <span data-fecha-texto>{fechaLarga(manana)}</span></h1>
+      <p class="lead">Red Eléctrica publica el precio del día siguiente cada tarde. Planifica la lavadora, el lavavajillas o la carga del coche antes de irte a dormir.</p>
+      <div class="btn-row">
+        <a class="btn btn--ghost" href="/precio-luz-hoy/">Precio de hoy</a>
+        <a class="btn btn--ghost" href="/precio-luz/">Días anteriores</a>
+      </div>
+    </div>
+  </section>
+  <section class="section section--tight">
+    <div class="wrap">
+      <PrecioDia fecha={manana} modo="manana" />
+    </div>
+  </section>
+  <AvisoDiario />
+</Base>

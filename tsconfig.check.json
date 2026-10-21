@@ -1,0 +1,5 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": { "lib": ["ES2022", "DOM", "DOM.Iterable"], "types": [] , "paths": { "@lst/tarifa": ["./packages/tarifa/src/index.ts"], "@lst/csv": ["./packages/csv/src/index.ts"] } },
+  "include": ["packages/*/src", "apps/worker/src", "apps/web/src/lib/formato.ts", "apps/web/src/lib/grafico.ts", "apps/web/src/lib/solar.ts", "apps/web/src/lib/bloque-precios.ts", "apps/web/src/lib/precios-cliente.ts", "apps/web/src/lib/consumo-local.ts", "apps/web/src/scripts"]
+}

@@ -1,0 +1,28 @@
+---
+import Legal from "../layouts/Legal.astro";
+import { SITIO, INSTALADOR } from "../config";
+---
+
+<Legal titulo="Política de privacidad" revisado="21/10/2026">
+  <h2>Responsable</h2>
+  <p>{SITIO.titular}, NIF [NIF], {SITIO.correo}.</p>
+
+  <h2>Tu fichero de consumos: no lo recibimos</h2>
+  <p>El comparador procesa el fichero de consumos <strong>íntegramente en tu navegador</strong>. El fichero, tu CUPS y tus datos de consumo <strong>no se envían a nuestros servidores ni a terceros</strong>. Para pasar tu consumo a la calculadora solar se guarda un resumen (medias de consumo por mes y hora, sin CUPS) en el almacenamiento local de tu navegador; puedes borrarlo en la calculadora con «Borrar mis datos de este navegador» o borrando los datos del sitio en tu navegador.</p>
+
+  <h2>Petición de estudio de placas solares</h2>
+  <ul>
+    <li><strong>Qué datos:</strong> nombre, teléfono o correo, código postal y el resumen del cálculo (tamaño de la instalación, producción y ahorro estimados, consumo anual, tipo de vivienda y superficie de tejado).</li>
+    <li><strong>Finalidad:</strong> que el instalador colaborador te contacte para hacerte un estudio y un presupuesto sin compromiso, y llevar el seguimiento de las peticiones con un código de referencia.</li>
+    <li><strong>Base legal:</strong> tu consentimiento expreso, que das marcando la casilla (nunca viene marcada).</li>
+    <li><strong>Destinatario:</strong> {INSTALADOR.nombre}, instalador colaborador, [DATOS DEL INSTALADOR]. No se ceden a nadie más.</li>
+    <li><strong>Conservación:</strong> mientras dure la gestión de tu petición. Los contactos que no siguen adelante se borran en un plazo de [PLAZO] meses.</li>
+    <li>Si tu código postal está fuera de la zona del instalador, solo guardamos tus datos si marcas la casilla para que te avisemos, con la misma base legal.</li>
+  </ul>
+
+  <h2>Tus derechos</h2>
+  <p>Puedes acceder, rectificar, suprimir, oponerte, limitar el tratamiento, pedir la portabilidad de tus datos y retirar el consentimiento en cualquier momento escribiendo a {SITIO.correo}. Si crees que no hemos tratado bien tus datos, puedes reclamar ante la <a href="https://www.aepd.es" rel="noopener">Agencia Española de Protección de Datos</a>.</p>
+
+  <h2>Analítica</h2>
+  <p>Usamos analítica sin cookies (Cloudflare Web Analytics), que no identifica a los usuarios ni los sigue entre sitios.</p>
+</Legal>
