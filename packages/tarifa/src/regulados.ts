@@ -11,6 +11,11 @@ export interface Regulados {
   bono_social_eur_dia: (Vigencia & { valor: number })[];
   alquiler_contador_eur_dia: (Vigencia & { valor: number })[];
   pvpc_potencia_eur_kw_dia: (Vigencia & { p1: number; p2: number })[];
+  /** Peajes + cargos del término de energía 2.0TD (€/kWh) — para las tarifas indexadas */
+  peajes_cargos_energia_eur_kwh?: (Vigencia & { p1: number; p2: number; p3: number })[];
+  /** Coeficientes de pérdidas 2.0TD (tanto por uno) */
+  perdidas_2_0td?: (Vigencia & { p1: number; p2: number; p3: number })[];
+  fnee_eur_kwh?: (Vigencia & { valor: number })[];
 }
 
 /** Devuelve la entrada vigente en `fecha`. Si no hay ninguna, usa la más cercana y lo indica. */

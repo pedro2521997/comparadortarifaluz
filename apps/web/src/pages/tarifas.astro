@@ -2,7 +2,7 @@
 // Ranking público de todas las tarifas con un consumo tipo editable. Se calcula en el build
 // (contenido indexable) y el navegador lo recalcula cuando cambias el consumo o la potencia.
 import Base from "../layouts/Base.astro";
-import { tarifas, regulados, festivos, dias, catalogoActualizado } from "../lib/datos";
+import { tarifas, regulados, festivos, dias, catalogoActualizado, ajustesMercado } from "../lib/datos";
 import { hoyMadrid, sumarDias, fechaMedia, fechaCorta, num } from "../lib/formato";
 import { compararTarifas, generarLecturas, PERFILES } from "@lst/tarifa";
 import { aFilas, tablaRanking, marca, nombrePlan } from "../lib/ranking";
@@ -12,10 +12,14 @@ const ultimoPvpc = [...dias].reverse().find((d) => d.fecha <= hoy)?.fecha ?? hoy
 const desde = sumarDias(ultimoPvpc, -364);
 const pvpc = Object.fromEntries(dias.filter((d) => d.fecha >= desde && d.fecha <= ultimoPvpc).map((d) => [d.fecha, d.precios as number[]]));
 const fest = new Set(festivos);
+const mercado = {
+  spot: Object.fromEntries(dias.filter((d) => d.fecha >= desde && d.fecha <= ultimoPvpc && d.spot).map((d) => [d.fecha, d.spot!])),
+  ajustes: ajustesMercado,
+};
 
 const DEF = { anual: 3000, p1: 4.6, p2: 4.6, perfil: "estandar" as const };
 const lecturas = generarLecturas({ desde, hasta: ultimoPvpc, anualKwh: DEF.anual, tipo: DEF.perfil, festivos: fest });
-const lista = compararTarifas(lecturas, tarifas, { p1: DEF.p1, p2: DEF.p2 }, { regulados, festivos: fest, pvpc }, hoy);
+const lista = compararTarifas(lecturas, tarifas, { p1: DEF.p1, p2: DEF.p2 }, { regulados, festivos: fest, pvpc, mercado }, hoy);
 const filas = aFilas(lista, null);
 const tablaInicial = tablaRanking(filas.slice(0, 25), { referencia: "la más barata", orden: "total", asc: true, hoy });
 const mejor = filas[0];
@@ -27,6 +31,8 @@ const porMarca = [...comercializadoras].sort((a, b) => a.localeCompare(b, "es"))
   tarifas: tarifas.filter((t) => marca(t.comercializadora) === m),
 }));
 const n = (x: number, d: number) => num(x, d);
+// Precio medio de la energía de cada indexada con el consumo tipo (para la tabla de precios).
+const mediaIndexada = new Map(filas.filter((f) => f.tarifa.tipo === "indexada").map((f) => [f.tarifa.id, f.factura.energia / f.factura.kwh]));
 const datos = { tarifas, regulados, festivos, hoy, ultimoPvpc, def: DEF };
 
 const schema = {
@@ -120,12 +126,12 @@ const schema = {
             {
               porMarca.flatMap((g) =>
                 g.tarifas.map((t, i) => (
-                  <tr data-texto={`${g.marca} ${t.nombre} ${t.tipo === "fijo" ? "precio unico 24 h" : t.tipo === "periodos" ? "3 periodos" : "pvpc regulada"}`.toLowerCase()}>
+                  <tr data-texto={`${g.marca} ${t.nombre} ${t.tipo === "fijo" ? "precio unico 24 h" : t.tipo === "periodos" ? "3 periodos" : t.tipo === "indexada" ? "indexada mercado" : "pvpc regulada"}`.toLowerCase()}>
                     <th scope="row" class:list={["precios__marca", { "precios__marca--rep": i > 0 }]}>{g.marca}</th>
                     <td>{nombrePlan(t.nombre)}</td>
-                    <td>{t.tipo === "fijo" ? "Precio único" : t.tipo === "periodos" ? "3 periodos" : "Regulada"}</td>
+                    <td>{t.tipo === "fijo" ? "Precio único" : t.tipo === "periodos" ? "3 periodos" : t.tipo === "indexada" ? "Indexada" : "Regulada"}</td>
                     <td class="r num">
-                      {t.energia ? (t.tipo === "fijo" ? n(t.energia.p1, 4) : `${n(t.energia.p1, 4)} · ${n(t.energia.p2, 4)} · ${n(t.energia.p3, 4)}`) : "Hora a hora"}
+                      {t.energia ? (t.tipo === "fijo" ? n(t.energia.p1, 4) : `${n(t.energia.p1, 4)} · ${n(t.energia.p2, 4)} · ${n(t.energia.p3, 4)}`) : t.tipo === "indexada" ? `Mercado (media ${n(mediaIndexada.get(t.id) ?? 0, 4)})` : "Hora a hora"}
                     </td>
                     <td class="r num">{t.potencia ? `${n(t.potencia.p1, 4)} · ${n(t.potencia.p2, 4)}` : `${n(regulados.pvpc_potencia_eur_kw_dia.at(-1)!.p1, 4)} · ${n(regulados.pvpc_potencia_eur_kw_dia.at(-1)!.p2, 4)}`}</td>
                     <td class="small">
@@ -134,10 +140,12 @@ const schema = {
                         t.servicio_mes ? `Servicio ${num(t.servicio_mes, 2)} €/mes` : t.info?.servicio_sin_precio ? "Servicio obligatorio" : null,
                         t.info?.descuento_energia ? `−${Math.round(t.info.descuento_energia.pct * 100)} % ${t.info.descuento_energia.meses} meses` : null,
                         t.info?.potencia_max_kw ? `Hasta ${num(t.info.potencia_max_kw)} kW` : null,
+                        t.tipo === "indexada" && t.cuota_fija_mes ? `Cuota ${t.cuota_fija_mes.toFixed(2).replace(".", ",")} €/mes` : null,
+                        t.indexada && t.indexada.formula !== "oficial" ? "Fórmula aproximada" : null,
                       ].filter(Boolean).join(" · ")}
                     </td>
                     <td class="small">
-                      <a href={t.url_fuente} rel="noopener" target="_blank">{t.origen === "cnmc" ? "CNMC" : t.origen === "regulada" ? "REE/BOE" : "Web oficial"}</a>
+                      <a href={t.url_fuente} rel="noopener" target="_blank">{t.origen === "cnmc" ? "CNMC" : t.origen === "regulada" ? "REE/BOE" : "Web oficial"}</a>{t.indexada?.url_formula ? <> · <a href={t.indexada.url_formula} rel="noopener" target="_blank">fórmula</a></> : null}
                       {t.fecha_comprobacion ? ` · ${fechaCorta(t.fecha_comprobacion)}` : ""}
                     </td>
                   </tr>
@@ -159,9 +167,12 @@ const schema = {
       <p>
         Algunas compañías grandes no publican sus ofertas allí. Las de Iberdrola, Naturgy y TotalEnergies las hemos copiado de sus webs oficiales, con el enlace y la fecha.
       </p>
+      <h3>Las tarifas indexadas</h3>
+      <p>
+        Lucera, Gana Energía, Octopus Flexi y el Plan Ahora de TotalEnergies cobran la energía al precio del mercado mayorista de cada hora. Las calculamos con el precio OMIE hora a hora, los costes de ajuste mensuales que publica Red Eléctrica, los coeficientes de pérdidas de la 2.0TD y los peajes y cargos vigentes, aplicando la fórmula de cada comercializadora. Lucera y Gana publican la suya completa; para Octopus usamos la que publica un comparador y TotalEnergies no la detalla, así que esas dos llevan la etiqueta «Fórmula aproximada». Su precio de un año no garantiza el del siguiente: dependen del mercado.
+      </p>
       <h3>Lo que todavía no está</h3>
       <ul>
-        <li><strong>Tarifas indexadas al mercado</strong> (Lucera, Gana Energía, Octopus Flexi, Plan Ahora de TotalEnergies…): su precio depende de una fórmula con el mercado mayorista y las estamos incorporando.</li>
         <li><strong>Tarifas planas personalizadas</strong> (Holaluz, Naturgy Tarifa Plana): la cuota depende de tu historial y no se puede comparar sin pedirles un presupuesto.</li>
         <li><strong>Pepeenergy</strong> y otras webs que no muestran los precios sin pasar por su calculadora.</li>
       </ul>
@@ -174,7 +185,7 @@ const schema = {
 
 <script>
   import { generarLecturas, type Regulados, type Tarifa, type TipoPerfil } from "@lst/tarifa";
-  import { cargarRango } from "../lib/precios-cliente";
+  import { cargarRango, cargarMercado, type DatosMercado } from "../lib/precios-cliente";
   import { sumarDias } from "../lib/formato";
   import { montarRanking } from "../scripts/ranking-ui";
 
@@ -192,25 +203,25 @@ const schema = {
   const hasta = datos.ultimoPvpc;
   const desde = sumarDias(hasta, -364);
 
-  const entrada = (pvpc: Record<string, number[]>) => {
+  const entrada = (pvpc: Record<string, number[]>, mercado: DatosMercado) => {
     const anual = Math.min(50000, Math.max(300, v("t-anual") || 3000));
     const p1 = Math.min(15, Math.max(1, v("t-p1") || 4.6));
     const p2 = Math.min(15, Math.max(1, v("t-p2") || p1));
     return {
       lecturas: generarLecturas({ desde, hasta, anualKwh: anual, tipo: $<HTMLSelectElement>("t-perfil").value as TipoPerfil, festivos }),
       potencias: { p1, p2 },
-      ctx: { regulados: datos.regulados, festivos, pvpc },
+      ctx: { regulados: datos.regulados, festivos, pvpc, mercado },
       tarifas: datos.tarifas,
       hoy: datos.hoy,
     };
   };
 
-  cargarRango(desde, hasta).then((pvpc) => {
-    const ranking = montarRanking($("ranking"), entrada(pvpc));
+  Promise.all([cargarRango(desde, hasta), cargarMercado(desde, hasta)]).then(([pvpc, mercado]) => {
+    const ranking = montarRanking($("ranking"), entrada(pvpc, mercado));
     let t: number | undefined;
     $("perfil-form").addEventListener("input", () => {
       clearTimeout(t);
-      t = window.setTimeout(() => ranking.actualizar(entrada(pvpc)), 300);
+      t = window.setTimeout(() => ranking.actualizar(entrada(pvpc, mercado)), 300);
     });
   });
 

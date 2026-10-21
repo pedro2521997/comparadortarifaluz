@@ -137,11 +137,16 @@ export function ordenar(filas: Fila[], col: ColumnaOrden, asc: boolean): Fila[] 
 
 function tipoTexto(t: Tarifa): string {
   if (t.tipo === "pvpc") return "Regulada (PVPC)";
+  if (t.tipo === "indexada") return "Indexada al mercado";
   if (t.tipo === "fijo") return "Precio único";
   return "3 periodos";
 }
 
-function precios(t: Tarifa): string {
+function precios(t: Tarifa, f?: Factura): string {
+  if (t.tipo === "indexada" && t.potencia) {
+    const media = f && f.kwh > 0 ? `media ${num(f.energia / f.kwh, 4)} €/kWh` : "precio hora a hora";
+    return `<span class="rk-mini"><span title="Precio medio de la energía con tu consumo">Mercado: ${media}</span><span title="Potencia €/kW y día: P1 · P2">${num(t.potencia.p1, 6)} · ${num(t.potencia.p2, 6)} <abbr title="euros por kW y día">€/kW·día</abbr></span>${t.cuota_fija_mes ? `<span>+ ${eur2(t.cuota_fija_mes)}/mes</span>` : ""}</span>`;
+  }
   if (t.tipo === "pvpc" || !t.energia || !t.potencia) return `<span class="rk-mini">Precio hora a hora</span>`;
   const e = t.energia;
   const en = t.tipo === "fijo" ? `${num(e.p1, 4)}` : `${num(e.p1, 4)} · ${num(e.p2, 4)} · ${num(e.p3, 4)}`;
@@ -159,6 +164,7 @@ export function insignias(t: Tarifa, porRevisar: boolean, esActual: boolean, inc
   if (t.servicios_obligatorios.length || i.servicios_adicionales) b.push(`<span class="pill">Con servicios</span>`);
   if (i.descuento_energia || i.promo_primer_anio_eur) b.push(`<span class="pill pill--barata">Promo 1.er año</span>`);
   if (i.horario_propio) b.push(`<span class="pill pill--aviso">Horario propio</span>`);
+  if (t.indexada && t.indexada.formula !== "oficial") b.push(`<span class="pill pill--aviso">Fórmula aproximada</span>`);
   if (i.verde) b.push(`<span class="pill">100 % renovable</span>`);
   return b.join("");
 }
@@ -195,6 +201,11 @@ function condiciones(t: Tarifa): string {
   }
   if (t.servicio_mes) li.push(`<strong>Servicio obligatorio:</strong> ${eur2(t.servicio_mes)} al mes sin IVA (incluido en el cálculo).`);
   if (t.info?.servicio_sin_precio) li.push(`<strong>Servicio obligatorio sin precio publicado:</strong> el total de la tabla no lo incluye, por eso va al final.`);
+  if (t.indexada) {
+    li.push(`<strong>Energía:</strong> precio del mercado mayorista hora a hora. Fórmula: ${esc(t.indexada.descripcion)}${t.indexada.url_formula ? ` <a href="${esc(t.indexada.url_formula)}" rel="noopener" target="_blank">${t.indexada.formula === "oficial" ? "Ver la fórmula oficial" : "Ver la fuente"}</a>` : ""}`);
+    li.push(`<strong>Cómo lo calculamos:</strong> con el precio OMIE de cada hora, los costes de ajuste mensuales que publica Red Eléctrica, los coeficientes de pérdidas de la 2.0TD y los peajes y cargos vigentes. ${t.indexada.formula === "oficial" ? "Es una buena aproximación: la comercializadora liquida con datos horarios de ESIOS." : t.indexada.formula === "terceros" ? "La fórmula la publica un comparador, no la comercializadora: tómalo como aproximado." : "La comercializadora no publica la fórmula completa: tómalo como aproximado."}`);
+    li.push(`<strong>Potencia:</strong> P1 ${num(t.potencia!.p1, 6)} y P2 ${num(t.potencia!.p2, 6)} €/kW·día.`);
+  }
   if (t.cuota_fija_mes) li.push(`<strong>Cuota fija:</strong> ${eur2(t.cuota_fija_mes)} al mes.`);
   li.push(`<strong>Permanencia:</strong> ${t.permanencia_meses ? `sí${i.penalizacion ? `. ${esc(i.penalizacion)}` : ""}` : "no"}.`);
   if (t.servicios_obligatorios.length) li.push(`<strong>Servicios obligatorios:</strong> ${t.servicios_obligatorios.map(esc).join(", ")}.`);
@@ -267,7 +278,7 @@ export function tablaRanking(filas: Fila[], o: OpcionesTabla): string {
         <span class="rk-logo" aria-hidden="true">${esc(iniciales(m))}</span>
         <span class="rk-nombre"><span class="rk-marca">${esc(m)}</span><span class="rk-plan">${esc(nombrePlan(t.nombre))}</span><span class="rk-badges">${insignias(t, f.porRevisar, esActual, f.incompleta)}</span></span>
       </div></th>
-      <td data-label="Tipo y precios"><span class="rk-tipo">${tipoTexto(t)}</span>${precios(t)}</td>
+      <td data-label="Tipo y precios"><span class="rk-tipo">${tipoTexto(t)}</span>${precios(t, f.factura)}</td>
       <td class="r num" data-label="Potencia">${eur2(f.factura.potencia)}</td>
       <td class="r num" data-label="Energía">${eur2(f.factura.energia)}</td>
       <td class="r num" data-label="Impuestos y otros">${eur2(f.otros)}</td>

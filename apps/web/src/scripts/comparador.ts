@@ -16,7 +16,7 @@ import {
   type TipoPerfil,
   type PeriodoEnergia,
 } from "@lst/tarifa";
-import { cargarRango } from "../lib/precios-cliente";
+import { cargarRango, cargarMercado, type DatosMercado } from "../lib/precios-cliente";
 import { eur, eur2, kwh, pct, fechaCorta, num, sumarDias } from "../lib/formato";
 import { guardarPerfil, perfilDesdeLecturas } from "../lib/consumo-local";
 import { marca, nombrePlan } from "../lib/ranking";
@@ -308,7 +308,7 @@ form.addEventListener("submit", async (e) => {
   botonCalcular.disabled = true;
   botonCalcular.textContent = "Calculando…";
   resultado.hidden = false;
-  resultado.innerHTML = `<div class="notice" role="status"><p>Trayendo los precios PVPC de Red Eléctrica para tus fechas…</p></div>`;
+  resultado.innerHTML = `<div class="notice" role="status"><p>Trayendo los precios PVPC y del mercado mayorista de Red Eléctrica para tus fechas…</p></div>`;
 
   const desde = lecturas.reduce((a, l) => (l.fecha < a ? l.fecha : a), lecturas[0].fecha);
   const hasta = lecturas.reduce((a, l) => (l.fecha > a ? l.fecha : a), lecturas[0].fecha);
@@ -320,7 +320,15 @@ form.addEventListener("submit", async (e) => {
     pvpc = undefined;
   }
 
-  const ctx = { regulados: datos.regulados, festivos, pvpc };
+  let mercado: DatosMercado | undefined;
+  try {
+    mercado = await cargarMercado(desde, hasta);
+    if (Object.keys(mercado.spot).length === 0) mercado = undefined;
+  } catch {
+    mercado = undefined;
+  }
+
+  const ctx = { regulados: datos.regulados, festivos, pvpc, mercado };
   const potencias = { p1, p2 };
   const lista = compararTarifas(lecturas, catalogo, potencias, ctx, datos.hoy);
   pintar(lista, idActual, lecturas, potencias, ctx, catalogo, Boolean(pvpc), descripcion);
@@ -433,7 +441,7 @@ function pintar(
       <span class="eyebrow">Resultado</span>
       ${cabecera}
       ${avisoRevisar}
-      <p class="caption">Calculado con ${esc(descripcion)}, los precios de cada tarifa sin impuestos ni promociones y los impuestos vigentes cada día. Es una estimación, no una oferta vinculante. ${hayPvpc ? "" : "<strong>No hemos podido traer los precios PVPC, así que la tarifa regulada no aparece.</strong>"} <a href="/como-funciona/">Cómo lo calculamos</a></p>
+      <p class="caption">Calculado con ${esc(descripcion)}, los precios de cada tarifa sin impuestos ni promociones y los impuestos vigentes cada día. Es una estimación, no una oferta vinculante. ${hayPvpc ? "" : "<strong>No hemos podido traer los precios PVPC, así que la tarifa regulada no aparece.</strong>"} ${ctx.mercado ? "" : "<strong>No hemos podido traer el precio del mercado, así que las tarifas indexadas no aparecen.</strong>"} <a href="/como-funciona/">Cómo lo calculamos</a></p>
     </div>
     <h2 class="res-h2">Ranking de ${lista.length} tarifas para tu consumo</h2>
     <p class="muted">Ordenadas por lo que habrías pagado. Filtra, reordena por columnas o abre el detalle de cada una.</p>

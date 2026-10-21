@@ -100,3 +100,65 @@ export async function cargarRango(desde: string, hasta: string): Promise<Record<
   }
   return out;
 }
+
+// ---------- Mercado mayorista (tarifas indexadas) ----------
+
+export interface DatosMercado {
+  /** OMIE €/kWh por hora de reloj */
+  spot: Record<string, (number | null)[]>;
+  /** Coste de ajustes mensual €/kWh */
+  ajustes: Record<string, number>;
+}
+
+const cacheMercado = new Map<string, Promise<{ spot: Record<string, (number | null)[]>; ajuste: number | null } | null>>();
+function mercadoMes(mes: string) {
+  if (!cacheMercado.has(mes)) {
+    cacheMercado.set(
+      mes,
+      fetch(`/datos/mercado/${mes}.json`)
+        .then((r) => (r.ok ? r.json() : null))
+        .catch(() => null),
+    );
+  }
+  return cacheMercado.get(mes)!;
+}
+
+/** OMIE de REData directamente (indicador 600, cuartohorario → media horaria). */
+async function spotRedata(desde: string, hasta: string): Promise<Record<string, (number | null)[]>> {
+  const url = `https://apidatos.ree.es/es/datos/mercados/precios-mercados-tiempo-real?start_date=${desde}T00:00&end_date=${hasta}T23:59&time_trunc=hour`;
+  const r = await fetch(url, { headers: { Accept: "application/json" } });
+  if (!r.ok) throw new Error(`REData ${r.status}`);
+  const j = await r.json();
+  const serie = j.included?.find((i: { id: string; type: string }) => i.id === "600" || i.type === "Precio mercado spot");
+  return serie ? agrupar(serie.attributes.values) : {};
+}
+
+/**
+ * OMIE horario y ajustes mensuales para un rango. Usa los ficheros mensuales del build y rellena
+ * los días que falten con REData. Los meses sin ajustes publicados los calcula el motor con la media.
+ */
+export async function cargarMercado(desde: string, hasta: string): Promise<DatosMercado> {
+  const spot: DatosMercado["spot"] = {};
+  const ajustes: DatosMercado["ajustes"] = {};
+  const meses = new Set<string>();
+  for (let f = desde; f <= hasta; f = sumar(f, 1)) meses.add(f.slice(0, 7));
+  for (const m of meses) {
+    const datos = await mercadoMes(m);
+    if (!datos) continue;
+    if (datos.ajuste !== null) ajustes[m] = datos.ajuste;
+    for (const [f, s] of Object.entries(datos.spot)) if (f >= desde && f <= hasta) spot[f] = s;
+  }
+  const faltan: string[] = [];
+  for (let f = desde; f <= hasta; f = sumar(f, 1)) if (!spot[f]) faltan.push(f);
+  for (let i = 0; i < faltan.length; ) {
+    const a = faltan[i];
+    let b = a;
+    while (i < faltan.length && faltan[i] <= sumar(a, 19)) b = faltan[i++];
+    try {
+      Object.assign(spot, await spotRedata(a, b));
+    } catch {
+      /* sin conexión: el motor valorará esas horas con la media y lo avisará */
+    }
+  }
+  return { spot, ajustes };
+}

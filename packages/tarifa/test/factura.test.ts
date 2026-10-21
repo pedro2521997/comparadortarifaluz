@@ -119,7 +119,7 @@ describe("perfiles y promociones", () => {
   it("el perfil sintético suma el consumo pedido y respeta el reparto de la factura", async () => {
     const { generarLecturas } = await import("../src/index");
     const l = generarLecturas({ desde: "2025-10-01", hasta: "2026-09-30", anualKwh: 3500, tipo: "estandar", festivos, porPeriodo: { 1: 1000, 2: 1000, 3: 1500 } });
-    expect(l).toHaveLength(365 * 24);
+    expect(l).toHaveLength(365 * 24 - 1); // el día del cambio de marzo tiene 23 horas
     expect(l.reduce((a, x) => a + x.kwh, 0)).toBeCloseTo(3500, 0);
     const rep = repartoPorPeriodos(l, festivos);
     expect(rep.kwh[3]).toBeCloseTo(1500, 0);

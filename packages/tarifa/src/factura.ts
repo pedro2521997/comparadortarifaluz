@@ -3,6 +3,7 @@
 
 import { periodoEnergia, type PeriodoEnergia, sumarDias, diasEntre } from "./periodos";
 import { vigenteEn, type Regulados } from "./regulados";
+import { precioIndexado, prepararMercado, type Mercado, type ParamsIndexada } from "./indexada";
 
 export interface Lectura {
   /** Fecha local YYYY-MM-DD */
@@ -16,7 +17,7 @@ export interface Tarifa {
   id: string;
   comercializadora: string;
   nombre: string;
-  tipo: "fijo" | "periodos" | "pvpc";
+  tipo: "fijo" | "periodos" | "pvpc" | "indexada";
   /** €/kW·día */
   potencia: { p1: number; p2: number } | null;
   /** €/kWh */
@@ -34,6 +35,8 @@ export interface Tarifa {
   /** "cnmc" (importada del comparador oficial), "manual" (web de la comercializadora) o "regulada" */
   origen?: string;
   info?: InfoTarifa;
+  /** Solo tarifas indexadas: cómo se calcula el precio de cada hora a partir del mercado */
+  indexada?: ParamsIndexada;
 }
 
 /** Datos adicionales de una tarifa: condiciones, promociones y particularidades del cálculo. */
@@ -75,6 +78,8 @@ export interface Contexto {
   festivos: ReadonlySet<string>;
   /** Necesario solo para tarifas PVPC. */
   pvpc?: PreciosPorHora;
+  /** Necesario solo para tarifas indexadas: OMIE horario y ajustes mensuales. */
+  mercado?: Mercado;
   /** Aplicar las promociones del primer año (descuentos temporales). Por defecto, no: se compara el precio estable. */
   promociones?: boolean;
 }
@@ -145,6 +150,10 @@ export function calcularFactura(lecturas: Lectura[], tarifa: Tarifa, potencias: 
     mediaPvpc = todos.length ? todos.reduce((a, b) => a + b, 0) / todos.length : 0;
   }
 
+  const mercado = tarifa.tipo === "indexada" ? (ctx.mercado ? prepararMercado(ctx.mercado) : null) : null;
+  if (tarifa.tipo === "indexada" && (!mercado || !tarifa.indexada)) throw new Error("Faltan los precios de mercado para calcular esta tarifa indexada");
+  let horasSinAjuste = 0;
+
   const kwhPorPeriodo: Record<PeriodoEnergia, number> = { 1: 0, 2: 0, 3: 0 };
   let servicios = 0;
   let kwh = 0, potencia = 0, energia = 0, cuotaFija = 0, bonoSocial = 0, iee = 0, alquiler = 0, iva = 0;
@@ -171,6 +180,11 @@ export function calcularFactura(lecturas: Lectura[], tarifa: Tarifa, potencias: 
         } else {
           energiaDia += l.kwh * precio;
         }
+      } else if (tarifa.tipo === "indexada") {
+        const h = precioIndexado(l.fecha, l.hora, p, tarifa.indexada!, mercado!, ctx.regulados);
+        if (h.sinSpot) horasSinPrecio++;
+        if (h.sinAjuste) horasSinAjuste++;
+        energiaDia += l.kwh * h.precio;
       } else {
         const e = tarifa.energia!;
         energiaDia += l.kwh * (p === 1 ? e.p1 : p === 2 ? e.p2 : e.p3);
@@ -213,7 +227,11 @@ export function calcularFactura(lecturas: Lectura[], tarifa: Tarifa, potencias: 
   }
 
   if (horasSinPrecio > 0) {
-    avisos.add(`${horasSinPrecio} horas sin precio PVPC publicado se han valorado con el precio medio.`);
+    avisos.add(`${horasSinPrecio} horas sin precio ${tarifa.tipo === "indexada" ? "de mercado" : "PVPC"} publicado se han valorado con el precio medio.`);
+  }
+  if (horasSinAjuste > 0) avisos.add("Para el mes en curso aún no hay costes de ajuste publicados: se ha usado la media de los meses anteriores.");
+  if (tarifa.tipo === "indexada" && tarifa.indexada?.formula !== "oficial") {
+    avisos.add(tarifa.indexada?.formula === "terceros" ? "Fórmula publicada por un comparador, no por la comercializadora: cálculo aproximado." : "La comercializadora no publica la fórmula completa: calculado como coste de mercado más su cuota.");
   }
   const huecos = dias * 24 - lecturas.length;
   if (huecos > 24) avisos.add(`Al fichero le faltan unas ${huecos} horas de consumo: el total puede quedarse corto.`);
@@ -283,6 +301,7 @@ export function compararTarifas(
   const resultados: Comparacion[] = [];
   for (const tarifa of tarifas) {
     if (tarifa.tipo === "pvpc" && !ctx.pvpc) continue;
+    if (tarifa.tipo === "indexada" && !ctx.mercado) continue;
     resultados.push({
       tarifa,
       factura: calcularFactura(lecturas, tarifa, potencias, ctx),

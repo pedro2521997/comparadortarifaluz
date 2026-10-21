@@ -81,5 +81,49 @@
       "verificar": false,
       "nota": "Comparador oficial de la CNMC, oferta PVPC 2026–2027: 30,816429 €/kW·año en P1 y 0,726429 €/kW·año en P2 (peajes, cargos y margen de comercialización)."
     }
+  ],
+  "peajes_cargos_energia_eur_kwh": [
+    {
+      "p1": 0.092539,
+      "p2": 0.028201,
+      "p3": 0.002994,
+      "vigente_desde": "2025-01-01",
+      "vigente_hasta": "2025-12-31",
+      "fuente": "https://linkener.com/blog/cargos-y-peajes-electricos-2026/",
+      "verificar": true,
+      "nota": "Peajes (CNMC) + cargos (MITECO) de energía 2.0TD en 2025."
+    },
+    {
+      "p1": 0.097553,
+      "p2": 0.029267,
+      "p3": 0.003292,
+      "vigente_desde": "2026-01-01",
+      "vigente_hasta": null,
+      "fuente": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2025-26348",
+      "verificar": false,
+      "nota": "Peajes (Resolución CNMC de 18/12/2025) + cargos 2026. P1 = 0,033261 peaje + 0,064292 cargo. Coinciden varias fuentes."
+    }
+  ],
+  "perdidas_2_0td": [
+    {
+      "p1": 0.167,
+      "p2": 0.163,
+      "p3": 0.18,
+      "vigente_desde": "2021-06-01",
+      "vigente_hasta": null,
+      "fuente": "https://www.boe.es/buscar/doc.php?id=BOE-A-2020-1066",
+      "verificar": true,
+      "nota": "Coeficientes de pérdidas 2.0TD de la Circular 3/2020 de la CNMC (art. 11). Las comercializadoras usan los horarios de REE, que se mueven alrededor de estos valores."
+    }
+  ],
+  "fnee_eur_kwh": [
+    {
+      "valor": 0.002657,
+      "vigente_desde": "2026-01-01",
+      "vigente_hasta": null,
+      "fuente": "https://comparador.cnmc.gob.es/",
+      "verificar": true,
+      "nota": "Aportación al Fondo Nacional de Eficiencia Energética que repercuten las comercializadoras (citada en las fichas de la CNMC)."
+    }
   ]
 }

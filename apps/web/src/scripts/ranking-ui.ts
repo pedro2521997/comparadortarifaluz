@@ -16,7 +16,7 @@ export interface EntradaRanking {
 
 interface Estado {
   promociones: boolean;
-  tipo: "todas" | "fijo" | "periodos" | "pvpc";
+  tipo: "todas" | "fijo" | "periodos" | "pvpc" | "indexada";
   sinPermanencia: boolean;
   sinServicios: boolean;
   verde: boolean;
@@ -113,7 +113,7 @@ export function montarRanking(raiz: HTMLElement, entrada: EntradaRanking) {
       <div class="rk-ctrl__fila">
         <div class="field rk-buscar"><label for="rk-q">Buscar</label><input id="rk-q" type="search" placeholder="Comercializadora o tarifa" autocomplete="off" /></div>
         <div class="field"><label for="rk-com">Comercializadora</label><select id="rk-com"><option value="">Todas</option>${comercializadoras.map((c) => `<option>${esc(c)}</option>`).join("")}</select></div>
-        <div class="field"><label for="rk-tipo">Tipo de tarifa</label><select id="rk-tipo"><option value="todas">Todas</option><option value="fijo">Precio único 24 h</option><option value="periodos">3 periodos</option><option value="pvpc">Regulada (PVPC)</option></select></div>
+        <div class="field"><label for="rk-tipo">Tipo de tarifa</label><select id="rk-tipo"><option value="todas">Todas</option><option value="fijo">Precio único 24 h</option><option value="periodos">3 periodos</option><option value="indexada">Indexada al mercado</option><option value="pvpc">Regulada (PVPC)</option></select></div>
       </div>
       <div class="rk-ctrl__checks">
         <label class="check"><input type="checkbox" data-f="sinPermanencia" /> <span>Sin permanencia</span></label>

@@ -19,12 +19,21 @@ describe("catálogo de tarifas", () => {
     expect(t.energia).toEqual({ p1: 0.2249, p2: 0.1489, p3: 0.1229 });
   });
   it("todas las tarifas tienen precios válidos, fuente y fecha", () => {
-    for (const t of todas.filter((x) => x.tipo !== "pvpc")) {
+    for (const t of todas.filter((x) => x.tipo !== "pvpc" && x.tipo !== "indexada")) {
       expect(t.potencia.p1, t.id).toBeGreaterThanOrEqual(0);
       expect(t.energia.p1, t.id).toBeGreaterThan(0.03);
       expect(t.energia.p1, t.id).toBeLessThan(0.6);
       expect(t.url_fuente, t.id).toMatch(/^https?:\/\//);
       expect(t.fecha_comprobacion, t.id).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    }
+  });
+  it("las indexadas tienen potencia, cuota y parámetros de fórmula", () => {
+    const idx = todas.filter((t) => t.tipo === "indexada");
+    expect(idx.length).toBeGreaterThanOrEqual(4);
+    for (const t of idx) {
+      expect(t.potencia.p1, t.id).toBeGreaterThan(0.05);
+      expect(t.indexada.factor_tm, t.id).toBeGreaterThanOrEqual(1);
+      expect(["oficial", "terceros", "aproximada"]).toContain(t.indexada.formula);
     }
   });
   it("no hay identificadores repetidos", () => {

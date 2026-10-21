@@ -2,9 +2,10 @@
  "fecha": "2026-09-02",
  "unidad": "€/kWh",
  "indicador": "PVPC 2.0TD (1001), peajes y cargos incluidos, sin impuestos",
+ "indicador_spot": "Precio del mercado diario (600), media horaria",
  "fuente": "Red Eléctrica · REData",
  "fuente_url": "https://www.ree.es/es/apidatos",
- "descargado": "2026-10-21T15:49:16.090Z",
+ "descargado": "2026-10-21T19:45:27.319Z",
  "precios": [
   0.18271,
   0.18204,
@@ -30,5 +31,31 @@
   0.34878,
   0.25645,
   0.24453
+ ],
+ "spot": [
+  0.19157,
+  0.19036,
+  0.18597,
+  0.18395,
+  0.18374,
+  0.18392,
+  0.19957,
+  0.21182,
+  0.20173,
+  0.1739,
+  0.12087,
+  0.08796,
+  0.07223,
+  0.06786,
+  0.06768,
+  0.06236,
+  0.08119,
+  0.11448,
+  0.16262,
+  0.20656,
+  0.23784,
+  0.2363,
+  0.21131,
+  0.20206
  ]
 }

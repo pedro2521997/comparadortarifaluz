@@ -6,6 +6,7 @@ import reguladosJson from "../../../../data/regulados.json";
 import festivosJson from "../../../../data/festivos.json";
 import aparatosJson from "../../../../data/aparatos.json";
 import provinciasJson from "../../../../data/provincias.json";
+import ajustesJson from "../../../../data/mercado-ajustes.json";
 import type { Regulados, Tarifa } from "@lst/tarifa";
 
 export interface DiaPrecios {
@@ -15,6 +16,8 @@ export interface DiaPrecios {
   descargado: string;
   /** €/kWh por hora de reloj; null en la hora que no existe el día del cambio de marzo */
   precios: (number | null)[];
+  /** Mercado diario OMIE, €/kWh por hora de reloj (para las tarifas indexadas) */
+  spot?: (number | null)[] | null;
 }
 
 export interface Aparato {
@@ -42,6 +45,10 @@ export const catalogoActualizado = tarifasJson.actualizado as string;
 export const regulados = reguladosJson as unknown as Regulados;
 export const festivos = festivosJson.fechas;
 export const aparatos = aparatosJson.aparatos as Aparato[];
+/** Coste de ajustes mensual (€/kWh) = precio final de la demanda − mercado diario (REData). */
+export const ajustesMercado: Record<string, number> = Object.fromEntries(
+  Object.entries(ajustesJson.meses as Record<string, { ajuste_eur_kwh: number }>).map(([m, v]) => [m, v.ajuste_eur_kwh]),
+);
 export const provincias = provinciasJson.provincias as Record<string, { nombre: string; lat: number; lon: number }>;
 
 const ficheros = import.meta.glob<DiaPrecios>("../../../../data/precios/*.json", { eager: true, import: "default" });

@@ -46,6 +46,12 @@ export interface OpcionesPerfil {
   porPeriodo?: Record<PeriodoEnergia, number> | null;
 }
 
+/** Último domingo de marzo: día de 23 horas (no existe la hora de 2 a 3). */
+function esDiaCambioMarzo(fecha: string): boolean {
+  const [y, m, d] = fecha.split("-").map(Number);
+  return m === 3 && d >= 25 && new Date(Date.UTC(y, m - 1, d)).getUTCDay() === 0;
+}
+
 /** Genera lecturas horarias sintéticas entre dos fechas (ambas incluidas). */
 export function generarLecturas(o: OpcionesPerfil): Lectura[] {
   const dias = diasEntre(o.desde, o.hasta);
@@ -54,7 +60,10 @@ export function generarLecturas(o: OpcionesPerfil): Lectura[] {
     const fecha = sumarDias(o.desde, i);
     const finde = esFinDeSemanaOFestivo(fecha, o.festivos);
     const est = ESTACION[Number(fecha.slice(5, 7)) - 1];
-    forma(o.tipo, finde).forEach((v, hora) => lecturas.push({ fecha, hora, kwh: v * est }));
+    const corto = esDiaCambioMarzo(fecha);
+    forma(o.tipo, finde).forEach((v, hora) => {
+      if (!(corto && hora === 2)) lecturas.push({ fecha, hora, kwh: v * est }); // de 2 a 3 no existe ese día
+    });
   }
   const objetivo = (o.anualKwh * dias) / 365;
   const suma = lecturas.reduce((a, l) => a + l.kwh, 0);
