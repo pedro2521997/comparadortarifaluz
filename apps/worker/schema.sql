@@ -1,5 +1,5 @@
--- Esquema D1 de LuzSinTrampa. Aplicar con:
---   npx wrangler d1 execute luzsintrampa --file=apps/worker/schema.sql --remote
+-- Esquema D1 de ComparadorTarifaLuz. Aplicar con:
+--   npx wrangler d1 execute comparadortarifaluz --file=apps/worker/schema.sql --remote
 
 CREATE TABLE IF NOT EXISTS precios (
   fecha TEXT PRIMARY KEY,              -- AAAA-MM-DD (hora de Madrid)

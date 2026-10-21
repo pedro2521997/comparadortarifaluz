@@ -1,7 +1,10 @@
 ---
 import Base from "../layouts/Base.astro";
 import AvisoDiario from "../components/AvisoDiario.astro";
-import { dias } from "../lib/datos";
+import { dias, tarifas, regulados, festivos, ajustesMercado } from "../lib/datos";
+import { compararTarifas, generarLecturas } from "@lst/tarifa";
+import { aFilas, marca, nombrePlan } from "../lib/ranking";
+import { eur, nombreMes, sumarDias, num } from "../lib/formato";
 import { resumen, niveles, mejorFranja } from "../lib/grafico";
 import { hoyMadrid, fechaLarga, ekwh, hh, franja } from "../lib/formato";
 import { guias } from "../lib/guias";
@@ -14,15 +17,38 @@ const max = r.max.p;
 const lavadora = mejorFranja(dia.precios, 2);
 const destacadas = guias.slice(0, 6);
 
+// Top 3 del mes para un hogar tipo (3.000 kWh, 4,6 kW), calculado con el último año de precios.
+const ultimo = dia.fecha;
+const desde = sumarDias(ultimo, -364);
+const dentro = dias.filter((d) => d.fecha >= desde && d.fecha <= ultimo);
+const ctxTop = {
+  regulados,
+  festivos: new Set(festivos),
+  pvpc: Object.fromEntries(dentro.map((d) => [d.fecha, d.precios as number[]])),
+  mercado: { spot: Object.fromEntries(dentro.filter((d) => d.spot).map((d) => [d.fecha, d.spot!])), ajustes: ajustesMercado },
+};
+const filasTop = aFilas(
+  compararTarifas(generarLecturas({ desde, hasta: ultimo, anualKwh: 3000, tipo: "estandar", festivos: ctxTop.festivos }), tarifas, { p1: 4.6, p2: 4.6 }, ctxTop, hoy),
+  null,
+).filter((f) => !f.incompleta && !(f.porRevisar && f.tarifa.tipo !== "pvpc"));
+const top = filasTop.slice(0, 3);
+const peor = filasTop[filasTop.length - 1];
+const nComercializadoras = new Set(tarifas.map((t) => marca(t.comercializadora))).size;
+
 const herramientas = [
-  { href: "/comparador/", eyebrow: "La herramienta estrella", t: "Compara tarifas con tu fichero", d: "Sube el consumo hora a hora de tu distribuidora y mira cuánto habrías pagado con cada tarifa. Se calcula en tu navegador.", cta: "Comparar mi tarifa" },
-  { href: "/precio-luz-hoy/", eyebrow: "Cada día", t: "Precio de la luz por horas", d: "El PVPC de hoy y de mañana con las mejores horas para la lavadora, el horno o cargar el coche.", cta: "Ver el precio de hoy" },
-  { href: "/cuanto-gasta/", eyebrow: "25 aparatos", t: "Cuánto gasta cada aparato", d: "Aire acondicionado, termo, horno, coche eléctrico… lo que cuesta al mes con el precio de hoy.", cta: "Calcular un aparato" },
+  { href: "/comparador/", eyebrow: "La herramienta estrella", t: "Comparador de tarifas", d: "Con tu fichero de consumos o tu factura: cuánto habrías pagado con cada tarifa, en un ranking que puedes filtrar.", cta: "Comparar mi tarifa" },
+  { href: "/calcular-factura-luz/", eyebrow: "¿Te cobran bien?", t: "Calcula tu factura", d: "Tus facturas mes a mes con tu fichero y tu tarifa, como las calcula tu compañía. Si no coinciden, reclama.", cta: "Calcular mis facturas" },
+  { href: "/analizador-consumo/", eyebrow: "Tu consumo en gráficas", t: "Analizador de consumo", d: "A qué horas gastas, tu consumo fantasma, tus picos y si te sobra potencia.", cta: "Analizar mi consumo" },
+  { href: "/precio-luz-hoy/", eyebrow: "Cada día", t: "Precio de la luz hoy", d: "Hora a hora, con las mejores horas para la lavadora o el coche y de dónde viene la luz.", cta: "Ver el precio de hoy" },
+  { href: "/cuanto-gasta/", eyebrow: "27 aparatos", t: "Cuánto gasta cada aparato", d: "Aire acondicionado, termo, horno, coche eléctrico… lo que cuesta al mes con el precio de hoy.", cta: "Calcular un aparato" },
   { href: "/placas-solares/", eyebrow: "Autoconsumo", t: "¿Te compensan las placas?", d: "Producción real de tu zona cruzada con tu consumo hora a hora. En rangos, sin promesas.", cta: "Calcular mis placas" },
 ];
 ---
 
-<Base titulo="LuzSinTrampa: paga menos luz con tus propios datos">
+<Base
+  titulo="Comparador de tarifas de luz gratis: ¿cuánto pagarías?"
+  descripcion={`Compara gratis las ${tarifas.length} tarifas de luz de ${nComercializadoras} compañías con tu consumo real. Entre la más barata y la más cara hay hasta ${eur(peor.anual - top[0].anual)} al año. Sin registro y con datos de la CNMC y Red Eléctrica.`}
+>
   <section class="hero portada">
     <div class="orbes" aria-hidden="true">
       <span class="orbe" style="width:56px;height:56px;right:6%;top:48px"></span>
@@ -30,13 +56,14 @@ const herramientas = [
       <span class="orbe orbe--lav" style="width:40px;height:40px;left:5%;top:200px"></span>
     </div>
     <div class="wrap center">
-      <span class="eyebrow">Tu factura, sin letra pequeña</span>
-      <h1 class="portada__t">Paga menos luz con tus propios datos</h1>
-      <p class="lead">Tu fichero de consumos, tu código postal, tu aparato y el precio real de hoy. Respuestas personales, no medias genéricas.</p>
+      <span class="eyebrow">Comparador de tarifas de luz · gratis y sin registro</span>
+      <h1 class="portada__t">¿Estás pagando de más por la luz?</h1>
+      <p class="lead">Comparamos las {tarifas.length} tarifas de {nComercializadoras} compañías con tu consumo real, hora a hora. Entre la más barata y la más cara hay hasta <strong>{eur(peor.anual - top[0].anual)} al año</strong> para un hogar normal.</p>
       <div class="btn-row">
-        <a class="btn btn--mint" href="/comparador/">Compara tu tarifa con tu fichero</a>
-        <a class="btn btn--ghost" href="/precio-luz-hoy/">Precio de la luz hoy</a>
+        <a class="btn btn--mint" href="/comparador/">Comparar mi tarifa gratis</a>
+        <a class="btn btn--ghost" href="/tarifas/">Ver el ranking de tarifas</a>
       </div>
+      <p class="portada__confianza">Precios de la CNMC y de Red Eléctrica · Ordenado solo por precio · Tus datos no salen de tu navegador</p>
     </div>
 
     <div class="wrap">
@@ -70,17 +97,40 @@ const herramientas = [
     </div>
   </section>
 
+  <section class="section section--white">
+    <div class="wrap">
+      <div class="center stack" style="--stack:12px;margin-bottom:32px">
+        <span class="eyebrow">Ranking de {nombreMes(hoy.slice(0, 7))}</span>
+        <h2>Las 3 tarifas más baratas para un hogar normal</h2>
+        <p class="lead">3.000 kWh al año y 4,6 kW, con los precios reales del último año. Con tu consumo pueden cambiar: compruébalo.</p>
+      </div>
+      <ol class="top3">
+        {
+          top.map((f, i) => (
+            <li class="top3__i">
+              <span class="top3__pos">{i + 1}º</span>
+              <span class="top3__n"><strong>{marca(f.tarifa.comercializadora)}</strong><span>{nombrePlan(f.tarifa.nombre)}</span></span>
+              <span class="top3__p"><strong>{eur(f.anual)}</strong><span>al año · {num(f.mensual, 2)} €/mes</span></span>
+            </li>
+          ))
+        }
+      </ol>
+      <p class="caption center" style="margin-top:12px">La más cara del ranking sale por {eur(peor.anual)} al año. Impuestos incluidos, sin promociones.</p>
+      <p class="btn-row" style="justify-content:center;margin-top:24px"><a class="btn" href="/comparador/">Calcular con mi consumo</a><a class="btn btn--ghost" href="/tarifas/">Ver las {tarifas.length}</a></p>
+    </div>
+  </section>
+
   <section class="section">
     <div class="wrap">
       <div class="center stack" style="--stack:12px;margin-bottom:48px">
         <span class="eyebrow">Herramientas</span>
-        <h2>Cuatro preguntas, cuatro respuestas con números</h2>
+        <h2>Respuestas con números, no con medias</h2>
       </div>
-      <div class="grid grid--2">
+      <div class="grid grid--3">
         {
           herramientas.map((h, i) => (
             <a class:list={["card card--link card--roomy herr", { "herr--star": i === 0 }]} href={h.href}>
-              <span class:list={["eyebrow", { "eyebrow--violet": i === 3 }]}>{h.eyebrow}</span>
+              <span class:list={["eyebrow", { "eyebrow--violet": i === 5 }]}>{h.eyebrow}</span>
               <h3 class="herr__t">{h.t}</h3>
               <p class="muted">{h.d}</p>
               <span class="arrow">{h.cta} →</span>
@@ -277,7 +327,71 @@ const herramientas = [
     color: var(--color-canopy);
   }
   .herr {
-    min-height: 260px;
+    min-height: 240px;
+  }
+  .portada__confianza {
+    margin-top: 20px;
+    font-size: 13px;
+    color: var(--color-slate);
+  }
+  .top3 {
+    list-style: none;
+    margin: 0 auto;
+    padding: 0;
+    max-width: 760px;
+    display: grid;
+    gap: 10px;
+  }
+  .top3__i {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 16px;
+    align-items: center;
+    padding: 16px 20px;
+    border: 1px solid var(--color-sage-mist);
+    border-radius: var(--radius-cards);
+    background: var(--color-cream-paper);
+  }
+  .top3__i:first-child {
+    border-color: var(--color-canopy);
+  }
+  .top3__pos {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-sheet-white);
+    border: 1px solid var(--color-sage-mist);
+    font-weight: 500;
+  }
+  .top3__i:first-child .top3__pos {
+    background: var(--color-mint-pulse);
+    border-color: var(--color-mint-pulse);
+  }
+  .top3__n,
+  .top3__p {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .top3__n span,
+  .top3__p span {
+    font-size: 14px;
+    color: var(--color-slate);
+  }
+  .top3__n strong {
+    font-weight: 500;
+    font-size: 18px;
+  }
+  .top3__p {
+    text-align: right;
+  }
+  .top3__p strong {
+    font-size: 22px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
   }
   .herr__t {
     font-size: 28px;

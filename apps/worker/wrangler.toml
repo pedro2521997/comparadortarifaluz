@@ -1,6 +1,6 @@
-# Worker de LuzSinTrampa: sirve la web estática (apps/web/dist) y las rutas /api/*.
-# Cuenta de Cloudflare NUEVA y separada de la web existente (ver docs/LuzSinTrampa.md §8).
-name = "luzsintrampa"
+# Worker de ComparadorTarifaLuz: sirve la web estática (apps/web/dist) y las rutas /api/*.
+# Cuenta de Cloudflare NUEVA y separada de la web existente (ver docs/ComparadorTarifaLuz.md §8).
+name = "comparadortarifaluz"
 main = "src/index.ts"
 compatibility_date = "2026-10-01"
 
@@ -17,7 +17,7 @@ crons = ["*/15 18-22 * * *"]
 
 [[d1_databases]]
 binding = "DB"
-database_name = "luzsintrampa"
+database_name = "comparadortarifaluz"
 database_id = "PENDIENTE"
 
 [vars]

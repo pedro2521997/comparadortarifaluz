@@ -56,7 +56,7 @@ function apiDesarrollo() {
 }
 
 export default defineConfig({
-  site: "https://luzsintrampa.es",
+  site: "https://comparadortarifaluz.es",
   trailingSlash: "ignore",
   build: { format: "directory" },
   vite: {

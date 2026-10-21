@@ -80,8 +80,24 @@ export interface Contexto {
   pvpc?: PreciosPorHora;
   /** Necesario solo para tarifas indexadas: OMIE horario y ajustes mensuales. */
   mercado?: Mercado;
+  /** Zona fiscal: en Canarias se paga IGIC y en Ceuta y Melilla, IPSI, en lugar del IVA. */
+  zona?: Zona;
+  /** Descuento del bono social (solo se aplica a la PVPC). */
+  bonoSocial?: { descuento: number; limiteAnualKwh: number } | null;
   /** Aplicar las promociones del primer año (descuentos temporales). Por defecto, no: se compara el precio estable. */
   promociones?: boolean;
+}
+
+export type Zona = "peninsula" | "canarias" | "ceuta_melilla";
+
+/**
+ * Impuesto indirecto según la zona [verificar en cada momento]:
+ * IGIC 0 % para suministros domésticos de hasta 10 kW (3 % por encima); IPSI 1 % en Ceuta y Melilla.
+ */
+export function impuestoZona(zona: Zona | undefined, ivaPeninsula: number, potencias: Potencias): number {
+  if (zona === "canarias") return Math.max(potencias.p1, potencias.p2) <= 10 ? 0 : 0.03;
+  if (zona === "ceuta_melilla") return 0.01;
+  return ivaPeninsula;
 }
 
 export interface Factura {
@@ -103,6 +119,8 @@ export interface Factura {
   iva: number;
   /** Promociones del primer año descontadas (€, impuestos incluidos); 0 si no se aplican. */
   promociones: number;
+  /** Descuento del bono social aplicado (sin impuestos) */
+  descuentoBonoSocial: number;
   total: number;
   /** Horas sin precio PVPC que se han valorado con la media del periodo. */
   horasSinPrecio: number;
@@ -161,6 +179,8 @@ export function calcularFactura(lecturas: Lectura[], tarifa: Tarifa, potencias: 
   const descuento = ctx.promociones ? tarifa.info?.descuento_energia ?? null : null;
   const diasDescuento = descuento ? descuento.meses * 30.44 : 0;
   const cobraBono = !tarifa.info?.incluye_bono_social;
+  const bonoSocial_ = tarifa.tipo === "pvpc" && ctx.bonoSocial ? ctx.bonoSocial : null;
+  let descuentoBonoSocial = 0;
 
   for (let i = 0; i < dias; i++) {
     const fecha = sumarDias(desde, i);
@@ -198,6 +218,7 @@ export function calcularFactura(lecturas: Lectura[], tarifa: Tarifa, potencias: 
       : { valor: tarifa.potencia!, exacto: true };
     if (!precioPot.exacto) avisos.add("Hay días sin precio de potencia PVPC vigente; se ha usado el más cercano.");
     const potenciaDia = potencias.p1 * precioPot.valor.p1 + potencias.p2 * precioPot.valor.p2;
+    let descuentoDia = 0;
     const cuotaDia = (tarifa.cuota_fija_mes * 12) / 365;
     const servicioDia = ((tarifa.servicio_mes ?? 0) * 12) / 365;
 
@@ -210,11 +231,18 @@ export function calcularFactura(lecturas: Lectura[], tarifa: Tarifa, potencias: 
     }
 
     const bonoDia = cobraBono ? bono.valor.valor : 0;
+    // Bono social: descuento sobre la potencia y la energía de los kWh dentro del límite (prorrateado por día).
+    if (bonoSocial_ && kwhDia > 0) {
+      const dentro = Math.min(1, bonoSocial_.limiteAnualKwh / 365 / kwhDia);
+      const d = bonoSocial_.descuento * (potenciaDia + energiaDia * dentro);
+      descuentoBonoSocial += d;
+      descuentoDia = d;
+    }
     const ieeDia = Math.max(
-      ieeV.valor.valor * (potenciaDia + energiaDia + bonoDia),
+      ieeV.valor.valor * (potenciaDia + energiaDia - descuentoDia + bonoDia),
       (kwhDia / 1000) * ieeV.valor.minimo_eur_mwh,
     );
-    const baseDia = potenciaDia + energiaDia + cuotaDia + bonoDia + ieeDia + alq.valor.valor + servicioDia;
+    const baseDia = potenciaDia + energiaDia - descuentoDia + cuotaDia + bonoDia + ieeDia + alq.valor.valor + servicioDia;
 
     potencia += potenciaDia;
     energia += energiaDia;
@@ -223,7 +251,7 @@ export function calcularFactura(lecturas: Lectura[], tarifa: Tarifa, potencias: 
     bonoSocial += bonoDia;
     iee += ieeDia;
     alquiler += alq.valor.valor;
-    iva += baseDia * ivaV.valor.valor;
+    iva += baseDia * impuestoZona(ctx.zona, ivaV.valor.valor, potencias);
   }
 
   if (horasSinPrecio > 0) {
@@ -236,7 +264,10 @@ export function calcularFactura(lecturas: Lectura[], tarifa: Tarifa, potencias: 
   const huecos = dias * 24 - lecturas.length;
   if (huecos > 24) avisos.add(`Al fichero le faltan unas ${huecos} horas de consumo: el total puede quedarse corto.`);
 
-  const baseIva = potencia + energia + cuotaFija + bonoSocial + iee + alquiler + servicios;
+  const baseIva = potencia + energia - descuentoBonoSocial + cuotaFija + bonoSocial + iee + alquiler + servicios;
+  if (descuentoBonoSocial) avisos.add(`Incluye ${r2(descuentoBonoSocial)} € de descuento del bono social (${Math.round(bonoSocial_!.descuento * 1000) / 10} % hasta ${bonoSocial_!.limiteAnualKwh} kWh al año).`);
+  if (ctx.zona === "canarias") avisos.add("Canarias: IGIC en lugar de IVA.");
+  if (ctx.zona === "ceuta_melilla") avisos.add("Ceuta y Melilla: IPSI en lugar de IVA. Los horarios de los periodos son distintos y aquí usamos los peninsulares.");
   if (tarifa.info?.servicio_sin_precio) avisos.add("Exige contratar un servicio cuyo precio no se publica: el total real será mayor.");
   // Promoción global del primer año que da la CNMC: se reparte por días (máximo un año).
   const promociones = ctx.promociones && tarifa.info?.promo_primer_anio_eur ? (tarifa.info.promo_primer_anio_eur * Math.min(dias, 365)) / 365 : 0;
@@ -260,6 +291,7 @@ export function calcularFactura(lecturas: Lectura[], tarifa: Tarifa, potencias: 
     baseIva: r2(baseIva),
     iva: r2(iva),
     promociones: r2(promociones),
+    descuentoBonoSocial: r2(descuentoBonoSocial),
     total: r2(baseIva + iva - promociones),
     horasSinPrecio,
     avisos: [...avisos],

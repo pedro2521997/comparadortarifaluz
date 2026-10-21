@@ -21,6 +21,8 @@ import { eur, eur2, kwh, pct, fechaCorta, num, sumarDias } from "../lib/formato"
 import { guardarPerfil, perfilDesdeLecturas } from "../lib/consumo-local";
 import { marca, nombrePlan } from "../lib/ranking";
 import { montarRanking } from "./ranking-ui";
+import { compartir } from "../lib/compartir";
+import { ficheroEjemplo, ficheroDeSesion, guardarSesion } from "./fichero-ui";
 
 interface Datos {
   tarifas: Tarifa[];
@@ -116,8 +118,9 @@ function mostrarEstado(html: string, tipo: "ok" | "warn" | "error") {
   estado.innerHTML = `<div class="${clase}">${html}</div>`;
 }
 
-function aceptarLecturas(l: Lectura[], cups: string | null, desde: string, hasta: string, avisos: string[]) {
+function aceptarLecturas(l: Lectura[], cups: string | null, desde: string, hasta: string, avisos: string[], guardar = true) {
   lecturasFichero = l;
+  if (guardar) guardarSesion({ lecturas: l, cups, desde, hasta, avisos });
   const total = l.reduce((a, x) => a + x.kwh, 0);
   const dias = Math.round((Date.parse(hasta) - Date.parse(desde)) / 86_400_000) + 1;
   const avisosHtml = avisos.length ? `<ul class="small">${avisos.map((a) => `<li>${esc(a)}</li>`).join("")}</ul>` : "";
@@ -206,25 +209,10 @@ zona.addEventListener("drop", (e) => {
   if (f) leerArchivo(f);
 });
 
-// Fichero de ejemplo: un hogar tipo de 2–3 personas, un año, con formato Datadis.
+// Fichero de ejemplo: el mismo generador que el resto de herramientas.
 $("ejemplo").addEventListener("click", () => {
-  const fin = sumarDias(datos.hoy, -2);
-  const inicio = sumarDias(fin, -364);
-  const lineas = ["CUPS;Fecha;Hora;Consumo_kWh;Metodo_obtencion"];
-  let semilla = 7;
-  const azar = () => ((semilla = (semilla * 16807) % 2147483647) / 2147483647);
-  const base = [0.18, 0.15, 0.14, 0.13, 0.13, 0.14, 0.2, 0.42, 0.38, 0.25, 0.22, 0.24, 0.3, 0.45, 0.52, 0.35, 0.26, 0.28, 0.36, 0.48, 0.66, 0.72, 0.55, 0.32];
-  for (let f = inicio; f <= fin; f = sumarDias(f, 1)) {
-    const mes = Number(f.slice(5, 7));
-    const estacion = [1.35, 1.3, 1.1, 0.95, 0.9, 1.05, 1.25, 1.25, 1.0, 0.95, 1.1, 1.35][mes - 1];
-    const [y, m, d] = f.split("-");
-    for (let h = 1; h <= 24; h++) {
-      const v = base[h - 1] * estacion * (0.75 + azar() * 0.5);
-      lineas.push(`ES0021000000000000EJ0F;${y}/${m}/${d};${String(h).padStart(2, "0")}:00;${v.toFixed(3).replace(".", ",")};Real`);
-    }
-  }
   ponerModo("fichero");
-  procesar(lineas.join("\n"));
+  procesar(ficheroEjemplo());
   $<HTMLInputElement>("p1").value = "4.6";
   $<HTMLInputElement>("p2").value = "4.6";
 });
@@ -328,7 +316,15 @@ form.addEventListener("submit", async (e) => {
     mercado = undefined;
   }
 
-  const ctx = { regulados: datos.regulados, festivos, pvpc, mercado };
+  const bono = $<HTMLSelectElement>("bono").value;
+  const ctx = {
+    regulados: datos.regulados,
+    festivos,
+    pvpc,
+    mercado,
+    zona: $<HTMLSelectElement>("zona").value as "peninsula" | "canarias" | "ceuta_melilla",
+    bonoSocial: bono ? { descuento: Number(bono), limiteAnualKwh: Number($<HTMLSelectElement>("bono-lim").value) } : null,
+  };
   const potencias = { p1, p2 };
   const lista = compararTarifas(lecturas, catalogo, potencias, ctx, datos.hoy);
   pintar(lista, idActual, lecturas, potencias, ctx, catalogo, Boolean(pvpc), descripcion);
@@ -441,7 +437,8 @@ function pintar(
       <span class="eyebrow">Resultado</span>
       ${cabecera}
       ${avisoRevisar}
-      <p class="caption">Calculado con ${esc(descripcion)}, los precios de cada tarifa sin impuestos ni promociones y los impuestos vigentes cada día. Es una estimación, no una oferta vinculante. ${hayPvpc ? "" : "<strong>No hemos podido traer los precios PVPC, así que la tarifa regulada no aparece.</strong>"} ${ctx.mercado ? "" : "<strong>No hemos podido traer el precio del mercado, así que las tarifas indexadas no aparecen.</strong>"} <a href="/como-funciona/">Cómo lo calculamos</a></p>
+      <p class="btn-row" style="margin:4px 0 12px"><button type="button" class="btn btn--ghost btn--small" id="compartir-res">Compartir el resultado</button><span class="caption" id="compartir-estado" aria-live="polite"></span></p>
+      <p class="caption">Calculado con ${esc(descripcion)}, los precios de cada tarifa sin impuestos ni promociones y los impuestos vigentes cada día. ${ctx.bonoSocial ? "Con el descuento del bono social en la PVPC (las demás tarifas no lo tienen). " : ""}${ctx.zona === "canarias" ? "Con IGIC de Canarias. " : ctx.zona === "ceuta_melilla" ? "Con IPSI de Ceuta y Melilla. " : ""}Es una estimación, no una oferta vinculante. ${hayPvpc ? "" : "<strong>No hemos podido traer los precios PVPC, así que la tarifa regulada no aparece.</strong>"} ${ctx.mercado ? "" : "<strong>No hemos podido traer el precio del mercado, así que las tarifas indexadas no aparecen.</strong>"} <a href="/como-funciona/">Cómo lo calculamos</a></p>
     </div>
     <h2 class="res-h2">Ranking de ${lista.length} tarifas para tu consumo</h2>
     <p class="muted">Ordenadas por lo que habrías pagado. Filtra, reordena por columnas o abre el detalle de cada una.</p>
@@ -449,8 +446,21 @@ function pintar(
     <h2 class="res-h2">Lo que dice ${desdeFichero ? "tu fichero" : "tu consumo"}</h2>
     ${extras}`;
 
+  const ahorroAnual = actual && mejor.factura.total < actual.factura.total ? anual(actual.factura.total - mejor.factura.total) : 0;
+  const textoCompartir = ahorroAnual > 0
+    ? `He comparado ${lista.length} tarifas de luz con mi consumo real y podría ahorrar ${eur(ahorroAnual)} al año. Compara la tuya gratis:`
+    : `He comparado ${lista.length} tarifas de luz con mi consumo real, gratis y sin registro. Compara la tuya:`;
+  $("compartir-res").addEventListener("click", () => compartir(textoCompartir, `${location.origin}/comparador/`, $("compartir-estado")));
+
   ranking = montarRanking($("ranking"), { lecturas, potencias, ctx, tarifas: catalogo, hoy: datos.hoy, idActual: actual ? idActual : null });
   void ranking;
 }
 
 ponerModo("fichero");
+
+// Fichero cargado antes en esta sesión (analizador, calculador…): se ofrece reutilizarlo.
+const previo = ficheroDeSesion();
+if (previo) {
+  estado.innerHTML = `<div class="notice"><p>Ya cargaste ${previo.ejemplo ? "el fichero de ejemplo" : "un fichero"} en esta sesión (${fechaCorta(previo.desde)} – ${fechaCorta(previo.hasta)}).</p><p><button type="button" class="btn btn--small" id="usar-previo">Usar ese fichero</button></p></div>`;
+  $("usar-previo").addEventListener("click", () => aceptarLecturas(previo.lecturas, previo.cups, previo.desde, previo.hasta, previo.avisos, false));
+}

@@ -50,6 +50,7 @@
   gap: 4px;
 }
 .nav__links ul a {
+  white-space: nowrap;
   display: inline-flex;
   align-items: center;
   min-height: 44px;
@@ -58,6 +59,9 @@
   color: var(--color-bark);
   text-decoration: none;
   border-radius: var(--radius-buttons);
+}
+.nav__cta {
+  white-space: nowrap;
 }
 .nav__links ul a:hover {
   background: var(--color-cream-paper);
@@ -130,7 +134,7 @@
   min-height: 48px;
   font-size: 17px;
 }
-@media (min-width: 1024px) {
+@media (min-width: 1200px) {
   .nav__toggle {
     display: none;
   }
@@ -422,4 +426,169 @@
 }
 .orbe--lav {
   background: radial-gradient(circle at 32% 30%, #fff 0%, #ece9fb 35%, #c9c3ee 100%);
+}
+
+/* ---------- Gráficas SVG (lib/graficas.ts) ---------- */
+.gr {
+  margin: 0;
+  background: var(--color-sheet-white);
+  border: 1px solid var(--color-sage-mist);
+  border-radius: var(--radius-cards);
+  padding: 20px;
+  min-width: 0;
+}
+.gr-t {
+  font-weight: var(--font-weight-medium);
+  margin-bottom: 8px;
+}
+.gr svg {
+  width: 100%;
+  height: 220px;
+  overflow: visible;
+}
+.gr-b {
+  fill: var(--color-sage-mist);
+}
+.gr-b--res {
+  fill: var(--color-orb-violet);
+}
+.gr-rej {
+  stroke: var(--color-pale-sage);
+  stroke-width: 1;
+}
+.gr-eje {
+  font-size: 11px;
+  fill: var(--color-slate);
+  font-family: inherit;
+}
+.gr-l {
+  fill: none;
+  stroke-width: 2.5;
+  vector-effect: non-scaling-stroke;
+}
+.gr-l--a {
+  stroke: var(--color-canopy);
+}
+.gr-l--b {
+  stroke: var(--color-orb-violet);
+}
+.gr-l--c {
+  stroke: #0aa65a;
+}
+.gr-leyenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  font-size: 13px;
+  color: var(--color-slate);
+  margin-bottom: 4px;
+}
+.gr-ley {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.gr-ley__m {
+  width: 18px;
+  height: 0;
+  border-top: 3px solid var(--color-canopy);
+}
+.gr-ley__m--b {
+  border-color: var(--color-orb-violet);
+}
+.gr-ley__m--c {
+  border-color: #0aa65a;
+}
+.gr-ley__m--disc {
+  border-top-style: dashed;
+}
+.gr-datos {
+  margin-top: 8px;
+  font-size: 14px;
+}
+.gr-datos .table-wrap {
+  margin-top: 8px;
+  max-height: 260px;
+}
+.gr-calor-wrap {
+  overflow-x: auto;
+  /* Contiene los textos sr-only (posición absoluta) para que no ensanchen la página */
+  position: relative;
+}
+.gr-calor {
+  border-collapse: separate;
+  border-spacing: 2px;
+  font-size: 11px;
+  min-width: 520px;
+}
+.gr-calor th,
+.gr-calor td {
+  padding: 0;
+  border: 0;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 400;
+  color: var(--color-slate);
+}
+.gr-calor tbody th {
+  padding-right: 6px;
+  white-space: nowrap;
+}
+.gr-c {
+  height: 20px;
+  min-width: 16px;
+  border-radius: 3px;
+}
+.gr-c--vacia {
+  background: transparent;
+}
+
+/* ---------- Subida del fichero (SubirFichero.astro) ---------- */
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 32px 16px;
+  border: 2px dashed var(--color-sage-mist);
+  border-radius: var(--radius-cards);
+  background: var(--color-sheet-white);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+.dropzone:hover,
+.dropzone.is-over,
+.dropzone:focus-within {
+  border-color: var(--color-canopy);
+  background: #f7fbf9;
+}
+.dropzone:focus-within {
+  outline: 3px solid var(--color-orb-violet);
+  outline-offset: 2px;
+}
+.dropzone__icono {
+  color: var(--color-canopy);
+}
+.dropzone__t {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-canopy);
+}
+[data-estado]:not(:empty),
+.subir__previo:not([hidden]) {
+  margin-top: 16px;
+  display: block;
+}
+.subir__previo:not([hidden]) {
+  margin: 0 0 16px;
+}
+.mapeo-grid {
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+}
+@media (min-width: 640px) {
+  .mapeo-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }

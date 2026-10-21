@@ -1,4 +1,4 @@
-/* LuzSinTrampa — estilos globales sobre el sistema de diseño de docs/DESIGN.md (Arcadia). */
+/* ComparadorTarifaLuz — estilos globales sobre el sistema de diseño de docs/DESIGN.md (Arcadia). */
 @import "@fontsource-variable/dm-sans";
 @import "./tokens.css";
 @import "./ranking.css";
@@ -472,6 +472,7 @@ textarea:focus-visible {
 
 /* ---------- Tablas ---------- */
 .table-wrap {
+  position: relative;
   overflow-x: auto;
   border: 1px solid var(--color-sage-mist);
   border-radius: var(--radius-cards);

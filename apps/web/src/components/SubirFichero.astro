@@ -1,0 +1,25 @@
+---
+// Subida del fichero de consumos (Datadis o distribuidora). La lógica está en scripts/fichero-ui.ts.
+// Todo ocurre en el navegador; el fichero no se envía a ningún sitio.
+interface Props {
+  id: string;
+}
+const { id } = Astro.props;
+---
+
+<div class="subir" data-subir={id}>
+  <div class="subir__previo" data-previo hidden></div>
+  <label class="dropzone" for={`${id}-fichero`}>
+    <input id={`${id}-fichero`} type="file" accept=".csv,.txt,text/csv,text/plain" class="sr-only" data-input />
+    <span class="dropzone__icono" aria-hidden="true">
+      <svg width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M19 15v4H5v-4H3v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4h-2zM11 4.8V16h2V4.8l3.6 3.6L18 7l-6-6-6 6 1.4 1.4L11 4.8z"></path></svg>
+    </span>
+    <span class="dropzone__t">Elige el fichero CSV o arrástralo aquí</span>
+    <span class="caption">Datadis, i-DE, e-distribución, UFD y otras distribuidoras · <a href="/guias/descargar-consumo-datadis/">Cómo descargarlo</a></span>
+  </label>
+  <p class="btn-row" style="margin-top:12px">
+    <button class="btn btn--ghost btn--small" type="button" data-ejemplo>Probar con un fichero de ejemplo</button>
+  </p>
+  <div data-estado aria-live="polite"></div>
+  <div data-mapeo hidden></div>
+</div>

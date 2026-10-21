@@ -5,3 +5,4 @@ export * from "./analisis";
 export * from "./horas";
 export * from "./perfiles";
 export * from "./indexada";
+export * from "./consumo";

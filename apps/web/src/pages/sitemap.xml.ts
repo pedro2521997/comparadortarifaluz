@@ -6,7 +6,7 @@ import { guias } from "../lib/guias";
 
 export const GET: APIRoute = () => {
   const rutas = [
-    "/", "/tarifas/", "/precio-luz-hoy/", "/precio-luz-manana/", "/precio-luz-ayer/", "/precio-luz/", "/comparador/", "/cuanto-gasta/",
+    "/", "/tarifas/", "/herramientas/", "/calcular-factura-luz/", "/analizador-consumo/", "/precio-luz/historico/", "/precio-luz-hoy/", "/precio-luz-manana/", "/precio-luz-ayer/", "/precio-luz/", "/comparador/", "/cuanto-gasta/",
     "/placas-solares/", "/guias/", "/como-funciona/", "/aviso-legal/", "/privacidad/", "/cookies/",
     ...dias.map((d) => `/precio-luz/${d.fecha}/`),
     ...aparatos.map((a) => `/cuanto-gasta/${a.slug}/`),

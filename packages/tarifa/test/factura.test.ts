@@ -134,3 +134,50 @@ describe("perfiles y promociones", () => {
     expect(con.energia).toBeCloseTo(sin.energia / 2, 2);
   });
 });
+
+describe("análisis de consumo y facturas por ciclo", () => {
+  it("resume el consumo y detecta el consumo base", async () => {
+    const { analizarConsumo } = await import("../src/index");
+    const lect = mesPlano("2026-10-01", 31, 0.5);
+    const r = analizarConsumo(lect, festivos);
+    expect(r.kwh).toBeCloseTo(372);
+    expect(r.dias).toBe(31);
+    expect(r.baseKw).toBeCloseTo(0.5);
+    expect(r.porMes).toEqual([{ mes: "2026-10", kwh: 372, dias: 31 }]);
+    expect(r.porDiaSemana.every((x) => Math.abs(x - 12) < 1e-9)).toBe(true);
+  });
+  it("divide las facturas por el día de corte", async () => {
+    const { facturasPorCiclo } = await import("../src/index");
+    const lect = mesPlano("2026-08-01", 61, 0.5); // 1 ago – 30 sep
+    const fs = facturasPorCiclo(lect, fija, { p1: 3.3, p2: 3.3 }, ctx, 15);
+    expect(fs.map((f) => f.ciclo.desde)).toEqual(["2026-07-15", "2026-08-15", "2026-09-15"]);
+    expect(fs[1].completo).toBe(true);
+    expect(fs[1].dias).toBe(31);
+    expect(fs[0].completo).toBe(false);
+    const total = fs.reduce((a, f) => a + f.kwh, 0);
+    expect(total).toBeCloseTo(61 * 24 * 0.5);
+  });
+});
+
+describe("zona fiscal y bono social", () => {
+  it("Canarias no paga IVA hasta 10 kW y Ceuta y Melilla pagan IPSI del 1 %", () => {
+    const lect = mesPlano("2026-10-01", 31);
+    const can = calcularFactura(lect, fija, { p1: 4.6, p2: 4.6 }, { ...ctx, zona: "canarias" });
+    expect(can.iva).toBe(0);
+    const cym = calcularFactura(lect, fija, { p1: 4.6, p2: 4.6 }, { ...ctx, zona: "ceuta_melilla" });
+    expect(cym.iva / cym.baseIva).toBeCloseTo(0.01, 4);
+  });
+  it("el bono social descuenta potencia y energía de la PVPC dentro del límite", () => {
+    const pvpc: Tarifa = { ...fija, id: "pvpc", tipo: "pvpc", potencia: null, energia: null };
+    const lect = mesPlano("2026-10-01", 31, 0.2); // 4,8 kWh/día: algo por encima del límite diario (1.587 / 365 = 4,35)
+    const precios = Object.fromEntries(Array.from({ length: 31 }, (_, i) => [`2026-10-${String(i + 1).padStart(2, "0")}`, new Array(24).fill(0.15)]));
+    const sin = calcularFactura(lect, pvpc, { p1: 3.3, p2: 3.3 }, { ...ctx, pvpc: precios });
+    const con = calcularFactura(lect, pvpc, { p1: 3.3, p2: 3.3 }, { ...ctx, pvpc: precios, bonoSocial: { descuento: 0.425, limiteAnualKwh: 1587 } });
+    const dentro = Math.min(1, 1587 / 365 / 4.8);
+    expect(con.descuentoBonoSocial).toBeCloseTo(0.425 * (sin.potencia + sin.energia * dentro), 1);
+    expect(con.total).toBeLessThan(sin.total);
+    // A otras tarifas no se les aplica
+    const f = calcularFactura(lect, fija, { p1: 3.3, p2: 3.3 }, { ...ctx, bonoSocial: { descuento: 0.425, limiteAnualKwh: 1587 } });
+    expect(f.descuentoBonoSocial).toBe(0);
+  });
+});

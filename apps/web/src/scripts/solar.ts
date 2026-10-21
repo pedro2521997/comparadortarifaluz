@@ -222,7 +222,7 @@ function pintarEstudio(zonaOk: boolean) {
           <div class="field"><label for="e-nombre">Nombre</label><input id="e-nombre" type="text" autocomplete="given-name" required /></div>
           <div class="field"><label for="e-contacto">Teléfono o correo</label><input id="e-contacto" type="text" autocomplete="email" required /></div>
         </div>
-        <label class="check"><input id="e-consent" type="checkbox" required /> <span>Acepto que LuzSinTrampa guarde mis datos para avisarme cuando haya un instalador en mi zona. <a href="/privacidad/">Privacidad</a></span></label>
+        <label class="check"><input id="e-consent" type="checkbox" required /> <span>Acepto que ComparadorTarifaLuz guarde mis datos para avisarme cuando haya un instalador en mi zona. <a href="/privacidad/">Privacidad</a></span></label>
         <div><button class="btn btn--ghost" type="submit">Avisadme</button></div>
         <div id="e-estado" aria-live="polite"></div>
       </form>`;

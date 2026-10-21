@@ -36,12 +36,20 @@
   ],
   "bono_social_eur_dia": [
     {
-      "valor": 0.019068,
+      "valor": 0.012742,
       "vigente_desde": "2025-01-01",
+      "vigente_hasta": "2025-12-31",
+      "fuente": "https://www.boe.es/",
+      "verificar": true,
+      "nota": "Orden TED/1487/2024 (4,65 €/año)."
+    },
+    {
+      "valor": 0.019068,
+      "vigente_desde": "2026-01-01",
       "vigente_hasta": "2026-06-30",
       "fuente": "https://www.ocu.org/vivienda-y-energia/gas-luz/noticias/financiacion-bono-social-2026",
       "verificar": true,
-      "nota": "0,58 €/mes"
+      "nota": "0,58 €/mes según la OCU antes del recálculo de la CNMC."
     },
     {
       "valor": 0.024688,
@@ -49,7 +57,7 @@
       "vigente_hasta": null,
       "fuente": "https://comparador.cnmc.gob.es/",
       "verificar": true,
-      "nota": "Orden TED/634/2026, de 17 de junio (citada por la CNMC y por las comercializadoras). Confirmar la fecha exacta de aplicación en el BOE."
+      "nota": "Orden TED/634/2026, de 17 de junio (0,75 €/mes). Confirmar la fecha exacta de aplicación en el BOE."
     }
   ],
   "alquiler_contador_eur_dia": [

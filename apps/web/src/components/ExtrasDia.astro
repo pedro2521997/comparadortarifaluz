@@ -1,0 +1,246 @@
+---
+// Extras del precio de un día: comparar con tu tarifa, calendario, compartir y (hoy) de dónde viene la luz.
+// Se rellenan en el navegador cuando PrecioDia emite el evento "precios-dia".
+interface Props {
+  modo: "hoy" | "manana" | "ayer";
+}
+const { modo } = Astro.props;
+---
+
+<section class="section section--white section--tight extras-dia" data-extras={modo}>
+  <div class="wrap grid grid--2" style="gap:24px">
+    <div class="card stack" style="--stack:12px">
+      <span class="eyebrow">Compara con tu tarifa</span>
+      <h2 class="ed-h">¿Te sale más barata la PVPC que tu precio?</h2>
+      <div class="field" style="max-width:280px">
+        <label for="ed-precio">Tu precio de la energía</label>
+        <input id="ed-precio" type="number" inputmode="decimal" min="0.01" max="0.6" step="0.001" placeholder="Ej.: 0,130" />
+        <span class="hint">€/kWh sin impuestos (en tu factura). Se guarda solo en este navegador.</span>
+      </div>
+      <p data-ed-comp aria-live="polite" class="muted">Escribe tu precio y marcaremos en la tabla las horas en que la PVPC es más barata.</p>
+    </div>
+    <div class="card stack" style="--stack:12px">
+      <span class="eyebrow">Llévatelo</span>
+      <h2 class="ed-h">Las mejores horas, en tu calendario o tu móvil</h2>
+      <p class="muted">Un aviso en tu calendario para la lavadora o la carga del coche en las horas más baratas, o envíaselo a quien pone las lavadoras en casa.</p>
+      <p class="btn-row">
+        <button type="button" class="btn btn--small" data-ed-ics disabled>Añadir a mi calendario</button>
+        <button type="button" class="btn btn--ghost btn--small" data-ed-compartir disabled>Compartir</button>
+      </p>
+      <p class="caption" data-ed-estado aria-live="polite"></p>
+    </div>
+    {
+      modo === "hoy" && (
+        <div class="card stack ed-mix" style="--stack:12px" data-ed-mix hidden>
+          <span class="eyebrow eyebrow--violet">De dónde viene la luz hoy</span>
+          <h2 class="ed-h" data-ed-mix-t>Generación de hoy</h2>
+          <div class="ed-barra" data-ed-mix-barra role="img"></div>
+          <ul class="ed-lista small" data-ed-mix-lista></ul>
+          <p class="caption">Fuente: Red Eléctrica (REData), generación peninsular del día hasta ahora. Cuanto más sol y viento, más barata suele salir la luz.</p>
+        </div>
+      )
+    }
+  </div>
+</section>
+
+<script>
+  import { mejorFranja, resumen } from "../lib/grafico";
+  import { ekwh, franja, fechaLarga, num, hoyMadrid } from "../lib/formato";
+
+  const raiz = document.querySelector<HTMLElement>("[data-extras]");
+  const CLAVE = "lst-mi-precio";
+  let actual: { fecha: string; precios: (number | null)[] } | null = null;
+
+  function marcarHoras() {
+    const out = raiz!.querySelector<HTMLElement>("[data-ed-comp]")!;
+    const input = raiz!.querySelector<HTMLInputElement>("#ed-precio")!;
+    const mio = parseFloat(input.value.replace(",", "."));
+    for (const li of document.querySelectorAll<HTMLElement>(".hrow")) {
+      li.querySelector(".pill--tuya")?.remove();
+      li.classList.remove("hrow--tuya");
+    }
+    if (!actual || !(mio > 0)) return;
+    let n = 0;
+    for (const li of document.querySelectorAll<HTMLElement>(".hrow[data-h]")) {
+      const p = actual.precios[Number(li.dataset.h)];
+      if (p !== null && p < mio) {
+        n++;
+        li.classList.add("hrow--tuya");
+        li.querySelector(".hrow__tag")?.insertAdjacentHTML("beforeend", `<span class="pill pill--tuya">más barata que tu tarifa</span>`);
+      }
+    }
+    const r = resumen(actual.precios);
+    out.innerHTML = n
+      ? `En <strong>${n} de 24 horas</strong> la PVPC (${ekwh(r.media)} de media) es más barata que tu precio de ${ekwh(mio)}. Están marcadas en la tabla. <a href="/comparador/">¿Te compensaría cambiar?</a>`
+      : `Hoy ninguna hora de la PVPC baja de tu precio de ${ekwh(mio)}. Bien elegido.`;
+  }
+
+  function ics(fecha: string, precios: (number | null)[]): string {
+    const f = fecha.replace(/-/g, "");
+    const ev = (ini: number, horas: number, titulo: string, desc: string) => [
+      "BEGIN:VEVENT",
+      `UID:${f}-${ini}-${horas}@comparadortarifaluz.es`,
+      `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, "").slice(0, 15)}Z`,
+      `DTSTART;TZID=Europe/Madrid:${f}T${String(ini).padStart(2, "0")}0000`,
+      `DTEND;TZID=Europe/Madrid:${f}T${String(Math.min(ini + horas, 24) % 24 === 0 && ini + horas >= 24 ? 23 : ini + horas).padStart(2, "0")}${ini + horas >= 24 ? "5900" : "0000"}`,
+      `SUMMARY:${titulo}`,
+      `DESCRIPTION:${desc}`,
+      "BEGIN:VALARM", "TRIGGER:-PT10M", "ACTION:DISPLAY", `DESCRIPTION:${titulo}`, "END:VALARM",
+      "END:VEVENT",
+    ];
+    const b2 = mejorFranja(precios, 2), b3 = mejorFranja(precios, 3);
+    const lineas = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//ComparadorTarifaLuz//Horas baratas//ES", "CALSCALE:GREGORIAN"];
+    if (b2) lineas.push(...ev(b2.inicio, 2, "💡 Luz barata: lavadora o lavavajillas", `Media ${ekwh(b2.media)} (PVPC sin impuestos). comparadortarifaluz.es/precio-luz-hoy/`));
+    if (b3 && (!b2 || b3.inicio !== b2.inicio)) lineas.push(...ev(b3.inicio, 3, "🔌 Luz barata: carga del coche o termo", `Media ${ekwh(b3.media)} (PVPC sin impuestos).`));
+    lineas.push("END:VCALENDAR");
+    return lineas.join("\r\n");
+  }
+
+  if (raiz) {
+    const input = raiz.querySelector<HTMLInputElement>("#ed-precio")!;
+    try {
+      const guardado = localStorage.getItem(CLAVE);
+      if (guardado) input.value = guardado;
+    } catch {
+      /* sin almacenamiento */
+    }
+    input.addEventListener("input", () => {
+      try {
+        localStorage.setItem(CLAVE, input.value);
+      } catch {
+        /* sin almacenamiento */
+      }
+      marcarHoras();
+    });
+
+    const estado = raiz.querySelector<HTMLElement>("[data-ed-estado]")!;
+    const bIcs = raiz.querySelector<HTMLButtonElement>("[data-ed-ics]")!;
+    const bComp = raiz.querySelector<HTMLButtonElement>("[data-ed-compartir]")!;
+
+    document.addEventListener("precios-dia", (e) => {
+      const d = (e as CustomEvent).detail as { fecha: string; precios: (number | null)[] | null };
+      if (!d.precios) return;
+      actual = { fecha: d.fecha, precios: d.precios };
+      bIcs.disabled = false;
+      bComp.disabled = false;
+      marcarHoras();
+    });
+
+    bIcs.addEventListener("click", () => {
+      if (!actual) return;
+      const blob = new Blob([ics(actual.fecha, actual.precios)], { type: "text/calendar;charset=utf-8" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `horas-baratas-luz-${actual.fecha}.ics`;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+      estado.textContent = "Descargado: ábrelo para añadir los avisos a tu calendario.";
+    });
+
+    bComp.addEventListener("click", async () => {
+      if (!actual) return;
+      const r = resumen(actual.precios);
+      const b2 = mejorFranja(actual.precios, 2);
+      const texto = `💡 Luz del ${fechaLarga(actual.fecha)}: lo más barato ${b2 ? franja(b2.inicio, 2) : ""} (${ekwh(r.min.p)}). Evita las ${String(r.max.h).padStart(2, "0")}:00 (${ekwh(r.max.p)}).`;
+      const url = location.href.split("#")[0];
+      if (navigator.share) {
+        try {
+          await navigator.share({ title: "Precio de la luz", text: texto, url });
+          return;
+        } catch {
+          /* cancelado: se ofrecen los enlaces */
+        }
+      }
+      const t = encodeURIComponent(`${texto} ${url}`);
+      estado.innerHTML = `Compartir en <a href="https://wa.me/?text=${t}" target="_blank" rel="noopener">WhatsApp</a> · <a href="https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(texto)}" target="_blank" rel="noopener">Telegram</a>`;
+      try {
+        await navigator.clipboard.writeText(`${texto} ${url}`);
+        estado.innerHTML += " · Texto copiado.";
+      } catch {
+        /* sin portapapeles */
+      }
+    });
+
+    // De dónde viene la luz hoy (REData, generación del día).
+    const mix = raiz.querySelector<HTMLElement>("[data-ed-mix]");
+    if (mix) {
+      const hoy = hoyMadrid();
+      fetch(`https://apidatos.ree.es/es/datos/generacion/estructura-generacion?start_date=${hoy}T00:00&end_date=${hoy}T23:59&time_trunc=day`)
+        .then((r) => (r.ok ? r.json() : null))
+        .then((j) => {
+          if (!j?.included) return;
+          const RENOV = ["Hidráulica", "Eólica", "Solar fotovoltaica", "Solar térmica", "Otras renovables", "Residuos renovables"];
+          const GRUPOS: Record<string, string> = { "Turbina de gas": "Gas", "Ciclo combinado": "Gas", "Turbina de vapor": "Otras", "Motores diésel": "Otras", "Residuos no renovables": "Otras", "Residuos renovables": "Otras renovables", "Solar térmica": "Solar", "Solar fotovoltaica": "Solar", Carbón: "Otras" };
+          const tecs = (j.included as { type: string; attributes: { values: { value: number }[] } }[]).filter((i) => i.type !== "Generación total");
+          const total = tecs.reduce((a, i) => a + (i.attributes.values[0]?.value ?? 0), 0);
+          if (!total) return;
+          const renov = tecs.filter((i) => RENOV.includes(i.type)).reduce((a, i) => a + (i.attributes.values[0]?.value ?? 0), 0);
+          const agrupado = new Map<string, number>();
+          for (const i of tecs) {
+            const g = GRUPOS[i.type] ?? i.type;
+            agrupado.set(g, (agrupado.get(g) ?? 0) + (i.attributes.values[0]?.value ?? 0));
+          }
+          const lista = [...agrupado.entries()].sort((a, b) => b[1] - a[1]);
+          const COLOR: Record<string, string> = { Eólica: "#0aa65a", Solar: "#0fff87", Hidráulica: "#2b8bb3", Nuclear: "#7c18d3", Gas: "#535e5d", Cogeneración: "#afc4bf", "Otras renovables": "#5fd19a", Otras: "#c2cec8" };
+          mix.hidden = false;
+          mix.querySelector("[data-ed-mix-t]")!.textContent = `Hoy, el ${num((renov / total) * 100)} % de la luz es renovable`;
+          const barra = mix.querySelector<HTMLElement>("[data-ed-mix-barra]")!;
+          barra.setAttribute("aria-label", lista.map(([g, v]) => `${g} ${num((v / total) * 100)} %`).join(", "));
+          barra.innerHTML = lista.map(([g, v]) => `<span style="width:${(v / total) * 100}%;background:${COLOR[g] ?? "#c2cec8"}" title="${g}: ${num((v / total) * 100)} %"></span>`).join("");
+          mix.querySelector("[data-ed-mix-lista]")!.innerHTML = lista.map(([g, v]) => `<li><span class="ed-punto" style="background:${COLOR[g] ?? "#c2cec8"}" aria-hidden="true"></span>${g}: <strong>${num((v / total) * 100)} %</strong></li>`).join("");
+        })
+        .catch(() => {
+          /* sin datos: la tarjeta queda oculta */
+        });
+    }
+  }
+</script>
+
+<style is:global>
+  .ed-h {
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--color-bark);
+    letter-spacing: 0;
+    line-height: 1.3;
+  }
+  .ed-mix {
+    grid-column: 1 / -1;
+  }
+  .ed-barra {
+    display: flex;
+    height: 28px;
+    border-radius: var(--radius-buttons);
+    overflow: hidden;
+    border: 1px solid var(--color-sage-mist);
+  }
+  .ed-barra span {
+    display: block;
+    height: 100%;
+  }
+  .ed-lista {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 20px;
+  }
+  .ed-punto {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 6px;
+  }
+  .hrow--tuya .hrow__h {
+    text-decoration: underline;
+    text-decoration-color: var(--color-mint-pulse);
+    text-decoration-thickness: 3px;
+  }
+  .pill--tuya {
+    background: #e8f7ef;
+    border-color: var(--color-canopy);
+    color: var(--color-canopy);
+  }
+</style>

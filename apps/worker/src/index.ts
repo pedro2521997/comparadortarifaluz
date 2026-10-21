@@ -1,4 +1,4 @@
-// Worker de LuzSinTrampa.
+// Worker de ComparadorTarifaLuz.
 //  - Sirve la web estática (binding ASSETS).
 //  - Cron: trae el PVPC de mañana (ESIOS si hay token, si no REData), lo guarda en D1 y lo publica en Telegram.
 //  - GET  /api/precios/AAAA-MM-DD  precios de un día (404 si aún no se han publicado).
@@ -112,7 +112,7 @@ export function mensajeDiario(fecha: string, precios: Precios): string {
     `Mañana, la franja más barata es ${franja(barata.inicio, 2)} (${ekwh(barata.media)}). Evita ${franja(cara.inicio, 2)} (${ekwh(cara.media)}).`,
     `Media del día: ${ekwh(r.media)}. PVPC sin impuestos.`,
     ``,
-    `Hora a hora: https://luzsintrampa.es/precio-luz-manana/`,
+    `Hora a hora: https://comparadortarifaluz.es/precio-luz-manana/`,
   ].join("\n");
 }
 
@@ -160,7 +160,7 @@ async function pvgis(url: URL, env: Env): Promise<Response> {
 
 const CONSENTIMIENTO = {
   estudio: "Acepto que mis datos se envíen al instalador colaborador para que me contacte con un estudio.",
-  futuro: "Acepto que LuzSinTrampa guarde mis datos para avisarme cuando haya un instalador en mi zona.",
+  futuro: "Acepto que ComparadorTarifaLuz guarde mis datos para avisarme cuando haya un instalador en mi zona.",
 };
 
 async function contacto(req: Request, env: Env): Promise<Response> {
@@ -188,7 +188,7 @@ async function contacto(req: Request, env: Env): Promise<Response> {
   ).bind(codigo, ahora, tipo, nombre, contactoTxt, cp, resumen, `${CONSENTIMIENTO[tipo]} (${ahora})`).run();
 
   if (tipo === "estudio") {
-    await telegram(env, env.TELEGRAM_AVISOS, `☀️ Nuevo contacto ${codigo}\n${nombre} · ${contactoTxt} · CP ${cp}\n${resumen}\nPanel: https://luzsintrampa.es/panel`);
+    await telegram(env, env.TELEGRAM_AVISOS, `☀️ Nuevo contacto ${codigo}\n${nombre} · ${contactoTxt} · CP ${cp}\n${resumen}\nPanel: https://comparadortarifaluz.es/panel`);
   }
   return json({ codigo });
 }
@@ -206,7 +206,7 @@ function autorizado(req: Request, env: Env): boolean {
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
 
 async function panel(req: Request, env: Env): Promise<Response> {
-  if (!autorizado(req, env)) return new Response("Acceso restringido", { status: 401, headers: { "WWW-Authenticate": 'Basic realm="Panel LuzSinTrampa"' } });
+  if (!autorizado(req, env)) return new Response("Acceso restringido", { status: 401, headers: { "WWW-Authenticate": 'Basic realm="Panel ComparadorTarifaLuz"' } });
   if (req.method === "POST") {
     const f = await req.formData();
     const codigo = String(f.get("codigo") ?? "");

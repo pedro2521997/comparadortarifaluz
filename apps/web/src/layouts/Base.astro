@@ -16,7 +16,8 @@ interface Props {
 }
 const { titulo, descripcion = SITIO.descripcion, schema, noindex = false } = Astro.props;
 const canonical = new URL(Astro.url.pathname, SITIO.url).href;
-const tituloCompleto = titulo.includes(SITIO.nombre) ? titulo : `${titulo} · ${SITIO.nombre}`;
+// Los títulos largos ya dicen lo que importa: la marca solo se añade si cabe (unos 60 caracteres en Google).
+const tituloCompleto = titulo.includes(SITIO.nombre) || titulo.length > 42 ? titulo : `${titulo} | ${SITIO.nombre}`;
 const ruta = Astro.url.pathname;
 
 // Barra de aviso: el último día publicado, siempre con su fecha para no presentar un dato viejo como nuevo.
@@ -109,8 +110,11 @@ const aviso = ultimo
               <li><a href="/precio-luz-manana/">Precio de la luz mañana</a></li>
               <li><a href="/precio-luz-ayer/">Precio de la luz ayer</a></li>
               <li><a href="/precio-luz/">Archivo de precios</a></li>
+              <li><a href="/precio-luz/historico/">Histórico del precio</a></li>
               <li><a href="/comparador/">Comparador con tu fichero</a></li>
               <li><a href="/tarifas/">Ranking de tarifas</a></li>
+              <li><a href="/calcular-factura-luz/">Calcular factura de luz</a></li>
+              <li><a href="/analizador-consumo/">Analizador de consumo</a></li>
               <li><a href="/cuanto-gasta/">Cuánto gasta cada aparato</a></li>
               <li><a href="/placas-solares/">Calculadora de placas solares</a></li>
             </ul>
@@ -122,6 +126,7 @@ const aviso = ultimo
               <li><a href="/guias/periodos-2-0td/">Punta, llano y valle</a></li>
               <li><a href="/guias/descargar-consumo-datadis/">Descargar tu consumo</a></li>
               <li><a href="/guias/potencia-contratada/">Potencia contratada</a></li>
+              <li><a href="/guias/por-que-sube-la-luz/">Por qué sube la luz</a></li>
               {TELEGRAM_URL && <li><a href={TELEGRAM_URL}>Canal de Telegram</a></li>}
             </ul>
           </div>

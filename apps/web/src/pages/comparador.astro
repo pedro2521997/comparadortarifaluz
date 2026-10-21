@@ -18,7 +18,7 @@ const gruposOrdenados = [...grupos.entries()].sort((a, b) => a[0].localeCompare(
 ---
 
 <Base
-  titulo="Comparador de tarifas de luz: ranking con tu consumo real"
+  titulo={`Comparador de tarifas de luz ${hoy.slice(0, 4)}: ${tarifas.length} tarifas con tu consumo`}
   descripcion={`Compara ${tarifas.length} tarifas de luz de ${grupos.size} comercializadoras con tu fichero de consumos o con los datos de tu factura. Ranking por precio, sin comisiones que alteren el orden.`}
 >
   <section class="hero hero--compacto">
@@ -157,6 +157,33 @@ const gruposOrdenados = [...grupos.entries()].sort((a, b) => a[0].localeCompare(
                   <label for="habitos">Cambio de hábitos: <strong id="habitos-v">sin cambios</strong></label>
                   <input id="habitos" type="range" min="-50" max="50" step="5" value="0" />
                   <span class="hint">Simula que consumes más (un coche, una bomba de calor) o menos.</span>
+                </div>
+                <div class="field">
+                  <label for="zona">Dónde vives</label>
+                  <select id="zona">
+                    <option value="peninsula">Península y Baleares (IVA)</option>
+                    <option value="canarias">Canarias (IGIC)</option>
+                    <option value="ceuta_melilla">Ceuta y Melilla (IPSI)</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="bono">Bono social (solo con la PVPC)</label>
+                  <select id="bono">
+                    <option value="">No tengo bono social</option>
+                    <option value="0.425">Vulnerable: 42,5 % de descuento</option>
+                    <option value="0.575">Vulnerable severo: 57,5 % de descuento</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="bono-lim">Límite anual del bono social</label>
+                  <select id="bono-lim">
+                    <option value="1587">1.587 kWh</option>
+                    <option value="1932">1.932 kWh</option>
+                    <option value="2222">2.222 kWh</option>
+                    <option value="2698">2.698 kWh</option>
+                    <option value="4761">4.761 kWh</option>
+                  </select>
+                  <span class="hint">Viene en tu factura de la PVPC; depende de tu unidad familiar.</span>
                 </div>
               </div>
             </details>

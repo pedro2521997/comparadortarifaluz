@@ -1,12 +1,12 @@
 ---
-titulo: "Preguntas frecuentes sobre la luz y sobre LuzSinTrampa"
+titulo: "Preguntas frecuentes sobre la luz y sobre ComparadorTarifaLuz"
 resumen: "Respuestas cortas a lo que más nos preguntan: privacidad del fichero, de dónde salen los precios, cómo ganamos dinero y más."
 revisado: "2026-10-21"
 orden: 20
 faq: true
 herramienta: { href: "/comparador/", texto: "La mejor respuesta a «¿estoy pagando de más?» es tu propio fichero de consumos." }
 fuentes:
-  - { nombre: "Cómo funciona LuzSinTrampa", url: "https://luzsintrampa.es/como-funciona/" }
+  - { nombre: "Cómo funciona ComparadorTarifaLuz", url: "https://comparadortarifaluz.es/como-funciona/" }
 ---
 
 ### ¿Qué hacéis con mi fichero de consumos?

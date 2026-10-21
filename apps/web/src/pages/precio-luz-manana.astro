@@ -2,13 +2,20 @@
 import Base from "../layouts/Base.astro";
 import PrecioDia from "../components/PrecioDia.astro";
 import AvisoDiario from "../components/AvisoDiario.astro";
-import { hoyMadrid, fechaLarga, sumarDias } from "../lib/formato";
+import ExtrasDia from "../components/ExtrasDia.astro";
+import { hoyMadrid, fechaLarga, sumarDias, ekwh, hh } from "../lib/formato";
+import { preciosDe } from "../lib/datos";
+import { resumen } from "../lib/grafico";
 
 const manana = sumarDias(hoyMadrid(), 1);
+const diaM = preciosDe(manana);
+const rM = diaM ? resumen(diaM.precios) : null;
+const fechaTitulo = fechaLarga(manana).split(", ")[1].replace(/ de \d{4}$/, "");
+const titulo = rM ? `Precio de la luz mañana ${fechaTitulo}: más barata a las ${hh(rM.min.h)} (${ekwh(rM.min.p)})` : `Precio de la luz mañana, ${fechaTitulo}, por horas`;
 ---
 
 <Base
-  titulo="Precio de la luz mañana por horas (PVPC)"
+  titulo={titulo}
   descripcion="Precio de la luz de mañana hora a hora en cuanto lo publica Red Eléctrica, con las mejores horas para la lavadora, el horno o cargar el coche."
 >
   <section class="hero hero--compacto">
@@ -27,5 +34,6 @@ const manana = sumarDias(hoyMadrid(), 1);
       <PrecioDia fecha={manana} modo="manana" />
     </div>
   </section>
+  <ExtrasDia modo="manana" />
   <AvisoDiario />
 </Base>

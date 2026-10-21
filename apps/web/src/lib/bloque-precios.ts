@@ -1,7 +1,9 @@
 // Bloque completo de precios de un día (resumen + mejores horas + gráfico).
 // Se genera en el build y se regenera en el navegador si el dato del build ya no es el del día.
 
-import { graficoHoras, mejoresHoras, resumen } from "./grafico";
+import { graficoHoras, mejoresHoras, resumen, mediaHogar } from "./grafico";
+import { forma, esFinDeSemanaOFestivo } from "@lst/tarifa";
+import festivosJson from "../../../../data/festivos.json";
 import { ekwh, hh, fechaLarga } from "./formato";
 
 /** "0,123" + unidad pequeña, para que el valor no se parta en el móvil. */
@@ -9,6 +11,8 @@ const v = (p: number) => `${ekwh(p).replace(" €/kWh", "")}<small> €/kWh</sma
 
 export function bloquePrecios(fecha: string, precios: (number | null)[], ahora: number | null = null): string {
   const r = resumen(precios);
+  const finde = esFinDeSemanaOFestivo(fecha, new Set(festivosJson.fechas));
+  const hogar = mediaHogar(precios, forma("estandar", finde));
   const precioAhora = ahora !== null ? precios[ahora] : null;
   const statAhora =
     precioAhora != null
@@ -19,7 +23,7 @@ export function bloquePrecios(fecha: string, precios: (number | null)[], ahora: 
   ${statAhora}
   <div class="stat"><span class="stat__label">Hora más barata</span><span class="stat__value">${hh(r.min.h)}</span><span class="stat__sub num">${ekwh(r.min.p)}</span></div>
   <div class="stat"><span class="stat__label">Hora más cara</span><span class="stat__value">${hh(r.max.h)}</span><span class="stat__sub num">${ekwh(r.max.p)}</span></div>
-  <div class="stat"><span class="stat__label">Media del día</span><span class="stat__value">${v(r.media)}</span><span class="stat__sub">Sin impuestos</span></div>
+  <div class="stat"><span class="stat__label">Media del día</span><span class="stat__value">${v(r.media)}</span><span class="stat__sub" title="Media ponderada con el consumo de un hogar tipo, que gasta más por la tarde-noche">Para un hogar tipo: ${ekwh(hogar)}</span></div>
 </div>
 <h2 class="h-sec">Las mejores horas para…</h2>
 ${mejoresHoras(precios)}

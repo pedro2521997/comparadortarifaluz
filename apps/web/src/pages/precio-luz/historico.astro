@@ -1,0 +1,200 @@
+---
+// Histórico mensual del precio de la luz (PVPC y OMIE) desde 2021 y de peajes, cargos e impuestos.
+import Base from "../../layouts/Base.astro";
+import historico from "../../../../../data/historico-mensual.json";
+import regHist from "../../../../../data/historico-regulados.json";
+import { lineas } from "../../lib/graficas";
+import { num, fechaCorta, nombreMes } from "../../lib/formato";
+
+type Mes = { pvpc: number | null; p1: number | null; p2: number | null; p3: number | null; omie: number | null };
+const meses = Object.entries(historico.meses as Record<string, Mes>);
+const anios = [...new Set(meses.map(([m]) => m.slice(0, 4)))];
+const ABR = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+const v = (x: number | null, d = 3) => (x === null ? "—" : num(x, d));
+
+const mediaAnio = (a: string, k: keyof Mes = "pvpc") => {
+  const xs = meses.filter(([m, o]) => m.startsWith(a) && o[k] !== null).map(([, o]) => o[k] as number);
+  return xs.length ? xs.reduce((s, x) => s + x, 0) / xs.length : null;
+};
+const ultimo = meses[meses.length - 1];
+const anioActual = ultimo[0].slice(0, 4);
+const anioPasado = String(Number(anioActual) - 1);
+const mActual = mediaAnio(anioActual), mPasado = mediaAnio(anioPasado);
+const masCaro = meses.reduce((a, b) => ((b[1].pvpc ?? 0) > (a[1].pvpc ?? 0) ? b : a));
+const masBarato = meses.reduce((a, b) => ((b[1].pvpc ?? 9) < (a[1].pvpc ?? 9) ? b : a));
+
+const grafica = lineas(
+  "Precio medio mensual de la luz",
+  meses.map(([m]) => `${ABR[Number(m.slice(5)) - 1]} ${m.slice(2, 4)}`),
+  [
+    { nombre: "PVPC (con peajes y cargos)", valores: meses.map(([, o]) => o.pvpc ?? 0), color: "a" },
+    { nombre: "Mercado mayorista (OMIE)", valores: meses.map(([, o]) => o.omie ?? 0), color: "b" },
+  ],
+  "€/kWh sin impuestos",
+  3,
+);
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  name: "Histórico mensual del precio de la luz PVPC y OMIE en España",
+  description: `Precio medio mensual del PVPC 2.0TD (total, punta, llano y valle) y del mercado diario OMIE desde junio de 2021.`,
+  temporalCoverage: `${meses[0][0]}/${ultimo[0]}`,
+  creator: { "@type": "Organization", name: "Red Eléctrica" },
+  isAccessibleForFree: true,
+};
+---
+
+<Base
+  titulo={`Histórico del precio de la luz: mes a mes desde 2021 (PVPC y OMIE)`}
+  descripcion={`¿La luz está cara o barata? Precio medio de cada mes desde 2021: PVPC en punta, llano y valle y mercado mayorista. En ${anioActual}, media de ${v(mActual)} €/kWh${mPasado ? ` frente a ${v(mPasado)} en ${anioPasado}` : ""}.`}
+  schema={schema}
+>
+  <section class="hero hero--compacto">
+    <div class="wrap">
+      <p class="breadcrumbs"><a href="/precio-luz/">Precio de la luz</a> / Histórico</p>
+      <h1>¿La luz está cara? El precio mes a mes desde 2021</h1>
+      <p class="lead">
+        La PVPC de {anioActual} lleva una media de <strong>{v(mActual)} €/kWh</strong>{mPasado ? <> frente a {v(mPasado)} en {anioPasado} ({mActual && mPasado ? `${mActual > mPasado ? "+" : ""}${num(((mActual - mPasado) / mPasado) * 100)} %` : ""})</> : null}. El mes más caro fue {nombreMes(masCaro[0])} ({v(masCaro[1].pvpc)}) y el más barato, {nombreMes(masBarato[0])} ({v(masBarato[1].pvpc)}).
+      </p>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="wrap stack" style="--stack:32px">
+      <Fragment set:html={grafica} />
+
+      <div>
+        <h2 class="h-hist">PVPC: media de cada mes</h2>
+        <p class="muted small" style="margin:6px 0 12px">€/kWh sin impuestos, media de las 24 horas. Debajo, en pequeño, punta · llano · valle.</p>
+        <div class="table-wrap" tabindex="0" role="region" aria-label="Tabla de precios PVPC por mes">
+          <table class="hist">
+            <caption class="sr-only">Precio medio mensual de la PVPC por año</caption>
+            <thead><tr><th scope="col">Año</th><th scope="col" class="r">Media</th>{ABR.map((m) => <th scope="col" class="r">{m}</th>)}</tr></thead>
+            <tbody>
+              {
+                anios.map((a) => (
+                  <tr>
+                    <th scope="row">{a}</th>
+                    <td class="r num"><strong>{v(mediaAnio(a))}</strong></td>
+                    {ABR.map((_, i) => {
+                      const o = (historico.meses as Record<string, Mes>)[`${a}-${String(i + 1).padStart(2, "0")}`];
+                      return o ? (
+                        <td class="r num">
+                          {v(o.pvpc)}
+                          <span class="hist__p">{v(o.p1, 2)} · {v(o.p2, 2)} · {v(o.p3, 2)}</span>
+                        </td>
+                      ) : (
+                        <td class="r">—</td>
+                      );
+                    })}
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div>
+        <h2 class="h-hist">Mercado mayorista (OMIE): media de cada mes</h2>
+        <p class="muted small" style="margin:6px 0 12px">€/kWh. Es lo que pagan las tarifas indexadas, antes de pérdidas, ajustes, peajes y cargos.</p>
+        <div class="table-wrap" tabindex="0" role="region" aria-label="Tabla de precios OMIE por mes">
+          <table class="hist">
+            <caption class="sr-only">Precio medio mensual del mercado diario por año</caption>
+            <thead><tr><th scope="col">Año</th><th scope="col" class="r">Media</th>{ABR.map((m) => <th scope="col" class="r">{m}</th>)}</tr></thead>
+            <tbody>
+              {
+                anios.map((a) => (
+                  <tr>
+                    <th scope="row">{a}</th>
+                    <td class="r num"><strong>{v(mediaAnio(a, "omie"))}</strong></td>
+                    {ABR.map((_, i) => {
+                      const o = (historico.meses as Record<string, Mes>)[`${a}-${String(i + 1).padStart(2, "0")}`];
+                      return <td class="r num">{o ? v(o.omie) : "—"}</td>;
+                    })}
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <p class="caption">Fuente: Red Eléctrica (REData). Actualizado el {fechaCorta(historico.actualizado)}. <a href="/precio-luz/">Precio de cada día, hora a hora</a></p>
+    </div>
+  </section>
+
+  <section class="section section--white" id="peajes">
+    <div class="wrap stack" style="--stack:16px">
+      <span class="eyebrow">Lo que no depende del mercado</span>
+      <h2>Peajes, cargos e impuestos de la luz desde 2021</h2>
+      <p class="lead">La parte regulada de la factura la fija el Gobierno (cargos, impuestos) y la CNMC (peajes). Estos son sus cambios desde que existe la 2.0TD.</p>
+      <div class="table-wrap" tabindex="0" role="region" aria-label="Tabla de peajes, cargos e impuestos">
+        <table class="hist hist--reg">
+          <caption class="sr-only">Peajes, cargos e impuestos de la tarifa 2.0TD por periodo de vigencia</caption>
+          <thead>
+            <tr>
+              <th scope="col">Desde</th><th scope="col">Norma y cambio</th>
+              <th scope="col" class="r">Potencia P1 · P2<br /><span class="hist__u">€/kW·año</span></th>
+              <th scope="col" class="r">Energía punta · llano · valle<br /><span class="hist__u">€/kWh</span></th>
+              <th scope="col" class="r">Bono social<br /><span class="hist__u">€/día</span></th>
+              <th scope="col" class="r">Impuesto eléctrico</th><th scope="col" class="r">IVA</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              [...regHist.periodos].reverse().map((p: any) => (
+                <tr>
+                  <th scope="row">{fechaCorta(p.desde)}</th>
+                  <td><strong>{p.norma}</strong>{p.nota ? <><br /><span class="small muted">{p.nota}</span></> : null}</td>
+                  <td class="r num">{p.potencia ? `${num(p.potencia.p1, 2)} · ${num(p.potencia.p2, 2)}` : "="}</td>
+                  <td class="r num">{p.energia ? `${num(p.energia.p1, 5)} · ${num(p.energia.p2, 5)} · ${num(p.energia.p3, 5)}` : "="}</td>
+                  <td class="r num">{p.bono_social ? num(p.bono_social, 6) : "="}</td>
+                  <td class="r num">{num(p.iee * 100, 2)} %</td>
+                  <td class="r num">{num(p.iva * 100)} %</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+      <p class="caption">«=» indica que no cambia respecto al periodo anterior. Recopilado de las órdenes y resoluciones del BOE; compruébalo en el BOE antes de usarlo en una reclamación. Más detalle en la <a href="/guias/impuestos-luz-cronologia/">cronología de impuestos</a>.</p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .h-hist {
+    font-size: 26px;
+    font-weight: 400;
+  }
+  .hist {
+    min-width: 980px;
+    font-size: 13px;
+  }
+  .hist td,
+  .hist th {
+    padding: 8px 8px;
+  }
+  .hist tbody th {
+    font-size: 14px;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--color-bark);
+    font-weight: 500;
+  }
+  .hist__p {
+    display: block;
+    font-size: 10.5px;
+    color: var(--color-slate);
+    white-space: nowrap;
+  }
+  .hist__u {
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .hist--reg {
+    min-width: 900px;
+  }
+</style>

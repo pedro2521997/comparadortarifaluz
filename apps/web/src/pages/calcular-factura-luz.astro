@@ -1,0 +1,274 @@
+---
+import Base from "../layouts/Base.astro";
+import SubirFichero from "../components/SubirFichero.astro";
+import { tarifas, regulados, festivos, dias } from "../lib/datos";
+import { hoyMadrid } from "../lib/formato";
+import { marca, nombrePlan } from "../lib/ranking";
+
+const hoy = hoyMadrid();
+const grupos = new Map<string, typeof tarifas>();
+for (const t of tarifas.filter((x) => x.tipo !== "pvpc")) {
+  const m = marca(t.comercializadora);
+  grupos.set(m, [...(grupos.get(m) ?? []), t]);
+}
+const gruposOrdenados = [...grupos.entries()].sort((a, b) => a[0].localeCompare(b[0], "es"));
+const datos = { tarifas, regulados, festivos, hoy };
+void dias;
+---
+
+<Base
+  titulo="Calcular factura de luz: ¿te están cobrando bien?"
+  descripcion="Calcula tus facturas de luz mes a mes con el fichero de consumos de tu distribuidora y tu tarifa (PVPC, precio fijo, 3 periodos o indexada). Compáralas con las que te llegan y detecta errores. Gratis y sin registro."
+>
+  <section class="hero hero--compacto">
+    <div class="wrap">
+      <span class="eyebrow">Calculador de factura</span>
+      <h1>Calcula tu factura de luz y comprueba si te cobran bien</h1>
+      <p class="lead">Con tu fichero de consumos y tu tarifa calculamos cada factura como lo hace tu comercializadora: potencia, energía hora a hora, bono social, impuesto eléctrico, contador e IVA. Si no coincide con la tuya, algo pasa.</p>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="wrap">
+      <ol class="pasos" style="max-width:800px;gap:40px">
+        <li class="paso">
+          <h2 class="paso__t">Tu fichero de consumos</h2>
+          <SubirFichero id="cf" />
+        </li>
+        <li class="paso">
+          <h2 class="paso__t">Tu tarifa</h2>
+          <form id="cf-form" class="stack" style="--stack:20px">
+            <div class="field">
+              <label for="cf-tarifa">Tarifa que tienes contratada</label>
+              <select id="cf-tarifa">
+                <option value="pvpc">PVPC (tarifa regulada)</option>
+                {
+                  gruposOrdenados.map(([m, lista]) => (
+                    <optgroup label={m}>
+                      {lista.map((t) => <option value={t.id}>{m} · {nombrePlan(t.nombre)}</option>)}
+                    </optgroup>
+                  ))
+                }
+                <option value="otra">Otra: escribir mis precios</option>
+              </select>
+              <span class="hint">Si tus precios son de hace tiempo, elige «Otra» y copia los de tu factura: las tarifas cambian.</span>
+            </div>
+            <fieldset id="cf-otra" class="otra" hidden>
+              <legend>Precios de tu factura, sin impuestos</legend>
+              <div class="form-grid form-grid--3">
+                <div class="field"><label for="cf-e1">Energía punta €/kWh</label><input id="cf-e1" type="number" step="0.000001" min="0" inputmode="decimal" placeholder="0,150000" /></div>
+                <div class="field"><label for="cf-e2">Energía llano €/kWh</label><input id="cf-e2" type="number" step="0.000001" min="0" inputmode="decimal" placeholder="Igual si es precio único" /></div>
+                <div class="field"><label for="cf-e3">Energía valle €/kWh</label><input id="cf-e3" type="number" step="0.000001" min="0" inputmode="decimal" placeholder="Igual si es precio único" /></div>
+                <div class="field"><label for="cf-p1">Potencia P1 €/kW·día</label><input id="cf-p1" type="number" step="0.000001" min="0" inputmode="decimal" placeholder="0,089000" /></div>
+                <div class="field"><label for="cf-p2">Potencia P2 €/kW·día</label><input id="cf-p2" type="number" step="0.000001" min="0" inputmode="decimal" placeholder="0,008900" /></div>
+                <div class="field"><label for="cf-cuota">Cuotas y servicios €/mes</label><input id="cf-cuota" type="number" step="0.01" min="0" inputmode="decimal" value="0" /></div>
+              </div>
+            </fieldset>
+            <div class="form-grid form-grid--3">
+              <div class="field"><label for="cf-pp1">Potencia contratada P1</label><input id="cf-pp1" type="number" inputmode="decimal" min="0.5" max="15" step="0.01" value="3.45" /><span class="hint">kW</span></div>
+              <div class="field"><label for="cf-pp2">Potencia contratada P2</label><input id="cf-pp2" type="number" inputmode="decimal" min="0.5" max="15" step="0.01" value="3.45" /><span class="hint">kW</span></div>
+              <div class="field">
+                <label for="cf-dia">Tu factura empieza el día</label>
+                <select id="cf-dia">{Array.from({ length: 28 }, (_, i) => <option value={i + 1}>{i + 1}</option>)}</select>
+                <span class="hint">Mira la fecha de inicio de tu última factura.</span>
+              </div>
+            </div>
+            <details class="avanzado">
+              <summary>Zona y bono social</summary>
+              <div class="form-grid form-grid--3" style="padding-top:12px">
+                <div class="field">
+                  <label for="cf-zona">Dónde vives</label>
+                  <select id="cf-zona">
+                    <option value="peninsula">Península y Baleares (IVA)</option>
+                    <option value="canarias">Canarias (IGIC)</option>
+                    <option value="ceuta_melilla">Ceuta y Melilla (IPSI)</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="cf-bono">Bono social (solo con la PVPC)</label>
+                  <select id="cf-bono">
+                    <option value="">No tengo bono social</option>
+                    <option value="0.425">Vulnerable: 42,5 % de descuento</option>
+                    <option value="0.575">Vulnerable severo: 57,5 % de descuento</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="cf-bono-lim">Límite anual del bono social</label>
+                  <select id="cf-bono-lim">
+                    <option value="1587">1.587 kWh</option>
+                    <option value="1932">1.932 kWh</option>
+                    <option value="2222">2.222 kWh</option>
+                    <option value="2698">2.698 kWh</option>
+                    <option value="4761">4.761 kWh</option>
+                  </select>
+                  <span class="hint">Viene en tu factura de la PVPC; depende de tu unidad familiar.</span>
+                </div>
+              </div>
+            </details>
+            <div>
+              <button class="btn btn--mint" type="submit" id="cf-calcular" disabled>Calcular mis facturas</button>
+              <p class="caption" style="margin-top:8px" id="cf-ayuda">Primero sube tu fichero o prueba con el de ejemplo.</p>
+            </div>
+          </form>
+        </li>
+      </ol>
+      <div id="cf-res" class="cf-res" hidden tabindex="-1" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <script type="application/json" id="datos-cf" set:html={JSON.stringify(datos)} />
+</Base>
+
+<script>
+  import { facturasPorCiclo, type Lectura, type Regulados, type Tarifa } from "@lst/tarifa";
+  import { montarSubida } from "../scripts/fichero-ui";
+  import { cargarRango, cargarMercado } from "../lib/precios-cliente";
+  import { barras } from "../lib/graficas";
+  import { eur2, eur, kwh, num, fechaCorta } from "../lib/formato";
+  import { marca, nombrePlan } from "../lib/ranking";
+
+  interface Datos { tarifas: Tarifa[]; regulados: Regulados; festivos: string[]; hoy: string }
+  const datos: Datos = JSON.parse(document.getElementById("datos-cf")!.textContent!);
+  const festivos = new Set(datos.festivos);
+  const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+  const v = (id: string) => parseFloat($<HTMLInputElement>(id).value.replace(",", "."));
+  const sel = $<HTMLSelectElement>("cf-tarifa");
+  const boton = $<HTMLButtonElement>("cf-calcular");
+  const res = $("cf-res");
+  let lecturas: Lectura[] | null = null;
+
+  sel.addEventListener("change", () => ($("cf-otra").hidden = sel.value !== "otra"));
+  montarSubida("cf", (f) => {
+    lecturas = f.lecturas;
+    boton.disabled = false;
+    $("cf-ayuda").textContent = "Se calcula en tu navegador.";
+  });
+
+  function tarifaElegida(): Tarifa | null {
+    if (sel.value !== "otra") return datos.tarifas.find((t) => t.id === sel.value) ?? null;
+    const e1 = v("cf-e1"), p1 = v("cf-p1");
+    if (!(e1 > 0) || !(p1 >= 0)) return null;
+    const e2 = v("cf-e2") > 0 ? v("cf-e2") : e1, e3 = v("cf-e3") > 0 ? v("cf-e3") : e1;
+    return {
+      id: "otra", comercializadora: "Tu tarifa", nombre: "Tus precios", tipo: e1 === e2 && e2 === e3 ? "fijo" : "periodos",
+      potencia: { p1, p2: v("cf-p2") >= 0 ? v("cf-p2") : p1 }, energia: { p1: e1, p2: e2, p3: e3 },
+      cuota_fija_mes: v("cf-cuota") || 0, permanencia_meses: 0, servicios_obligatorios: [], url_fuente: "", fecha_comprobacion: datos.hoy, comision: false, url_contratar: "",
+    };
+  }
+
+  $("cf-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!lecturas) return;
+    const t = tarifaElegida();
+    res.hidden = false;
+    if (!t) {
+      res.innerHTML = `<div class="notice notice--error"><p>Escribe al menos el precio de la energía en punta y el de la potencia P1.</p></div>`;
+      return;
+    }
+    boton.disabled = true;
+    res.innerHTML = `<div class="notice" role="status"><p>Calculando…</p></div>`;
+    const desde = lecturas.reduce((a, l) => (l.fecha < a ? l.fecha : a), lecturas[0].fecha);
+    const hasta = lecturas.reduce((a, l) => (l.fecha > a ? l.fecha : a), lecturas[0].fecha);
+    const [pvpc, mercado] = await Promise.all([
+      t.tipo === "pvpc" ? cargarRango(desde, hasta) : Promise.resolve(undefined),
+      t.tipo === "indexada" ? cargarMercado(desde, hasta) : Promise.resolve(undefined),
+    ]);
+    const bono = $<HTMLSelectElement>("cf-bono").value;
+    const ctx = {
+      regulados: datos.regulados, festivos, pvpc, mercado,
+      zona: $<HTMLSelectElement>("cf-zona").value as "peninsula" | "canarias" | "ceuta_melilla",
+      bonoSocial: bono ? { descuento: Number(bono), limiteAnualKwh: Number($<HTMLSelectElement>("cf-bono-lim").value) } : null,
+    };
+    const potencias = { p1: v("cf-pp1"), p2: v("cf-pp2") };
+    let fs;
+    try {
+      fs = facturasPorCiclo(lecturas, t, potencias, ctx, Number($<HTMLSelectElement>("cf-dia").value));
+    } catch (err) {
+      res.innerHTML = `<div class="notice notice--error"><p>No hemos podido calcularlo: ${(err as Error).message}</p></div>`;
+      boton.disabled = false;
+      return;
+    }
+    const completas = fs.filter((f) => f.completo);
+    const total = fs.reduce((a, f) => a + f.total, 0);
+    const media = completas.length ? completas.reduce((a, f) => a + f.total, 0) / completas.length : total / fs.length;
+    const fila = (f: (typeof fs)[number]) => `<tr${f.completo ? "" : ' class="cf-parcial"'}>
+      <th scope="row">${fechaCorta(f.ciclo.desde)} – ${fechaCorta(f.ciclo.hasta)}${f.completo ? "" : ` <span class="pill pill--aviso">parcial: ${f.dias} días</span>`}</th>
+      <td class="r num">${num(f.kwh, 0)}</td><td class="r num small">${num(f.kwhPorPeriodo[1], 0)} · ${num(f.kwhPorPeriodo[2], 0)} · ${num(f.kwhPorPeriodo[3], 0)}</td>
+      <td class="r num">${eur2(f.potencia)}</td><td class="r num">${eur2(f.energia)}</td>
+      <td class="r num">${eur2(f.bonoSocial + f.iee + f.alquiler + f.cuotaFija + f.servicios)}</td><td class="r num">${eur2(f.iva)}</td>
+      <td class="r num"><strong>${eur2(f.total)}</strong></td><td class="r num">${num(f.total / Math.max(1, f.kwh), 3)}</td></tr>`;
+    const nombre = t.id === "otra" ? "tus precios" : `${marca(t.comercializadora)} · ${nombrePlan(t.nombre)}`;
+    const avisos = [...new Set(fs.flatMap((f) => f.avisos))];
+    res.innerHTML = `
+      <div class="card card--roomy">
+        <span class="eyebrow">Tus facturas con ${nombre}</span>
+        <p class="answer">Unos <strong>${eur(media)}</strong> al mes</p>
+        <p class="lead">${fs.length} facturas del ${fechaCorta(fs[0].ciclo.desde)} al ${fechaCorta(fs[fs.length - 1].ciclo.hasta)}: ${eur2(total)} en total por ${kwh(fs.reduce((a, f) => a + f.kwh, 0))}.</p>
+        <p class="caption">Compara cada fila con la factura que te llegó: una diferencia de más del 2–3 % merece una reclamación. <a href="/guias/cortes-y-reclamaciones/">Cómo reclamar</a></p>
+      </div>
+      ${barras({ titulo: "Importe de cada factura", etiquetas: fs.map((f) => fechaCorta(f.ciclo.desde).slice(0, 5)), valores: fs.map((f) => f.total), unidad: "€", decimales: 2, resaltar: fs.map((f, i) => (f.completo ? -1 : i)).filter((i) => i >= 0) })}
+      <div class="table-wrap" tabindex="0" role="region" aria-label="Tabla de facturas"><table class="cf-tabla">
+        <caption class="sr-only">Facturas por ciclo de facturación</caption>
+        <thead><tr><th scope="col">Periodo</th><th scope="col" class="r">kWh</th><th scope="col" class="r">Punta · llano · valle</th><th scope="col" class="r">Potencia</th><th scope="col" class="r">Energía</th><th scope="col" class="r">Bono, IEE, contador y cuotas</th><th scope="col" class="r">IVA</th><th scope="col" class="r">Total</th><th scope="col" class="r">€/kWh</th></tr></thead>
+        <tbody>${fs.map(fila).join("")}</tbody>
+      </table></div>
+      ${avisos.length ? `<ul class="small muted">${avisos.map((a) => `<li>${a}</li>`).join("")}</ul>` : ""}
+      <div class="card an-cta"><div><strong>¿Pagas demasiado?</strong> <span class="muted">Mira cuánto pagarías con cada tarifa del mercado con este mismo consumo.</span></div><a class="btn btn--mint" href="/comparador/">Comparar tarifas con mi fichero</a></div>`;
+    boton.disabled = false;
+    res.focus({ preventScroll: true });
+    res.scrollIntoView({ block: "start" });
+  });
+</script>
+
+<style is:global>
+  .cf-res {
+    display: grid;
+    gap: 24px;
+    margin-top: 48px;
+    scroll-margin-top: 88px;
+  }
+  .cf-res:focus {
+    outline: none;
+  }
+  .cf-res .answer {
+    margin: 8px 0;
+  }
+  .cf-tabla {
+    min-width: 820px;
+    font-size: 14px;
+  }
+  .cf-tabla tbody th {
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-bark);
+  }
+  .cf-parcial td,
+  .cf-parcial th {
+    color: var(--color-slate) !important;
+  }
+  .avanzado {
+    border-top: 1px solid var(--color-pale-sage);
+    padding-top: 8px;
+  }
+  .otra {
+    border: 1px solid var(--color-sage-mist);
+    border-radius: var(--radius-cards);
+    padding: 16px 20px 20px;
+    margin: 0;
+    background: var(--color-sheet-white);
+  }
+  .otra legend {
+    font-weight: 500;
+    padding: 0 6px;
+    font-size: 15px;
+  }
+  .an-cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px 32px;
+    align-items: center;
+    justify-content: space-between;
+  }
+</style>

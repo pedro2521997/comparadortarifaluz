@@ -27,8 +27,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git config user.name "luzsintrampa-bot"
-          git config user.email "bot@luzsintrampa.es"
+          git config user.name "comparadortarifaluz-bot"
+          git config user.email "bot@comparadortarifaluz.es"
           git diff --quiet data/tarifas.json && exit 0
           rama="tarifas-$(date +%F)"
           git checkout -b "$rama"

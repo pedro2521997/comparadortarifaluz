@@ -18,7 +18,8 @@ const LABORABLE = [0.18, 0.15, 0.14, 0.13, 0.13, 0.14, 0.2, 0.42, 0.38, 0.25, 0.
 const FINDE = [0.2, 0.16, 0.14, 0.13, 0.13, 0.13, 0.15, 0.2, 0.3, 0.42, 0.45, 0.44, 0.48, 0.55, 0.56, 0.4, 0.34, 0.36, 0.42, 0.52, 0.64, 0.68, 0.52, 0.34];
 const ESTACION = [1.3, 1.25, 1.1, 0.95, 0.9, 1.0, 1.2, 1.2, 1.0, 0.95, 1.1, 1.3];
 
-function forma(tipo: TipoPerfil, finde: boolean): number[] {
+/** Forma diaria (kWh relativos por hora) de un perfil tipo. */
+export function forma(tipo: TipoPerfil, finde: boolean): number[] {
   const base = [...(finde ? FINDE : LABORABLE)];
   if (tipo === "teletrabajo" && !finde) for (let h = 9; h < 18; h++) base[h] += 0.22;
   if (tipo === "noche") {

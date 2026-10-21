@@ -1,11 +1,13 @@
 // Configuración del sitio. Lo marcado PENDIENTE depende de decisiones del propietario (§14 del plan).
 
 export const SITIO = {
-  nombre: "LuzSinTrampa",
-  dominio: "luzsintrampa.es",
-  url: "https://luzsintrampa.es",
-  descripcion: "Paga menos luz con tus propios datos y el precio real de hoy. Precio por horas, comparador con tu fichero de consumos, cuánto gasta cada aparato y calculadora de placas solares.",
-  correo: "hola@luzsintrampa.es", // PENDIENTE: crear el buzón
+  nombre: "ComparadorTarifaLuz",
+  dominio: "comparadortarifaluz.es",
+  url: "https://comparadortarifaluz.es",
+  descripcion: "Compara gratis las tarifas de luz de todas las compañías con tu consumo real y descubre cuánto ahorrarías. Precio de la luz hoy por horas, ranking de tarifas y calculadora de factura. Sin registro.",
+  /** Lema de la marca (la promesa de la web) */
+  lema: "Tu tarifa de luz, sin trampa",
+  correo: "hola@comparadortarifaluz.es", // PENDIENTE: crear el buzón
   titular: "[TITULAR DEL SITIO]", // PENDIENTE: nombre y NIF para el aviso legal
 };
 
@@ -34,7 +36,7 @@ export const NAV = [
   { href: "/precio-luz-hoy/", texto: "Precio de hoy" },
   { href: "/comparador/", texto: "Comparador" },
   { href: "/tarifas/", texto: "Ranking" },
-  { href: "/cuanto-gasta/", texto: "Cuánto gasta" },
-  { href: "/placas-solares/", texto: "Placas solares" },
+  { href: "/calcular-factura-luz/", texto: "Calcular factura" },
+  { href: "/herramientas/", texto: "Herramientas" },
   { href: "/guias/", texto: "Guías" },
 ];

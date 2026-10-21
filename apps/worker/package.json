@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
-    "db:init": "wrangler d1 execute luzsintrampa --file=schema.sql --remote"
+    "db:init": "wrangler d1 execute comparadortarifaluz --file=schema.sql --remote"
   },
   "devDependencies": {
     "wrangler": "^4.151.3"

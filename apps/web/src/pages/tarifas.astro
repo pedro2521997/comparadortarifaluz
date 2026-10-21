@@ -3,7 +3,7 @@
 // (contenido indexable) y el navegador lo recalcula cuando cambias el consumo o la potencia.
 import Base from "../layouts/Base.astro";
 import { tarifas, regulados, festivos, dias, catalogoActualizado, ajustesMercado } from "../lib/datos";
-import { hoyMadrid, sumarDias, fechaMedia, fechaCorta, num } from "../lib/formato";
+import { hoyMadrid, sumarDias, fechaMedia, fechaCorta, num, nombreMes } from "../lib/formato";
 import { compararTarifas, generarLecturas, PERFILES } from "@lst/tarifa";
 import { aFilas, tablaRanking, marca, nombrePlan } from "../lib/ranking";
 
@@ -41,13 +41,13 @@ const schema = {
   name: "Ranking de tarifas de luz 2.0TD",
   description: `Precio anual estimado de ${tarifas.length} tarifas de luz de ${comercializadoras.size} comercializadoras para un hogar tipo de ${DEF.anual} kWh al año y ${DEF.p1} kW.`,
   dateModified: catalogoActualizado,
-  creator: { "@type": "Organization", name: "LuzSinTrampa" },
+  creator: { "@type": "Organization", name: "ComparadorTarifaLuz" },
   isBasedOn: "https://comparador.cnmc.gob.es/",
 };
 ---
 
 <Base
-  titulo={`Ranking de tarifas de luz: ${tarifas.length} tarifas ordenadas por precio`}
+  titulo={`Tarifas de luz más baratas de ${nombreMes(hoy.slice(0, 7)).replace(" de ", " ")}: ranking de ${tarifas.length}`}
   descripcion={`Las ${tarifas.length} tarifas de luz de ${comercializadoras.size} comercializadoras, ordenadas por lo que pagarías al año. Cambia tu consumo y tu potencia para recalcular. Datos del comparador oficial de la CNMC.`}
   schema={schema}
 >

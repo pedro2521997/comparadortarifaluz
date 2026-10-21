@@ -36,4 +36,4 @@ fuentes:
 
 ## ¿Es seguro?
 
-El fichero contiene tu CUPS y tu consumo. En LuzSinTrampa **no lo subimos a ningún servidor**: el cálculo se hace en tu navegador. Puedes comprobarlo desconectando internet después de cargar la página: el comparador sigue funcionando.
+El fichero contiene tu CUPS y tu consumo. En ComparadorTarifaLuz **no lo subimos a ningún servidor**: el cálculo se hace en tu navegador. Puedes comprobarlo desconectando internet después de cargar la página: el comparador sigue funcionando.

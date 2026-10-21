@@ -32,7 +32,7 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       - name: Guardar los precios nuevos en el repositorio
         run: |
-          git config user.name "luzsintrampa-bot"
-          git config user.email "bot@luzsintrampa.es"
+          git config user.name "comparadortarifaluz-bot"
+          git config user.email "bot@comparadortarifaluz.es"
           git add data/precios
           git diff --cached --quiet || (git commit -m "Precios PVPC $(date +%F)" && git push)

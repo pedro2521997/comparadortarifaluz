@@ -33,9 +33,13 @@ const html = dia ? bloquePrecios(fecha, dia.precios) : bloqueNoPublicado(fecha, 
     // Actualiza también los títulos que llevan la fecha.
     for (const el of document.querySelectorAll<HTMLElement>("[data-fecha-texto]")) el.textContent = fechaLarga(objetivo);
 
+    const fechaBuild = raiz.dataset.fecha;
     cargarDia(objetivo).then((precios) => {
+      // El título lleva el dato del día del build: si ya no es ese día, se cambia por uno genérico.
+      if (fechaBuild !== objetivo) document.title = `Precio de la luz ${modo === "hoy" ? "hoy" : modo === "manana" ? "mañana" : "ayer"}, ${fechaLarga(objetivo)}`;
       contenido.innerHTML = precios ? bloquePrecios(objetivo, precios, ahora) : bloqueNoPublicado(objetivo, modo === "manana");
       raiz.dataset.fecha = objetivo;
+      document.dispatchEvent(new CustomEvent("precios-dia", { detail: { fecha: objetivo, precios, modo } }));
     });
   }
 </script>

@@ -9,6 +9,6 @@ describe("mensaje diario de Telegram", () => {
     expect(m).toContain("jueves, 22 de octubre de 2026");
     expect(m).toContain("de 14:00 a 16:00 (0,080 €/kWh)");
     expect(m).toContain("Evita de 20:00 a 22:00");
-    expect(m).toContain("https://luzsintrampa.es/precio-luz-manana/");
+    expect(m).toContain("https://comparadortarifaluz.es/precio-luz-manana/");
   });
 });

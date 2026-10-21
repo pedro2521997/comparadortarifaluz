@@ -1,0 +1,71 @@
+---
+import Base from "../layouts/Base.astro";
+import { tarifas } from "../lib/datos";
+
+const grupos = [
+  {
+    titulo: "Elegir tarifa",
+    items: [
+      { href: "/comparador/", t: "Comparador de tarifas", d: `Las ${tarifas.length} tarifas del mercado calculadas con tu fichero de consumos o tu factura, en un ranking que puedes filtrar.`, cta: "Comparar mi tarifa" },
+      { href: "/tarifas/", t: "Ranking de tarifas", d: "Todas las tarifas ordenadas por lo que pagaría un hogar tipo. Cambia el consumo y la potencia y se recalcula.", cta: "Ver el ranking" },
+    ],
+  },
+  {
+    titulo: "Entender lo que pagas",
+    items: [
+      { href: "/calcular-factura-luz/", t: "Calculador de factura", d: "Tus facturas mes a mes con tu fichero y tu tarifa, como las calcula tu comercializadora. Para comprobar si te cobran bien.", cta: "Calcular mis facturas" },
+      { href: "/analizador-consumo/", t: "Analizador de consumo", d: "A qué horas, qué días y qué meses gastas más, tu consumo fantasma y tus picos, en gráficas.", cta: "Analizar mi consumo" },
+      { href: "/cuanto-gasta/", t: "Cuánto gasta cada aparato", d: "27 aparatos con el precio de la luz de hoy: aire acondicionado, termo, horno, coche eléctrico…", cta: "Calcular un aparato" },
+    ],
+  },
+  {
+    titulo: "Precio de la luz",
+    items: [
+      { href: "/precio-luz-hoy/", t: "Precio de la luz hoy", d: "Cada hora, las mejores horas para la lavadora o el coche, de dónde viene la luz y la comparación con tu tarifa.", cta: "Ver el precio de hoy" },
+      { href: "/precio-luz-manana/", t: "Precio de la luz mañana", d: "En cuanto lo publica Red Eléctrica, con avisos para tu calendario.", cta: "Ver mañana" },
+      { href: "/precio-luz/historico/", t: "Histórico del precio", d: "PVPC y mercado mayorista mes a mes desde 2021, y los cambios de peajes e impuestos.", cta: "Ver el histórico" },
+    ],
+  },
+  {
+    titulo: "Autoconsumo",
+    items: [{ href: "/placas-solares/", t: "Calculadora de placas solares", d: "Producción de tu tejado hora a hora (PVGIS) cruzada con tu consumo, en rangos y sin promesas.", cta: "Calcular mis placas" }],
+  },
+];
+---
+
+<Base titulo="Herramientas gratis para pagar menos luz" descripcion="Comparador de tarifas, ranking, calculador de factura, analizador de consumo, precio de la luz hoy y calculadora de placas solares. Gratis, sin registro y con tus datos en tu navegador.">
+  <section class="hero hero--compacto">
+    <div class="wrap">
+      <span class="eyebrow">Herramientas</span>
+      <h1>Todo lo que necesitas para pagar menos luz</h1>
+      <p class="lead">Gratis, sin registro y sin subir tus datos a ningún servidor: todo se calcula en tu navegador.</p>
+    </div>
+  </section>
+  <section class="section section--tight">
+    <div class="wrap stack" style="--stack:48px">
+      {
+        grupos.map((g) => (
+          <div>
+            <h2 class="herr-g">{g.titulo}</h2>
+            <div class="grid grid--3">
+              {g.items.map((i) => (
+                <a class="card card--link" href={i.href}>
+                  <h3>{i.t}</h3>
+                  <p class="muted small">{i.d}</p>
+                  <span class="arrow">{i.cta} →</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+</Base>
+
+<style>
+  .herr-g {
+    font-size: 28px;
+    margin-bottom: 16px;
+  }
+</style>

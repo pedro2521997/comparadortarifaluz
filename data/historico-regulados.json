@@ -1,0 +1,163 @@
+{
+ "_nota": "Peajes y cargos de la 2.0TD, financiación del bono social e impuestos desde junio de 2021. Potencia en €/kW·año (peajes + cargos), energía en €/kWh (peajes + cargos). Recopilado de las órdenes y resoluciones del BOE y contrastado con simuladorfacturaluz.es. Revisar contra el BOE antes de usarlo en cálculos.",
+ "periodos": [
+  {
+   "desde": "2021-06-01",
+   "norma": "Circular 3/2020 (CNMC) y Orden TED/371/2021",
+   "nota": "Entrada en vigor de la 2.0TD",
+   "iva": 0.21,
+   "iee": 0.0511269632
+  },
+  {
+   "desde": "2021-06-26",
+   "norma": "Real Decreto-ley 12/2021",
+   "nota": "IVA al 10 % para potencias de hasta 10 kW",
+   "iva": 0.1,
+   "iee": 0.0511269632
+  },
+  {
+   "desde": "2021-09-16",
+   "norma": "Real Decreto-ley 17/2021",
+   "nota": "Rebaja de cargos e impuesto eléctrico al 0,5 %",
+   "potencia": {
+    "p1": 23.75,
+    "p2": 0.98
+   },
+   "energia": {
+    "p1": 0.03151,
+    "p2": 0.02145,
+    "p3": 0.00092
+   },
+   "iva": 0.1,
+   "iee": 0.005
+  },
+  {
+   "desde": "2022-01-01",
+   "norma": "Orden TED/1484/2021",
+   "nota": "Precios de 2022",
+   "potencia": {
+    "p1": 27.96,
+    "p2": 1.26
+   },
+   "energia": {
+    "p1": 0.10076,
+    "p2": 0.03374,
+    "p3": 0.00435
+   },
+   "iva": 0.1,
+   "iee": 0.005
+  },
+  {
+   "desde": "2022-03-31",
+   "norma": "Real Decreto-ley 6/2022",
+   "nota": "Medidas por la guerra de Ucrania",
+   "potencia": {
+    "p1": 26.16,
+    "p2": 1.14
+   },
+   "energia": {
+    "p1": 0.07441,
+    "p2": 0.02847,
+    "p3": 0.00303
+   },
+   "iva": 0.1,
+   "iee": 0.005
+  },
+  {
+   "desde": "2022-06-25",
+   "norma": "Real Decreto-ley 11/2022",
+   "nota": "IVA al 5 %",
+   "iva": 0.05,
+   "iee": 0.005
+  },
+  {
+   "desde": "2023-01-01",
+   "norma": "Precios de 2023",
+   "potencia": {
+    "p1": 25.38,
+    "p2": 1.34
+   },
+   "energia": {
+    "p1": 0.07299,
+    "p2": 0.02857,
+    "p3": 0.00318
+   },
+   "bono_social": 0.038455,
+   "iva": 0.05,
+   "iee": 0.005
+  },
+  {
+   "desde": "2024-01-01",
+   "norma": "Precios de 2024 (RDL 8/2023)",
+   "nota": "IVA al 10 % e impuesto eléctrico al 2,5 % (3,8 % desde abril y 5,11 % desde julio)",
+   "potencia": {
+    "p1": 25.39,
+    "p2": 0.96
+   },
+   "energia": {
+    "p1": 0.07697,
+    "p2": 0.02796,
+    "p3": 0.00275
+   },
+   "bono_social": 0.033885,
+   "iva": 0.1,
+   "iee": 0.025
+  },
+  {
+   "desde": "2025-01-01",
+   "norma": "Orden TED/1487/2024",
+   "nota": "Fin de las rebajas: IVA al 21 %",
+   "potencia": {
+    "p1": 27,
+    "p2": 0.7
+   },
+   "energia": {
+    "p1": 0.09254,
+    "p2": 0.0282,
+    "p3": 0.00299
+   },
+   "bono_social": 0.012742,
+   "iva": 0.21,
+   "iee": 0.0511269632
+  },
+  {
+   "desde": "2026-01-01",
+   "norma": "Resolución CNMC de 18/12/2025 y cargos 2026",
+   "nota": "Precios de 2026",
+   "potencia": {
+    "p1": 27.704413,
+    "p2": 0.725423
+   },
+   "energia": {
+    "p1": 0.097553,
+    "p2": 0.029267,
+    "p3": 0.003292
+   },
+   "bono_social": 0.019068,
+   "iva": 0.21,
+   "iee": 0.0511269632
+  },
+  {
+   "desde": "2026-03-22",
+   "norma": "Rebaja temporal del IVA",
+   "nota": "IVA al 10 % hasta el 31 de mayo",
+   "iva": 0.1,
+   "iee": 0.0511269632
+  },
+  {
+   "desde": "2026-06-01",
+   "norma": "Fin de la rebaja",
+   "nota": "IVA al 21 %",
+   "iva": 0.21,
+   "iee": 0.0511269632
+  },
+  {
+   "desde": "2026-07-01",
+   "norma": "Orden TED/634/2026",
+   "nota": "Nueva financiación del bono social",
+   "bono_social": 0.024688,
+   "iva": 0.21,
+   "iee": 0.0511269632
+  }
+ ]
+}

@@ -33,6 +33,17 @@ export function niveles(precios: (number | null)[]): (Nivel | null)[] {
   return precios.map((p) => (p === null ? null : p < t1 ? "barata" : p >= t2 ? "cara" : "normal"));
 }
 
+/** Media ponderada por el consumo de un hogar tipo (más peso a las horas en que más se consume). */
+export function mediaHogar(precios: (number | null)[], pesos: number[]): number {
+  let s = 0, w = 0;
+  precios.forEach((p, h) => {
+    if (p === null) return;
+    s += p * pesos[h];
+    w += pesos[h];
+  });
+  return w ? s / w : 0;
+}
+
 export function resumen(precios: (number | null)[]) {
   const validos = precios.map((p, h) => ({ p, h })).filter((x): x is { p: number; h: number } => x.p !== null);
   const media = validos.reduce((a, x) => a + x.p, 0) / validos.length;
@@ -57,7 +68,7 @@ export function graficoHoras(precios: (number | null)[], ahora: number | null = 
       const ancho = Math.max(4, (p / max) * 100).toFixed(1);
       const actual = ahora === h ? " hrow--ahora" : "";
       const etiquetaAhora = ahora === h ? `<span class="pill pill--canopy">Ahora</span>` : "";
-      return `<li class="hrow hrow--${n}${actual}"${ahora === h ? ' aria-current="time"' : ""}>
+      return `<li class="hrow hrow--${n}${actual}" data-h="${h}"${ahora === h ? ' aria-current="time"' : ""}>
 <span class="hrow__h">${hh(h)}<span class="sr-only"> a ${hh(h + 1)}</span></span>
 <span class="hrow__bar" aria-hidden="true"><span style="width:${ancho}%"></span></span>
 <span class="hrow__p num">${esc(ekwh(p))}</span>
