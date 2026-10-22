@@ -19,8 +19,14 @@ export const SITIO = {
 /** PENDIENTE: crear el canal. Mientras sea null, no se enlaza. */
 export const TELEGRAM_URL: string | null = null;
 
-/** Instalador colaborador de placas (§5). PENDIENTE: nombre, zona y tabla de precios del amigo. */
+/**
+ * Instalador colaborador de placas (§5). Apagado hasta tener el acuerdo: con `activo: false` no se muestra
+ * el formulario de estudio, no se recoge ningún dato y los textos legales no lo mencionan. Al activarlo,
+ * el panel del estudio sale arriba del resultado de la calculadora solar.
+ * PENDIENTE: nombre, zona y tabla de precios del instalador.
+ */
 export const INSTALADOR = {
+  activo: false,
   nombre: "[EMPRESA]",
   /** Prefijos de código postal que cubre (2 dígitos = provincia, o CP completos). */
   zona: ["28", "45", "19"],

@@ -65,20 +65,21 @@
 /* ---------- Tabla ---------- */
 .rk-scroll {
   border: 1px solid var(--color-sage-mist);
-  border-radius: var(--radius-cards);
+  border-radius: 20px;
   background: var(--color-sheet-white);
   overflow-x: auto;
+  box-shadow: 0 1px 2px rgba(16, 52, 42, 0.04), 0 8px 24px rgba(16, 52, 42, 0.05);
 }
 .rk-tabla {
   width: 100%;
-  min-width: 1080px;
+  min-width: 980px;
   border-collapse: separate;
   border-spacing: 0;
   font-size: 14px;
 }
 .rk-tabla th,
 .rk-tabla td {
-  padding: 12px 10px;
+  padding: 14px 12px;
   border-bottom: 1px solid var(--color-pale-sage);
   vertical-align: middle;
   text-align: left;
@@ -86,23 +87,22 @@
 .rk-tabla .r {
   text-align: right;
 }
+.rk-tabla .num {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
 .rk-tabla thead th {
   position: sticky;
   top: 0;
-  background: var(--color-canopy);
-  color: #fff;
-  font-size: 12px;
-  font-weight: var(--font-weight-bold);
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  border-bottom: 0;
-  z-index: 1;
-}
-.rk-tabla .rk-grupos th {
-  background: #0b3127;
-  color: var(--color-mint-pulse);
-  padding: 8px 10px;
+  background: var(--color-cream-paper);
+  color: var(--color-slate);
   font-size: 11px;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  border-bottom: 2px solid var(--color-canopy);
+  padding-block: 14px;
+  z-index: 1;
 }
 .rk-ord {
   all: unset;
@@ -114,9 +114,14 @@
   font: inherit;
   letter-spacing: inherit;
   text-transform: inherit;
+  border-radius: 6px;
+}
+.rk-ord:hover,
+.rk-ord[aria-pressed="true"] {
+  color: var(--color-canopy);
 }
 .rk-ord:focus-visible {
-  outline: 2px solid var(--color-mint-pulse);
+  outline: 2px solid var(--color-orb-violet);
   outline-offset: 2px;
 }
 .r .rk-ord {
@@ -126,10 +131,35 @@
   font-size: 10px;
   opacity: 0.8;
 }
-th[aria-sort="none"] .rk-flecha {
-  opacity: 0.45;
+.rk-ord[aria-pressed="false"] .rk-flecha {
+  opacity: 0.4;
+}
+.rk-c-rep__t {
+  display: block;
+  margin-bottom: 4px;
+}
+.rk-leyenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 10px;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 500;
+  font-size: 12px;
+}
+.rk-leyenda i,
+.rk-rep__n i {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  margin-right: 4px;
 }
 
+/* Filas */
+.rk-fila > * {
+  transition: background 0.12s;
+}
 .rk-fila:hover > * {
   background: #f8faf9;
 }
@@ -147,16 +177,18 @@ th[aria-sort="none"] .rk-flecha {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 34px;
-  height: 28px;
-  padding: 0 6px;
-  border-radius: var(--radius-buttons);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
   background: var(--color-cream-paper);
   font-weight: var(--font-weight-medium);
+  font-size: 13px;
   font-variant-numeric: tabular-nums;
+  color: var(--color-bark);
 }
 tbody .rk-fila:first-child .rk-pos span {
   background: var(--color-mint-pulse);
+  color: var(--color-canopy);
 }
 
 .rk-tabla tbody th.rk-tarifa {
@@ -165,47 +197,67 @@ tbody .rk-fila:first-child .rk-pos span {
   letter-spacing: normal;
   text-transform: none;
   color: var(--color-bark);
-  min-width: 230px;
+  min-width: 240px;
 }
 .rk-tarifa__in {
   display: flex;
-  gap: 10px;
-  align-items: flex-start;
+  gap: 12px;
+  align-items: center;
 }
 .rk-logo {
   flex: none;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
   background: var(--color-canopy);
   color: var(--color-mint-pulse);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: var(--font-weight-bold);
   display: flex;
   align-items: center;
   justify-content: center;
   letter-spacing: 0.02em;
+  overflow: hidden;
+}
+.rk-logo--img {
+  background: #fff;
+  border: 1px solid var(--color-pale-sage);
+  padding: 6px;
+}
+.rk-logo--img img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.rk-logo--pvpc {
+  background: #fff6db;
+  color: #8a6500;
 }
 .rk-nombre {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
   min-width: 0;
 }
 .rk-marca {
   font-weight: var(--font-weight-medium);
-  font-size: 15px;
-  color: var(--color-bark);
+  font-size: 16px;
+  color: var(--color-ink);
+  line-height: 1.25;
 }
 .rk-plan {
   font-size: 13px;
   color: var(--color-charcoal);
+  line-height: 1.3;
 }
 .rk-badges {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
-  margin-top: 4px;
+  margin-top: 6px;
+}
+.rk-badges:empty {
+  display: none;
 }
 .rk-badges .pill {
   font-size: 10px;
@@ -213,17 +265,22 @@ tbody .rk-fila:first-child .rk-pos span {
   letter-spacing: 0.04em;
 }
 
+.rk-precios {
+  min-width: 190px;
+}
 .rk-tipo {
   display: block;
   font-weight: var(--font-weight-medium);
   font-size: 13px;
+  color: var(--color-bark);
+  margin-bottom: 2px;
 }
 .rk-mini {
   display: flex;
   flex-direction: column;
   font-size: 12px;
   color: var(--color-slate);
-  line-height: 1.35;
+  line-height: 1.4;
   font-variant-numeric: tabular-nums;
 }
 .rk-mini > span {
@@ -232,13 +289,73 @@ tbody .rk-fila:first-child .rk-pos span {
 .rk-mini abbr {
   text-decoration: none;
 }
-.rk-total strong,
-.rk-mes strong {
-  font-size: 16px;
+
+/* Reparto de la factura */
+.rk-c-rep {
+  min-width: 190px;
+}
+.rk-rep__b {
+  display: flex;
+  height: 10px;
+  border-radius: 5px;
+  overflow: hidden;
+  background: var(--color-pale-sage);
+  gap: 2px;
+}
+.rk-rep__b > span {
+  display: block;
+  height: 100%;
+}
+.rk-rep__l {
+  display: none;
+}
+.rk-rep--pot {
+  background: var(--color-canopy);
+}
+.rk-rep--ene {
+  background: #2fd47f;
+}
+.rk-rep--otr {
+  background: #c9a2ee;
+}
+.rk-rep__n {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--color-slate);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.rk-total strong {
+  display: block;
+  font-size: 19px;
   font-weight: var(--font-weight-medium);
+  color: var(--color-ink);
+}
+.rk-total strong small {
+  font-size: 12px;
+  font-weight: var(--font-weight-regular);
+  color: var(--color-slate);
+  margin-left: 2px;
 }
 .rk-total .rk-mini {
   align-items: flex-end;
+}
+.rk-c-dif {
+  min-width: 140px;
+}
+.rk-c-total__b {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+.rk-ord--sec {
+  font-size: 10px;
+  opacity: 0.85;
 }
 
 .rk-dif {
@@ -246,16 +363,17 @@ tbody .rk-fila:first-child .rk-pos span {
   flex-wrap: wrap;
   align-items: baseline;
   gap: 2px 6px;
-  padding: 4px 8px;
-  border-radius: var(--radius-buttons);
+  padding: 5px 10px;
+  border-radius: 10px;
   font-size: 13px;
   font-variant-numeric: tabular-nums;
 }
 .rk-dif__t {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: var(--font-weight-bold);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
+  width: 100%;
 }
 .rk-dif .rk-mini {
   display: inline;
@@ -269,20 +387,47 @@ tbody .rk-fila:first-child .rk-pos span {
   color: var(--color-canopy);
 }
 .rk-ref {
-  font-size: 13px;
-  color: var(--color-slate);
+  display: inline-block;
+  font-size: 11px;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-canopy);
+  background: #dcfde9;
+  border-radius: 10px;
+  padding: 5px 10px;
 }
 
+.rk-c-ver {
+  width: 1%;
+  white-space: nowrap;
+  text-align: right;
+}
 .rk-ver {
   all: unset;
-  display: block;
-  margin-top: 4px;
-  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--color-sage-mist);
+  border-radius: var(--radius-pills);
   font-size: 13px;
+  font-weight: var(--font-weight-medium);
   color: var(--color-canopy);
-  text-decoration: underline;
-  text-underline-offset: 3px;
+  background: var(--color-sheet-white);
   cursor: pointer;
+  white-space: nowrap;
+}
+.rk-ver:hover {
+  border-color: var(--color-canopy);
+}
+.rk-ver__f {
+  font-size: 11px;
+  transition: transform 0.15s;
+}
+.rk-ver[aria-expanded="true"] .rk-ver__f {
+  transform: rotate(180deg);
 }
 .rk-ver:focus-visible {
   outline: 3px solid var(--color-orb-violet);
@@ -345,27 +490,31 @@ tbody .rk-fila:first-child .rk-pos span {
 /* Columnas de puesto y tarifa fijas al desplazar la tabla en horizontal */
 @media (min-width: 761px) {
   .rk-tabla .rk-pos,
-  .rk-tabla thead tr:last-child th:first-child {
+  .rk-tabla thead th:first-child {
     position: sticky;
     left: 0;
     z-index: 2;
-    width: 56px;
-    min-width: 56px;
+    width: 62px;
+    min-width: 62px;
   }
   .rk-tabla tbody th.rk-tarifa,
-  .rk-tabla thead tr:last-child th:nth-child(2) {
+  .rk-tabla thead th:nth-child(2) {
     position: sticky;
-    left: 56px;
+    left: 62px;
     z-index: 2;
     box-shadow: 1px 0 0 var(--color-pale-sage);
   }
-  .rk-tabla thead tr:last-child th:first-child,
-  .rk-tabla thead tr:last-child th:nth-child(2) {
+  .rk-tabla thead th:first-child,
+  .rk-tabla thead th:nth-child(2) {
     z-index: 3;
   }
   .rk-fila > .rk-pos,
   .rk-fila > .rk-tarifa {
     background: var(--color-sheet-white);
+  }
+  .rk-fila:hover > .rk-pos,
+  .rk-fila:hover > .rk-tarifa {
+    background: #f8faf9;
   }
 }
 
@@ -375,6 +524,7 @@ tbody .rk-fila:first-child .rk-pos span {
     border: 0;
     background: transparent;
     overflow: visible;
+    box-shadow: none;
   }
   .rk-tabla {
     min-width: 0;
@@ -392,17 +542,18 @@ tbody .rk-fila:first-child .rk-pos span {
   }
   .rk-fila {
     display: grid;
-    grid-template-columns: auto 1fr 1fr;
-    gap: 0 12px;
+    grid-template-columns: auto 1fr auto;
+    gap: 10px 12px;
+    align-items: center;
     background: var(--color-sheet-white);
     border: 1px solid var(--color-sage-mist);
-    border-radius: var(--radius-cards);
+    border-radius: 16px;
     padding: 14px;
-    margin-top: 10px;
+    margin-top: 12px;
   }
   .rk-fila > * {
     border: 0 !important;
-    padding: 4px 0 !important;
+    padding: 0 !important;
     background: transparent !important;
     text-align: left !important;
   }
@@ -420,51 +571,32 @@ tbody .rk-fila:first-child .rk-pos span {
   .rk-tarifa {
     grid-row: 1;
     grid-column: 2 / -1;
+    min-width: 0 !important;
+  }
+  .rk-precios,
+  .rk-fila > .rk-c-rep,
+  .rk-fila > .rk-c-dif {
+    grid-column: 1 / -1;
     min-width: 0;
   }
-  .rk-fila > td[data-label]:not(.rk-pos)::before {
-    content: attr(data-label);
-    display: block;
-    font-size: 11px;
-    font-weight: var(--font-weight-bold);
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    color: var(--color-slate);
-  }
-  .rk-fila > td:nth-child(3) {
+  .rk-total {
     grid-column: 1 / -1;
   }
-  .rk-fila > td:nth-child(n + 4) {
-    grid-column: span 1;
-  }
-  .rk-fila > td:nth-child(4) {
-    grid-column: 1 / 2;
-    min-width: 92px;
-  }
-  .rk-fila > td:nth-child(8) {
-    grid-column: 1 / -1;
-  }
-  .rk-fila > .rk-mes {
-    grid-column: 1 / -1;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-    border-top: 1px solid var(--color-pale-sage) !important;
-    margin-top: 6px;
-    padding-top: 10px !important;
-  }
-  .rk-fila > .rk-mes::before {
-    width: 100%;
-  }
-  .rk-ver {
-    margin: 0;
-    min-height: 32px;
-    display: inline-flex;
-    align-items: center;
+  /* En el móvil no se ve la cabecera: la leyenda va junto a cada cifra. */
+  .rk-rep__l {
+    display: inline;
   }
   .rk-total .rk-mini {
     align-items: flex-start;
+  }
+  .rk-fila > .rk-c-ver {
+    grid-column: 1 / -1;
+    width: auto;
+  }
+  .rk-ver {
+    width: 100%;
+    justify-content: center;
+    box-sizing: border-box;
   }
   .rk-det {
     display: block;
@@ -474,15 +606,9 @@ tbody .rk-fila:first-child .rk-pos span {
   }
   .rk-det > td {
     display: block;
-    border-radius: 0 0 var(--radius-cards) var(--radius-cards);
-    margin-top: -8px;
+    border-radius: 0 0 16px 16px;
+    margin-top: -10px;
     border: 1px solid var(--color-sage-mist);
     border-top: 0;
-  }
-}
-
-@media (min-width: 761px) {
-  .rk-tabla td:nth-child(3) {
-    min-width: 200px;
   }
 }

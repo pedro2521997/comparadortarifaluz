@@ -1,6 +1,6 @@
 ---
 import Legal from "../layouts/Legal.astro";
-import { SITIO } from "../config";
+import { SITIO, INSTALADOR } from "../config";
 ---
 
 <Legal titulo="Aviso legal" revisado="22/10/2026" descripcion={`Datos del titular de ${SITIO.dominio}, condiciones del sitio, responsabilidad, propiedad intelectual y legislación aplicable.`}>
@@ -30,7 +30,7 @@ import { SITIO } from "../config";
 
   <h2>Comunicaciones comerciales y enlaces con comisión</h2>
   <p>
-    El sitio se financia con publicidad, con comisiones de algunas empresas cuando el usuario contrata a través de un enlace y con la puesta en contacto, previa autorización expresa del usuario, con un instalador colaborador de placas solares. La publicidad se identifica con la palabra «Publicidad» y los enlaces que pueden generar comisión con la etiqueta «Enlace con comisión», conforme al artículo 20 de la LSSI. Ni la publicidad ni las comisiones alteran el orden de los resultados del comparador, que es siempre por precio. Más información en <a href="/como-funciona/">Cómo funciona y cómo ganamos dinero</a>.
+    El sitio se financia con publicidad{INSTALADOR.activo ? ", con comisiones de algunas empresas cuando el usuario contrata a través de un enlace y con la puesta en contacto, previa autorización expresa del usuario, con un instalador colaborador de placas solares" : " y con comisiones de algunas empresas cuando el usuario contrata a través de un enlace"}. La publicidad se identifica con la palabra «Publicidad» y los enlaces que pueden generar comisión con la etiqueta «Enlace con comisión», conforme al artículo 20 de la LSSI. Ni la publicidad ni las comisiones alteran el orden de los resultados del comparador, que es siempre por precio. Más información en <a href="/como-funciona/">Cómo funciona y cómo ganamos dinero</a>.
   </p>
 
   <h2>Propiedad intelectual e industrial</h2>

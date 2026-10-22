@@ -190,7 +190,7 @@ export function montarRanking(raiz: HTMLElement, entrada: EntradaRanking) {
       det.hidden = !abrir;
       det.firstElementChild!.innerHTML = abrir ? detalleHtml(fila, e.idActual) : "";
       ver.setAttribute("aria-expanded", String(abrir));
-      ver.textContent = abrir ? "Ocultar" : "Ver detalle";
+      ver.firstElementChild!.textContent = abrir ? "Ocultar" : "Detalle";
     }
   });
 

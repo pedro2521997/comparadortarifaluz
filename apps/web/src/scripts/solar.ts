@@ -15,7 +15,7 @@ import { eur, kwh, num, pct, fechaCorta } from "../lib/formato";
 
 interface Datos {
   provincias: Record<string, { nombre: string; lat: number; lon: number }>;
-  instalador: { nombre: string; zona: string[]; precios: { hastaKwp: number | null; eurPorKwp: number }[]; preciosProvisionales: boolean };
+  instalador: { activo: boolean; nombre: string; zona: string[]; precios: { hastaKwp: number | null; eurPorKwp: number }[]; preciosProvisionales: boolean };
 }
 
 const datos: Datos = JSON.parse(document.getElementById("datos-solar")!.textContent!);
@@ -143,6 +143,8 @@ function pintar(kwp: number) {
     ? `<div class="notice notice--warn"><p>En un piso, las placas suelen ir en la cubierta común con <strong>autoconsumo colectivo</strong>: hace falta acuerdo de la comunidad y la producción se reparte. El cálculo te sirve de orientación para tu parte. <a href="/guias/placas-en-un-piso/">Cómo funciona en un piso</a></p></div>`
     : "";
 
+  // El panel del siguiente paso vive dentro del resultado: se saca antes de repintarlo para no perderlo.
+  $("resultado-solar").after($("estudio"));
   $("resultado-solar").innerHTML = `
   <div class="solar-res">
     <div class="card card--roomy stack" style="--stack:16px">
@@ -173,13 +175,16 @@ function pintar(kwp: number) {
           <p><strong>Producción:</strong> ${fuente === "pvgis" ? "PVGIS 5.3 de la Comisión Europea, hora a hora con la radiación real de 2023 en tu zona" : "aproximación por latitud (no hemos podido consultar PVGIS ahora mismo; el resultado es menos preciso)"}, con un 14 % de pérdidas del sistema.</p>
           <p><strong>Consumo:</strong> ${perfil && usarFichero ? "tu fichero de consumos, hora a hora por mes" : `${kwh(anual)} al año estimados a partir de tu factura, con un perfil tipo de hogar`}.</p>
           <p><strong>Ahorro:</strong> lo que consumes de tus placas se valora a tu precio de energía (${num(precios.energia, 3)} €/kWh) y los excedentes a ${num(precios.excedente, 3)} €/kWh con compensación simplificada, que nunca descuenta más que el término de energía de cada mes. Impuesto eléctrico e IVA incluidos. Escenario prudente: −10 % de producción, −15 % de precio de la luz, +10 % de inversión y cambio de inversor. Favorable: +5 % de producción y +10 % de precio.</p>
-          <p><strong>Inversión:</strong> ${datos.instalador.preciosProvisionales ? "precios orientativos por kWp mientras recibimos la tabla del instalador" : "tabla de precios del instalador colaborador"} (${num(eurPorKwp(kwp))} €/kWp para este tamaño).</p>
+          <p><strong>Inversión:</strong> ${datos.instalador.activo && !datos.instalador.preciosProvisionales ? "tabla de precios del instalador colaborador" : "precios medios orientativos del mercado por kWp, IVA incluido"} (${num(eurPorKwp(kwp))} €/kWp para este tamaño).</p>
           <p>Producción anual ${kwh(base.produccion)} · autoconsumo ${kwh(base.autoconsumo)} · excedentes ${kwh(base.excedentes)} · consumo ${kwh(base.consumo)}.</p>
         </div>
       </details>
     </div>
     <p class="caption">Es una estimación, no una oferta vinculante. Un instalador tiene que ver tu tejado (sombras, estructura, espacio real) para darte una cifra cerrada.</p>
   </div>`;
+
+  // El siguiente paso, justo debajo de la cifra de ahorro (antes de los detalles).
+  $("resultado-solar").querySelector(".solar-res > .card")?.after($("estudio"));
 
   // "change" y no "input": el bloque se repinta entero y cortaría el arrastre.
   $<HTMLInputElement>("kwp").addEventListener("change", (ev) => {
@@ -193,7 +198,24 @@ function pintar(kwp: number) {
     kwp,
     resumen: `${num(kwp, 1)} kWp · ${kwh(base.produccion)}/año · ahorro ${eur(simP.ahorro)}–${eur(simF.ahorro)}/año · consumo ${kwh(anual)}/año (${perfil && usarFichero ? "fichero" : "factura"}) · ${$<HTMLSelectElement>("vivienda").value} · tejado ${valor("tejado")} m²`,
   };
-  pintarEstudio(enZona(cp));
+  if (datos.instalador.activo) pintarEstudio(enZona(cp));
+  else pintarConsejo();
+}
+
+/** Sin instalador colaborador: cómo pedir presupuestos por tu cuenta y comparar con este cálculo. */
+function pintarConsejo() {
+  const caja = $("estudio");
+  caja.hidden = false;
+  caja.innerHTML = `<div class="card stack estudio-consejo" style="--stack:10px">
+      <span class="eyebrow">Siguiente paso</span>
+      <h2 style="font-size:24px">Pide tres presupuestos y compáralos con este cálculo</h2>
+      <ul class="small" style="padding-left:1.2em;display:grid;gap:4px">
+        <li>Divide el precio de cada presupuesto entre los kWp: entre 1.100 y 1.600 €/kWp con IVA es lo habitual en una vivienda.</li>
+        <li>Pide la producción estimada al año (kWh) y compárala con la de aquí arriba.</li>
+        <li>Comprueba que incluye la legalización, el boletín y la tramitación de la compensación de excedentes.</li>
+      </ul>
+      <p class="small"><a href="/guias/placas-solares-guia-completa/">Guía completa de placas solares</a> · <a href="/guias/cuantas-placas-necesito/">Cuántas placas necesito</a></p>
+    </div>`;
 }
 
 /** La batería, aparte: cuánto ahorra de más y si se paga sola dentro de su vida útil (unos 10–15 años). */

@@ -24,7 +24,7 @@ Porque hace más de 45 días que no comprobamos su precio, o todavía no lo hemo
 
 ### ¿Cómo ganáis dinero?
 
-Sobre todo cuando alguien pide un estudio de placas solares y acaba instalándolas con nuestro instalador colaborador. También con enlaces con comisión, siempre etiquetados y sin cambiar el orden. Lo contamos en [cómo funciona](/como-funciona/#dinero).
+Con publicidad, siempre marcada como tal y nunca dentro de los resultados, y con enlaces con comisión, siempre etiquetados y sin cambiar el orden del comparador. Lo contamos en [cómo funciona](/como-funciona/#dinero).
 
 ### ¿Cuándo se publica el precio de mañana?
 

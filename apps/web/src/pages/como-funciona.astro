@@ -1,5 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
+import { INSTALADOR } from "../config";
 import { regulados, tarifas } from "../lib/datos";
 import { fechaCorta, num } from "../lib/formato";
 
@@ -36,7 +37,11 @@ const periodo = (d: string, h: string | null) => `${fechaCorta(d)} – ${h ? fec
       <h2 id="dinero">Cómo ganamos dinero</h2>
       <p>La web es gratuita. Se financia así, por orden de importancia:</p>
       <ol>
-        <li><strong>Estudios de placas solares.</strong> Si en la calculadora solar pides un estudio y das tu consentimiento, enviamos tu contacto a un instalador colaborador. Si acabas firmando una instalación, el instalador nos paga una comisión. Tú no pagas nada más por ello.</li>
+        {
+          INSTALADOR.activo && (
+            <li><strong>Estudios de placas solares.</strong> Si en la calculadora solar pides un estudio y das tu consentimiento, enviamos tu contacto a un instalador colaborador. Si acabas firmando una instalación, el instalador nos paga una comisión. Tú no pagas nada más por ello.</li>
+          )
+        }
         <li><strong>Enlaces con comisión de comercializadoras</strong>, cuando existan programas que lo permitan. Siempre etiquetados.</li>
         <li><strong>Enlaces de afiliado a productos</strong> (por ejemplo, enchufes medidores), siempre indicados.</li>
         <li><strong>Publicidad</strong>, solo cuando haya tráfico suficiente, y nunca dentro de los resultados de las calculadoras.</li>

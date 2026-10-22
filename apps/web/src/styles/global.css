@@ -132,6 +132,12 @@ p {
 .wrap--narrow {
   max-width: 800px;
 }
+/* Títulos sin palabras sueltas en la última línea */
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
 
 .section {
   padding-block: 64px;

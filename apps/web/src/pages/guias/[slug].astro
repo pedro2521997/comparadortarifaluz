@@ -10,7 +10,9 @@ export function getStaticPaths() {
   return guias.map((g) => ({ params: { slug: g.slug }, props: { g } }));
 }
 const { g } = Astro.props as { g: Guia };
-const html = conAnuncios(await g.md.compiledContent(), anuncioHtml("articulo", { dev: import.meta.env.DEV }));
+// Las tablas de las guías van en un contenedor desplazable para que no ensanchen la página en el móvil.
+const conTablas = (await g.md.compiledContent()).replace(/<table>([\s\S]*?)<\/table>/g, '<div class="table-wrap" tabindex="0" role="region" aria-label="Tabla"><table>$1</table></div>');
+const html = conAnuncios(conTablas, anuncioHtml("articulo", { dev: import.meta.env.DEV }));
 const indice = g.md.getHeadings().filter((h) => h.depth === 2);
 const faqs = preguntasDe(g);
 const otras = relacionadas(g);

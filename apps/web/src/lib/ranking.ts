@@ -3,6 +3,7 @@
 
 import type { Comparacion, Factura, Tarifa } from "@lst/tarifa";
 import { eur2, eur, num, fechaCorta } from "./formato";
+import logos from "../../../../data/logos.json";
 
 export interface Fila extends Comparacion {
   /** Total extrapolado a un año (365 días) */
@@ -75,6 +76,20 @@ export function marca(comercializadora: string): string {
 
 const iniciales = (s: string) =>
   s.replace(/\(.*\)/, "").split(/[\s-]+/).filter(Boolean).slice(0, 2).map((p) => p[0]).join("").toUpperCase();
+
+const dominio = (url: string) => url.replace(/^https?:\/\/(www\.)?/, "").split("/")[0].toLowerCase();
+const LOGOS = logos as Record<string, string>;
+// La PVPC no es de una marca: un rayo propio.
+const RAYO = `<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>`;
+
+/** Logo de la comercializadora (descargado con scripts/logos.mjs) o sus iniciales. */
+export function logoHtml(t: Tarifa): string {
+  if (t.tipo === "pvpc") return `<span class="rk-logo rk-logo--pvpc" aria-hidden="true">${RAYO}</span>`;
+  const src = LOGOS[dominio(t.url_contratar || t.url_fuente || "")];
+  return src
+    ? `<span class="rk-logo rk-logo--img" aria-hidden="true"><img src="${src}" alt="" width="40" height="40" loading="lazy" decoding="async" /></span>`
+    : `<span class="rk-logo" aria-hidden="true">${esc(iniciales(marca(t.comercializadora)))}</span>`;
+}
 
 /** Nombre del plan en un formato legible (muchos vienen en mayúsculas). */
 export function nombrePlan(nombre: string): string {
@@ -244,28 +259,32 @@ function detalle(f: Fila, esActual: boolean): string {
   </div>`;
 }
 
-const COLS: { k: ColumnaOrden | null; t: string; c?: string }[] = [
-  { k: null, t: "#" },
-  { k: "nombre", t: "Tarifa" },
-  { k: null, t: "Tipo y precios" },
-  { k: "potencia", t: "Potencia", c: "r" },
-  { k: "energia", t: "Energía", c: "r" },
-  { k: "otros", t: "Impuestos y otros", c: "r" },
-  { k: "total", t: "Total del periodo", c: "r" },
-  { k: null, t: "Comparada con", c: "" },
-  { k: "eurKwh", t: "€/kWh medio", c: "r" },
-  { k: "total", t: "Media al mes", c: "r" },
-];
+/** Reparto de la factura en una barra: potencia, energía e impuestos y otros. */
+function reparto(f: Fila): string {
+  const total = Math.max(0.01, f.factura.potencia + f.factura.energia + Math.max(0, f.otros));
+  const pc = (x: number) => `${((Math.max(0, x) / total) * 100).toFixed(1)}%`;
+  return `<div class="rk-rep" role="img" aria-label="Potencia ${eur2(f.factura.potencia)}, energía ${eur2(f.factura.energia)}, impuestos y otros ${eur2(f.otros)}">
+      <span class="rk-rep__b"><span class="rk-rep--pot" style="width:${pc(f.factura.potencia)}"></span><span class="rk-rep--ene" style="width:${pc(f.factura.energia)}"></span><span class="rk-rep--otr" style="width:${pc(f.otros)}"></span></span>
+      <span class="rk-rep__n" aria-hidden="true"><span><i class="rk-rep--pot"></i><span class="rk-rep__l">Potencia </span>${eur(f.factura.potencia)}</span><span><i class="rk-rep--ene"></i><span class="rk-rep__l">Energía </span>${eur(f.factura.energia)}</span><span><i class="rk-rep--otr"></i><span class="rk-rep__l">Impuestos </span>${eur(f.otros)}</span></span>
+    </div>`;
+}
+
+const ord = (k: ColumnaOrden, texto: string, o: OpcionesTabla, clase = "") => {
+  const activa = k === o.orden;
+  return `<button type="button" class="rk-ord ${clase}" data-orden="${k}" aria-pressed="${activa}">${texto}<span class="rk-flecha" aria-hidden="true">${activa ? (o.asc ? "▲" : "▼") : "↕"}</span></button>`;
+};
+const sortAria = (ks: ColumnaOrden[], o: OpcionesTabla) => (ks.includes(o.orden) ? `aria-sort="${o.asc ? "ascending" : "descending"}"` : "");
 
 export function tablaRanking(filas: Fila[], o: OpcionesTabla): string {
   const abiertas = o.abiertas ?? new Set<string>();
-  const cab = COLS.map((c, i) => {
-    const titulo = i === 7 ? `Comparada con ${o.referencia}` : c.t;
-    if (!c.k) return `<th scope="col" class="${c.c ?? ""}">${titulo}</th>`;
-    const activa = c.k === o.orden && (i !== 9 || o.orden !== "total");
-    const aria = activa ? (o.asc ? "ascending" : "descending") : "none";
-    return `<th scope="col" class="${c.c ?? ""}" aria-sort="${aria}"><button type="button" class="rk-ord" data-orden="${c.k}">${titulo}<span class="rk-flecha" aria-hidden="true">${activa ? (o.asc ? "▲" : "▼") : "↕"}</span></button></th>`;
-  }).join("");
+  const cab = `
+    <th scope="col" class="rk-c-pos">#</th>
+    <th scope="col" class="rk-c-tarifa" ${sortAria(["nombre"], o)}>${ord("nombre", "Tarifa", o)}</th>
+    <th scope="col" class="rk-c-precios">Tipo y precios</th>
+    <th scope="col" class="rk-c-rep" ${sortAria(["potencia", "energia", "otros"], o)}><span class="rk-c-rep__t">Reparto de la factura</span><span class="rk-leyenda">${ord("potencia", '<i class="rk-rep--pot"></i>Potencia', o)}${ord("energia", '<i class="rk-rep--ene"></i>Energía', o)}${ord("otros", '<i class="rk-rep--otr"></i>Impuestos', o)}</span></th>
+    <th scope="col" class="r rk-c-total" ${sortAria(["total", "eurKwh"], o)}><span class="rk-c-total__b">${ord("total", "Total", o)}${ord("eurKwh", "€/kWh", o, "rk-ord--sec")}</span></th>
+    <th scope="col" class="rk-c-dif">Frente a ${esc(o.referencia)}</th>
+    <th scope="col" class="rk-c-ver"><span class="sr-only">Detalle</span></th>`;
 
   const cuerpo = filas.map((f, i) => {
     const t = f.tarifa;
@@ -275,28 +294,21 @@ export function tablaRanking(filas: Fila[], o: OpcionesTabla): string {
     return `<tr class="rk-fila${esActual ? " rk-fila--actual" : ""}${(f.porRevisar && t.tipo !== "pvpc") || f.incompleta ? " rk-fila--revisar" : ""}" data-id="${esc(t.id)}">
       <td class="rk-pos" data-label="Puesto"><span>${f.pos ?? i + 1}º</span></td>
       <th scope="row" class="rk-tarifa" data-label="Tarifa"><div class="rk-tarifa__in">
-        <span class="rk-logo" aria-hidden="true">${esc(iniciales(m))}</span>
+        ${logoHtml(t)}
         <span class="rk-nombre"><span class="rk-marca">${esc(m)}</span><span class="rk-plan">${esc(nombrePlan(t.nombre))}</span><span class="rk-badges">${insignias(t, f.porRevisar, esActual, f.incompleta)}</span></span>
       </div></th>
-      <td data-label="Tipo y precios"><span class="rk-tipo">${tipoTexto(t)}</span>${precios(t, f.factura)}</td>
-      <td class="r num" data-label="Potencia">${eur2(f.factura.potencia)}</td>
-      <td class="r num" data-label="Energía">${eur2(f.factura.energia)}</td>
-      <td class="r num" data-label="Impuestos y otros">${eur2(f.otros)}</td>
-      <td class="r num rk-total" data-label="Total del periodo"><strong>${eur2(f.factura.total)}</strong><span class="rk-mini">${eur(f.anual)}/año</span></td>
-      <td data-label="Comparada con ${esc(o.referencia)}">${difHtml(f, esActual, o.referencia)}</td>
-      <td class="r num" data-label="€/kWh medio">${num(f.eurKwh, 3)}</td>
-      <td class="r num rk-mes" data-label="Media al mes"><strong>${eur2(f.mensual)}</strong>
-        <button type="button" class="rk-ver" aria-expanded="${abierta}" aria-controls="rk-d-${esc(t.id)}" data-ver="${esc(t.id)}">${abierta ? "Ocultar" : "Ver detalle"}</button></td>
+      <td class="rk-precios" data-label="Tipo y precios"><span class="rk-tipo">${tipoTexto(t)}</span>${precios(t, f.factura)}</td>
+      <td class="rk-c-rep" data-label="Reparto">${reparto(f)}</td>
+      <td class="r num rk-total" data-label="Total"><strong>${eur(f.anual)}<small>/año</small></strong><span class="rk-mini"><span>${eur2(f.mensual)}/mes · ${num(f.eurKwh, 3)} €/kWh</span>${f.factura.dias !== 365 ? `<span>${eur2(f.factura.total)} en ${f.factura.dias} días</span>` : ""}</span></td>
+      <td class="rk-c-dif" data-label="Frente a ${esc(o.referencia)}">${difHtml(f, esActual, o.referencia)}</td>
+      <td class="rk-c-ver"><button type="button" class="rk-ver" aria-expanded="${abierta}" aria-controls="rk-d-${esc(t.id)}" data-ver="${esc(t.id)}"><span>${abierta ? "Ocultar" : "Detalle"}</span><span aria-hidden="true" class="rk-ver__f">▾</span><span class="sr-only"> de ${esc(m)} ${esc(nombrePlan(t.nombre))}</span></button></td>
     </tr>
-    <tr class="rk-det" id="rk-d-${esc(t.id)}"${abierta ? "" : " hidden"}><td colspan="${COLS.length}">${abierta ? detalle(f, esActual) : ""}</td></tr>`;
+    <tr class="rk-det" id="rk-d-${esc(t.id)}"${abierta ? "" : " hidden"}><td colspan="7">${abierta ? detalle(f, esActual) : ""}</td></tr>`;
   }).join("");
 
   return `<div class="rk-scroll"><table class="rk-tabla">
     <caption class="sr-only">Ranking de tarifas, ordenado por ${o.orden === "total" ? "precio total" : o.orden}</caption>
-    <thead>
-      <tr class="rk-grupos" aria-hidden="true"><th colspan="3">Tarifa</th><th colspan="4" class="r">Factura del periodo</th><th>Ahorro</th><th colspan="2" class="r">Media</th></tr>
-      <tr>${cab}</tr>
-    </thead>
+    <thead><tr>${cab}</tr></thead>
     <tbody>${cuerpo}</tbody>
   </table></div>`;
 }

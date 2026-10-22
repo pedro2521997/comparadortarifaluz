@@ -5,7 +5,7 @@ import { GRUPOS_HERRAMIENTAS, HERRAMIENTAS } from "../lib/herramientas";
 import AvisoDiario from "../components/AvisoDiario.astro";
 import { dias, tarifas, regulados, festivos, ajustesMercado } from "../lib/datos";
 import { compararTarifas, generarLecturas } from "@lst/tarifa";
-import { aFilas, marca, nombrePlan } from "../lib/ranking";
+import { aFilas, marca, nombrePlan, logoHtml } from "../lib/ranking";
 import { eur, nombreMes, sumarDias, num } from "../lib/formato";
 import { resumen, niveles, mejorFranja } from "../lib/grafico";
 import { hoyMadrid, fechaLarga, ekwh, hh, franja } from "../lib/formato";
@@ -111,6 +111,7 @@ const herramientas = [
           top.map((f, i) => (
             <li class="top3__i">
               <span class="top3__pos">{i + 1}º</span>
+              <Fragment set:html={logoHtml(f.tarifa)} />
               <span class="top3__n"><strong>{marca(f.tarifa.comercializadora)}</strong><span>{nombrePlan(f.tarifa.nombre)}</span></span>
               <span class="top3__p"><strong>{eur(f.anual)}</strong><span>al año · {num(f.mensual, 2)} €/mes</span></span>
             </li>
@@ -363,7 +364,7 @@ const herramientas = [
   }
   .top3__i {
     display: grid;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: auto auto 1fr auto;
     gap: 16px;
     align-items: center;
     padding: 16px 20px;

@@ -6,7 +6,7 @@ import Anuncio from "../components/Anuncio.astro";
 import { tarifas, regulados, festivos, dias, catalogoActualizado, ajustesMercado } from "../lib/datos";
 import { hoyMadrid, sumarDias, fechaMedia, fechaCorta, num, nombreMes } from "../lib/formato";
 import { compararTarifas, generarLecturas, PERFILES } from "@lst/tarifa";
-import { aFilas, tablaRanking, marca, nombrePlan } from "../lib/ranking";
+import { aFilas, tablaRanking, marca, nombrePlan, logoHtml } from "../lib/ranking";
 
 const hoy = hoyMadrid();
 const ultimoPvpc = [...dias].reverse().find((d) => d.fecha <= hoy)?.fecha ?? hoy;
@@ -129,7 +129,7 @@ const schema = {
               porMarca.flatMap((g) =>
                 g.tarifas.map((t, i) => (
                   <tr data-texto={`${g.marca} ${t.nombre} ${t.tipo === "fijo" ? "precio unico 24 h" : t.tipo === "periodos" ? "3 periodos" : t.tipo === "indexada" ? "indexada mercado" : "pvpc regulada"}`.toLowerCase()}>
-                    <th scope="row" class:list={["precios__marca", { "precios__marca--rep": i > 0 }]}>{g.marca}</th>
+                    <th scope="row" class:list={["precios__marca", { "precios__marca--rep": i > 0 }]}><span class="precios__m">{i === 0 && <Fragment set:html={logoHtml(t)} />}<span>{g.marca}</span></span></th>
                     <td>{nombrePlan(t.nombre)}</td>
                     <td>{t.tipo === "fijo" ? "Precio único" : t.tipo === "periodos" ? "3 periodos" : t.tipo === "indexada" ? "Indexada" : "Regulada"}</td>
                     <td class="r num">
@@ -242,7 +242,8 @@ const schema = {
     display: grid;
     gap: 16px;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    align-items: end;
+    /* Arriba: así las etiquetas quedan a la misma altura aunque unos campos lleven nota debajo y otros no. */
+    align-items: start;
   }
   @media (min-width: 900px) {
     .perfil-form {
@@ -255,6 +256,8 @@ const schema = {
   @media (min-width: 900px) {
     .perfil-form__cta {
       grid-column: auto;
+      /* A la altura de las cajas: deja el hueco de la etiqueta. */
+      padding-top: 26px;
     }
   }
   .ranking-pub {
@@ -282,6 +285,21 @@ const schema = {
     vertical-align: top;
   }
   /* La compañía se repite en cada fila (para filtrar y para lectores de pantalla), pero se atenúa. */
+  .precios__m {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .precios__m :global(.rk-logo) {
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    font-size: 11px;
+    padding: 4px;
+  }
+  .precios__marca--rep .precios__m {
+    padding-left: 42px;
+  }
   .precios__marca--rep {
     color: var(--color-slate);
     font-weight: 400;

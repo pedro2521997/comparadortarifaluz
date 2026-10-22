@@ -6,7 +6,7 @@ import { leerFactura, lineasDesdeTrozos, cupsValido, conceptosEn, type DatosFact
 import { calcularFactura, compararTarifas, generarLecturas, diasEntre, sumarDias, type Factura, type Regulados, type Tarifa, type Contexto } from "@lst/tarifa";
 import { cargarRango, cargarMercado } from "../lib/precios-cliente";
 import { eur, eur2, kwh, num, pct, fechaCorta } from "../lib/formato";
-import { marca, nombrePlan } from "../lib/ranking";
+import { marca, nombrePlan, logoHtml } from "../lib/ranking";
 
 interface Datos {
   tarifas: Tarifa[];
@@ -360,7 +360,7 @@ function pintar(c: Contexto2) {
     ? `<ol class="ef-alt">${mejores
         .map((a) => {
           const ahorro = anual(referencia - a.factura.total);
-          return `<li><span><strong>${esc(marca(a.tarifa.comercializadora))}</strong> · ${esc(nombrePlan(a.tarifa.nombre))}</span><span>${eur2(a.factura.total)}${ahorro > 5 ? ` <span class="pill pill--barata">−${eur(ahorro)}/año</span>` : ""}</span></li>`;
+          return `<li><span class="ef-alt__n">${logoHtml(a.tarifa)}<span><strong>${esc(marca(a.tarifa.comercializadora))}</strong> · ${esc(nombrePlan(a.tarifa.nombre))}</span></span><span>${eur2(a.factura.total)}${ahorro > 5 ? ` <span class="pill pill--barata">−${eur(ahorro)}/año</span>` : ""}</span></li>`;
         })
         .join("")}</ol>
       <p class="caption">Misma factura (${c.dias} días, ${kwh(c.ktotal)}, ${num(c.potencias.p1, 2)} kW) calculada con cada tarifa, impuestos incluidos y sin promociones. El ahorro está pasado a un año.</p>`
