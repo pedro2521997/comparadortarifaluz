@@ -1,0 +1,237 @@
+---
+import Base from "../layouts/Base.astro";
+import AyudaHerramienta from "../components/AyudaHerramienta.astro";
+import DondeEnFactura from "../components/DondeEnFactura.astro";
+import { esquemaFaq, esquemaHerramienta, type Pregunta } from "../lib/faq";
+import { tarifas, regulados, festivos } from "../lib/datos";
+import { hoyMadrid } from "../lib/formato";
+import { SITIO } from "../config";
+
+const hoy = hoyMadrid();
+const fijos = tarifas.filter((t) => t.tipo === "fijo" && t.energia?.p1).map((t) => t.energia!.p1 as number).sort((a, b) => a - b);
+const datos = { tarifas, regulados, festivos, hoy, medianaFijo: fijos[Math.floor(fijos.length / 2)] ?? 0.14 };
+
+const preguntas: Pregunta[] = [
+  { p: "¿Es seguro subir mi factura?", r: "Sí. El PDF se abre y se lee en tu navegador, como si lo abrieras en tu ordenador: no se envía a ningún servidor ni se guarda. Puedes comprobarlo desconectando internet después de cargar la página." },
+  { p: "¿Qué facturas se pueden leer?", r: "Las facturas en PDF que descargas del área de clientes de tu compañía. Si es una foto o un escaneo, no tiene texto que leer: en ese caso puedes escribir los datos a mano y te la explicamos igual." },
+  { p: "¿Por qué no ha encontrado algún dato?", r: "Cada compañía maqueta la factura a su manera. Lo que no encontramos lo dejamos vacío para que lo copies de la factura. Los datos imprescindibles son las fechas, los kWh, la potencia y el total." },
+  { p: "¿Qué hago si mi factura no cuadra?", r: "Revisa primero que los precios sean los del periodo facturado, que no haya regularizaciones o lecturas estimadas y los servicios añadidos. Si sigue sin cuadrar, reclama por escrito a tu compañía." },
+  { p: "¿Cómo sé si pago mucho?", r: "Mira el precio medio por kWh con todo incluido y compáralo con lo que pagarías con otras tarifas: te lo enseñamos al final de la explicación, con la misma factura calculada con las más baratas." },
+];
+const schema = [
+  esquemaHerramienta("Lector y explicador de facturas de luz", "Sube el PDF de tu factura de luz: te explicamos cada concepto, comprobamos si cuadra y te decimos cuánto pagarías con otras tarifas.", "/entender-factura-luz/", SITIO.url),
+  esquemaFaq(preguntas),
+];
+---
+
+<Base
+  titulo="Entender la factura de la luz: sube tu PDF y te la explicamos"
+  descripcion="Sube el PDF de tu factura de luz y te explicamos cada concepto en lenguaje claro, comprobamos si te cobran bien y te decimos cuánto pagarías con otras tarifas. Gratis y sin que el PDF salga de tu navegador."
+  schema={schema}
+  migas={[["Herramientas", "/herramientas/"], ["Entender tu factura"]]}
+>
+  <section class="hero hero--compacto">
+    <div class="wrap">
+      <p class="breadcrumbs"><a href="/herramientas/">Herramientas</a> / Entender tu factura</p>
+      <h1>Sube tu factura de luz y te la explicamos</h1>
+      <p class="lead">Leemos el PDF, te explicamos cada línea en palabras normales, comprobamos si te cobran bien y te decimos cuánto pagarías con otras tarifas. <strong>El PDF no sale de tu navegador.</strong></p>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="wrap" style="max-width:900px">
+      <ol class="pasos" style="gap:40px">
+        <li class="paso">
+          <h2 class="paso__t">Tu factura en PDF</h2>
+          <label class="dropzone" for="ef-fichero">
+            <input id="ef-fichero" type="file" accept="application/pdf,.pdf" class="sr-only" />
+            <span class="dropzone__icono" aria-hidden="true">
+              <svg width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M19 15v4H5v-4H3v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4h-2zM11 4.8V16h2V4.8l3.6 3.6L18 7l-6-6-6 6 1.4 1.4L11 4.8z"></path></svg>
+            </span>
+            <span class="dropzone__t">Elige el PDF de tu factura o arrástralo aquí</span>
+            <span class="caption">Descárgalo del área de clientes o de la app de tu compañía de luz</span>
+          </label>
+          <p class="btn-row" style="margin-top:12px">
+            <button class="btn btn--ghost btn--small" type="button" id="ef-ejemplo">Probar con una factura de ejemplo</button>
+            <button class="btn btn--ghost btn--small" type="button" id="ef-manual">No tengo el PDF: escribo los datos</button>
+          </p>
+          <div id="ef-estado" aria-live="polite" style="margin-top:16px"></div>
+        </li>
+
+        <li class="paso">
+          <h2 class="paso__t">Revisa lo que hemos leído</h2>
+          <p class="muted small">Los campos en verde los hemos sacado de tu factura. Corrige lo que no esté bien y completa lo que falte: lo imprescindible está marcado con *.</p>
+          <form id="ef-form" class="stack ef-form" style="--stack:24px;margin-top:16px" hidden novalidate>
+            <fieldset>
+              <legend class="label">Tu contrato</legend>
+              <div class="form-grid form-grid--3">
+                <div class="field"><label for="ef-comercializadora">Compañía</label><input id="ef-comercializadora" type="text" autocomplete="off" /></div>
+                <div class="field" style="grid-column:span 2"><label for="ef-cups">CUPS</label><input id="ef-cups" type="text" autocomplete="off" spellcheck="false" /></div>
+                <div class="field"><label for="ef-desde">Desde *</label><input id="ef-desde" type="date" /></div>
+                <div class="field"><label for="ef-hasta">Hasta *</label><input id="ef-hasta" type="date" /></div>
+                <div class="field"><label for="ef-dias">Días</label><input id="ef-dias" type="number" min="1" max="400" inputmode="numeric" /></div>
+                <div class="field"><label for="ef-pot1">Potencia punta (kW) *</label><input id="ef-pot1" type="number" min="0.5" max="30" step="0.001" inputmode="decimal" /></div>
+                <div class="field"><label for="ef-pot2">Potencia valle (kW)</label><input id="ef-pot2" type="number" min="0.5" max="30" step="0.001" inputmode="decimal" /></div>
+                <label class="check" style="align-self:end"><input id="ef-pvpc" type="checkbox" /> <span>Tengo la PVPC (tarifa regulada)</span></label>
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend class="label">Consumo</legend>
+              <div class="form-grid form-grid--3">
+                <div class="field"><label for="ef-k1">kWh punta</label><input id="ef-k1" type="number" min="0" step="0.01" inputmode="decimal" /></div>
+                <div class="field"><label for="ef-k2">kWh llano</label><input id="ef-k2" type="number" min="0" step="0.01" inputmode="decimal" /></div>
+                <div class="field"><label for="ef-k3">kWh valle</label><input id="ef-k3" type="number" min="0" step="0.01" inputmode="decimal" /></div>
+                <div class="field"><label for="ef-ktotal">kWh en total *</label><input id="ef-ktotal" type="number" min="0" step="0.01" inputmode="decimal" /><span class="hint">Si no tienes el reparto por periodos, basta con el total.</span></div>
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend class="label">Precios de tu tarifa (sin impuestos)</legend>
+              <div class="form-grid form-grid--3">
+                <div class="field"><label for="ef-e1">Energía punta €/kWh</label><input id="ef-e1" type="number" min="0" step="0.000001" inputmode="decimal" /><span class="hint">Si es precio único, ponlo solo aquí.</span></div>
+                <div class="field"><label for="ef-e2">Energía llano €/kWh</label><input id="ef-e2" type="number" min="0" step="0.000001" inputmode="decimal" /></div>
+                <div class="field"><label for="ef-e3">Energía valle €/kWh</label><input id="ef-e3" type="number" min="0" step="0.000001" inputmode="decimal" /></div>
+                <div class="field"><label for="ef-pp1">Potencia punta €/kW·día</label><input id="ef-pp1" type="number" min="0" step="0.000001" inputmode="decimal" /></div>
+                <div class="field"><label for="ef-pp2">Potencia valle €/kW·día</label><input id="ef-pp2" type="number" min="0" step="0.000001" inputmode="decimal" /></div>
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend class="label">Importes de la factura (€)</legend>
+              <div class="form-grid form-grid--3">
+                <div class="field"><label for="ef-iPotencia">Potencia</label><input id="ef-iPotencia" type="number" step="0.01" inputmode="decimal" /></div>
+                <div class="field"><label for="ef-iEnergia">Energía</label><input id="ef-iEnergia" type="number" step="0.01" inputmode="decimal" /></div>
+                <div class="field"><label for="ef-iBono">Bono social</label><input id="ef-iBono" type="number" step="0.01" inputmode="decimal" /></div>
+                <div class="field"><label for="ef-iIee">Impuesto electricidad</label><input id="ef-iIee" type="number" step="0.01" inputmode="decimal" /></div>
+                <div class="field"><label for="ef-iAlquiler">Alquiler del contador</label><input id="ef-iAlquiler" type="number" step="0.01" inputmode="decimal" /></div>
+                <div class="field"><label for="ef-iServicios">Servicios añadidos</label><input id="ef-iServicios" type="number" step="0.01" inputmode="decimal" /></div>
+                <div class="field"><label for="ef-iDescuentos">Descuentos</label><input id="ef-iDescuentos" type="number" step="0.01" inputmode="decimal" /></div>
+                <div class="field"><label for="ef-iIva">IVA</label><input id="ef-iIva" type="number" step="0.01" inputmode="decimal" /></div>
+                <div class="field"><label for="ef-total">Total de la factura *</label><input id="ef-total" type="number" step="0.01" inputmode="decimal" /></div>
+              </div>
+            </fieldset>
+            <DondeEnFactura />
+            <div><button class="btn btn--mint" type="submit">Explicar mi factura</button></div>
+          </form>
+        </li>
+      </ol>
+      <div id="ef-res" class="ef-res" hidden tabindex="-1" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <script type="application/json" id="datos-ef" set:html={JSON.stringify(datos)} />
+
+  <AyudaHerramienta
+    titulo="Cómo leemos tu factura"
+    preguntas={preguntas}
+    guias={[
+      { href: "/guias/leer-factura/", t: "Cómo leer la factura de la luz" },
+      { href: "/guias/factura-luz-alta/", t: "Por qué me ha llegado la factura tan alta" },
+      { href: "/guias/permanencias-y-servicios/", t: "Permanencias y servicios añadidos" },
+      { href: "/guias/cortes-y-reclamaciones/", t: "Cómo reclamar" },
+    ]}
+  >
+    <ol>
+      <li><strong>Abrimos el PDF en tu navegador</strong> y sacamos su texto. Nada se envía a ningún servidor.</li>
+      <li><strong>Buscamos los conceptos que la ley obliga a poner</strong> en todas las facturas: potencia, energía, bono social, impuesto eléctrico, alquiler del contador, IVA y total, además de tu CUPS, el periodo, los kWh y los precios.</li>
+      <li><strong>Tú revisas</strong> lo que hemos leído: cada compañía maqueta la factura a su manera y preferimos que lo compruebes antes de sacar conclusiones.</li>
+      <li><strong>Recalculamos la factura</strong> con tus precios y los valores regulados de esas fechas para ver si cuadra.</li>
+      <li><strong>La calculamos con todas las tarifas del mercado</strong> para que veas cuánto pagarías con las más baratas.</li>
+    </ol>
+  </AyudaHerramienta>
+</Base>
+
+<script>
+  import "../scripts/factura-ui";
+</script>
+
+<style is:global>
+  .ef-form fieldset {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+  }
+  .ef-form legend {
+    margin-bottom: 8px;
+    font-size: 16px;
+  }
+  .ef-form .ef-leido input {
+    border-color: var(--color-canopy);
+    background: #f2f7f5;
+  }
+  .ef-form .ef-leido label::after {
+    content: " ✓ leído";
+    color: var(--color-canopy);
+    font-weight: 400;
+    font-size: 12px;
+  }
+  .ef-res {
+    display: grid;
+    gap: 24px;
+    margin-top: 48px;
+    scroll-margin-top: 88px;
+  }
+  .ef-res:focus {
+    outline: none;
+  }
+  .ef-res .answer {
+    margin: 8px 0;
+  }
+  .ef-dos {
+    display: grid;
+    gap: 24px;
+  }
+  @media (min-width: 900px) {
+    .ef-dos {
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    }
+  }
+  .ef-h {
+    font-size: 24px;
+    margin-bottom: 16px;
+  }
+  .ef-conceptos,
+  .ef-obs,
+  .ef-alt {
+    display: grid;
+    gap: 16px;
+    padding: 0;
+    list-style: none;
+  }
+  .ef-concepto__cab {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+  .ef-barra {
+    display: block;
+    height: 8px;
+    border-radius: 4px;
+    background: var(--color-pale-sage);
+    margin: 6px 0;
+    overflow: hidden;
+  }
+  .ef-barra span {
+    display: block;
+    height: 100%;
+    background: var(--color-canopy);
+  }
+  .ef-obs li {
+    padding-left: 16px;
+    border-left: 3px solid var(--color-canopy);
+    font-size: 15px;
+  }
+  .ef-alt {
+    counter-reset: alt;
+  }
+  .ef-alt li {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--color-pale-sage);
+    padding-bottom: 8px;
+    font-size: 15px;
+    font-variant-numeric: tabular-nums;
+  }
+</style>

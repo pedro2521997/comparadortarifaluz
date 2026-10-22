@@ -13,7 +13,7 @@ export const GET: APIRoute = () => {
   // [ruta, última modificación]
   const rutas: [string, string?][] = [
     ["/", ultimoDia], ["/precio-luz-hoy/", ultimoDia], ["/precio-luz-manana/", dias.at(-1)?.fecha], ["/precio-luz-ayer/", ultimoDia], ["/precio-luz/", ultimoDia], ["/precio-luz/historico/", ultimoDia],
-    ["/tarifas/", catalogo], ["/comparador/", catalogo], ["/calcular-factura-luz/"], ["/analizador-consumo/"], ["/cuanto-gasta/", ultimoDia],
+    ["/tarifas/", catalogo], ["/comparador/", catalogo], ["/calcular-factura-luz/"], ["/entender-factura-luz/"], ["/analizador-consumo/"], ["/cuanto-gasta/", ultimoDia],
     ["/placas-solares/"], ["/herramientas/"], ["/herramientas/potencia/"], ["/herramientas/coche-electrico/"], ["/herramientas/distribuidora/"],
     ["/guias/", ultimaGuia], ["/como-funciona/"], ["/aviso-legal/"], ["/condiciones-de-uso/"], ["/privacidad/"], ["/cookies/"],
     ...dias.map((d): [string, string] => [`/precio-luz/${d.fecha}/`, d.fecha]),

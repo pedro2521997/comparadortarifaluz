@@ -5,3 +5,6 @@ dist/
 .dev.vars
 *.log
 .wrangler-dry/
+
+# Facturas reales de ejemplo para afinar el lector de PDF: nunca al repositorio
+docs/facturas-ejemplo/

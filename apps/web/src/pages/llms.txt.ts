@@ -10,6 +10,7 @@ const HERRAMIENTAS: [string, string, string][] = [
   ["Precio de la luz hoy", "/precio-luz-hoy/", "PVPC hora a hora de hoy, con las horas más baratas y más caras."],
   ["Precio de la luz mañana", "/precio-luz-manana/", "PVPC de mañana en cuanto lo publica Red Eléctrica (hacia las 20:30)."],
   ["Histórico del precio de la luz", "/precio-luz/historico/", "PVPC y mercado mayorista mes a mes desde 2021, y cambios de peajes e impuestos."],
+  ["Entender la factura de la luz", "/entender-factura-luz/", "Lee el PDF de la factura en el navegador del usuario, explica cada concepto, comprueba si el total cuadra y calcula la misma factura con las tarifas más baratas."],
   ["Simulador de factura de luz", "/calcular-factura-luz/", "Calcula una factura completa (potencia, energía, bono social, impuesto eléctrico, contador e IVA) con los kWh de la factura o con el fichero de consumos."],
   ["Analizador de consumo", "/analizador-consumo/", "Gráficas del consumo horario, consumo fantasma y picos a partir del fichero de la distribuidora."],
   ["Cuánto gasta cada aparato", "/cuanto-gasta/", "Coste al mes de cada electrodoméstico con el precio de hoy."],

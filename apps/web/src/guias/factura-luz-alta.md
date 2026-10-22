@@ -6,7 +6,7 @@ revisado: "2026-10-22"
 publicado: "2026-10-22"
 orden: 37
 categoria: "Tu factura"
-herramienta: { href: "/calcular-factura-luz/", texto: "Recalcula tus facturas con tu consumo real y tu tarifa para ver si te han cobrado bien." }
+herramienta: { href: "/entender-factura-luz/", texto: "Sube el PDF de tu factura y te explicamos cada línea, si cuadra y cuánto pagarías con otra tarifa." }
 fuentes:
   - { nombre: "CNMC: reclamaciones de consumidores", url: "https://www.cnmc.es/" }
 faq:

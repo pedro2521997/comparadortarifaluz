@@ -482,3 +482,42 @@ if (previo) {
   estado.innerHTML = `<div class="notice"><p>Ya cargaste ${previo.ejemplo ? "el fichero de ejemplo" : "un fichero"} en esta sesión (${fechaCorta(previo.desde)} – ${fechaCorta(previo.hasta)}).</p><p><button type="button" class="btn btn--small" id="usar-previo">Usar ese fichero</button></p></div>`;
   $("usar-previo").addEventListener("click", () => aceptarLecturas(previo.lecturas, previo.cups, previo.desde, previo.hasta, previo.avisos, false));
 }
+
+// Datos que llegan del lector de facturas (/entender-factura-luz/): modo factura ya relleno.
+try {
+  const f = JSON.parse(sessionStorage.getItem("lst-factura-leida") ?? "null") as {
+    kwh: { p1: number; p2: number; p3: number }; dias: number; potencia: { p1: number; p2: number };
+    precioEnergia?: { p1?: number; p2?: number; p3?: number }; precioPotencia?: { p1?: number; p2?: number }; pvpc?: boolean; servicios?: number;
+  } | null;
+  if (f && location.hash === "#factura") {
+    sessionStorage.removeItem("lst-factura-leida");
+    ponerModo("factura");
+    const porPeriodos = document.querySelector<HTMLInputElement>('input[name=fact-dato][value="periodos"]')!;
+    porPeriodos.checked = true;
+    porPeriodos.dispatchEvent(new Event("change", { bubbles: true }));
+    const poner = (id: string, v: number | undefined) => {
+      if (v !== undefined && Number.isFinite(v)) $<HTMLInputElement>(id).value = String(+v.toFixed(6));
+    };
+    poner("fp-p1", f.kwh.p1);
+    poner("fp-p2", f.kwh.p2);
+    poner("fp-p3", f.kwh.p3);
+    poner("fp-dias", f.dias);
+    poner("p1", f.potencia.p1);
+    poner("p2", f.potencia.p2);
+    if (f.pvpc) selActual.value = "pvpc";
+    else if (f.precioEnergia?.p1 && f.precioPotencia?.p1) {
+      selActual.value = "otra";
+      poner("o-e1", f.precioEnergia.p1);
+      poner("o-e2", f.precioEnergia.p2 ?? f.precioEnergia.p1);
+      poner("o-e3", f.precioEnergia.p3 ?? f.precioEnergia.p1);
+      poner("o-p1", f.precioPotencia.p1);
+      poner("o-p2", f.precioPotencia.p2 ?? f.precioPotencia.p1);
+      // Servicios de la factura, pasados a €/mes.
+      if (f.servicios) poner("o-cuota", (f.servicios / f.dias) * 30.4);
+    }
+    selActual.dispatchEvent(new Event("change"));
+    $("panel-factura").insertAdjacentHTML("afterbegin", `<div class="notice"><p><strong>Hemos rellenado el comparador con los datos de tu factura.</strong> Revísalos y pulsa comparar.</p></div>`);
+  }
+} catch {
+  // Sin almacenamiento de sesión: el comparador funciona igual, solo que vacío.
+}

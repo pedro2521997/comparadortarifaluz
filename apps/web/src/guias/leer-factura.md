@@ -5,7 +5,7 @@ respuesta: "Una factura de luz doméstica tiene seis bloques: potencia (pagas lo
 categoria: "Tu factura"
 revisado: "2026-10-21"
 orden: 1
-herramienta: { href: "/comparador/", texto: "Con tu fichero de consumos calculamos todas estas líneas para cada tarifa y te decimos cuál te sale más barata." }
+herramienta: { href: "/entender-factura-luz/", texto: "Sube el PDF de tu factura y te explicamos cada línea, si cuadra y cuánto pagarías con otra tarifa." }
 fuentes:
   - { nombre: "CNMC: entender la factura de la luz", url: "https://www.cnmc.es/" }
   - { nombre: "BOE: peajes y cargos vigentes", url: "https://www.boe.es/" }
