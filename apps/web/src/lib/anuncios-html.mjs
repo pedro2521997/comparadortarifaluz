@@ -17,6 +17,8 @@ export function verHuecos(dev = false) {
 
 export const anunciosActivos = () => config.activo;
 export const clienteAdsense = () => config.cliente;
+/** ID de editor real (no el de ejemplo): basta para la etiqueta meta y ads.txt, que no cargan nada de Google. */
+export const cuentaAdsense = () => (/^ca-pub-(?!0+$)\d{10,}$/.test(config.cliente) ? config.cliente : null);
 
 /**
  * @param {TipoAnuncio} tipo

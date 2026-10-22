@@ -8,7 +8,7 @@ import { frase } from "../lib/grafico";
 import { fechaCorta, hoyMadrid } from "../lib/formato";
 import Anuncio from "../components/Anuncio.astro";
 import { GRUPOS_HERRAMIENTAS, HERRAMIENTAS } from "../lib/herramientas";
-import { anunciosActivos, clienteAdsense } from "../lib/anuncios-html.mjs";
+import { anunciosActivos, clienteAdsense, cuentaAdsense } from "../lib/anuncios-html.mjs";
 
 interface Props {
   titulo: string;
@@ -82,10 +82,11 @@ const aviso = ultimo
     <meta property="og:description" content={descripcion} />
     <meta property="og:url" content={canonical} />
     {esquemas.length > 0 && <script type="application/ld+json" set:html={JSON.stringify(esquemas.length === 1 ? esquemas[0] : esquemas)} />}
+    {/* Verificación de AdSense: solo una etiqueta, sin cargar nada de Google ni poner cookies. */}
+    {cuentaAdsense() && <meta name="google-adsense-account" content={cuentaAdsense()} />}
     {
       adsense && (
         <>
-          <meta name="google-adsense-account" content={clienteAdsense()} />
           <script async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${clienteAdsense()}`} crossorigin="anonymous" />
         </>
       )

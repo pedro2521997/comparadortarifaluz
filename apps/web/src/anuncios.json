@@ -1,7 +1,7 @@
 {
-  "_nota": "Configuración de Google AdSense. Mientras 'activo' sea false no se carga nada de Google: en desarrollo (o con PREVIEW_ANUNCIOS=1) se ven huecos grises para revisar el reparto, y en producción no se muestra nada. Cuando AdSense apruebe la web: pon tu ID de editor en 'cliente', crea los bloques de anuncio en AdSense, copia sus IDs en 'bloques' y pon 'activo' a true. El consentimiento (RGPD) se configura en AdSense > Privacidad y mensajes (CMP certificado de Google).",
+  "_nota": "Configuración de Google AdSense. Con un 'cliente' real y 'activo' a false, la web está en modo verificación: publica la etiqueta meta google-adsense-account y la línea de Google en /ads.txt, pero no carga ningún script ni anuncio de Google (no hay cookies). En desarrollo (o con PREVIEW_ANUNCIOS=1) se ven huecos grises para revisar el reparto. Cuando AdSense apruebe la web: configura el mensaje de consentimiento en AdSense > Privacidad y mensajes (CMP certificado de Google), crea los bloques de anuncio, copia sus IDs en 'bloques' y pon 'activo' a true.",
   "activo": false,
-  "cliente": "ca-pub-0000000000000000",
+  "cliente": "ca-pub-2003300660156726",
   "bloques": {
     "horizontal": "0000000000",
     "articulo": "0000000000",
