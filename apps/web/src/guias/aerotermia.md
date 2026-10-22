@@ -1,6 +1,6 @@
 ---
 titulo: "Aerotermia: cuánta luz gasta, cuánto cuesta y si compensa"
-resumen: "La aerotermia calienta la casa y el agua con una bomba de calor que da 3–4 kWh de calor por cada kWh de luz. Cuánto consume, qué tarifa y potencia te convienen y si compensa frente al gas."
+resumen: "La aerotermia da 3–4 kWh de calor por cada kWh de luz. Cuánto consume, qué tarifa y potencia te convienen y si compensa frente al gas."
 respuesta: "Una aerotermia produce 3–4 kWh de calor por cada kWh de electricidad. Una vivienda que necesite 10.000 kWh de calor al año (calefacción y agua caliente) gastará unos 2.500–3.300 kWh de luz, unos 400–650 € al año según la tarifa. Compensa sobre todo en casas bien aisladas, en obra nueva o al sustituir gasóleo o radiadores eléctricos, y mucho más si se combina con placas solares."
 revisado: "2026-10-22"
 publicado: "2026-10-22"

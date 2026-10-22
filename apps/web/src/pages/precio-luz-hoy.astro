@@ -15,9 +15,9 @@ const diaHoy = preciosDe(hoy);
 const rHoy = diaHoy ? resumen(diaHoy.precios) : null;
 const fechaTitulo = fechaLarga(hoy).split(", ")[1].replace(/ de \d{4}$/, "");
 // Títulos con el dato del día: es lo que busca la gente y lo que hace clicar (se regeneran cada día en el build).
-const titulo = rHoy ? `Precio de la luz hoy ${fechaTitulo}: más barata a las ${hh(rHoy.min.h)} (${ekwh(rHoy.min.p)})` : "Precio de la luz hoy por horas (PVPC)";
+const titulo = rHoy ? `Precio de la luz hoy ${fechaTitulo}: ${ekwh(rHoy.min.p)} a las ${hh(rHoy.min.h)}` : "Precio de la luz hoy por horas (PVPC)";
 const descripcion = rHoy
-  ? `Precio de la luz hoy ${fechaTitulo} hora a hora: lo más barato a las ${hh(rHoy.min.h)} (${ekwh(rHoy.min.p)}) y lo más caro a las ${hh(rHoy.max.h)} (${ekwh(rHoy.max.p)}). Mejores horas para la lavadora y el coche, y si te sale mejor que tu tarifa.`
+  ? `Precio de la luz hoy ${fechaTitulo} por horas: lo más barato a las ${hh(rHoy.min.h)} (${ekwh(rHoy.min.p)}) y lo más caro a las ${hh(rHoy.max.h)}. Las mejores horas para la lavadora.`
   : "Precio de la luz de hoy hora a hora, las horas más baratas para poner la lavadora, el lavavajillas o cargar el coche, con datos de Red Eléctrica.";
 const schema = {
   "@context": "https://schema.org",

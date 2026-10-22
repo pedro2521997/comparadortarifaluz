@@ -1,6 +1,6 @@
 ---
 titulo: "¿Cuánto cuesta un kWh de luz en 2026? Precio real con y sin impuestos"
-resumen: "Lo que cuesta de verdad un kilovatio hora: el precio de la energía en las tarifas fijas y en la PVPC, cuánto suben los impuestos, y el precio medio final contando la potencia."
+resumen: "Lo que cuesta de verdad un kWh de luz: el precio de la energía en las tarifas fijas y en la PVPC, los impuestos y el precio final con la potencia."
 respuesta: "En octubre de 2026, las tarifas de precio fijo cobran la energía a unos 0,15 €/kWh de mediana (entre 0,10 y 0,26 según la compañía), y la PVPC ha salido a unos 0,15 €/kWh de media en 2026, ambos sin impuestos. Con impuesto eléctrico e IVA hay que multiplicar por 1,27. Contando potencia y demás conceptos, un hogar medio paga en total unos 0,25–0,30 € por cada kWh que consume."
 revisado: "2026-10-22"
 publicado: "2026-10-22"

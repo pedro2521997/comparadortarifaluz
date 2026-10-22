@@ -1,6 +1,6 @@
 ---
 titulo: "Placas solares en casa: precio, ahorro, trámites y ayudas (guía 2026)"
-resumen: "Todo lo que hay que saber antes de poner placas: cuánto cuestan, cuánto ahorras, cuándo se amortizan, qué trámites hay, qué ayudas existen y los errores más comunes."
+resumen: "Antes de poner placas: cuánto cuestan, cuánto ahorras, cuándo se amortizan, qué trámites y ayudas hay y los errores más comunes."
 respuesta: "Una instalación doméstica de 3 a 5 kWp cuesta, orientativamente, entre 4.000 y 8.000 € instalada. En España produce unos 1.300–1.750 kWh al año por cada kWp según la zona, y suele amortizarse en 6–10 años si aprovechas buena parte de la producción en el momento. La clave no es la potencia de las placas sino cuánto de lo que producen consumes tú directamente."
 revisado: "2026-10-22"
 publicado: "2026-10-22"

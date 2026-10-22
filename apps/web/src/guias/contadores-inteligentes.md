@@ -1,5 +1,6 @@
 ---
 titulo: "Contadores inteligentes y telegestión: qué miden y qué puedes hacer con ellos"
+titulo_seo: "Contadores inteligentes de luz: qué miden y qué puedes hacer"
 resumen: "Cómo funciona tu contador digital, qué datos guarda, cómo leerlo y por qué gracias a él puedes comparar tarifas con tu consumo hora a hora."
 respuesta: "El contador digital registra tu consumo hora a hora y la distribuidora lo lee a distancia: por eso puedes pagar por horas y descargar tu consumo. Lleva el limitador integrado: si salta, apaga algo y espera o pulsa su botón."
 categoria: "Tu consumo y el fichero"

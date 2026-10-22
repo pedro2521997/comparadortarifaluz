@@ -1,5 +1,6 @@
 ---
 titulo: "El fichero de consumos CSV: qué contiene, formatos y cómo crearlo a mano"
+titulo_seo: "El fichero de consumos CSV: qué contiene y cómo crearlo"
 resumen: "Cómo es el fichero de consumo horario de Datadis y de las distribuidoras, qué formatos leemos y cómo hacer uno a mano para simular cambios de hábitos."
 respuesta: "El fichero de consumos es un CSV con tu consumo hora a hora: fecha, hora (de 1 a 24 en Datadis) y kWh. Se descarga de Datadis o de tu distribuidora y puedes crearlo a mano con un bloc de notas para simular cambios."
 categoria: "Tu consumo y el fichero"

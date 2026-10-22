@@ -4,7 +4,7 @@ export const SITIO = {
   nombre: "ComparadorTarifaLuz",
   dominio: "comparadortarifaluz.es",
   url: "https://comparadortarifaluz.es",
-  descripcion: "Compara gratis las tarifas de luz de todas las compañías con tu consumo real y descubre cuánto ahorrarías. Precio de la luz hoy por horas, ranking de tarifas y calculadora de factura. Sin registro.",
+  descripcion: "Compara gratis las tarifas de luz de todas las compañías con tu consumo real. Precio de la luz hoy por horas, ranking de tarifas y simulador de factura.",
   /** Lema de la marca (la promesa de la web) */
   lema: "Tu tarifa de luz, sin trampa",
   /** Correo de contacto y de protección de datos. Cuando exista hola@comparadortarifaluz.es se puede cambiar aquí. */

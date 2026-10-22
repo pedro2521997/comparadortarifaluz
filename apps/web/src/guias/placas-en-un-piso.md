@@ -1,5 +1,6 @@
 ---
 titulo: "Placas solares en un piso: autoconsumo colectivo y comunidades energéticas"
+titulo_seo: "Placas solares en un piso: autoconsumo colectivo"
 resumen: "Si vives en un piso también puedes tener placas: en la cubierta de tu edificio o en una instalación cercana. Cómo funciona y qué pasos hay que dar."
 respuesta: "Si vives en un piso puedes tener placas con autoconsumo colectivo en la cubierta del edificio (se aprueba por un tercio de la junta y pagan los que participan) o en una instalación cercana o comunidad energética. Cada vecino recibe un porcentaje de la producción."
 categoria: "Placas solares y baterías"

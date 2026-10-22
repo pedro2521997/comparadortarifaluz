@@ -1,6 +1,6 @@
 ---
 titulo: "Previsión del precio de la luz: qué esperar en los próximos meses"
-resumen: "Nadie puede adivinar el precio de la luz, pero sí saber qué lo mueve, qué meses suelen ser más baratos y qué dicen los mercados a plazo. Y cómo protegerte elijas lo que elijas."
+resumen: "Qué mueve el precio de la luz, qué meses suelen ser más baratos y qué dicen los mercados a plazo. Y cómo protegerte elijas la tarifa que elijas."
 respuesta: "Nadie puede predecir el precio exacto de la luz, pero hay patrones claros: con los datos de 2023 a 2026, abril y mayo son de media los meses más baratos (unos 0,11–0,12 €/kWh en la PVPC) y octubre, diciembre y agosto, los más caros (unos 0,15–0,16). A medio plazo, la referencia son los precios del mercado a plazo de OMIP y el precio del gas. Si no quieres sustos, una tarifa de precio fijo te protege durante el contrato."
 revisado: "2026-10-22"
 publicado: "2026-10-22"

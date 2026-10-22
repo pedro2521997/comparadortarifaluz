@@ -21,6 +21,8 @@ const costeUso = kwhUsoAparato(aparato) * r.media * factor;
 const nombreMin = aparato.nombre.charAt(0).toLowerCase() + aparato.nombre.slice(1);
 const unidadRango = aparato.tipo === "potencia" ? "W" : aparato.tipo === "ciclo" ? "kWh por uso" : "kWh al año";
 const usoTexto = aparato.tipo === "ciclo" ? "cada uso" : aparato.tipo === "continuo" ? "al día" : "cada día de uso";
+const tituloBase = `Cuánto gasta ${articulo(aparato)} ${nombreMin}: ${eur2(costeMes)} al mes`;
+const tituloAparato = tituloBase.length <= 45 ? `${tituloBase} con el precio de hoy` : tituloBase;
 const relacionados = aparatos.filter((a) => a.grupo === aparato.grupo && a.slug !== aparato.slug).slice(0, 4);
 
 const faq = {
@@ -40,8 +42,8 @@ const faq = {
 ---
 
 <Base
-  titulo={`Cuánto gasta ${articulo(aparato)} ${nombreMin}: ${eur2(costeMes)} al mes con el precio de hoy`}
-  descripcion={`${aparato.nombre}: unos ${eur2(costeMes)} al mes con el precio de la luz de hoy. Calcula tu caso, mira las horas más baratas para usarlo y un truco para gastar menos.`}
+  titulo={tituloAparato}
+  descripcion={`${aparato.nombre}: unos ${eur2(costeMes)} al mes con el precio de la luz de hoy. Calcula tu caso, las horas más baratas y un truco para gastar menos.`}
   schema={faq}
 >
   <section class="hero hero--compacto">

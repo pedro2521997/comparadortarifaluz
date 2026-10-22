@@ -1,6 +1,7 @@
 ---
 titulo: "Cómo descargar el CSV de consumos de luz en cada compañía y distribuidora"
-resumen: "Paso a paso para conseguir tu consumo hora a hora en i-DE (Iberdrola), e-distribución (Endesa), UFD (Naturgy), E-Redes, Viesgo y Datadis, y qué hacer si tu compañía es otra."
+titulo_seo: "Cómo descargar el CSV de consumos de luz en cada distribuidora"
+resumen: "Paso a paso para descargar tu consumo hora a hora en i-DE, e-distribución, UFD, E-Redes, Viesgo y Datadis, y qué hacer si tu compañía es otra."
 respuesta: "Tu consumo hora a hora lo tiene tu distribuidora, no tu comercializadora. Regístrate en su área de clientes (o en Datadis, que sirve para todas) con tu DNI y tu CUPS, entra en la sección de consumos, elige el último año, consumo horario, y descarga el fichero CSV. Después súbelo al comparador: no sale de tu ordenador."
 revisado: "2026-10-22"
 publicado: "2026-10-22"

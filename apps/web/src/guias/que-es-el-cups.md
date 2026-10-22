@@ -1,6 +1,6 @@
 ---
 titulo: "Qué es el CUPS de la luz, dónde encontrarlo y qué dice de ti"
-resumen: "El CUPS es el código de tu punto de suministro: 20 o 22 caracteres que empiezan por ES. Dónde aparece en la factura, para qué lo necesitas y cómo saber tu distribuidora con él."
+resumen: "El CUPS es el código de tu punto de suministro: 20 o 22 caracteres que empiezan por ES. Dónde está en la factura y para qué lo necesitas."
 respuesta: "El CUPS (Código Universal del Punto de Suministro) identifica tu instalación eléctrica, no a ti: no cambia aunque cambies de compañía o de titular. Tiene 20 o 22 caracteres, empieza por ES y lo encuentras en cualquier factura de la luz, normalmente en el apartado de datos del contrato. Las cuatro cifras tras ES indican tu distribuidora."
 revisado: "2026-10-22"
 publicado: "2026-10-22"

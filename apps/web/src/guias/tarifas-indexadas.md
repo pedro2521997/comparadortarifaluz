@@ -1,6 +1,6 @@
 ---
 titulo: "Tarifas de luz indexadas: qué son, cómo se calculan y cuándo convienen"
-resumen: "Las tarifas indexadas cobran la energía al precio del mercado de cada hora más un margen. Cómo es su fórmula, en qué se diferencian de la PVPC, sus riesgos y quién gana con ellas."
+resumen: "Las tarifas indexadas cobran la energía al precio del mercado de cada hora más un margen: su fórmula, en qué se diferencian de la PVPC y sus riesgos."
 respuesta: "Una tarifa indexada cobra la energía al precio del mercado mayorista de cada hora (OMIE), más los costes del sistema, las pérdidas, los peajes y un margen o cuota de la comercializadora. Es como la PVPC pero siguiendo solo el mercado diario, sin la parte a plazo. Convienen si puedes mover consumo a las horas baratas y aceptas que un mes caro te suba la factura; en el último año han salido a unos 0,154–0,158 €/kWh de energía para un hogar tipo, casi igual que la PVPC."
 revisado: "2026-10-22"
 publicado: "2026-10-22"

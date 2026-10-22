@@ -27,7 +27,7 @@ const schema = {
 ---
 
 <Base
-  titulo={`Precio de la luz ${fechaLarga(dia.fecha).split(", ")[1]} por horas: la más barata, a las ${String(r.min.h).padStart(2, "0")}:00`}
+  titulo={`Precio de la luz el ${fechaLarga(dia.fecha).split(", ")[1]}: más barata a las ${String(r.min.h).padStart(2, "0")}:00`}
   descripcion={`Precio de la luz PVPC del ${fechaLarga(dia.fecha)}: hora más barata ${String(r.min.h).padStart(2, "0")}:00 (${ekwh(r.min.p)}), media ${ekwh(r.media)}.`}
   schema={schema}
 >

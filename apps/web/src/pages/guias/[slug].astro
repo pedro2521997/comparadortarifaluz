@@ -38,7 +38,7 @@ const schema = faqs.length && g.faq !== true
     : articulo;
 ---
 
-<Base titulo={g.titulo} descripcion={g.resumen} schema={schema} migas={[["Guías", "/guias/"], [g.titulo]]}>
+<Base titulo={g.titulo_seo ?? g.titulo} descripcion={g.resumen} schema={schema} migas={[["Guías", "/guias/"], [g.titulo]]}>
   <section class="hero hero--compacto">
     <div class="wrap guia-wrap">
       <p class="breadcrumbs"><a href="/guias/">Guías</a>{g.categoria && <> / {g.categoria}</>}</p>

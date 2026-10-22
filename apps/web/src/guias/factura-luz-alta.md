@@ -1,5 +1,6 @@
 ---
 titulo: "¿Por qué me ha llegado la factura de la luz tan alta? 9 causas y qué hacer"
+titulo_seo: "¿Por qué me ha llegado la factura de la luz tan alta? 9 causas"
 resumen: "Lecturas estimadas, regularizaciones, más días facturados, fin de una promoción, cambios de IVA, aparatos nuevos… Cómo encontrar la causa y cuándo reclamar."
 respuesta: "Las causas más habituales de una factura de luz alta son: más días facturados que otros meses, una regularización tras lecturas estimadas, el fin de una promoción o una subida de precios de tu tarifa, un cambio de impuestos (como la vuelta del IVA al 21 % en junio de 2026), más consumo por frío o calor, o un aparato que gasta de más. Compara los kWh y los precios con la factura anterior, y si no cuadra, reclama a tu comercializadora."
 revisado: "2026-10-22"

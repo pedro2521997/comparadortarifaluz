@@ -18,6 +18,8 @@ export type Categoria = (typeof CATEGORIAS)[number];
 
 export interface Frontmatter {
   titulo: string;
+  /** Título para Google cuando el titular es largo (máx. ~65 caracteres); si no, se usa `titulo` */
+  titulo_seo?: string;
   resumen: string;
   /** Respuesta directa en 1–3 frases (GEO): se muestra arriba en «En pocas palabras» */
   respuesta?: string;

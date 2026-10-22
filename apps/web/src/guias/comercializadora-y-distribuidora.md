@@ -1,6 +1,7 @@
 ---
 titulo: "Comercializadora y distribuidora de luz: qué es cada una y cómo saber cuál es la tuya"
-resumen: "La comercializadora te vende la luz y la eliges tú; la distribuidora te la lleva a casa, lee tu contador y no la puedes cambiar. Cómo saber cuál te toca por tu CUPS."
+titulo_seo: "Comercializadora y distribuidora de luz: diferencias y cuál es la tuya"
+resumen: "La comercializadora te vende la luz y la eliges tú; la distribuidora te la lleva y lee tu contador. Cómo saber cuál te toca por tu CUPS."
 respuesta: "La comercializadora es la empresa que te vende la luz y te factura (Iberdrola, Endesa, Octopus…): la eliges tú y puedes cambiarla gratis. La distribuidora es la dueña de los cables y del contador de tu zona (i-DE, e-distribución, UFD, E-Redes, Viesgo…): no la eliges, no cambia aunque cambies de compañía y es quien tiene tu consumo hora a hora. La sabes por las primeras cifras de tu CUPS."
 revisado: "2026-10-22"
 publicado: "2026-10-22"

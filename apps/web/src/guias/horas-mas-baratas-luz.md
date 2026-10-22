@@ -1,6 +1,6 @@
 ---
 titulo: "¿A qué hora es más barata la luz? Las horas buenas y malas, con datos"
-resumen: "Con la PVPC, la luz es más barata de 14 a 16 h y de madrugada, y más cara de 19 a 22 h. Con una tarifa de 3 periodos, de 0 a 8 h y los fines de semana. Con precio fijo, da igual."
+resumen: "Con PVPC, la luz es más barata de 14 a 16 h y de madrugada, y más cara de 19 a 22 h. Con 3 periodos, de 0 a 8 h y fines de semana."
 respuesta: "Con la tarifa regulada (PVPC), en el último año la luz ha sido de media más barata de 14:00 a 16:00 (unos 0,07–0,08 €/kWh, gracias a la solar) y más cara de 19:00 a 22:00 (unos 0,22–0,25 €/kWh). Con una tarifa de tres periodos, lo barato es de 0 a 8 h y todo el fin de semana. Con precio fijo, cuesta lo mismo a cualquier hora."
 revisado: "2026-10-22"
 publicado: "2026-10-22"

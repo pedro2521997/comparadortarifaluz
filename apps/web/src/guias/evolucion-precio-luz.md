@@ -1,6 +1,6 @@
 ---
 titulo: "Evolución del precio de la luz en España: de 2021 a 2026, año a año"
-resumen: "Qué ha pasado con el precio de la luz desde que existe la tarifa 2.0TD: la crisis de 2022, la bajada de 2023–2024 y la situación de 2026, con los datos de Red Eléctrica."
+resumen: "El precio de la luz desde la tarifa 2.0TD: la crisis de 2022, la bajada de 2023–2024 y la situación de 2026, con datos de Red Eléctrica."
 respuesta: "La PVPC (tarifa regulada) costó de media 0,287 €/kWh en 2022, el año de la crisis del gas, bajó a 0,147 en 2023 y a 0,128 en 2024, el más barato, y ha subido algo después: 0,137 en 2025 y 0,147 de media en lo que va de 2026 (sin impuestos, con peajes y cargos). El mes más caro fue agosto de 2022 y el más barato, abril de 2024."
 revisado: "2026-10-22"
 publicado: "2026-10-22"

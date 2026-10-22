@@ -16,7 +16,8 @@
     "autocompletado": "node scripts/autocompletado.mjs",
     "tarifas": "node scripts/importar-cnmc.mjs",
     "desplegar": "npm run build && npm run deploy -w @lst/worker",
-    "db:init": "npm run db:init -w @lst/worker"
+    "db:init": "npm run db:init -w @lst/worker",
+    "seo": "node scripts/auditar-seo.mjs"
   },
   "devDependencies": {
     "typescript": "^5.9.0",

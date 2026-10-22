@@ -1,5 +1,6 @@
 ---
 titulo: "Instalar una batería en casa: precio, tipos, trámites y cuándo compensa"
+titulo_seo: "Instalar una batería en casa: precio, tipos y cuándo compensa"
 resumen: "Qué batería elegir, cuánto cuesta instalarla, qué inversor necesitas, si sirve sin placas solares, y las cuentas para saber si se amortiza en tu caso."
 respuesta: "Una batería doméstica de litio (LFP) de 5 kWh útiles cuesta, orientativamente, entre 2.500 y 4.500 € instalada. Solo ahorra la diferencia entre lo que pagas por la luz y lo que te compensan por los excedentes, unos 0,08–0,12 € por kWh almacenado, así que en la mayoría de casas tarda más en pagarse que su vida útil. Compensa si tienes muchos excedentes, poca compensación, o necesitas respaldo ante cortes."
 revisado: "2026-10-22"

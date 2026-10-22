@@ -1,6 +1,7 @@
 ---
 titulo: "¿Cuánto cuesta cargar un coche eléctrico en casa? Coste por km y al mes"
-resumen: "Lo que cuesta cargar el coche eléctrico en casa según tu tarifa y la hora, comparado con la gasolina y con los cargadores públicos, con ejemplos de modelos habituales."
+titulo_seo: "¿Cuánto cuesta cargar un coche eléctrico en casa? Coste por km"
+resumen: "Lo que cuesta cargar el coche eléctrico en casa según tu tarifa y la hora, frente a la gasolina y los cargadores públicos, con ejemplos."
 respuesta: "Un turismo eléctrico gasta unos 15–20 kWh cada 100 km. Cargando en casa de madrugada, con la energía a unos 0,10–0,13 €/kWh con impuestos, 100 km salen por unos 1,7–2,9 €, frente a unos 9–11 € de gasolina. 1.000 km al mes cuestan unos 17–29 € en casa. En cargadores rápidos públicos puede costar tres o cuatro veces más."
 revisado: "2026-10-22"
 publicado: "2026-10-22"
