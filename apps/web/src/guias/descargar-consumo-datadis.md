@@ -1,6 +1,8 @@
 ---
 titulo: "Cómo descargar tu consumo de luz en Datadis, paso a paso"
 resumen: "Datadis es la plataforma común de las distribuidoras. En cinco minutos tienes tu consumo hora a hora en un CSV listo para el comparador."
+respuesta: "Regístrate gratis en datadis.es con el DNI del titular, entra en tu suministro, elige la sección de consumos, el último año y el consumo horario, y descarga el CSV. Sirve para todas las distribuidoras y luego puedes subirlo al comparador."
+categoria: "Tu consumo y el fichero"
 revisado: "2026-10-21"
 orden: 5
 howto: true

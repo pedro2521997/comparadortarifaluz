@@ -1,6 +1,8 @@
 ---
 titulo: "¿Por qué sube el precio de la luz? Las 5 causas"
 resumen: "El gas, el CO2, el viento, el calor y la hora del día: lo que hace que la luz suba o baje, con datos de los últimos años."
+respuesta: "La luz sube cuando sube el gas (las centrales de gas marcan el precio en las horas caras), cuando hay poco viento, sol o agua, con olas de frío o calor, y cuando cambian impuestos o peajes. 2022 fue el año más caro por la crisis del gas."
+categoria: "Precio y mercado"
 revisado: "2026-10-21"
 orden: 22
 herramienta: { href: "/precio-luz/historico/", texto: "Mira cómo ha cambiado el precio mes a mes desde 2021." }

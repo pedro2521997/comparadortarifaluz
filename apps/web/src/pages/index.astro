@@ -1,5 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
+import Anuncio from "../components/Anuncio.astro";
 import AvisoDiario from "../components/AvisoDiario.astro";
 import { dias, tarifas, regulados, festivos, ajustesMercado } from "../lib/datos";
 import { compararTarifas, generarLecturas } from "@lst/tarifa";
@@ -140,6 +141,7 @@ const herramientas = [
       </div>
     </div>
   </section>
+  <Anuncio tipo="horizontal" seccion />
 
   <section class="section section--white">
     <div class="wrap grid grid--2 confianza">

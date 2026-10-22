@@ -1,6 +1,7 @@
 ---
 titulo: "Preguntas frecuentes sobre la luz y sobre ComparadorTarifaLuz"
 resumen: "Respuestas cortas a lo que más nos preguntan: privacidad del fichero, de dónde salen los precios, cómo ganamos dinero y más."
+categoria: "Tu factura"
 revisado: "2026-10-21"
 orden: 20
 faq: true

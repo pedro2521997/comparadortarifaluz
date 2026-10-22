@@ -6,6 +6,8 @@ import { SITIO, NAV, TELEGRAM_URL } from "../config";
 import { dias } from "../lib/datos";
 import { frase } from "../lib/grafico";
 import { fechaCorta, hoyMadrid } from "../lib/formato";
+import Anuncio from "../components/Anuncio.astro";
+import { anunciosActivos, clienteAdsense } from "../lib/anuncios-html.mjs";
 
 interface Props {
   titulo: string;
@@ -13,8 +15,38 @@ interface Props {
   /** JSON-LD opcional */
   schema?: Record<string, unknown> | Record<string, unknown>[];
   noindex?: boolean;
+  /** Anuncio antes del pie (no en legales ni en el 404) */
+  anuncioFinal?: boolean;
+  /** Ruta de migas de pan para los datos estructurados: [["Guías", "/guias/"], ["Título"]] */
+  migas?: [string, string?][];
 }
-const { titulo, descripcion = SITIO.descripcion, schema, noindex = false } = Astro.props;
+const { titulo, descripcion = SITIO.descripcion, schema, noindex = false, anuncioFinal = true, migas } = Astro.props;
+const adsense = anunciosActivos();
+// Datos estructurados comunes: la web y, si hay, las migas de pan (ayudan a Google y a los buscadores con IA).
+const esquemas = [
+  ...(schema ? (Array.isArray(schema) ? schema : [schema]) : []),
+  ...(Astro.url.pathname === "/"
+    ? [
+        {
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: SITIO.nombre,
+          alternateName: SITIO.dominio,
+          url: SITIO.url,
+          inLanguage: "es-ES",
+          description: SITIO.descripcion,
+          publisher: { "@type": "Organization", name: SITIO.nombre, url: SITIO.url, logo: new URL("/favicon.svg", SITIO.url).href },
+        },
+      ]
+    : []),
+  ...(migas
+    ? [{
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [["Inicio", "/"], ...migas].map(([n, u], i) => ({ "@type": "ListItem", position: i + 1, name: n, ...(u ? { item: new URL(u, SITIO.url).href } : {}) })),
+      }]
+    : []),
+];
 const canonical = new URL(Astro.url.pathname, SITIO.url).href;
 // Los títulos largos ya dicen lo que importa: la marca solo se añade si cabe (unos 60 caracteres en Google).
 const tituloCompleto = titulo.includes(SITIO.nombre) || titulo.length > 42 ? titulo : `${titulo} | ${SITIO.nombre}`;
@@ -48,18 +80,26 @@ const aviso = ultimo
     <meta property="og:title" content={tituloCompleto} />
     <meta property="og:description" content={descripcion} />
     <meta property="og:url" content={canonical} />
-    {schema && <script type="application/ld+json" set:html={JSON.stringify(schema)} />}
+    {esquemas.length > 0 && <script type="application/ld+json" set:html={JSON.stringify(esquemas.length === 1 ? esquemas[0] : esquemas)} />}
+    {
+      adsense && (
+        <>
+          <meta name="google-adsense-account" content={clienteAdsense()} />
+          <script async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${clienteAdsense()}`} crossorigin="anonymous" />
+        </>
+      )
+    }
   </head>
   <body>
     <a class="skip-link" href="#contenido">Saltar al contenido</a>
     {
       aviso && (
-        <div class="anuncio">
-          <a class="wrap anuncio__in" href={aviso.href} data-aviso-fecha={aviso.fecha}>
+        <aside class="aviso-barra" aria-label="Precio de la luz">
+          <a class="wrap aviso-barra__in" href={aviso.href} data-aviso-fecha={aviso.fecha}>
             <span>{aviso.texto}</span>
             <span aria-hidden="true">→</span>
           </a>
-        </div>
+        </aside>
       )
     }
     <header class="nav">
@@ -90,6 +130,7 @@ const aviso = ultimo
 
     <main id="contenido">
       <slot />
+      {anuncioFinal && <Anuncio tipo="multiplex" seccion />}
     </main>
 
     <footer class="pie">
@@ -147,6 +188,22 @@ const aviso = ultimo
       </div>
     </footer>
 
+    {
+      adsense && (
+        <script is:inline>
+          (function () {
+            function activar() {
+              document.querySelectorAll("ins.adsbygoogle:not([data-adsbygoogle-status])").forEach(function () {
+                (window.adsbygoogle = window.adsbygoogle || []).push({});
+              });
+            }
+            if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", activar);
+            else activar();
+            document.addEventListener("anuncios", activar);
+          })();
+        </script>
+      )
+    }
     <script>
       const boton = document.querySelector<HTMLButtonElement>(".nav__toggle");
       const menu = document.getElementById("menu");

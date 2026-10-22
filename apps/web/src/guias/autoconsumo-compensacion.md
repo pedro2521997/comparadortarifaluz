@@ -1,6 +1,8 @@
 ---
 titulo: "Autoconsumo: cómo funciona la compensación de excedentes"
 resumen: "Qué pasa con la energía de tus placas que no consumes, cuánto te descuentan por ella y por qué nunca te pagan más que tu factura de energía."
+respuesta: "Con la compensación simplificada, la energía de tus placas que no consumes se descuenta de tu factura a un precio bajo (unos 0,04–0,08 €/kWh), nunca más que el término de energía del mes: no te pagan dinero. Por eso ahorras mucho más consumiendo tu producción en el momento."
+categoria: "Placas solares y baterías"
 revisado: "2026-10-21"
 orden: 9
 herramienta: { href: "/placas-solares/", texto: "Calcula con tu consumo real qué parte de tu producción aprovecharías y cuánto valdrían tus excedentes." }

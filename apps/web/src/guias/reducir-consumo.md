@@ -1,6 +1,8 @@
 ---
 titulo: "Cómo reducir el consumo de luz: 15 trucos ordenados por lo que ahorran"
 resumen: "Del termo a la nevera, pasando por la potencia y la hora a la que usas cada aparato: trucos concretos con lo que ahorra cada uno."
+respuesta: "Lo que más ahorra: programar el termo eléctrico en horas baratas, calentar con bomba de calor en vez de radiadores, el aire a 26 °C, ajustar la potencia contratada, cambiar a una tarifa que encaje con tu consumo y poner lavadora y lavavajillas en las horas baratas."
+categoria: "Ahorrar luz"
 revisado: "2026-10-21"
 orden: 23
 herramienta: { href: "/analizador-consumo/", texto: "Sube tu fichero y te decimos dónde se te va la luz: horas, días, meses y consumo fantasma." }

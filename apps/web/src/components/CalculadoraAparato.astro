@@ -1,7 +1,7 @@
 ---
 // Calculadora de cuánto gasta un aparato. Valores típicos editables; precio de hoy (PVPC) o tu precio fijo.
 import type { Aparato } from "../lib/datos";
-import { dias, factorImpuestos } from "../lib/datos";
+import { dias, factorImpuestos, tarifas } from "../lib/datos";
 import { hoyMadrid } from "../lib/formato";
 
 interface Props {
@@ -13,8 +13,11 @@ const ultimo = dias[dias.length - 1];
 // Último día publicado hasta hoy (no el de mañana) como dato inicial; el navegador lo refresca.
 const diaBase = [...dias].reverse().find((d) => d.fecha <= hoy) ?? ultimo;
 const tipo = aparato?.tipo ?? "potencia";
+// Precio de referencia del mercado libre: la mediana de las tarifas de precio fijo del catálogo.
+const fijos = tarifas.filter((t) => t.tipo === "fijo" && t.energia?.p1).map((t) => t.energia.p1 as number).sort((a, b) => a - b);
 const config = {
   tipo,
+  mediana: +(fijos[Math.floor(fijos.length / 2)] ?? 0.14).toFixed(4),
   ventana: aparato?.ventana_h ?? 1,
   desplazable: aparato?.desplazable ?? true,
   factor: factorImpuestos(hoy),
@@ -70,7 +73,18 @@ const id = aparato?.slug ?? "generico";
         <label for={`t-${id}`}>Tu tarifa</label>
         <select id={`t-${id}`} name="t">
           <option value="pvpc">PVPC: precio de hoy hora a hora</option>
+          <option value="mediana">Mercado libre: un precio fijo típico</option>
           <option value="fijo">Precio fijo: escribo mi precio</option>
+        </select>
+      </div>
+      <div class="field" data-tarifa="pvpc">
+        <label for={`hu-${id}`}>¿A qué hora lo usas?</label>
+        <select id={`hu-${id}`} name="hu">
+          <option value="todo">Repartido a lo largo del día</option>
+          <option value="8-11">Por la mañana (8 a 11 h)</option>
+          <option value="13-16">Al mediodía (13 a 16 h)</option>
+          <option value="19-22">Por la tarde-noche (19 a 22 h)</option>
+          <option value="0-7">De madrugada (0 a 7 h)</option>
         </select>
       </div>
       <div class="field" data-tarifa="fijo" hidden>
@@ -79,6 +93,28 @@ const id = aparato?.slug ?? "generico";
         <span class="hint">€/kWh sin impuestos (en tu factura)</span>
       </div>
     </div>
+
+    <details class="calc__nuevo">
+      <summary>¿Y si lo cambio por uno más eficiente?</summary>
+      <div class="form-grid form-grid--2" style="padding-top:12px">
+        <div class="field">
+          <label for={`ef-${id}`}>El nuevo gasta</label>
+          <select id={`ef-${id}`} name="ef">
+            <option value="0">No lo quiero comparar</option>
+            <option value="0.2">Un 20 % menos</option>
+            <option value="0.3">Un 30 % menos</option>
+            <option value="0.4">Un 40 % menos</option>
+            <option value="0.5">La mitad</option>
+            <option value="0.7">Un 70 % menos (p. ej., de radiador a bomba de calor)</option>
+          </select>
+          <span class="hint">Compara los kWh al año de las dos etiquetas energéticas.</span>
+        </div>
+        <div class="field">
+          <label for={`pn-${id}`}>Precio del nuevo (€)</label>
+          <input id={`pn-${id}`} name="pn" type="number" min="0" step="10" inputmode="numeric" placeholder="Opcional" />
+        </div>
+      </div>
+    </details>
   </form>
 
   <div class="calc__res" aria-live="polite">
@@ -86,6 +122,7 @@ const id = aparato?.slug ?? "generico";
     <p class="answer"><strong data-out="mes">—</strong> al mes</p>
     <p class="calc__det" data-out="detalle"></p>
     <div class="calc__comp" data-out="comparacion"></div>
+    <p class="small" data-out="nuevo"></p>
     <p class="caption" data-out="fuente"></p>
   </div>
 </div>
@@ -97,6 +134,7 @@ const id = aparato?.slug ?? "generico";
 
   interface Config {
     tipo: "potencia" | "ciclo" | "continuo";
+    mediana: number;
     ventana: number;
     desplazable: boolean;
     factor: number;
@@ -116,6 +154,8 @@ const id = aparato?.slug ?? "generico";
       for (const el of raiz.querySelectorAll<HTMLElement>("[data-modo]")) el.hidden = el.dataset.modo !== m;
       const tarifa = (form.elements.namedItem("t") as HTMLSelectElement).value;
       raiz.querySelector<HTMLElement>('[data-tarifa="fijo"]')!.hidden = tarifa !== "fijo";
+      // La hora de uso solo cambia algo con PVPC y en aparatos que no están siempre encendidos.
+      raiz.querySelector<HTMLElement>('[data-tarifa="pvpc"]')!.hidden = tarifa !== "pvpc" || m === "continuo";
 
       // kWh de un uso, usos al mes y horas que dura cada uso
       let kwhUso: number, usosMes: number, horasUso: number, queEsUso: string;
@@ -139,7 +179,14 @@ const id = aparato?.slug ?? "generico";
 
       const validos = cfg.precios.filter((p): p is number => p !== null);
       const media = validos.reduce((a, b) => a + b, 0) / validos.length;
-      const precio = tarifa === "fijo" ? val("p") : media;
+      const hu = (form.elements.namedItem("hu") as HTMLSelectElement).value;
+      let precioHora = media;
+      if (hu !== "todo" && m !== "continuo") {
+        const [a, b] = hu.split("-").map(Number);
+        const tramo = cfg.precios.slice(a, b + 1).filter((p): p is number => p !== null);
+        if (tramo.length) precioHora = tramo.reduce((x, y) => x + y, 0) / tramo.length;
+      }
+      const precio = tarifa === "fijo" ? val("p") : tarifa === "mediana" ? cfg.mediana : precioHora;
       const coste = (k: number, p: number) => k * p * cfg.factor;
 
       out("mes").textContent = eur2(coste(kwhMes, precio));
@@ -162,10 +209,20 @@ const id = aparato?.slug ?? "generico";
         } else comp.innerHTML = "";
       } else comp.innerHTML = "";
 
+      // Cambio por uno más eficiente: ahorro al año y en cuánto se paga.
+      const ef = Number((form.elements.namedItem("ef") as HTMLSelectElement).value);
+      const ahorroAnio = coste(kwhMes * 12 * ef, precio);
+      const pn = val("pn");
+      out("nuevo").innerHTML = ef
+        ? `Con uno nuevo que gaste ${ef === 0.5 ? "la mitad" : `un ${Math.round(ef * 100)} % menos`} ahorrarías <strong>${eur2(ahorroAnio)} al año</strong>${pn > 0 ? `: se pagaría en ${ahorroAnio > 0 ? `${num(pn / ahorroAnio, 0)} años` : "nunca"} solo con el ahorro${pn / ahorroAnio > 12 ? ", más de lo que suele durar. Cámbialo cuando se estropee el viejo" : ""}.` : "."}`
+        : "";
+
       out("fuente").innerHTML =
         tarifa === "pvpc"
-          ? `Con el PVPC del ${fechaCorta(cfg.fecha)} (media ${ekwh(media)} sin impuestos) más impuesto eléctrico e IVA (×${num(cfg.factor, 3)}). No incluye la potencia contratada, que pagas igual uses o no el aparato.`
-          : `Con tu precio de ${ekwh(precio)} más impuesto eléctrico e IVA (×${num(cfg.factor, 3)}). No incluye la potencia contratada.`;
+          ? `Con el PVPC del ${fechaCorta(cfg.fecha)} (${hu === "todo" || m === "continuo" ? `media del día ${ekwh(media)}` : `${ekwh(precio)} de media en esas horas`}, sin impuestos) más impuesto eléctrico e IVA (×${num(cfg.factor, 3)}). No incluye la potencia contratada, que pagas igual uses o no el aparato.`
+          : tarifa === "mediana"
+            ? `Con ${ekwh(precio)}, la mediana de las tarifas de precio fijo de nuestro catálogo, más impuesto eléctrico e IVA (×${num(cfg.factor, 3)}). No incluye la potencia contratada.`
+            : `Con tu precio de ${ekwh(precio)} más impuesto eléctrico e IVA (×${num(cfg.factor, 3)}). No incluye la potencia contratada.`;
     }
 
     form.addEventListener("input", calcular);
@@ -235,6 +292,15 @@ const id = aparato?.slug ?? "generico";
   }
   [hidden] {
     display: none !important;
+  }
+  .calc__nuevo {
+    border-top: 1px solid var(--color-pale-sage);
+    padding-top: 8px;
+  }
+  .calc__nuevo summary {
+    cursor: pointer;
+    color: var(--color-bark);
+    font-weight: 500;
   }
   .calc__res {
     background: var(--color-cream-paper);

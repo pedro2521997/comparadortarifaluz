@@ -1,6 +1,8 @@
 ---
 titulo: "Cómo leer tu factura de la luz, línea a línea"
 resumen: "Qué es cada concepto de la factura, cuáles dependen de ti y cuáles no, con un ejemplo de un mes real en euros."
+respuesta: "Una factura de luz doméstica tiene seis bloques: potencia (pagas los kW contratados cada día), energía (los kWh consumidos), financiación del bono social, impuesto eléctrico (5,11 %), alquiler del contador e IVA. Lo que puedes cambiar tú es la potencia, la tarifa y cuándo consumes."
+categoria: "Tu factura"
 revisado: "2026-10-21"
 orden: 1
 herramienta: { href: "/comparador/", texto: "Con tu fichero de consumos calculamos todas estas líneas para cada tarifa y te decimos cuál te sale más barata." }

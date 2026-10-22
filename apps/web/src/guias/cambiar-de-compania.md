@@ -1,6 +1,8 @@
 ---
 titulo: "Cambiar de compañía de luz: gratis, sin corte y sin permiso del casero"
 resumen: "Cómo funciona el cambio de comercializadora, qué datos necesitas, cuánto tarda y qué mirar antes de firmar."
+respuesta: "Cambiar de compañía de luz es gratis, no corta el suministro y lo gestiona la nueva compañía: solo necesitas DNI, CUPS e IBAN. No necesitas permiso del casero si eres el titular. Antes de firmar, revisa permanencias y servicios añadidos."
+categoria: "Tarifas y compañías"
 revisado: "2026-10-21"
 orden: 6
 herramienta: { href: "/comparador/", texto: "Antes de cambiar, comprueba con tu consumo real cuánto ahorrarías con cada tarifa." }

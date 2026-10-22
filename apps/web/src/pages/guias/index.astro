@@ -1,27 +1,54 @@
 ---
 import Base from "../../layouts/Base.astro";
-import { guias } from "../../lib/guias";
+import Anuncio from "../../components/Anuncio.astro";
+import { guias, CATEGORIAS } from "../../lib/guias";
 import { fechaCorta } from "../../lib/formato";
+
+const grupos = CATEGORIAS.map((c) => ({ c, lista: guias.filter((g) => (g.categoria ?? "Tu factura") === c) })).filter((g) => g.lista.length);
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  name: "Guías sobre la factura de la luz",
+  hasPart: guias.map((g) => ({ "@type": "Article", headline: g.titulo, url: `/guias/${g.slug}/` })),
+};
 ---
 
-<Base titulo="Guías para entender y bajar la factura de la luz" descripcion="Guías cortas con ejemplos en euros: periodos, potencia, PVPC o mercado libre, cómo descargar tu consumo, cambiar de compañía, bono social y más.">
+<Base
+  titulo="Guías de la luz: factura, tarifas, placas solares y ahorro"
+  descripcion={`${guias.length} guías claras y con datos sobre la factura de la luz, las tarifas, cómo descargar tu consumo, las placas solares, el coche eléctrico y cómo ahorrar.`}
+  schema={schema}
+  migas={[["Guías"]]}
+>
   <section class="hero hero--compacto">
     <div class="wrap">
       <span class="eyebrow">Guías</span>
       <h1>Todo lo que rodea a tu factura, sin relleno</h1>
-      <p class="lead">Cada guía termina en una herramienta o en una decisión. Con fuentes oficiales y la fecha de la última revisión.</p>
+      <p class="lead">{guias.length} guías con datos y ejemplos en euros. Cada una termina en una herramienta o en una decisión, con fuentes oficiales y fecha de revisión.</p>
+      <nav class="cats" aria-label="Temas">
+        {grupos.map((g) => <a class="pill" href={`#${g.c.toLowerCase().replace(/[^a-záéíóúñ]+/g, "-")}`}>{g.c}</a>)}
+      </nav>
     </div>
   </section>
   <section class="section section--tight">
-    <div class="wrap grid grid--3">
+    <div class="wrap stack" style="--stack:48px">
       {
-        guias.map((g) => (
-          <a class="card card--link" href={`/guias/${g.slug}/`}>
-            <h2 class="g__t">{g.titulo}</h2>
-            <p class="muted small">{g.resumen}</p>
-            <span class="caption">Revisada el {fechaCorta(g.revisado)}</span>
-            <span class="arrow">Leer →</span>
-          </a>
+        grupos.map((g, i) => (
+          <>
+            <div id={g.c.toLowerCase().replace(/[^a-záéíóúñ]+/g, "-")}>
+              <h2 class="g-cat">{g.c}</h2>
+              <div class="grid grid--3">
+                {g.lista.map((x) => (
+                  <a class="card card--link" href={`/guias/${x.slug}/`}>
+                    <h3 class="g__t">{x.titulo}</h3>
+                    <p class="muted small">{x.resumen}</p>
+                    <span class="caption">Revisada el {fechaCorta(x.revisado)}</span>
+                    <span class="arrow">Leer →</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+            {i % 2 === 1 && i < grupos.length - 1 && <Anuncio tipo="horizontal" />}
+          </>
         ))
       }
     </div>
@@ -29,8 +56,23 @@ import { fechaCorta } from "../../lib/formato";
 </Base>
 
 <style>
+  .cats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 24px;
+  }
+  .cats .pill {
+    text-decoration: none;
+    font-size: 12px;
+  }
+  .g-cat {
+    font-size: 28px;
+    margin-bottom: 16px;
+    scroll-margin-top: 88px;
+  }
   .g__t {
-    font-size: 20px;
+    font-size: 19px;
     font-weight: 500;
     color: var(--color-bark);
     letter-spacing: 0;

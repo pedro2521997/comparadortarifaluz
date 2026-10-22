@@ -1,0 +1,153 @@
+---
+import Base from "../../layouts/Base.astro";
+import AyudaHerramienta from "../../components/AyudaHerramienta.astro";
+import DondeEnFactura from "../../components/DondeEnFactura.astro";
+import { esquemaFaq, esquemaHerramienta, type Pregunta } from "../../lib/faq";
+import { SITIO } from "../../config";
+
+const preguntas: Pregunta[] = [
+  { p: "¿Dónde encuentro mi CUPS?", r: "En cualquier factura de la luz, normalmente en la primera página junto a los datos del suministro o del contrato. Empieza por ES y tiene 20 o 22 caracteres." },
+  { p: "¿La distribuidora es mi compañía de la luz?", r: "No. La distribuidora es la dueña de los cables y del contador de tu zona, y no puedes elegirla. La comercializadora es la que te vende la luz y te cobra la factura; esa sí la eliges." },
+  { p: "¿Puedo cambiar de distribuidora?", r: "No: depende de dónde está tu casa. Lo que puedes cambiar, gratis y sin corte de luz, es la comercializadora." },
+  { p: "¿Para qué quiero saber mi distribuidora?", r: "Para descargar tu consumo hora a hora desde su web, para llamar si se va la luz y para reclamar por averías o por el contador." },
+  { p: "¿Es seguro escribir aquí mi CUPS?", r: "Sí. La comprobación se hace en tu navegador y el CUPS no se envía a ningún sitio ni se guarda." },
+];
+const schema = [
+  esquemaHerramienta("Qué distribuidora tengo por el CUPS", "Escribe tu CUPS y te decimos tu distribuidora eléctrica, si el código es correcto y dónde descargar tu consumo.", "/herramientas/distribuidora/", SITIO.url),
+  esquemaFaq(preguntas),
+];
+---
+
+<Base
+  titulo="¿Qué distribuidora eléctrica tengo? Compruébalo con tu CUPS"
+  descripcion="Escribe el CUPS de tu factura y te decimos tu distribuidora de luz (i-DE, e-distribución, UFD, E-Redes, Viesgo…), si el código es válido y cómo descargar tu consumo horario."
+  schema={schema}
+  migas={[["Herramientas", "/herramientas/"], ["Distribuidora por CUPS"]]}
+>
+  <section class="hero hero--compacto">
+    <div class="wrap">
+      <p class="breadcrumbs"><a href="/herramientas/">Herramientas</a> / Distribuidora</p>
+      <h1>¿Cuál es mi distribuidora eléctrica?</h1>
+      <p class="lead">Escribe el <strong>CUPS</strong> de tu factura y te decimos qué empresa lleva los cables de tu casa, si el código está bien escrito y dónde descargar tu consumo hora a hora.</p>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="wrap herr">
+      <form class="herr__form card card--roomy" id="f-cups" onsubmit="return false">
+        <div class="field">
+          <label for="cups">Tu CUPS</label>
+          <input id="cups" name="cups" type="text" autocomplete="off" spellcheck="false" inputmode="text" placeholder="ES0021000012345678AB" maxlength="26" />
+          <span class="hint">Empieza por <strong>ES</strong>. Lo tienes en la primera página de tu factura, en «Datos del suministro». Puedes pegarlo con espacios: los quitamos.</span>
+        </div>
+        <DondeEnFactura datos={["cups"]} />
+        <p class="small muted">
+          También puede aparecer como «Código Universal del Punto de Suministro» o «Identificador del punto de suministro», y lo tienes en el área de clientes de tu compañía y en el contrato. Más en <a href="/guias/que-es-el-cups/">qué es el CUPS</a>.
+        </p>
+      </form>
+
+      <div class="herr__res" aria-live="polite" id="r-cups">
+        <p class="eyebrow">Tu distribuidora</p>
+        <p class="answer" data-o="nombre">Escribe tu CUPS</p>
+        <p class="muted" data-o="estado">Te lo decimos en cuanto lo escribas. Nada sale de tu navegador.</p>
+        <div data-o="detalle"></div>
+      </div>
+    </div>
+  </section>
+
+  <AyudaHerramienta
+    titulo="Distribuidora y comercializadora: no son lo mismo"
+    preguntas={preguntas}
+    guias={[
+      { href: "/guias/comercializadora-y-distribuidora/", t: "Diferencia entre comercializadora y distribuidora" },
+      { href: "/guias/descargar-consumo-por-distribuidora/", t: "Cómo descargar el consumo en cada distribuidora" },
+      { href: "/guias/descargar-consumo-datadis/", t: "Descargar tu consumo con Datadis" },
+    ]}
+  >
+    <p>
+      La <strong>distribuidora</strong> es la empresa de los cables y del contador de tu zona: no la eliges, te toca por la dirección. La <strong>comercializadora</strong> es la que te vende la luz y te manda la factura: esa la puedes cambiar cuando quieras, gratis y sin corte.
+    </p>
+    <h3>Cómo se lee el CUPS</h3>
+    <ul>
+      <li><strong>ES</strong>: el país.</li>
+      <li><strong>4 cifras</strong>: la distribuidora (0021 es i-DE, 0031 e-distribución…).</li>
+      <li><strong>12 cifras</strong>: tu punto de suministro.</li>
+      <li><strong>2 letras de control</strong>: salen de una cuenta con las 16 cifras, como la letra del DNI. Si no cuadran, hay un error al copiarlo.</li>
+      <li>A veces, <strong>2 caracteres más</strong> al final (por ejemplo «0F»): indican la frontera del punto y no cambian nada.</li>
+    </ul>
+    <h3>Y ahora, ¿qué hago?</h3>
+    <p>
+      Con tu distribuidora identificada, descarga tu <strong>fichero de consumo horario</strong> y súbelo al <a href="/comparador/">comparador</a>: verás cuánto pagarías con cada tarifa del mercado con tu consumo real.
+    </p>
+  </AyudaHerramienta>
+</Base>
+
+<script>
+  const LETRAS = "TRWAGMYFPDXBNJZSQVHLCKE";
+  const DISTRIBUIDORAS: Record<string, { n: string; grupo: string; zona: string; web: string; guia: string }> = {
+    "0021": { n: "i-DE", grupo: "Iberdrola", zona: "sobre todo Madrid, Comunidad Valenciana, Castilla y León, Castilla-La Mancha, País Vasco, Navarra, La Rioja y Murcia", web: "https://www.i-de.es/", guia: "#i-de-zona-iberdrola" },
+    "0031": { n: "e-distribución", grupo: "Endesa", zona: "sobre todo Cataluña, Andalucía, Aragón, Baleares, Canarias y Extremadura", web: "https://www.edistribucion.com/", guia: "#e-distribución-zona-endesa" },
+    "0022": { n: "UFD", grupo: "Naturgy", zona: "sobre todo Galicia, Madrid y Castilla-La Mancha", web: "https://www.ufd.es/", guia: "#ufd-zona-naturgy" },
+    "0026": { n: "E-Redes", grupo: "antes EDP / Hidrocantábrico", zona: "sobre todo Asturias", web: "https://www.e-redes.es/", guia: "#e-redes-antes-edp--hc" },
+    "0027": { n: "Viesgo Distribución", grupo: "Viesgo", zona: "sobre todo Cantabria, Asturias, Galicia y Castilla y León", web: "https://www.viesgodistribucion.com/", guia: "#viesgo-distribución" },
+  };
+
+  const input = document.getElementById("cups") as HTMLInputElement;
+  const res = document.getElementById("r-cups")!;
+  const o = (k: string) => res.querySelector<HTMLElement>(`[data-o="${k}"]`)!;
+
+  /** Las dos letras de control: 16 cifras módulo 529, cociente y resto entre 23. */
+  function control(cifras: string): string {
+    const n = Number(BigInt(cifras) % 529n);
+    return LETRAS[Math.floor(n / 23)] + LETRAS[n % 23];
+  }
+
+  function comprobar() {
+    const v = input.value.toUpperCase().replace(/[\s.\-]/g, "");
+    const det = o("detalle");
+    det.innerHTML = "";
+    if (!v) {
+      o("nombre").textContent = "Escribe tu CUPS";
+      o("estado").textContent = "Te lo decimos en cuanto lo escribas. Nada sale de tu navegador.";
+      return;
+    }
+    if (!v.startsWith("ES")) {
+      o("nombre").textContent = "Revisa el código";
+      o("estado").textContent = "El CUPS de la luz en España siempre empieza por «ES».";
+      return;
+    }
+    const codigo = v.slice(2, 6);
+    const d = /^\d{4}$/.test(codigo) ? DISTRIBUIDORAS[codigo] : undefined;
+    const completo = /^ES\d{16}[A-Z]{2}([0-9A-Z]{2})?$/.test(v);
+    let estado: string;
+    if (!completo) {
+      estado = v.length < 20 ? `Faltan caracteres: llevas ${v.length} de 20 (o 22).` : "El formato no cuadra: deben ser ES, 16 cifras y 2 letras (más 2 caracteres opcionales).";
+    } else {
+      const esperado = control(v.slice(2, 18));
+      estado = esperado === v.slice(18, 20) ? "✓ El CUPS es válido: las letras de control cuadran." : `Las letras de control no cuadran (deberían ser ${esperado}). Revisa que lo hayas copiado bien.`;
+    }
+    o("estado").textContent = estado;
+
+    if (d) {
+      o("nombre").innerHTML = `<strong>${d.n}</strong>`;
+      det.innerHTML = `
+        <div class="herr__filas">
+          <div><span>Grupo</span><span>${d.grupo}</span></div>
+          <div><span>Código</span><span>ES${codigo}</span></div>
+          <div><span>Dónde opera</span><span>${d.zona}</span></div>
+        </div>
+        <p class="small" style="margin-top:12px">Para descargar tu consumo hora a hora, entra en el área de clientes de <a href="${d.web}" rel="noopener">${d.web.replace(/^https:\/\/(www\.)?|\/$/g, "")}</a> o usa <a href="https://datadis.es" rel="noopener">Datadis</a>, que vale para todas.</p>
+        <p class="btn-row"><a class="btn btn--primary" href="/guias/descargar-consumo-por-distribuidora/${d.guia}">Ver el paso a paso de ${d.n}</a></p>`;
+    } else if (/^\d{4}$/.test(codigo)) {
+      o("nombre").innerHTML = `<strong>Distribuidora pequeña</strong>`;
+      det.innerHTML = `
+        <p class="small">El código <strong>ES${codigo}</strong> no es de las cinco grandes. Hay cerca de 300 distribuidoras pequeñas, muchas de un solo pueblo o comarca. Su nombre aparece en tu factura, junto al teléfono de averías.</p>
+        <p class="small">Para el consumo hora a hora, prueba en <a href="https://datadis.es" rel="noopener">Datadis</a>: muchas pequeñas están adheridas. Si no, pídeselo a tu distribuidora: tiene obligación de dártelo.</p>
+        <p class="btn-row"><a class="btn btn--ghost" href="/guias/descargar-consumo-por-distribuidora/#si-tu-distribuidora-es-pequeña">Qué hacer con una distribuidora pequeña</a></p>`;
+    } else {
+      o("nombre").textContent = "Sigue escribiendo";
+    }
+  }
+  input.addEventListener("input", comprobar);
+  comprobar();
+</script>

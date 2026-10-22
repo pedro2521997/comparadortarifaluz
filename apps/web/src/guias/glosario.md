@@ -1,6 +1,8 @@
 ---
 titulo: "Glosario de la factura de la luz: CUPS, kWh, kW, peajes y cargos"
 resumen: "Las palabras de la factura explicadas en una línea, para entender cualquier contrato sin perderte."
+respuesta: "CUPS es el código de tu suministro; kW es potencia (lo que contratas) y kWh es energía (lo que consumes); peajes y cargos son la parte regulada de la factura; la PVPC es la tarifa regulada y la 2.0TD, la tarifa de acceso de los hogares."
+categoria: "Tu factura"
 revisado: "2026-10-21"
 orden: 19
 herramienta: { href: "/guias/leer-factura/", texto: "Con estas palabras ya puedes leer tu factura línea a línea." }

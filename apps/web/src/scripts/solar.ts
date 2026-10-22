@@ -156,6 +156,7 @@ function pintar(kwp: number) {
       </div>
     </div>
     ${avisoPiso}
+    ${bloqueBateria(prod, consumo, kwp, precios, base)}
     <div class="rango">
       <div class="stat"><span class="stat__label">Inversión estimada</span><span class="stat__value">${eur(inversion * 0.95)}–${eur(inversion * 1.1)}</span><span class="stat__sub">IVA incluido${ayudas ? `, antes de restar ${eur(ayudas)} de ayudas` : ""}</span></div>
       <div class="stat"><span class="stat__label">Se paga sola en</span><span class="stat__value">${amort(favorable)}–${amort(prudente)} años</span><span class="stat__sub">del favorable al prudente</span></div>
@@ -193,6 +194,28 @@ function pintar(kwp: number) {
     resumen: `${num(kwp, 1)} kWp · ${kwh(base.produccion)}/año · ahorro ${eur(simP.ahorro)}–${eur(simF.ahorro)}/año · consumo ${kwh(anual)}/año (${perfil && usarFichero ? "fichero" : "factura"}) · ${$<HTMLSelectElement>("vivienda").value} · tejado ${valor("tejado")} m²`,
   };
   pintarEstudio(enZona(cp));
+}
+
+/** La batería, aparte: cuánto ahorra de más y si se paga sola dentro de su vida útil (unos 10–15 años). */
+function bloqueBateria(prod: Matriz, consumo: Matriz, kwp: number, precios: Parameters<typeof simular>[3], base: ReturnType<typeof simular>): string {
+  const cap = Number($<HTMLSelectElement>("bateria").value);
+  if (!cap) return "";
+  const con = simular(prod, consumo, kwp, precios, 1, cap);
+  const extra = con.ahorro - base.ahorro;
+  const coste = valor("bateria-precio") || cap * 700;
+  const anios = extra > 0 ? coste / extra : Infinity;
+  const veredicto =
+    anios <= 10
+      ? "Con estos números, la batería se paga sola dentro de su vida útil."
+      : anios <= 15
+        ? "Se paga muy justa: más o menos lo que dura la batería. Compensa si además quieres respaldo ante cortes."
+        : "Con estos números, la batería no llega a pagarse en su vida útil (unos 10–15 años). Sale más a cuenta sin ella, salvo que quieras respaldo ante cortes.";
+  return `<div class="card stack" style="--stack:12px">
+      <span class="eyebrow">Con batería de ${num(cap)} kWh</span>
+      <p>Usarías <strong>${kwh(con.desdeBateria)} al año</strong> desde la batería y ahorrarías <strong>${eur(extra)} más al año</strong> (${eur(con.ahorro)} en total). Cubriría el ${pct(con.autoconsumo / con.consumo)} de tu consumo, frente al ${pct(base.autoconsumo / base.consumo)} sin batería.</p>
+      <p>Con un coste de ${eur(coste)}, la batería tardaría <strong>${Number.isFinite(anios) ? `${num(anios, 0)} años` : "más de lo que dura"}</strong> en pagarse. ${veredicto}</p>
+      <p class="caption">Simulación con un día medio de cada mes y un 90 % de rendimiento de ida y vuelta. No incluye el inversor híbrido si hace falta cambiarlo.</p>
+    </div>`;
 }
 
 // ---------- Petición de estudio (después del resultado) ----------

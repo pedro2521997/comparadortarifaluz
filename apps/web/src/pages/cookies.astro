@@ -1,17 +1,44 @@
 ---
 import Legal from "../layouts/Legal.astro";
+import { anunciosActivos } from "../lib/anuncios-html.mjs";
+const publicidad = anunciosActivos();
 ---
 
-<Legal titulo="Política de cookies" revisado="21/10/2026">
-  <h2>No usamos cookies de seguimiento</h2>
-  <p>Mientras no haya publicidad, este sitio no instala cookies publicitarias ni de análisis. Por eso no ves un banner de consentimiento.</p>
+<Legal titulo="Política de cookies" revisado="22/10/2026">
+  {
+    publicidad ? (
+      <>
+        <h2>Publicidad de Google</h2>
+        <p>
+          Mostramos anuncios de Google AdSense para financiar la web y mantenerla gratis. Google y sus socios pueden usar cookies e identificadores para mostrar anuncios, medir su rendimiento y, si lo aceptas, personalizarlos según tus intereses.
+        </p>
+        <p>
+          Antes de instalar cualquier cookie publicitaria te pedimos el consentimiento con el gestor de consentimiento certificado de Google (compatible con el marco TCF de IAB Europe). Rechazar es tan fácil como aceptar. Si rechazas, puedes seguir viendo anuncios no personalizados, que usan cookies solo para limitar la frecuencia y evitar el fraude.
+        </p>
+        <p>
+          Puedes cambiar tu elección cuando quieras desde el botón del gestor de consentimiento. Más información sobre <a href="https://policies.google.com/technologies/ads?hl=es" rel="noopener">cómo usa Google las cookies en publicidad</a> y en la <a href="https://adssettings.google.com/" rel="noopener">configuración de anuncios de Google</a>.
+        </p>
+      </>
+    ) : (
+      <>
+        <h2>No usamos cookies de seguimiento</h2>
+        <p>Ahora mismo no hay publicidad y este sitio no instala cookies publicitarias ni de análisis. Por eso no ves un banner de consentimiento.</p>
+      </>
+    )
+  }
 
   <h2>Almacenamiento local</h2>
-  <p>La calculadora solar puede guardar en el almacenamiento local de tu navegador un resumen de tu consumo que tú mismo has cargado en el comparador. Es técnico, no se envía a ningún servidor y puedes borrarlo desde la propia calculadora.</p>
+  <p>El comparador guarda tu fichero de consumos en el almacenamiento de esta pestaña para que no tengas que volver a subirlo al cambiar de herramienta, y la calculadora solar puede guardar en tu navegador un resumen de tu consumo. Es técnico, no se envía a ningún servidor y lo puedes borrar desde las propias herramientas o cerrando la pestaña.</p>
 
   <h2>Analítica sin cookies</h2>
   <p>Medimos las visitas con Cloudflare Web Analytics, que no usa cookies ni identificadores persistentes.</p>
 
-  <h2>Si algún día hay publicidad</h2>
-  <p>Antes de instalar cualquier cookie no técnica te pediremos el consentimiento con un gestor certificado, con la opción de rechazar tan visible como la de aceptar.</p>
+  {
+    !publicidad && (
+      <>
+        <h2>Cuando haya publicidad</h2>
+        <p>Si activamos publicidad, antes de instalar cualquier cookie no técnica te pediremos el consentimiento con un gestor certificado, con la opción de rechazar tan visible como la de aceptar, y actualizaremos esta página.</p>
+      </>
+    )
+  }
 </Legal>

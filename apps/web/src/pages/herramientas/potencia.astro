@@ -1,0 +1,235 @@
+---
+import Base from "../../layouts/Base.astro";
+import AyudaHerramienta from "../../components/AyudaHerramienta.astro";
+import DondeEnFactura from "../../components/DondeEnFactura.astro";
+import { esquemaFaq, esquemaHerramienta, type Pregunta } from "../../lib/faq";
+import { factorImpuestos, tarifas } from "../../lib/datos";
+import { hoyMadrid, num } from "../../lib/formato";
+import { SITIO } from "../../config";
+
+const mediana = (xs: number[]) => {
+  const s = [...xs].sort((a, b) => a - b);
+  return s.length ? s[Math.floor(s.length / 2)] : 0;
+};
+// Precio de la potencia (€/kW·día) del catálogo, sin valores raros.
+const conPotencia = tarifas.filter((t) => t.potencia && t.potencia.p1 > 0 && t.potencia.p1 < 0.3);
+const p1 = mediana(conPotencia.map((t) => t.potencia.p1));
+const p2 = mediana(conPotencia.map((t) => t.potencia.p2 ?? 0));
+
+// Potencia típica (W) que piden a la vez. Valores de placa habituales; editables en la página.
+const aparatos = [
+  { id: "base", n: "Luces, nevera, tele, router…", w: 400, fijo: true },
+  { id: "vitro", n: "Vitrocerámica o inducción (2 fuegos)", w: 3000 },
+  { id: "horno", n: "Horno", w: 2200 },
+  { id: "micro", n: "Microondas", w: 1200 },
+  { id: "lavadora", n: "Lavadora (calentando agua)", w: 2000 },
+  { id: "lavavajillas", n: "Lavavajillas (calentando)", w: 1900 },
+  { id: "secadora", n: "Secadora", w: 2500 },
+  { id: "termo", n: "Termo eléctrico", w: 1600 },
+  { id: "aire", n: "Aire acondicionado o bomba de calor (por equipo)", w: 1100, cantidad: true },
+  { id: "radiador", n: "Radiador o calefactor eléctrico (cada uno)", w: 1500, cantidad: true },
+  { id: "plancha", n: "Plancha", w: 2000 },
+  { id: "secador", n: "Secador de pelo", w: 1600 },
+  { id: "hervidor", n: "Hervidor o cafetera", w: 1800 },
+  { id: "aspiradora", n: "Aspiradora", w: 800 },
+  { id: "coche", n: "Coche eléctrico cargando", w: 3700, coche: true },
+];
+const config = { factor: factorImpuestos(hoyMadrid()), p1, p2 };
+
+const preguntas: Pregunta[] = [
+  { p: "¿Qué potencia de luz necesito?", r: "La suma de los aparatos que funcionan a la vez en el peor momento, más un margen. Un piso sin calefacción eléctrica suele ir bien con 3,45 kW; con vitrocerámica, horno y aire a la vez, 4,6 o 5,75 kW." },
+  { p: "¿Cuánto ahorro bajando la potencia?", r: `Cada kW menos ahorra unos ${num((p1 + p2) * 365 * config.factor, 0)} € al año con los precios medianos del catálogo, impuestos incluidos.` },
+  { p: "¿Qué pasa si me quedo corto?", r: "Salta el limitador del contador (el ICP) cuando pides más de lo contratado y se va la luz de la casa. Se recupera en unos segundos al apagar algo. No es peligroso, pero es molesto." },
+  { p: "¿Puedo tener una potencia de día y otra de noche?", r: "Sí. Con la tarifa 2.0TD hay dos potencias: P1 (punta y llano, de 8 a 24 h) y P2 (valle, de 0 a 8 h y fines de semana). Puedes contratar más en el valle, por ejemplo para cargar el coche." },
+  { p: "¿Cuánto cuesta cambiar la potencia?", r: "Bajarla suele costar poco. Subirla puede tener derechos de acceso y extensión que dependen de tu instalación: tu distribuidora te dice el importe antes de hacerlo. Se pide a tu comercializadora." },
+];
+const schema = [
+  esquemaHerramienta("Calculadora de potencia contratada", "Elige los aparatos que usas a la vez y te decimos qué potencia de luz contratar y cuánto ahorras al año.", "/herramientas/potencia/", SITIO.url),
+  esquemaFaq(preguntas),
+];
+---
+
+<Base
+  titulo="Calculadora de potencia de luz: qué potencia contratar"
+  descripcion="Marca los aparatos que usas a la vez y te decimos qué potencia contratar (P1 y P2), si te salta el limitador y cuánto ahorras al año bajando kW."
+  schema={schema}
+  migas={[["Herramientas", "/herramientas/"], ["Potencia"]]}
+>
+  <section class="hero hero--compacto">
+    <div class="wrap">
+      <p class="breadcrumbs"><a href="/herramientas/">Herramientas</a> / Potencia</p>
+      <h1>¿Qué potencia de luz necesito?</h1>
+      <p class="lead">Marca los aparatos que pueden estar encendidos <strong>a la vez</strong> en el peor momento del día (por ejemplo, cocinando con el aire puesto). Te decimos qué potencia contratar y cuánto pagas de más si te sobra.</p>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="wrap herr" data-potencia={JSON.stringify(config)}>
+      <form class="herr__form card card--roomy" onsubmit="return false">
+        <fieldset>
+          <legend class="herr__paso"><b>1</b> ¿Qué tienes encendido a la vez?</legend>
+          <div class="pot-lista">
+            {
+              aparatos.map((a) => (
+                <div class="pot-fila">
+                  <label class="check">
+                    <input type="checkbox" name="ap" value={a.id} data-w={a.w} checked={a.fijo || a.id === "vitro" || a.id === "micro"} disabled={a.fijo} data-coche={a.coche ? "1" : undefined} />
+                    <span>{a.n}</span>
+                  </label>
+                  {a.cantidad && (
+                    <input class="pot-n" type="number" name={`n-${a.id}`} min="1" max="9" value="1" aria-label={`Cuántos: ${a.n}`} />
+                  )}
+                  <span class="pot-w caption">{num(a.w / 1000, 1)} kW</span>
+                </div>
+              ))
+            }
+          </div>
+          <label class="check" style="margin-top:16px">
+            <input type="checkbox" name="noche" checked />
+            <span>El coche solo carga de noche (de 0 a 8 h), cuando no uso lo demás</span>
+          </label>
+        </fieldset>
+
+        <fieldset>
+          <legend class="herr__paso"><b>2</b> Lo que tienes ahora (opcional)</legend>
+          <div class="form-grid form-grid--2">
+            <div class="field">
+              <label for="po-p1">Potencia contratada P1 (punta)</label>
+              <input id="po-p1" name="actual1" type="number" min="1" max="15" step="0.05" inputmode="decimal" value="4.6" />
+              <span class="hint">kW: en tu factura, «potencia contratada»</span>
+            </div>
+            <div class="field">
+              <label for="po-p2">Potencia P2 (valle)</label>
+              <input id="po-p2" name="actual2" type="number" min="1" max="15" step="0.05" inputmode="decimal" value="4.6" />
+              <span class="hint">Si solo ves una, es la misma</span>
+            </div>
+          </div>
+          <div style="margin-top:16px"><DondeEnFactura datos={["potencia", "precios"]} /></div>
+          <label class="check" style="margin-top:16px">
+            <input type="checkbox" name="salta" />
+            <span>A veces me salta el limitador y se va la luz</span>
+          </label>
+        </fieldset>
+      </form>
+
+      <div class="herr__res" aria-live="polite">
+        <p class="eyebrow">Te recomendamos</p>
+        <p class="answer"><strong data-o="rec">—</strong></p>
+        <p class="muted" data-o="pico"></p>
+        <div class="herr__filas" data-o="filas"></div>
+        <p data-o="ahorro"></p>
+        <p class="caption">
+          Recomendación orientativa con potencias típicas. Para un dato exacto, el <a href="/analizador-consumo/">analizador de consumo</a> te dice tu pico real a partir de tu fichero, y tu distribuidora te da el «maxímetro».
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <AyudaHerramienta
+    titulo="Cómo elegir la potencia sin pasarte"
+    preguntas={preguntas}
+    guias={[
+      { href: "/guias/potencia-contratada/", t: "Potencia contratada: cómo saber si te sobra" },
+      { href: "/guias/periodos-2-0td/", t: "Periodos de la tarifa 2.0TD" },
+      { href: "/guias/coche-electrico/", t: "Coche eléctrico: tarifa y potencia" },
+    ]}
+  >
+    <p>
+      La potencia es <strong>cuánta luz puedes usar a la vez</strong>, no cuánta gastas en total. Se paga cada día, la uses o no: por eso conviene no contratar de más. Pero si te quedas corto, salta el limitador.
+    </p>
+    <ol>
+      <li>Piensa en el <strong>peor momento</strong> de tu día: cocinando con el horno, la lavadora en marcha y el aire puesto.</li>
+      <li>Marca esos aparatos. Lo básico (luces, nevera, tele) ya va incluido.</li>
+      <li>Sumamos el aparato más potente entero y el resto al 60 %: los que calientan (vitro, horno, lavadora) se encienden y apagan a ratos y casi nunca coinciden a tope.</li>
+      <li>Te damos el resultado con un 10 % de margen y la potencia <strong>normalizada</strong> más cercana por encima (3,45; 4,6; 5,75 kW…), que es la que se contrata habitualmente.</li>
+      <li>Si tienes coche eléctrico y cargas de noche, te proponemos <strong>más potencia solo en el valle</strong> (P2), que es mucho más barata.</li>
+    </ol>
+    <p>Truco: si no pones el horno y la lavadora a la vez, muchas veces puedes bajar un escalón sin notarlo.</p>
+  </AyudaHerramienta>
+</Base>
+
+<style>
+  .pot-lista {
+    display: grid;
+    gap: 4px;
+  }
+  .pot-fila {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 12px;
+    align-items: center;
+    min-height: 44px;
+    border-bottom: 1px solid var(--color-pale-sage);
+  }
+  .pot-n {
+    width: 72px;
+    min-height: 40px;
+    padding: 6px 8px;
+  }
+  .pot-w {
+    min-width: 52px;
+    text-align: right;
+  }
+</style>
+
+<script>
+  import { eur, num } from "../../lib/formato";
+
+  const NORMALIZADAS = [1.15, 1.725, 2.3, 3.45, 4.6, 5.75, 6.9, 8.05, 9.2, 10.35, 11.5, 13.856, 14.49];
+  const raiz = document.querySelector<HTMLElement>("[data-potencia]")!;
+  const cfg = JSON.parse(raiz.dataset.potencia!) as { factor: number; p1: number; p2: number };
+  const form = raiz.querySelector("form")!;
+  const o = (k: string) => raiz.querySelector<HTMLElement>(`[data-o="${k}"]`)!;
+  const val = (n: string) => parseFloat((form.elements.namedItem(n) as HTMLInputElement).value.replace(",", ".")) || 0;
+  const marcado = (n: string) => (form.elements.namedItem(n) as HTMLInputElement).checked;
+  const kw = (x: number) => `${num(x, 2)} kW`;
+  const normalizada = (x: number) => NORMALIZADAS.find((n) => n >= x - 1e-9) ?? Math.ceil(x * 10) / 10;
+
+  function calcular() {
+    const potencias: number[] = [];
+    let coche = 0;
+    for (const c of form.querySelectorAll<HTMLInputElement>('input[name="ap"]')) {
+      if (!c.checked) continue;
+      const n = form.querySelector<HTMLInputElement>(`input[name="n-${c.value}"]`);
+      const veces = n ? Math.max(1, parseInt(n.value) || 1) : 1;
+      if (c.dataset.coche) coche += Number(c.dataset.w);
+      else for (let i = 0; i < veces; i++) potencias.push(Number(c.dataset.w));
+    }
+    const noche = marcado("noche") && coche > 0;
+    if (coche && !noche) potencias.push(coche);
+    // Simultaneidad: el aparato más potente al 100 % y el resto al 60 %, porque los que calientan
+    // (vitro, horno, lavadora) se encienden y se apagan a ratos y casi nunca coinciden a tope.
+    const [mayor = 0, ...resto] = potencias.sort((a, b) => b - a);
+    const picoDia = (mayor + 0.6 * resto.reduce((a, b) => a + b, 0)) / 1000;
+    // De noche: el coche y lo básico (unos 1,5 kW por si hay termo o lavavajillas programados).
+    const picoNoche = noche ? coche / 1000 + 1.5 : picoDia;
+    const rec1 = normalizada(picoDia * 1.1);
+    const rec2 = Math.max(rec1, normalizada(picoNoche * 1.1));
+
+    o("rec").textContent = rec2 > rec1 ? `${kw(rec1)} y ${kw(rec2)} de noche` : kw(rec1);
+    o("pico").textContent = `En el peor momento pides unos ${num(picoDia, 1)} kW${noche ? ` (y ${num(picoNoche, 1)} kW de noche con el coche)` : ""}. Le sumamos un 10 % de margen.`;
+
+    const a1 = val("actual1");
+    const a2 = val("actual2") || a1;
+    const costeAnio = (x1: number, x2: number) => (x1 * cfg.p1 + x2 * cfg.p2) * 365 * cfg.factor;
+    o("filas").innerHTML = `
+      <div><span>P1 punta (8–24 h)</span><span>${kw(rec1)}</span></div>
+      <div><span>P2 valle (0–8 h y findes)</span><span>${kw(rec2)}</span></div>
+      <div><span>Coste de la potencia recomendada</span><span>${eur(costeAnio(rec1, rec2))}/año</span></div>
+      ${a1 ? `<div><span>Con tu potencia actual</span><span>${eur(costeAnio(a1, a2))}/año</span></div>` : ""}`;
+
+    const dif = costeAnio(a1, a2) - costeAnio(rec1, rec2);
+    const salta = marcado("salta");
+    let texto = "";
+    if (!a1) texto = "";
+    else if (salta && a1 <= rec1) texto = `Si te salta el limitador con ${kw(a1)}, es normal: en el peor momento pides más. Sube a <strong>${kw(rec1)}</strong> o no juntes los aparatos que más gastan.`;
+    else if (salta) texto = `Te salta el limitador aunque ya tienes más de lo que calculamos: seguramente hay algún aparato potente que no has marcado, o se juntan varios. Revisa la lista.`;
+    else if (dif > 5) texto = `Te sobra potencia: bajando a lo recomendado ahorrarías unos <strong>${eur(dif)} al año</strong> (${eur(dif / 12)} al mes).`;
+    else if (dif < -5) texto = `Tienes menos de lo que calculamos. Si no te salta el limitador, no lo cambies: es que no juntas todo a la vez. Subir costaría unos ${eur(-dif)} más al año.`;
+    else texto = "Tu potencia está bien ajustada.";
+    o("ahorro").innerHTML = texto;
+  }
+  form.addEventListener("input", calcular);
+  form.addEventListener("change", calcular);
+  calcular();
+</script>

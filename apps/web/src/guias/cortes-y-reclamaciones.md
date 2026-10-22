@@ -1,6 +1,8 @@
 ---
 titulo: "Cortes de luz y reclamaciones: a quién acudir"
 resumen: "Si se va la luz, te facturan mal o te cambian de compañía sin permiso: con quién hablar primero, plazos y dónde reclamar si no te hacen caso."
+respuesta: "Por cortes o averías llama a tu distribuidora (teléfono en la factura). Por la factura, a tu comercializadora, por escrito: tiene un mes para responder. Si no te hacen caso, acude a la oficina de consumo o al arbitraje de consumo."
+categoria: "Tu factura"
 revisado: "2026-10-21"
 orden: 18
 herramienta: { href: "/comparador/", texto: "¿Crees que te cobran de más? Calcula con tu fichero de consumos lo que deberías estar pagando." }

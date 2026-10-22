@@ -1,6 +1,8 @@
 ---
 titulo: "Permanencias y servicios añadidos: qué mirar antes de firmar"
 resumen: "Las cláusulas que encarecen una tarifa barata: permanencias, servicios de mantenimiento, promociones que caducan y cómo darte de baja."
+respuesta: "Antes de firmar una tarifa mira si tiene permanencia y penalización, si incluye servicios de pago (mantenimiento, seguros) obligatorios o marcados por defecto, y qué precio queda cuando acaba la promoción. Un servicio de 6 € al mes son 72 € al año."
+categoria: "Tarifas y compañías"
 revisado: "2026-10-21"
 orden: 8
 herramienta: { href: "/comparador/", texto: "En el comparador cada tarifa lleva su letra pequeña: permanencia, servicios obligatorios, fuente y fecha de comprobación." }

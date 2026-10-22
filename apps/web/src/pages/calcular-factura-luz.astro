@@ -1,9 +1,13 @@
 ---
 import Base from "../layouts/Base.astro";
 import SubirFichero from "../components/SubirFichero.astro";
+import DondeEnFactura from "../components/DondeEnFactura.astro";
 import { tarifas, regulados, festivos, dias } from "../lib/datos";
-import { hoyMadrid } from "../lib/formato";
+import { hoyMadrid, sumarDias } from "../lib/formato";
 import { marca, nombrePlan } from "../lib/ranking";
+import AyudaHerramienta from "../components/AyudaHerramienta.astro";
+import { esquemaFaq, esquemaHerramienta, type Pregunta } from "../lib/faq";
+import { SITIO } from "../config";
 
 const hoy = hoyMadrid();
 const grupos = new Map<string, typeof tarifas>();
@@ -14,17 +18,32 @@ for (const t of tarifas.filter((x) => x.tipo !== "pvpc")) {
 const gruposOrdenados = [...grupos.entries()].sort((a, b) => a[0].localeCompare(b[0], "es"));
 const datos = { tarifas, regulados, festivos, hoy };
 void dias;
+// Para el modo sin fichero: por defecto, el mes pasado completo.
+const finMesPasado = sumarDias(hoy.slice(0, 8) + "01", -1);
+const iniMesPasado = finMesPasado.slice(0, 8) + "01";
+const preguntas: Pregunta[] = [
+  { p: "¿Cómo simulo mi factura de luz sin el fichero de consumos?", r: "Elige «Escribo los kWh de mi factura», pon las fechas y los kWh de punta, llano y valle que vienen en tu factura (o solo el total) y tu tarifa. Calculamos la factura con los mismos conceptos que tu comercializadora." },
+  { p: "¿Por qué mi factura no coincide exactamente?", r: "Diferencias de céntimos son normales por redondeos. Si la diferencia es de más del 2–3 %, revisa los precios de tu tarifa (pueden haber cambiado), los días del periodo y si hay servicios añadidos o descuentos." },
+  { p: "¿Qué es mejor, el fichero o escribir los kWh?", r: "El fichero, si tienes PVPC o una indexada: el precio cambia cada hora y con el fichero sabemos a qué hora gastaste. Con tarifa fija o por periodos, escribir los kWh da el mismo resultado." },
+  { p: "¿Qué hago si me han cobrado mal?", r: "Reclama primero a tu comercializadora por escrito y guarda el número de reclamación. Si en un mes no te responden o no estás de acuerdo, acude a consumo de tu comunidad autónoma." },
+];
+const schema = [
+  esquemaHerramienta("Simulador de factura de luz", "Calcula tu factura de luz con tu tarifa, escribiendo los kWh de tu factura o con el fichero de consumos.", "/calcular-factura-luz/", SITIO.url),
+  esquemaFaq(preguntas),
+];
 ---
 
 <Base
-  titulo="Calcular factura de luz: ¿te están cobrando bien?"
-  descripcion="Calcula tus facturas de luz mes a mes con el fichero de consumos de tu distribuidora y tu tarifa (PVPC, precio fijo, 3 periodos o indexada). Compáralas con las que te llegan y detecta errores. Gratis y sin registro."
+  titulo="Simulador de factura de luz: calcula y comprueba la tuya"
+  descripcion="Simula tu factura de luz con tu tarifa (PVPC, fija, 3 periodos o indexada): escribe los kWh de tu factura o sube tu fichero de consumos y la calculamos como tu comercializadora. Gratis y sin registro."
+  schema={schema}
+  migas={[["Herramientas", "/herramientas/"], ["Simulador de factura"]]}
 >
   <section class="hero hero--compacto">
     <div class="wrap">
-      <span class="eyebrow">Calculador de factura</span>
-      <h1>Calcula tu factura de luz y comprueba si te cobran bien</h1>
-      <p class="lead">Con tu fichero de consumos y tu tarifa calculamos cada factura como lo hace tu comercializadora: potencia, energía hora a hora, bono social, impuesto eléctrico, contador e IVA. Si no coincide con la tuya, algo pasa.</p>
+      <span class="eyebrow">Simulador de factura</span>
+      <h1>Simula tu factura de luz y comprueba si te cobran bien</h1>
+      <p class="lead">Escribe los kWh de tu factura o sube tu fichero de consumos, elige tu tarifa y la calculamos como lo hace tu comercializadora: potencia, energía, bono social, impuesto eléctrico, contador e IVA. Si no coincide con la tuya, algo pasa.</p>
     </div>
   </section>
 
@@ -32,8 +51,44 @@ void dias;
     <div class="wrap">
       <ol class="pasos" style="max-width:800px;gap:40px">
         <li class="paso">
-          <h2 class="paso__t">Tu fichero de consumos</h2>
-          <SubirFichero id="cf" />
+          <h2 class="paso__t">Tu consumo</h2>
+          <fieldset class="cf-modo">
+            <legend class="sr-only">Cómo quieres dar tu consumo</legend>
+            <div class="seg">
+              <label><input type="radio" name="cf-modo" value="manual" checked /> Escribo los kWh de mi factura</label>
+              <label><input type="radio" name="cf-modo" value="fichero" /> Tengo el fichero de consumos</label>
+            </div>
+          </fieldset>
+          <div id="cf-m-manual" class="stack" style="--stack:16px;margin-top:16px">
+            <div class="form-grid form-grid--2">
+              <div class="field"><label for="cf-desde">Primer día de la factura</label><input id="cf-desde" type="date" value={iniMesPasado} /></div>
+              <div class="field"><label for="cf-hasta">Último día de la factura</label><input id="cf-hasta" type="date" value={finMesPasado} /></div>
+            </div>
+            <div class="form-grid form-grid--3">
+              <div class="field"><label for="cf-k1">kWh en punta</label><input id="cf-k1" type="number" min="0" step="1" inputmode="decimal" value="60" /><span class="hint">P1: de 10 a 14 y de 18 a 22 h</span></div>
+              <div class="field"><label for="cf-k2">kWh en llano</label><input id="cf-k2" type="number" min="0" step="1" inputmode="decimal" value="65" /><span class="hint">P2: el resto del día laborable</span></div>
+              <div class="field"><label for="cf-k3">kWh en valle</label><input id="cf-k3" type="number" min="0" step="1" inputmode="decimal" value="95" /><span class="hint">P3: de 0 a 8 h y fines de semana</span></div>
+            </div>
+            <details>
+              <summary>Solo veo un total de kWh en mi factura</summary>
+              <div class="form-grid form-grid--2" style="padding-top:12px">
+                <div class="field"><label for="cf-ktotal">Total de kWh</label><input id="cf-ktotal" type="number" min="0" step="1" inputmode="decimal" placeholder="Ej.: 220" /><span class="hint">Si lo rellenas, repartimos el total según tus costumbres.</span></div>
+                <div class="field">
+                  <label for="cf-perfil">¿Cuándo gastas más?</label>
+                  <select id="cf-perfil">
+                    <option value="estandar">Fuera de casa de día</option>
+                    <option value="teletrabajo">En casa de día (teletrabajo, jubilados)</option>
+                    <option value="noche">Pongo lavadoras y termo de noche</option>
+                    <option value="coche">Cargo un coche eléctrico de noche</option>
+                  </select>
+                </div>
+              </div>
+            </details>
+            <DondeEnFactura datos={["kwh", "potencia", "precios", "total"]} />
+          </div>
+          <div id="cf-m-fichero" hidden style="margin-top:16px">
+            <SubirFichero id="cf" />
+          </div>
         </li>
         <li class="paso">
           <h2 class="paso__t">Tu tarifa</h2>
@@ -106,8 +161,8 @@ void dias;
               </div>
             </details>
             <div>
-              <button class="btn btn--mint" type="submit" id="cf-calcular" disabled>Calcular mis facturas</button>
-              <p class="caption" style="margin-top:8px" id="cf-ayuda">Primero sube tu fichero o prueba con el de ejemplo.</p>
+              <button class="btn btn--mint" type="submit" id="cf-calcular">Calcular mi factura</button>
+              <p class="caption" style="margin-top:8px" id="cf-ayuda">Se calcula en tu navegador.</p>
             </div>
           </form>
         </li>
@@ -117,10 +172,31 @@ void dias;
   </section>
 
   <script type="application/json" id="datos-cf" set:html={JSON.stringify(datos)} />
+
+  <AyudaHerramienta
+    titulo="Cómo se calcula una factura de luz"
+    preguntas={preguntas}
+    guias={[
+      { href: "/guias/leer-factura/", t: "Cómo leer la factura de la luz" },
+      { href: "/guias/factura-luz-alta/", t: "Por qué me ha llegado la factura tan alta" },
+      { href: "/guias/cortes-y-reclamaciones/", t: "Cortes y reclamaciones" },
+    ]}
+  >
+    <ol>
+      <li><strong>Potencia</strong>: kW contratados × precio por kW y día × días, en P1 y en P2.</li>
+      <li><strong>Energía</strong>: kWh de cada periodo × su precio. Con PVPC o indexada, hora a hora con el precio de cada hora.</li>
+      <li><strong>Bono social y cuotas</strong>: la aportación al bono social y las cuotas o servicios de tu tarifa.</li>
+      <li><strong>Impuesto eléctrico</strong>: un porcentaje de la potencia y la energía.</li>
+      <li><strong>Alquiler del contador</strong>: unos céntimos al día.</li>
+      <li><strong>IVA</strong> (IGIC en Canarias, IPSI en Ceuta y Melilla) sobre todo lo anterior.</li>
+    </ol>
+    <p>Usamos los valores regulados vigentes en cada fecha: si tu factura cruza un cambio de IVA o de peajes, cada día lleva el suyo.</p>
+    <p>Sin fichero, repartimos tus kWh entre las horas de cada periodo con la forma de consumo de un hogar tipo. Con tarifas de precio fijo o por periodos el resultado es exacto; con PVPC o indexadas es una buena aproximación.</p>
+  </AyudaHerramienta>
 </Base>
 
 <script>
-  import { facturasPorCiclo, type Lectura, type Regulados, type Tarifa } from "@lst/tarifa";
+  import { facturasPorCiclo, calcularFactura, generarLecturas, diasEntre, type Lectura, type Regulados, type Tarifa, type TipoPerfil } from "@lst/tarifa";
   import { montarSubida } from "../scripts/fichero-ui";
   import { cargarRango, cargarMercado } from "../lib/precios-cliente";
   import { barras } from "../lib/graficas";
@@ -138,11 +214,46 @@ void dias;
   let lecturas: Lectura[] | null = null;
 
   sel.addEventListener("change", () => ($("cf-otra").hidden = sel.value !== "otra"));
+  const modo = () => document.querySelector<HTMLInputElement>('input[name="cf-modo"]:checked')?.value ?? "manual";
+  function cambiarModo() {
+    const m = modo();
+    $("cf-m-manual").hidden = m !== "manual";
+    $("cf-m-fichero").hidden = m !== "fichero";
+    boton.disabled = m === "fichero" && !lecturas;
+    boton.textContent = m === "fichero" ? "Calcular mis facturas" : "Calcular mi factura";
+    $("cf-ayuda").textContent = m === "fichero" && !lecturas ? "Primero sube tu fichero o prueba con el de ejemplo." : "Se calcula en tu navegador.";
+  }
+  for (const r of document.querySelectorAll('input[name="cf-modo"]')) r.addEventListener("change", cambiarModo);
   montarSubida("cf", (f) => {
     lecturas = f.lecturas;
-    boton.disabled = false;
-    $("cf-ayuda").textContent = "Se calcula en tu navegador.";
+    // Con un fichero cargado (ahora o en esta sesión), pasamos a ese modo.
+    document.querySelector<HTMLInputElement>('input[name="cf-modo"][value="fichero"]')!.checked = true;
+    cambiarModo();
   });
+  cambiarModo();
+
+  /** Consumo hora a hora del periodo de la factura, repartiendo los kWh que escribe el usuario. */
+  function lecturasManuales(): { ls: Lectura[]; desde: string; hasta: string } | string {
+    const desde = $<HTMLInputElement>("cf-desde").value;
+    const hasta = $<HTMLInputElement>("cf-hasta").value;
+    if (!desde || !hasta || hasta < desde) return "Revisa las fechas: el último día tiene que ser igual o posterior al primero.";
+    const dias = diasEntre(desde, hasta);
+    if (dias > 366) return "El periodo no puede pasar de un año.";
+    const total = v("cf-ktotal");
+    const k = [v("cf-k1"), v("cf-k2"), v("cf-k3")].map((x) => (x > 0 ? x : 0));
+    const usarTotal = total > 0;
+    const suma = usarTotal ? total : k[0] + k[1] + k[2];
+    if (!(suma > 0)) return "Escribe los kWh de tu factura.";
+    const ls = generarLecturas({
+      desde,
+      hasta,
+      anualKwh: (suma * 365) / dias,
+      festivos,
+      tipo: (usarTotal ? $<HTMLSelectElement>("cf-perfil").value : "estandar") as TipoPerfil,
+      porPeriodo: usarTotal ? null : { 1: k[0], 2: k[1], 3: k[2] },
+    });
+    return { ls, desde, hasta };
+  }
 
   function tarifaElegida(): Tarifa | null {
     if (sel.value !== "otra") return datos.tarifas.find((t) => t.id === sel.value) ?? null;
@@ -158,7 +269,21 @@ void dias;
 
   $("cf-form").addEventListener("submit", async (e) => {
     e.preventDefault();
-    if (!lecturas) return;
+    let lsCalc: Lectura[];
+    let periodo: { desde: string; hasta: string } | null = null;
+    if (modo() === "manual") {
+      const m = lecturasManuales();
+      if (typeof m === "string") {
+        res.hidden = false;
+        res.innerHTML = `<div class="notice notice--error"><p>${m}</p></div>`;
+        return;
+      }
+      lsCalc = m.ls;
+      periodo = { desde: m.desde, hasta: m.hasta };
+    } else {
+      if (!lecturas) return;
+      lsCalc = lecturas;
+    }
     const t = tarifaElegida();
     res.hidden = false;
     if (!t) {
@@ -167,8 +292,8 @@ void dias;
     }
     boton.disabled = true;
     res.innerHTML = `<div class="notice" role="status"><p>Calculando…</p></div>`;
-    const desde = lecturas.reduce((a, l) => (l.fecha < a ? l.fecha : a), lecturas[0].fecha);
-    const hasta = lecturas.reduce((a, l) => (l.fecha > a ? l.fecha : a), lecturas[0].fecha);
+    const desde = lsCalc.reduce((a, l) => (l.fecha < a ? l.fecha : a), lsCalc[0].fecha);
+    const hasta = lsCalc.reduce((a, l) => (l.fecha > a ? l.fecha : a), lsCalc[0].fecha);
     const [pvpc, mercado] = await Promise.all([
       t.tipo === "pvpc" ? cargarRango(desde, hasta) : Promise.resolve(undefined),
       t.tipo === "indexada" ? cargarMercado(desde, hasta) : Promise.resolve(undefined),
@@ -182,7 +307,9 @@ void dias;
     const potencias = { p1: v("cf-pp1"), p2: v("cf-pp2") };
     let fs;
     try {
-      fs = facturasPorCiclo(lecturas, t, potencias, ctx, Number($<HTMLSelectElement>("cf-dia").value));
+      fs = periodo
+        ? [{ ...calcularFactura(lsCalc, t, potencias, ctx), ciclo: periodo, completo: true }]
+        : facturasPorCiclo(lsCalc, t, potencias, ctx, Number($<HTMLSelectElement>("cf-dia").value));
     } catch (err) {
       res.innerHTML = `<div class="notice notice--error"><p>No hemos podido calcularlo: ${(err as Error).message}</p></div>`;
       boton.disabled = false;
@@ -202,18 +329,18 @@ void dias;
     res.innerHTML = `
       <div class="card card--roomy">
         <span class="eyebrow">Tus facturas con ${nombre}</span>
-        <p class="answer">Unos <strong>${eur(media)}</strong> al mes</p>
-        <p class="lead">${fs.length} facturas del ${fechaCorta(fs[0].ciclo.desde)} al ${fechaCorta(fs[fs.length - 1].ciclo.hasta)}: ${eur2(total)} en total por ${kwh(fs.reduce((a, f) => a + f.kwh, 0))}.</p>
+        <p class="answer">${periodo ? `<strong>${eur2(total)}</strong>` : `Unos <strong>${eur(media)}</strong> al mes`}</p>
+        <p class="lead">${fs.length === 1 ? "Una factura" : `${fs.length} facturas`} del ${fechaCorta(fs[0].ciclo.desde)} al ${fechaCorta(fs[fs.length - 1].ciclo.hasta)}: ${eur2(total)} en total por ${kwh(fs.reduce((a, f) => a + f.kwh, 0))}.</p>
         <p class="caption">Compara cada fila con la factura que te llegó: una diferencia de más del 2–3 % merece una reclamación. <a href="/guias/cortes-y-reclamaciones/">Cómo reclamar</a></p>
       </div>
-      ${barras({ titulo: "Importe de cada factura", etiquetas: fs.map((f) => fechaCorta(f.ciclo.desde).slice(0, 5)), valores: fs.map((f) => f.total), unidad: "€", decimales: 2, resaltar: fs.map((f, i) => (f.completo ? -1 : i)).filter((i) => i >= 0) })}
+      ${fs.length < 2 ? "" : barras({ titulo: "Importe de cada factura", etiquetas: fs.map((f) => fechaCorta(f.ciclo.desde).slice(0, 5)), valores: fs.map((f) => f.total), unidad: "€", decimales: 2, resaltar: fs.map((f, i) => (f.completo ? -1 : i)).filter((i) => i >= 0) })}
       <div class="table-wrap" tabindex="0" role="region" aria-label="Tabla de facturas"><table class="cf-tabla">
         <caption class="sr-only">Facturas por ciclo de facturación</caption>
         <thead><tr><th scope="col">Periodo</th><th scope="col" class="r">kWh</th><th scope="col" class="r">Punta · llano · valle</th><th scope="col" class="r">Potencia</th><th scope="col" class="r">Energía</th><th scope="col" class="r">Bono, IEE, contador y cuotas</th><th scope="col" class="r">IVA</th><th scope="col" class="r">Total</th><th scope="col" class="r">€/kWh</th></tr></thead>
         <tbody>${fs.map(fila).join("")}</tbody>
       </table></div>
       ${avisos.length ? `<ul class="small muted">${avisos.map((a) => `<li>${a}</li>`).join("")}</ul>` : ""}
-      <div class="card an-cta"><div><strong>¿Pagas demasiado?</strong> <span class="muted">Mira cuánto pagarías con cada tarifa del mercado con este mismo consumo.</span></div><a class="btn btn--mint" href="/comparador/">Comparar tarifas con mi fichero</a></div>`;
+      <div class="card an-cta"><div><strong>¿Pagas demasiado?</strong> <span class="muted">Mira cuánto pagarías con cada tarifa del mercado con este mismo consumo.</span></div><a class="btn btn--mint" href="/comparador/">${periodo ? "Comparar tarifas" : "Comparar tarifas con mi fichero"}</a></div>`;
     boton.disabled = false;
     res.focus({ preventScroll: true });
     res.scrollIntoView({ block: "start" });

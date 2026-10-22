@@ -30,6 +30,30 @@ describe("simulación de autoconsumo", () => {
   });
 });
 
+describe("batería", () => {
+  // 6 h de sol con 1 kWh cada hora; consumo plano de 0,5 kWh: sobran 3 kWh al día y faltan 9.
+  const prod = plana(0).map((fila) => fila.map((_, h) => (h >= 10 && h < 16 ? 1 : 0)));
+
+  it("guarda excedentes y los usa en las horas sin sol", () => {
+    const sin = simular(prod, plana(0.5), 1, precios);
+    const con = simular(prod, plana(0.5), 1, precios, 1, 5);
+    expect(con.desdeBateria).toBeGreaterThan(0);
+    expect(con.autoconsumo).toBeGreaterThan(sin.autoconsumo);
+    expect(con.excedentes).toBeLessThan(sin.excedentes);
+    // Cada día carga los 3 kWh sobrantes y devuelve el 90 % (dos pasos del 95 %).
+    expect(con.desdeBateria / anual(plana(1 / 24))).toBeCloseTo(3 * 0.95 * 0.95, 5);
+  });
+
+  it("no devuelve más de su capacidad al día", () => {
+    const con = simular(prod, plana(0.5), 1, precios, 1, 1);
+    expect(con.desdeBateria / anual(plana(1 / 24))).toBeLessThanOrEqual(1 + 1e-9);
+  });
+
+  it("sin batería, el resultado es el de siempre", () => {
+    expect(simular(prod, plana(0.5), 1, precios, 1, 0)).toEqual({ ...simular(prod, plana(0.5), 1, precios), desdeBateria: 0 });
+  });
+});
+
 describe("escenarios", () => {
   it("amortización y neto a 25 años", () => {
     const e = escenario(500, 4000, 0, 0);

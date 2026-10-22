@@ -1,6 +1,8 @@
 ---
 titulo: "Bono social de la luz: requisitos y cómo pedirlo"
 resumen: "Quién puede pedir el bono social eléctrico, qué descuento tiene en 2026 y los pasos para solicitarlo."
+respuesta: "El bono social de la luz descuenta un 42,5 % (vulnerables) o un 57,5 % (vulnerables severos) en 2026, solo con la PVPC de una comercializadora de referencia. Pueden pedirlo hogares con rentas bajas, familias numerosas, ciertos pensionistas y perceptores del Ingreso Mínimo Vital."
+categoria: "Tarifas y compañías"
 revisado: "2026-10-21"
 orden: 7
 herramienta: { href: "/precio-luz-hoy/", texto: "El bono social solo se aplica con la PVPC: mira cada día las horas más baratas para sacarle más partido." }

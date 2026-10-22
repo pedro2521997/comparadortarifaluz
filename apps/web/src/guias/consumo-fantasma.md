@@ -1,6 +1,8 @@
 ---
 titulo: "Consumo fantasma: lo que gastan los aparatos en espera"
 resumen: "Cuánto consumen la tele, el decodificador o la consola apagados, cómo medirlo y qué merece la pena desenchufar."
+respuesta: "Los aparatos en espera pueden sumar 50–100 € al año en una casa con aparatos antiguos: decodificadores, consolas con encendido instantáneo y equipos de sonido. Una regleta con interruptor lo soluciona; los cargadores modernos apenas gastan."
+categoria: "Ahorrar luz"
 revisado: "2026-10-21"
 orden: 15
 herramienta: { href: "/cuanto-gasta/", texto: "Pon los vatios en espera de tu aparato (24 horas al día) y te decimos cuánto te cuesta al año." }

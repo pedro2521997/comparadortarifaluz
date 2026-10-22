@@ -2,6 +2,7 @@
 // Ranking público de todas las tarifas con un consumo tipo editable. Se calcula en el build
 // (contenido indexable) y el navegador lo recalcula cuando cambias el consumo o la potencia.
 import Base from "../layouts/Base.astro";
+import Anuncio from "../components/Anuncio.astro";
 import { tarifas, regulados, festivos, dias, catalogoActualizado, ajustesMercado } from "../lib/datos";
 import { hoyMadrid, sumarDias, fechaMedia, fechaCorta, num, nombreMes } from "../lib/formato";
 import { compararTarifas, generarLecturas, PERFILES } from "@lst/tarifa";
@@ -98,6 +99,7 @@ const schema = {
       </div>
     </div>
   </section>
+  <Anuncio tipo="horizontal" seccion />
 
   <section class="section section--white" id="precios">
     <div class="wrap">

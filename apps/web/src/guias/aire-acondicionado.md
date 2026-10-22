@@ -1,6 +1,8 @@
 ---
 titulo: "Aire acondicionado: cuánto gasta y cómo usarlo bien"
 resumen: "Cuánto cuesta una hora de aire acondicionado, por qué 26 °C es la temperatura clave y los trucos que más ahorran en verano."
+respuesta: "Un split de 3.000 frigorías consume de media 0,6–1 kW: unos 0,14 € por hora y 25–30 € al mes usándolo 6 horas al día. Ponerlo a 26 °C con un ventilador y bajar persianas es lo que más ahorra."
+categoria: "Ahorrar luz"
 revisado: "2026-10-21"
 orden: 14
 herramienta: { href: "/cuanto-gasta/aire-acondicionado/", texto: "Calcula cuánto te cuesta tu aire acondicionado al mes con el precio de hoy y en qué horas sale más barato." }

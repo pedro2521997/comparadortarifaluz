@@ -1,10 +1,22 @@
 ---
 import Base from "../layouts/Base.astro";
+import AyudaHerramienta from "../components/AyudaHerramienta.astro";
+import { esquemaFaq } from "../lib/faq";
 import SubirFichero from "../components/SubirFichero.astro";
 import { festivos } from "../lib/datos";
+const preguntasAyuda = [
+  { p: "¿De dónde saco el fichero de consumos?", r: "De Datadis o del área de clientes de tu distribuidora (la empresa de los cables de tu zona, no tu compañía de la luz). Es gratis y lo tienes si tienes contador inteligente." },
+  { p: "¿Qué es un consumo fantasma normal?", r: "En un piso, entre 50 y 150 W constantes (nevera aparte) es habitual. Por encima de 200 W suele haber aparatos en espera que se pueden apagar con una regleta." },
+  { p: "¿Cuánto gasta un hogar medio?", r: "Unos 2.500–3.500 kWh al año, es decir, entre 200 y 300 kWh al mes. Con calefacción eléctrica o coche eléctrico, bastante más." },
+  { p: "¿Mis datos se suben a algún sitio?", r: "No. El fichero se lee y se analiza en tu navegador. Solo si lo pides guardamos un resumen en este navegador, y lo puedes borrar cuando quieras." },
+];
+const faqAnalizador = esquemaFaq(preguntasAyuda);
+
 ---
 
 <Base
+  schema={faqAnalizador}
+  migas={[["Herramientas", "/herramientas/"], ["Analizador de consumo"]]}
   titulo="Analizador de consumo de luz gratis: tu fichero en gráficas"
   descripcion="Sube tu fichero de consumos de Datadis o de tu distribuidora y mira a qué horas, qué días y qué meses gastas más luz, tu consumo fantasma y tus picos. Gratis, sin registro y sin subir nada a ningún servidor."
 >
@@ -31,6 +43,25 @@ import { festivos } from "../lib/datos";
   </section>
 
   <script type="application/json" id="datos-an" set:html={JSON.stringify({ festivos })} />
+
+  <AyudaHerramienta
+    titulo="Qué te dice el analizador"
+    preguntas={preguntasAyuda}
+    guias={[
+      { href: "/guias/descargar-consumo-datadis/", t: "Descargar tu consumo con Datadis" },
+      { href: "/guias/consumo-fantasma/", t: "Consumo fantasma: qué es y cómo bajarlo" },
+      { href: "/guias/consumo-medio-hogar/", t: "Consumo medio de un hogar en España" },
+      { href: "/guias/reducir-consumo/", t: "15 trucos para gastar menos luz" },
+    ]}
+  >
+    <ul>
+      <li><strong>Cuándo gastas</strong>: horas, días de la semana y meses, y cuánto cae en punta, llano y valle.</li>
+      <li><strong>Consumo fantasma</strong>: lo que gasta tu casa cuando no hay nadie haciendo nada (nevera, routers, aparatos en espera).</li>
+      <li><strong>Picos</strong>: las horas de más consumo, para saber si te sobra o te falta potencia.</li>
+      <li><strong>Comparación</strong> con un hogar medio, para saber si gastas mucho o poco.</li>
+    </ul>
+    <p>Todo se calcula en tu navegador. Si quieres, puedes guardar el resumen en este navegador para usarlo en la calculadora solar.</p>
+  </AyudaHerramienta>
 </Base>
 
 <script>

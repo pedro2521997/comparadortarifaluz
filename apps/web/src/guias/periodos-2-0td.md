@@ -1,6 +1,8 @@
 ---
 titulo: "Periodos de la luz: punta, llano y valle"
 resumen: "Las horas de cada periodo de la tarifa 2.0TD, por qué los fines de semana son todo valle y cuándo te conviene una tarifa de tres periodos."
+respuesta: "En la tarifa 2.0TD la punta (P1) es de 10 a 14 h y de 18 a 22 h los días laborables, el llano (P2) de 8 a 10, de 14 a 18 y de 22 a 24 h, y el valle (P3) de 0 a 8 h y todo el fin de semana y los festivos nacionales."
+categoria: "Tu factura"
 revisado: "2026-10-21"
 orden: 2
 herramienta: { href: "/comparador/", texto: "Sube tu fichero y te decimos qué parte de tu consumo cae en punta, llano y valle, y cuánto ahorrarías moviendo un 10 % a la noche." }

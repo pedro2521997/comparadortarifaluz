@@ -1,6 +1,8 @@
 ---
 titulo: "Potencia contratada: cómo saber si te sobra y cómo bajarla"
 resumen: "Qué potencia necesitas de verdad, cómo comprobarlo con tu consumo y cuánto ahorras al año por cada kW que bajas."
+respuesta: "Cada kW contratado cuesta unos 30–40 € al año. Para saber si te sobra, mira tu hora de más consumo en tu fichero horario o el maxímetro: si nunca pasas de 2–3 kW y tienes 5,75 kW, puedes bajarla. Se pide a tu comercializadora y normalmente se puede cambiar una vez al año."
+categoria: "Tu factura"
 revisado: "2026-10-21"
 orden: 3
 herramienta: { href: "/comparador/", texto: "Con tu fichero de consumos vemos tu hora de más consumo y te decimos si te sobra potencia." }

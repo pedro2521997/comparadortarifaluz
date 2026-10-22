@@ -1,4 +1,5 @@
 ---
+import { anunciosActivos } from "../lib/anuncios-html.mjs";
 import Legal from "../layouts/Legal.astro";
 import { SITIO, INSTALADOR } from "../config";
 ---
@@ -25,4 +26,16 @@ import { SITIO, INSTALADOR } from "../config";
 
   <h2>Analítica</h2>
   <p>Usamos analítica sin cookies (Cloudflare Web Analytics), que no identifica a los usuarios ni los sigue entre sitios.</p>
+
+  {
+    anunciosActivos() && (
+      <>
+        <h2>Publicidad</h2>
+        <p>
+          La web se financia con anuncios de Google AdSense. Google, como responsable independiente, puede tratar datos de tu navegación (cookies, identificadores del dispositivo y tu dirección IP) para mostrar y medir anuncios y, solo si das tu consentimiento, para personalizarlos. Puedes dar, rechazar o retirar el consentimiento en el gestor de consentimiento de la web. Consulta la <a href="https://policies.google.com/privacy?hl=es" rel="noopener">política de privacidad de Google</a> y la <a href="/cookies/">política de cookies</a>.
+        </p>
+        <p>Los anuncios nunca reciben tu fichero de consumos ni los resultados de las calculadoras: se calculan en tu navegador y no salen de él.</p>
+      </>
+    )
+  }
 </Legal>

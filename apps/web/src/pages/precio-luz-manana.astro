@@ -1,5 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
+import Anuncio from "../components/Anuncio.astro";
 import PrecioDia from "../components/PrecioDia.astro";
 import AvisoDiario from "../components/AvisoDiario.astro";
 import ExtrasDia from "../components/ExtrasDia.astro";
@@ -34,6 +35,7 @@ const titulo = rM ? `Precio de la luz mañana ${fechaTitulo}: más barata a las 
       <PrecioDia fecha={manana} modo="manana" />
     </div>
   </section>
+  <Anuncio tipo="horizontal" seccion />
   <ExtrasDia modo="manana" />
   <AvisoDiario />
 </Base>

@@ -1,6 +1,8 @@
 ---
 titulo: "Contadores inteligentes y telegestión: qué miden y qué puedes hacer con ellos"
 resumen: "Cómo funciona tu contador digital, qué datos guarda, cómo leerlo y por qué gracias a él puedes comparar tarifas con tu consumo hora a hora."
+respuesta: "El contador digital registra tu consumo hora a hora y la distribuidora lo lee a distancia: por eso puedes pagar por horas y descargar tu consumo. Lleva el limitador integrado: si salta, apaga algo y espera o pulsa su botón."
+categoria: "Tu consumo y el fichero"
 revisado: "2026-10-21"
 orden: 17
 herramienta: { href: "/guias/descargar-consumo-datadis/", texto: "Descarga los datos que registra tu contador y úsalos en el comparador." }

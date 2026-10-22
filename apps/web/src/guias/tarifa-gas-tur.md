@@ -1,6 +1,8 @@
 ---
 titulo: "Tarifa de gas: la TUR y dónde contratarla"
 resumen: "La Tarifa de Último Recurso del gas es la regulada: quién puede contratarla, qué comercializadoras la ofrecen y cómo pedirla."
+respuesta: "La TUR es la tarifa regulada del gas, la pueden contratar los hogares con menos de 50.000 kWh al año y solo la ofrecen las comercializadoras de referencia: Curenergía (Iberdrola), Energía XXI (Endesa), Comercializadora Regulada (Naturgy) y Baser COR (TotalEnergies)."
+categoria: "Gas y otros"
 revisado: "2026-10-21"
 orden: 24
 herramienta: { href: "/comparador/", texto: "Y para la luz, compara todas las tarifas con tu consumo real." }

@@ -77,17 +77,24 @@ function actualizarBoton() {
     : "Primero sube tu fichero, prueba con el de ejemplo o usa los datos de tu factura.";
 }
 
-// Factura: consumo anual o por periodos
+// Para estimar el consumo desde lo que se paga: precios medianos del mercado (€/kW·día y €/kWh con impuestos).
+const PRECIO_KW_DIA = 0.12;
+const FACTOR_IMP = 1.27;
+const PRECIO_KWH_IMP = 0.15 * FACTOR_IMP;
+
+// Factura: consumo anual, por periodos o lo que se paga
 for (const r of document.querySelectorAll<HTMLInputElement>("input[name=fact-dato]")) {
   r.addEventListener("change", () => {
-    const porPeriodos = document.querySelector<HTMLInputElement>("input[name=fact-dato]:checked")!.value === "periodos";
-    $("fact-anual").hidden = porPeriodos;
-    $("fact-periodos").hidden = !porPeriodos;
+    const dato = document.querySelector<HTMLInputElement>("input[name=fact-dato]:checked")!.value;
+    $("fact-anual").hidden = dato !== "anual";
+    $("fact-periodos").hidden = dato !== "periodos";
+    $("fact-euros").hidden = dato !== "euros";
   });
 }
 
 function lecturasFactura(): { lecturas: Lectura[]; descripcion: string } | { error: string } {
-  const porPeriodos = document.querySelector<HTMLInputElement>("input[name=fact-dato]:checked")!.value === "periodos";
+  const dato = document.querySelector<HTMLInputElement>("input[name=fact-dato]:checked")!.value;
+  const porPeriodos = dato === "periodos";
   const tipo = $<HTMLSelectElement>("perfil").value as TipoPerfil;
   const hasta = datos.ultimoPvpc < datos.hoy ? datos.ultimoPvpc : sumarDias(datos.hoy, -1);
   const desde = sumarDias(hasta, -364);
@@ -101,6 +108,17 @@ function lecturasFactura(): { lecturas: Lectura[]; descripcion: string } | { err
     return {
       lecturas: generarLecturas({ desde, hasta, anualKwh: anual, tipo, festivos, porPeriodo: p }),
       descripcion: `${kwh(anual)} al año estimados con tu factura (${pct(p[1] / (p[1] + p[2] + p[3]))} en punta, ${pct(p[3] / (p[1] + p[2] + p[3]))} en valle)`,
+    };
+  }
+  if (dato === "euros") {
+    const euros = valor("fe-eur");
+    if (!(euros >= 10 && euros <= 1000)) return { error: "Escribe lo que pagas al mes, en euros (entre 10 y 1.000)." };
+    // Estimación inversa con una factura típica: parte fija (potencia, contador, bono social) y el resto, energía.
+    const fijoMes = (valor("p1") || 3.45) * PRECIO_KW_DIA * 30.4 * FACTOR_IMP + 1.2;
+    const anual = Math.max(300, Math.round((((euros - fijoMes) / PRECIO_KWH_IMP) * 12) / 50) * 50);
+    return {
+      lecturas: generarLecturas({ desde, hasta, anualKwh: anual, tipo, festivos }),
+      descripcion: `unos ${kwh(anual)} al año estimados a partir de ${eur(euros)} al mes`,
     };
   }
   const anual = valor("fa-kwh");

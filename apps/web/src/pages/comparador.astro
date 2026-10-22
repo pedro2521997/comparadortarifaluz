@@ -1,5 +1,8 @@
 ---
 import Base from "../layouts/Base.astro";
+import AyudaHerramienta from "../components/AyudaHerramienta.astro";
+import { esquemaFaq } from "../lib/faq";
+import DondeEnFactura from "../components/DondeEnFactura.astro";
 import { tarifas, regulados, festivos, dias } from "../lib/datos";
 import { hoyMadrid } from "../lib/formato";
 import { marca, nombrePlan } from "../lib/ranking";
@@ -15,9 +18,19 @@ for (const t of tarifas.filter((x) => x.tipo !== "pvpc")) {
   grupos.set(m, [...(grupos.get(m) ?? []), t]);
 }
 const gruposOrdenados = [...grupos.entries()].sort((a, b) => a[0].localeCompare(b[0], "es"));
+const preguntasAyuda = [
+  { p: "¿Cuál es la tarifa de luz más barata?", r: "Depende de cuánto gastas y a qué horas. Por eso el comparador calcula la factura de cada tarifa con tu consumo: la más barata para tu vecino puede no serlo para ti." },
+  { p: "¿Necesito el fichero de consumos?", r: "No. Puedes poner tu consumo anual, los kWh de una factura o solo lo que pagas al mes. Con el fichero el resultado es más exacto, sobre todo para comparar PVPC e indexadas." },
+  { p: "¿Cambiar de compañía tiene coste o corte de luz?", r: "No. El cambio es gratis, no hay corte y no cambia el contador. Solo hay que vigilar si tu tarifa actual tiene permanencia." },
+  { p: "¿Por qué el comparador no recomienda la tarifa que me paga comisión?", r: "Porque ordenamos solo por precio. Si una tarifa nos da comisión, lo verás indicado, pero no cambia su posición." },
+];
+const faqComparador = esquemaFaq(preguntasAyuda);
+
 ---
 
 <Base
+  schema={faqComparador}
+  migas={[["Herramientas", "/herramientas/"], ["Comparador"]]}
   titulo={`Comparador de tarifas de luz ${hoy.slice(0, 4)}: ${tarifas.length} tarifas con tu consumo`}
   descripcion={`Compara ${tarifas.length} tarifas de luz de ${grupos.size} comercializadoras con tu fichero de consumos o con los datos de tu factura. Ranking por precio, sin comisiones que alteren el orden.`}
 >
@@ -73,6 +86,7 @@ const gruposOrdenados = [...grupos.entries()].sort((a, b) => a[0].localeCompare(
               <legend class="label">¿Qué dato tienes?</legend>
               <label class="check"><input type="radio" name="fact-dato" value="anual" checked /> <span>Consumo anual (kWh)</span></label>
               <label class="check"><input type="radio" name="fact-dato" value="periodos" /> <span>kWh de punta, llano y valle de una factura</span></label>
+              <label class="check"><input type="radio" name="fact-dato" value="euros" /> <span>Solo sé lo que pago al mes (€)</span></label>
             </fieldset>
             <div id="fact-anual" class="form-grid form-grid--2">
               <div class="field">
@@ -81,12 +95,20 @@ const gruposOrdenados = [...grupos.entries()].sort((a, b) => a[0].localeCompare(
                 <span class="hint">kWh. Suele venir en la factura («consumo del último año»). Un hogar medio gasta 2.500–3.500 kWh.</span>
               </div>
             </div>
+            <div id="fact-euros" class="form-grid form-grid--2" hidden>
+              <div class="field">
+                <label for="fe-eur">Lo que pagas al mes, más o menos</label>
+                <input id="fe-eur" type="number" inputmode="decimal" min="10" max="1000" step="1" value="60" />
+                <span class="hint">€ con impuestos: el total de una factura normal dividido entre los meses que cubre. Estimamos tu consumo a partir de ahí; con la factura delante el resultado es más fino.</span>
+              </div>
+            </div>
             <div id="fact-periodos" class="form-grid form-grid--2" hidden>
               <div class="field"><label for="fp-p1">kWh en punta (P1)</label><input id="fp-p1" type="number" inputmode="numeric" min="0" step="1" value="70" /></div>
               <div class="field"><label for="fp-p2">kWh en llano (P2)</label><input id="fp-p2" type="number" inputmode="numeric" min="0" step="1" value="65" /></div>
               <div class="field"><label for="fp-p3">kWh en valle (P3)</label><input id="fp-p3" type="number" inputmode="numeric" min="0" step="1" value="115" /></div>
               <div class="field"><label for="fp-dias">Días de la factura</label><input id="fp-dias" type="number" inputmode="numeric" min="7" max="400" step="1" value="30" /></div>
             </div>
+            <DondeEnFactura datos={["anual", "kwh", "potencia", "total"]} />
             <div class="field" style="max-width:420px">
               <label for="perfil">Cómo se reparte tu consumo</label>
               <select id="perfil" aria-describedby="perfil-ayuda">
@@ -200,6 +222,25 @@ const gruposOrdenados = [...grupos.entries()].sort((a, b) => a[0].localeCompare(
   </section>
 
   <script type="application/json" id="datos-comparador" set:html={JSON.stringify(datos)} />
+
+  <AyudaHerramienta
+    titulo="Cómo comparamos las tarifas"
+    preguntas={preguntasAyuda}
+    guias={[
+      { href: "/guias/descargar-consumo-por-distribuidora/", t: "Cómo descargar tu consumo en cada distribuidora" },
+      { href: "/guias/pvpc-o-mercado-libre/", t: "PVPC o mercado libre" },
+      { href: "/guias/tarifas-indexadas/", t: "Tarifas indexadas: qué son y cuándo convienen" },
+      { href: "/guias/cambiar-de-compania/", t: "Cómo cambiar de compañía" },
+    ]}
+  >
+    <ol>
+      <li><strong>Tu consumo, hora a hora.</strong> Con tu fichero usamos lo que gastaste de verdad. Sin fichero, repartimos tu consumo con la forma de un hogar tipo.</li>
+      <li><strong>Cada tarifa, con sus reglas.</strong> Precio fijo, tres periodos, PVPC con el precio de cada hora, o indexadas con el precio del mercado más su margen. Incluimos cuotas, servicios obligatorios y promociones del primer año.</li>
+      <li><strong>Factura completa.</strong> Potencia, energía, bono social, impuesto eléctrico, alquiler del contador e IVA, con los valores vigentes en cada fecha.</li>
+      <li><strong>Ordenadas solo por precio.</strong> Si alguna tarifa nos paga comisión, lo indicamos, pero nunca la subimos en la lista.</li>
+    </ol>
+    <p>Tu fichero se lee en tu navegador: no lo subimos a ningún servidor.</p>
+  </AyudaHerramienta>
 </Base>
 
 

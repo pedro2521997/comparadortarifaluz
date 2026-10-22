@@ -1,6 +1,8 @@
 ---
 titulo: "Calefacción: radiador eléctrico, bomba de calor o gas"
 resumen: "Cuánto cuesta cada kWh de calor con cada sistema, por qué la bomba de calor gana casi siempre y cuándo un radiador tiene sentido."
+respuesta: "La bomba de calor da 3–4 kWh de calor por cada kWh de luz, así que calienta tres o cuatro veces más barato que un radiador eléctrico. El radiador solo tiene sentido para ratos cortos en una habitación."
+categoria: "Ahorrar luz"
 revisado: "2026-10-21"
 orden: 13
 herramienta: { href: "/cuanto-gasta/bomba-de-calor/", texto: "Calcula lo que te cuesta tu calefacción al mes con el precio de la luz de hoy." }

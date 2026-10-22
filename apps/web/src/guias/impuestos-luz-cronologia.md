@@ -1,6 +1,8 @@
 ---
 titulo: "IVA e impuesto eléctrico de la luz: cronología de cambios"
 resumen: "Cómo han cambiado el IVA y el impuesto especial sobre la electricidad desde 2021, y por qué importa para comparar facturas de distintos meses."
+respuesta: "El IVA de la luz estuvo al 10 % (y al 5 % en el segundo semestre de 2022) entre 2021 y 2024, volvió al 21 % en 2025, bajó otra vez al 10 % del 22 de marzo al 31 de mayo de 2026 y vuelve a ser del 21 % desde junio. El impuesto eléctrico es del 5,11 % desde julio de 2024."
+categoria: "Tu factura"
 revisado: "2026-10-21"
 orden: 16
 herramienta: { href: "/comparador/", texto: "El comparador aplica a cada día de tu fichero el IVA y el impuesto que estaban vigentes ese día." }

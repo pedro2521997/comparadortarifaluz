@@ -1,0 +1,43 @@
+---
+// Debajo de cada herramienta: cómo se usa, preguntas frecuentes y guías. El anuncio va después, nunca dentro del resultado.
+import Anuncio from "./Anuncio.astro";
+import type { Pregunta } from "../lib/faq";
+
+interface Props {
+  titulo: string;
+  preguntas: Pregunta[];
+  guias?: { href: string; t: string }[];
+}
+const { titulo, preguntas, guias = [] } = Astro.props;
+---
+
+<Anuncio tipo="horizontal" seccion />
+<section class="section section--white">
+  <div class="wrap ayuda">
+    <div class="prose">
+      <h2>{titulo}</h2>
+      <slot />
+    </div>
+    <div class="ayuda__faq">
+      <h2>Preguntas frecuentes</h2>
+      {
+        preguntas.map((x) => (
+          <details>
+            <summary>{x.p}</summary>
+            <p>{x.r}</p>
+          </details>
+        ))
+      }
+      {
+        guias.length > 0 && (
+          <div class="ayuda__guias">
+            <span class="eyebrow">Para saber más</span>
+            {guias.map((g) => (
+              <a href={g.href}>{g.t} →</a>
+            ))}
+          </div>
+        )
+      }
+    </div>
+  </div>
+</section>

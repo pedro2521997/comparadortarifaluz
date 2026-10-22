@@ -1,6 +1,8 @@
 ---
 titulo: "Tarifas de luz para el coche eléctrico: cuánto cuesta cargar en casa"
 resumen: "Cuánto cuestan 100 km cargando en casa, qué tarifa conviene, qué potencia contratar y cómo aprovechar el periodo valle."
+respuesta: "Para el coche eléctrico conviene una tarifa con valle barato (tres periodos, PVPC o específica para coche), cargar de madrugada y contratar más potencia solo en valle (P2), que es muy barata. 100 km en casa cuestan unos 2–3 €, frente a unos 10 € de gasolina."
+categoria: "Coche eléctrico"
 revisado: "2026-10-21"
 orden: 12
 herramienta: { href: "/cuanto-gasta/cargador-coche-electrico/", texto: "Calcula lo que te cuesta cargar tu coche con el precio de hoy y a qué hora sale más barato." }

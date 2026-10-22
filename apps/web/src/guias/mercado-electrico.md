@@ -1,6 +1,8 @@
 ---
 titulo: "Cómo funciona el mercado eléctrico, explicado sin tecnicismos"
 resumen: "Quién genera, quién transporta y quién te vende la luz, cómo se fija el precio de cada hora en el mercado y qué parte de tu factura va a cada uno."
+respuesta: "El precio de cada hora se fija el día antes en el mercado diario (OMIE): se ordenan las ofertas de las centrales de más barata a más cara y la última necesaria marca el precio para todas. Por eso la solar abarata el mediodía y el gas encarece la tarde."
+categoria: "Precio y mercado"
 revisado: "2026-10-21"
 orden: 21
 herramienta: { href: "/precio-luz-hoy/", texto: "Mira cómo sale hoy el precio de cada hora y de dónde viene la electricidad." }

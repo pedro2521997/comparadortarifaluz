@@ -1,6 +1,8 @@
 ---
 titulo: "Baterías para placas solares: cuándo compensan y cuándo no"
 resumen: "Las cuentas de una batería doméstica: cuánto cuesta cada kWh almacenado, en qué casos se amortiza y qué alternativas hay."
+respuesta: "Una batería solo ahorra la diferencia entre lo que pagas por la luz y lo que te compensan por los excedentes, unos 0,08–0,12 € por kWh. Una de 5 kWh suele ahorrar 100–150 € al año, así que en la mayoría de casas tarda más en pagarse que lo que dura."
+categoria: "Placas solares y baterías"
 revisado: "2026-10-21"
 orden: 11
 herramienta: { href: "/placas-solares/", texto: "Mira primero cuántos excedentes tendrías con tus placas: sin excedentes que guardar, una batería no sirve de nada." }

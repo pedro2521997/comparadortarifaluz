@@ -40,8 +40,24 @@ docs              Plan, diseño y datos de validación (docs/datos)
 | M2 Comparador | Lector en el navegador (Datadis, i-DE, e-distribución, UFD, formatos genéricos, cuartohorario, Wh, hora 25 y día de 23 h, mapeo manual si no reconoce el formato). Motor 2.0TD con regulados por fecha (IVA del 10 % en 2026 incluido) y PVPC hora a hora real. Dos modos: fichero horario o datos de la factura (anual o por periodos, con 4 perfiles de consumo). Ranking en tabla con filtros (tipo, permanencia, servicios, online, renovable, potencia máxima), orden por columnas, promociones del primer año opcionales, detalle con desglose y letra pequeña, y exportación a CSV. Orden solo por precio; «por revisar» e incompletas detrás. Extras: reparto por periodos, potencia sobrante, mover un 10 % a valle y enlace a la calculadora solar con el consumo cargado. |
 | M3 Cuánto gasta | Calculadora genérica y 27 páginas de aparato con el precio de hoy, mejor y peor franja, truco y fuente. |
 | M4 Solar | PVGIS hora a hora (con aproximación si falla) × consumo del fichero o de la factura, escenarios prudente/favorable, amortización y 25 años. Formulario después del resultado, consentimiento sin marcar, fuera de zona. Worker con D1, código `LST-AAAA-NNNN`, aviso por Telegram y panel de estados. |
-| M5 Guías | Las 20 guías del plan con fecha de revisión, fuentes y herramienta; datos estructurados HowTo y FAQPage. |
+| M5 Guías | 41 guías en 8 temas (`/guias/`), con respuesta corta al principio, índice, preguntas frecuentes, fecha de revisión, fuentes, herramienta y guías relacionadas; datos estructurados Article/HowTo, FAQPage y migas. |
+| Herramientas nuevas | `/herramientas/potencia/` (potencia P1/P2 según aparatos a la vez), `/herramientas/coche-electrico/` (coste de carga frente a combustión y mejores horas), `/herramientas/distribuidora/` (distribuidora y letras de control del CUPS). El simulador de factura funciona sin fichero (kWh de la factura), el comparador acepta «solo sé lo que pago al mes», la calculadora solar simula una batería y la de aparatos tiene hora de uso y comparación con uno más eficiente. |
+| SEO y GEO | `llms.txt`, `robots.txt` abierto a buscadores con IA, sitemap con `lastmod`, WebSite/Organization en la portada, WebApplication + FAQPage en cada herramienta. |
+| Publicidad | Huecos de AdSense repartidos (ver abajo), apagados hasta la aprobación. |
 | Legal y transparencia | `/como-funciona/`, aviso legal, privacidad y cookies (borradores para revisión). |
+
+## Publicidad (Google AdSense)
+
+Los anuncios están **apagados** (`apps/web/src/anuncios.json` → `"activo": false`): en producción no sale nada, ni script ni huecos. Para ver dónde irán: `npm run dev` (huecos rayados de muestra) o `PREVIEW_ANUNCIOS=1 npx astro build`.
+
+Dónde van: en las guías, uno cada tres apartados (desde el tercero), uno en la barra lateral y un bloque de contenido relacionado al final; en las herramientas, antes de la ayuda y las preguntas frecuentes, **nunca dentro de un resultado**; en el precio de hoy y mañana, el ranking, el histórico y los aparatos, entre secciones. Legales y 404 sin anuncios.
+
+Para activarlos:
+
+1. Publica la web con contenido (las guías) y date de alta en AdSense con el dominio. Google revisa el sitio; tarda de días a semanas.
+2. En AdSense, **Privacidad y mensajes → Europa**: crea el mensaje de consentimiento (CMP certificado de Google, TCF v2.2) con el botón «No consentir». Sin él, en el EEE solo hay anuncios limitados.
+3. Crea cuatro bloques de anuncios: *display* adaptable (horizontal), *in-article* (articulo), *display* vertical (lateral) y *multiplex*. Copia el `ca-pub-…` y los `data-ad-slot` en `anuncios.json` y pon `"activo": true`.
+4. Despliega: se generan `ads.txt` con tu `pub-…`, el script de AdSense y la sección de publicidad de las páginas de cookies y privacidad.
 
 ## Pendiente (no se puede cerrar sin el propietario)
 

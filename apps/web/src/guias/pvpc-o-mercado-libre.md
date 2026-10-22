@@ -1,6 +1,8 @@
 ---
 titulo: "PVPC o mercado libre: cuál te conviene"
 resumen: "Diferencias entre la tarifa regulada y las del mercado libre, quién gana con cada una y por qué la respuesta depende de tu consumo."
+respuesta: "La PVPC es la tarifa regulada: precio distinto cada hora, sin permanencia y la única con bono social. El mercado libre ofrece precios fijos o por periodos que decide cada compañía. Ninguna es siempre más barata: depende de tu consumo y del año, y lo mejor es compararlas con tu consumo real."
+categoria: "Tarifas y compañías"
 revisado: "2026-10-21"
 orden: 4
 herramienta: { href: "/comparador/", texto: "La única forma de saberlo de verdad: calcula tu último año con la PVPC real hora a hora y con cada tarifa del mercado libre." }

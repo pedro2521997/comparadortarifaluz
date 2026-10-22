@@ -1,0 +1,271 @@
+---
+import Base from "../../layouts/Base.astro";
+import AyudaHerramienta from "../../components/AyudaHerramienta.astro";
+import { esquemaFaq, esquemaHerramienta, type Pregunta } from "../../lib/faq";
+import { dias, factorImpuestos, tarifas } from "../../lib/datos";
+import { hoyMadrid, num, fechaCorta } from "../../lib/formato";
+import { SITIO } from "../../config";
+import { mejorFranja } from "../../lib/grafico";
+
+const hoy = hoyMadrid();
+const mediana = (xs: number[]) => {
+  const s = [...xs].sort((a, b) => a - b);
+  return s.length ? s[Math.floor(s.length / 2)] : 0;
+};
+// PVPC en las 3 horas seguidas más baratas de cada día (últimos 30 días publicados).
+const recientes = dias.filter((d) => d.fecha <= hoy).slice(-30);
+const baratas = recientes.map((d) => mejorFranja(d.precios, 3)?.media).filter((p): p is number => p != null);
+const pvpcBarato = baratas.reduce((a, b) => a + b, 0) / (baratas.length || 1);
+// Del catálogo: el precio valle (P3) de las tarifas por periodos y el precio de las de precio fijo.
+const valles = tarifas.filter((t) => t.tipo === "periodos" && t.energia?.p3).map((t) => t.energia.p3 as number);
+const fijos = tarifas.filter((t) => t.tipo === "fijo" && t.energia?.p1).map((t) => t.energia.p1 as number);
+const config = {
+  factor: factorImpuestos(hoy),
+  precios: {
+    valle: +mediana(valles).toFixed(4),
+    vallemin: +Math.min(...valles).toFixed(4),
+    pvpc: +pvpcBarato.toFixed(4),
+    fijo: +mediana(fijos).toFixed(4),
+  },
+  // Último día con precios para recomendar las horas de carga.
+  dia: recientes.at(-1)?.precios ?? [],
+  fecha: recientes.at(-1)?.fecha ?? hoy,
+};
+
+const preguntas: Pregunta[] = [
+  { p: "¿Cuánto cuesta cargar un coche eléctrico en casa?", r: `Un compacto gasta unos 16 kWh cada 100 km. Con una tarifa con valle barato (${num(config.precios.valle, 3)} €/kWh de mediana en el catálogo), cargar en casa sale por unos ${num(16 * 1.1 * config.precios.valle * config.factor, 2)} € cada 100 km, impuestos incluidos.` },
+  { p: "¿Es más barato que la gasolina?", r: "Cargando en casa por la noche, normalmente cuesta entre la cuarta y la quinta parte que la gasolina por kilómetro. Si cargas siempre en cargadores rápidos públicos, la diferencia se reduce mucho." },
+  { p: "¿Necesito subir la potencia contratada?", r: "Con un enchufe normal (2,3 kW) casi nunca. Con un cargador de pared (wallbox) de 7,4 kW, sí suele hacer falta subir la potencia del periodo valle, que es barata. Con 2.0TD puedes contratar más potencia solo en el valle." },
+  { p: "¿A qué hora conviene cargar?", r: "De 0 a 8 h, entre semana, y todo el fin de semana es periodo valle en todas las tarifas por periodos. Con PVPC o una indexada, mira el precio de cada hora: a veces el mediodía es aún más barato." },
+  { p: "¿Qué tarifa es mejor para el coche eléctrico?", r: "Una con el periodo valle muy barato, si cargas casi siempre de noche. Compáralo con tu consumo real en el comparador, porque lo que ganas en el valle puedes perderlo en las horas punta." },
+];
+const schema = [
+  esquemaHerramienta("Calculadora de coste de carga del coche eléctrico", "Cuánto cuesta cargar un coche eléctrico en casa y fuera, al mes y al año, comparado con gasolina o diésel.", "/herramientas/coche-electrico/", SITIO.url),
+  esquemaFaq(preguntas),
+];
+---
+
+<Base
+  titulo="Cuánto cuesta cargar un coche eléctrico: calculadora"
+  descripcion="Calcula cuánto te cuesta cargar tu coche eléctrico en casa y fuera, al mes y al año, cuánto ahorras frente a gasolina o diésel y a qué hora conviene cargar."
+  schema={schema}
+  migas={[["Herramientas", "/herramientas/"], ["Coche eléctrico"]]}
+>
+  <section class="hero hero--compacto">
+    <div class="wrap">
+      <p class="breadcrumbs"><a href="/herramientas/">Herramientas</a> / Coche eléctrico</p>
+      <h1>¿Cuánto cuesta cargar tu coche eléctrico?</h1>
+      <p class="lead">Elige tu coche y cuánto conduces. Te decimos lo que pagas al mes y al año, cuánto ahorras frente a la gasolina y a qué hora te conviene cargar. Si no sabes un dato, deja el que viene puesto.</p>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="wrap herr" data-coche={JSON.stringify(config)}>
+      <form class="herr__form card card--roomy" onsubmit="return false">
+        <fieldset>
+          <legend class="herr__paso"><b>1</b> Tu coche</legend>
+          <div class="seg">
+            <label><input type="radio" name="coche" value="14" /> Pequeño</label>
+            <label><input type="radio" name="coche" value="16" checked /> Compacto</label>
+            <label><input type="radio" name="coche" value="18" /> Berlina o SUV</label>
+            <label><input type="radio" name="coche" value="21" /> SUV grande</label>
+            <label><input type="radio" name="coche" value="x" /> Sé el dato</label>
+          </div>
+          <div class="form-grid form-grid--2" style="margin-top:16px">
+            <div class="field">
+              <label for="ce-cons">Consumo del coche</label>
+              <input id="ce-cons" name="cons" type="number" min="8" max="40" step="0.5" inputmode="decimal" value="16" />
+              <span class="hint">kWh cada 100 km (en el ordenador del coche o la ficha técnica)</span>
+            </div>
+            <div class="field">
+              <label for="ce-km">Kilómetros al año</label>
+              <input id="ce-km" name="km" type="number" min="500" max="100000" step="500" inputmode="numeric" value="12000" />
+              <span class="hint">La media en España ronda los 12.000 km. <span data-o="kmdia"></span></span>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend class="herr__paso"><b>2</b> Dónde cargas</legend>
+          <div class="field">
+            <label for="ce-casa">En casa: <strong data-o="casa">90 %</strong> de los kilómetros</label>
+            <input id="ce-casa" name="casa" type="range" min="0" max="100" step="5" value="90" />
+            <span class="hint">El resto, en cargadores públicos.</span>
+          </div>
+          <div class="form-grid form-grid--2" style="margin-top:16px">
+            <div class="field">
+              <label for="ce-cargador">Cómo cargas en casa</label>
+              <select id="ce-cargador" name="cargador">
+                <option value="2.3">Enchufe normal (2,3 kW)</option>
+                <option value="3.7">Enchufe reforzado (3,7 kW)</option>
+                <option value="7.4" selected>Cargador de pared (7,4 kW)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="ce-pub">Precio en cargadores públicos</label>
+              <input id="ce-pub" name="pub" type="number" min="0" max="1.5" step="0.01" inputmode="decimal" value="0.45" />
+              <span class="hint">€/kWh con IVA. Los rápidos suelen costar 0,40–0,60.</span>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend class="herr__paso"><b>3</b> Tu tarifa de luz en casa</legend>
+          <div class="seg">
+            <label><input type="radio" name="tarifa" value="valle" checked /> Con valle barato</label>
+            <label><input type="radio" name="tarifa" value="vallemin" /> El valle más barato</label>
+            <label><input type="radio" name="tarifa" value="pvpc" /> PVPC en sus horas baratas</label>
+            <label><input type="radio" name="tarifa" value="fijo" /> Precio fijo</label>
+            <label><input type="radio" name="tarifa" value="x" /> Escribo mi precio</label>
+          </div>
+          <div class="field" style="margin-top:16px">
+            <label for="ce-precio">Precio de la luz al cargar</label>
+            <input id="ce-precio" name="precio" type="number" min="0" max="1" step="0.001" inputmode="decimal" value={config.precios.valle} />
+            <span class="hint" data-o="ptexto">€/kWh sin impuestos.</span>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend class="herr__paso"><b>4</b> Comparar con un coche de combustión</legend>
+          <div class="seg">
+            <label><input type="radio" name="comb" value="gasolina" checked /> Gasolina</label>
+            <label><input type="radio" name="comb" value="diesel" /> Diésel</label>
+          </div>
+          <div class="form-grid form-grid--2" style="margin-top:16px">
+            <div class="field">
+              <label for="ce-l">Consumo</label>
+              <input id="ce-l" name="litros" type="number" min="2" max="20" step="0.1" inputmode="decimal" value="6.5" />
+              <span class="hint">litros cada 100 km</span>
+            </div>
+            <div class="field">
+              <label for="ce-pl">Precio del combustible</label>
+              <input id="ce-pl" name="plitro" type="number" min="0.5" max="3" step="0.01" inputmode="decimal" value="1.55" />
+              <span class="hint">€/litro: pon el de tu gasolinera</span>
+            </div>
+          </div>
+        </fieldset>
+      </form>
+
+      <div class="herr__res" aria-live="polite">
+        <p class="eyebrow">Cargar te cuesta</p>
+        <p class="answer"><strong data-o="mes">—</strong> al mes</p>
+        <div class="herr__filas">
+          <div><span>Al año</span><span data-o="anio"></span></div>
+          <div><span>Cada 100 km</span><span data-o="cien"></span></div>
+          <div><span>Energía al año</span><span data-o="kwh"></span></div>
+          <div><span>Carga media diaria en casa</span><span data-o="noche"></span></div>
+        </div>
+        <p class="eyebrow" style="margin-top:12px">Frente a <span data-o="combnom">gasolina</span></p>
+        <div class="barra-comp" data-o="barras"></div>
+        <p data-o="ahorro"></p>
+        <p class="small" data-o="horas"></p>
+        <p class="caption">
+          Incluye un 10 % de pérdidas al cargar e impuestos de la luz (IVA e impuesto eléctrico). No incluye el término de potencia: si tienes que subirla, mira la <a href="/herramientas/potencia/">calculadora de potencia</a>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <AyudaHerramienta
+    titulo="Cómo calculamos el coste de cargar"
+    preguntas={preguntas}
+    guias={[
+      { href: "/guias/coste-cargar-coche-electrico/", t: "Cuánto cuesta cargar un coche eléctrico (guía)" },
+      { href: "/guias/coche-electrico/", t: "La mejor tarifa para el coche eléctrico" },
+      { href: "/guias/potencia-contratada/", t: "Qué potencia contratar" },
+    ]}
+  >
+    <ol>
+      <li><strong>Energía que gasta el coche</strong>: kilómetros × consumo cada 100 km. Le sumamos un 10 % de pérdidas en la carga.</li>
+      <li><strong>Reparto</strong>: la parte que cargas en casa la multiplicamos por tu precio de la luz con impuestos; la que cargas fuera, por el precio del cargador público.</li>
+      <li><strong>Comparación</strong>: los mismos kilómetros con un coche de gasolina o diésel, con el consumo y el precio por litro que pongas.</li>
+    </ol>
+    <h3>De dónde salen los precios que te proponemos</h3>
+    <ul>
+      <li><strong>Con valle barato</strong>: la mediana del precio valle (de 0 a 8 h) de las {valles.length} tarifas por periodos de nuestro catálogo: {num(config.precios.valle, 3)} €/kWh.</li>
+      <li><strong>El valle más barato</strong> del catálogo: {num(config.precios.vallemin, 3)} €/kWh. Mira cuál es en el <a href="/tarifas/">ranking</a>.</li>
+      <li><strong>PVPC en sus horas baratas</strong>: la media de las 3 horas seguidas más baratas de cada día, en los últimos 30 días hasta el {fechaCorta(config.fecha)}: {num(config.precios.pvpc, 3)} €/kWh (ya incluye peajes y cargos). Hoy en día suelen ser las del mediodía, por el sol.</li>
+      <li><strong>Precio fijo</strong>: la mediana de las tarifas de precio único: {num(config.precios.fijo, 3)} €/kWh.</li>
+    </ul>
+  </AyudaHerramienta>
+</Base>
+
+<script>
+  import { eur, eur2, kwh, num, hh } from "../../lib/formato";
+  import { mejorFranja } from "../../lib/grafico";
+
+  const raiz = document.querySelector<HTMLElement>("[data-coche]")!;
+  const cfg = JSON.parse(raiz.dataset.coche!) as { factor: number; precios: Record<string, number>; dia: (number | null)[]; fecha: string };
+  const form = raiz.querySelector("form")!;
+  const o = (k: string) => raiz.querySelector<HTMLElement>(`[data-o="${k}"]`)!;
+  const el = (n: string) => form.elements.namedItem(n) as HTMLInputElement;
+  const val = (n: string) => parseFloat(el(n).value.replace(",", ".")) || 0;
+  const radio = (n: string) => form.querySelector<HTMLInputElement>(`input[name="${n}"]:checked`)?.value ?? "";
+  const TEXTOS: Record<string, string> = {
+    valle: "Mediana del precio valle en nuestro catálogo. €/kWh sin impuestos.",
+    vallemin: "El valle más barato del catálogo. €/kWh sin impuestos.",
+    pvpc: "Media del PVPC en las 3 horas más baratas de cada día (últimos 30 días). €/kWh sin impuestos.",
+    fijo: "Mediana de las tarifas de precio fijo. €/kWh sin impuestos.",
+    x: "Escribe el precio de la energía de tu factura (del periodo valle si tienes uno). €/kWh sin impuestos.",
+  };
+  const COMB: Record<string, [number, number]> = { gasolina: [6.5, 1.55], diesel: [5.5, 1.48] };
+
+  function calcular() {
+    const kmAnio = val("km");
+    const kwhAnio = (kmAnio / 100) * val("cons") * 1.1;
+    const casa = val("casa") / 100;
+    const coste = kwhAnio * casa * val("precio") * cfg.factor + kwhAnio * (1 - casa) * val("pub");
+    const comb = (kmAnio / 100) * val("litros") * val("plitro");
+
+    o("casa").textContent = `${Math.round(casa * 100)} %`;
+    o("kmdia").textContent = `Son ${num(kmAnio / 365, 0)} km al día.`;
+    o("mes").textContent = eur2(coste / 12);
+    o("anio").textContent = eur(coste);
+    o("cien").textContent = eur2(kmAnio ? (coste / kmAnio) * 100 : 0);
+    o("kwh").textContent = kwh(kwhAnio);
+
+    // Carga diaria media en casa y cuántas horas tarda con tu cargador.
+    const kwhDia = (kwhAnio * casa) / 365;
+    const kw = parseFloat(el("cargador").value);
+    const horas = kwhDia / kw;
+    o("noche").textContent = `${kwh(kwhDia)} · ${horas < 1 ? `${Math.max(1, Math.round(horas * 60))} min` : `${num(horas, 1)} h`}`;
+
+    const nombre = radio("comb") === "diesel" ? "diésel" : "gasolina";
+    o("combnom").textContent = nombre;
+    const max = Math.max(coste, comb, 1);
+    o("barras").innerHTML = [
+      ["Eléctrico", coste, true],
+      [nombre[0].toUpperCase() + nombre.slice(1), comb, false],
+    ]
+      .map(([n, v, tu]) => `<div class="barra-comp__f${tu ? " barra-comp__f--tu" : ""}"><span>${n}</span><span class="barra-comp__b"><span style="width:${((v as number) / max) * 100}%"></span></span><span>${eur(v as number)}/año</span></div>`)
+      .join("");
+    const ahorro = comb - coste;
+    o("ahorro").innerHTML =
+      ahorro > 0
+        ? `Ahorras <strong>${eur(ahorro)} al año</strong> (${eur(ahorro / 12)} al mes) en energía frente a ${nombre}.`
+        : `Con estos datos, el eléctrico te sale <strong>${eur(-ahorro)} al año más caro</strong> en energía: carga más en casa o busca una tarifa con valle barato.`;
+
+    // Mejores horas del último día publicado para una carga de esa duración.
+    const ventana = Math.max(1, Math.min(8, Math.ceil(horas)));
+    const f = cfg.dia.length ? mejorFranja(cfg.dia, ventana) : null;
+    o("horas").innerHTML = f
+      ? `Con PVPC o una indexada, el ${new Date(cfg.fecha + "T12:00").toLocaleDateString("es-ES", { day: "numeric", month: "long" })} lo más barato era cargar <strong>de ${hh(f.inicio)} a ${hh(f.inicio + ventana)}</strong>. Con una tarifa por periodos, carga de 0 a 8 h o en fin de semana. <a href="/precio-luz-hoy/">Precio de hoy</a>.`
+      : "";
+  }
+
+  form.addEventListener("change", (e) => {
+    const t = e.target as HTMLInputElement;
+    if (t.name === "coche" && t.value !== "x") el("cons").value = t.value;
+    if (t.name === "coche" && t.value === "x") el("cons").focus();
+    if (t.name === "tarifa") {
+      if (t.value !== "x") el("precio").value = String(cfg.precios[t.value]);
+      else el("precio").focus();
+      o("ptexto").textContent = TEXTOS[t.value];
+    }
+    if (t.name === "comb") [el("litros").value, el("plitro").value] = COMB[t.value].map(String);
+    calcular();
+  });
+  form.addEventListener("input", calcular);
+  o("ptexto").textContent = TEXTOS.valle;
+  calcular();
+</script>

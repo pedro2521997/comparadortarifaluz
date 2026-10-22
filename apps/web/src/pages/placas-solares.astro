@@ -1,12 +1,24 @@
 ---
 import Base from "../layouts/Base.astro";
+import AyudaHerramienta from "../components/AyudaHerramienta.astro";
+import { esquemaFaq } from "../lib/faq";
 import { provincias } from "../lib/datos";
 import { INSTALADOR } from "../config";
 
 const datos = { provincias, instalador: INSTALADOR };
+const preguntasAyuda = [
+  { p: "¿Cuánto se ahorra con placas solares?", r: "Una casa con 3.500 kWh al año y una instalación de 3–4 kWp suele ahorrar entre 400 y 700 € al año, según la zona, el tejado y cuánto consumas con sol. La calculadora te da el rango para tu caso." },
+  { p: "¿En cuántos años se amortizan?", r: "Habitualmente entre 6 y 10 años. Depende sobre todo de cuánto consumes en horas de sol y del precio de tu luz." },
+  { p: "¿Merece la pena una batería?", r: "Solo si tienes muchos excedentes y te los compensan poco, o si quieres respaldo ante cortes. Con los precios actuales, muchas no llegan a pagarse en su vida útil. Activa la batería en la calculadora para verlo con tus datos." },
+  { p: "¿Puedo poner placas en un piso?", r: "Sí, con autoconsumo colectivo en la cubierta común: hace falta acuerdo de la comunidad y la producción se reparte entre los vecinos que participan." },
+];
+const faqSolar = esquemaFaq(preguntasAyuda);
+
 ---
 
 <Base
+  schema={faqSolar}
+  migas={[["Herramientas", "/herramientas/"], ["Placas solares"]]}
   titulo="Calculadora de placas solares con tu consumo real"
   descripcion="Calcula cuánto ahorrarías con placas solares en tu tejado: producción hora a hora de tu zona (PVGIS) cruzada con tu consumo real. Resultado en rangos, sin promesas."
 >
@@ -86,6 +98,28 @@ const datos = { provincias, instalador: INSTALADOR };
         <label class="check"><input id="teletrabajo" type="checkbox" /> <span>Hay alguien en casa durante el día (teletrabajo, jubilados…). Se consume más con sol.</span></label>
 
         <details>
+          <summary>Añadir una batería</summary>
+          <div class="form-grid form-grid--2" style="padding-top:12px">
+            <div class="field">
+              <label for="bateria">Batería (capacidad útil)</label>
+              <select id="bateria">
+                <option value="0">Sin batería</option>
+                <option value="5">5 kWh</option>
+                <option value="10">10 kWh</option>
+                <option value="15">15 kWh</option>
+              </select>
+              <span class="hint">Guarda lo que te sobra a mediodía para usarlo por la noche.</span>
+            </div>
+            <div class="field">
+              <label for="bateria-precio">Precio de la batería instalada (€)</label>
+              <input id="bateria-precio" type="number" min="0" step="100" inputmode="numeric" placeholder="Orientativo: 700 € por kWh" />
+              <span class="hint">Si lo dejas vacío, usamos unos 700 € por kWh útil, inversor híbrido aparte.</span>
+            </div>
+          </div>
+          <p class="small muted" style="margin-top:8px">Te lo calculamos aparte para que veas si la batería se paga sola. Más en <a href="/guias/instalar-bateria-casa/">instalar una batería en casa</a>.</p>
+        </details>
+
+        <details>
           <summary>Ayudas y bonificaciones</summary>
           <div class="stack small" style="--stack:12px;padding-top:8px">
             <p>Hay deducciones en el IRPF por obras de eficiencia energética y muchos ayuntamientos bonifican el IBI y el ICIO por instalar placas. Dependen de tu municipio y de cada año, así que <strong>no las sumamos</strong> salvo que tú lo indiques.</p>
@@ -111,6 +145,25 @@ const datos = { provincias, instalador: INSTALADOR };
   </section>
 
   <script type="application/json" id="datos-solar" set:html={JSON.stringify(datos)} />
+
+  <AyudaHerramienta
+    titulo="Cómo calculamos tu ahorro con placas"
+    preguntas={preguntasAyuda}
+    guias={[
+      { href: "/guias/placas-solares-guia-completa/", t: "Placas solares: la guía completa" },
+      { href: "/guias/cuantas-placas-necesito/", t: "Cuántas placas necesito" },
+      { href: "/guias/instalar-bateria-casa/", t: "Instalar una batería en casa" },
+      { href: "/guias/autoconsumo-compensacion/", t: "Autoconsumo y compensación de excedentes" },
+    ]}
+  >
+    <ol>
+      <li><strong>Producción de tu tejado</strong>, hora a hora, con los datos de radiación de PVGIS (Comisión Europea) para tu zona, orientación e inclinación.</li>
+      <li><strong>Tu consumo</strong>, hora a hora: con tu fichero si lo has subido al comparador, o estimado a partir de lo que pagas.</li>
+      <li><strong>Autoconsumo y excedentes</strong>: lo que usas en el momento ahorra tu precio de la luz; lo que sobra se compensa a un precio menor.</li>
+      <li><strong>Batería</strong> (opcional): guarda los excedentes para la noche. Te decimos aparte si se paga sola.</li>
+      <li><strong>Dos escenarios</strong>, prudente y favorable, para no darte una sola cifra que parezca exacta.</li>
+    </ol>
+  </AyudaHerramienta>
 </Base>
 
 <script>

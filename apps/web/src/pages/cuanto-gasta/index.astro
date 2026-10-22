@@ -1,5 +1,6 @@
 ---
 import Base from "../../layouts/Base.astro";
+import Anuncio from "../../components/Anuncio.astro";
 import CalculadoraAparato from "../../components/CalculadoraAparato.astro";
 import { aparatos, kwhMesAparato } from "../../lib/datos";
 import { kwh } from "../../lib/formato";
@@ -23,6 +24,7 @@ const grupos = [...new Set(aparatos.map((a) => a.grupo))].map((g) => ({ nombre: 
       <CalculadoraAparato />
     </div>
   </section>
+  <Anuncio tipo="horizontal" seccion />
   <section class="section section--white">
     <div class="wrap stack" style="--stack:40px">
       <div>

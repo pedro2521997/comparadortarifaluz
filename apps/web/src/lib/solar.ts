@@ -91,6 +91,8 @@ export interface Simulacion {
   ahorroEnergia: number;
   compensacion: number;
   ahorro: number;
+  /** kWh al año que salen de la batería (0 sin batería) */
+  desdeBateria: number;
   porMes: { produccion: number; consumo: number; autoconsumo: number }[];
 }
 
@@ -103,26 +105,41 @@ export interface Precios {
   impuestos: number;
 }
 
+/** Rendimiento de cada sentido de la batería (carga y descarga): ida y vuelta ≈ 90 %. */
+const RENDIMIENTO_BATERIA = 0.95;
+
 /**
  * Cruza hora a hora producción y consumo. Excedentes con compensación simplificada:
  * nunca descuentan más que el término de energía de cada mes [verificar normativa vigente].
+ * Con `bateria` (kWh útiles), los excedentes cargan la batería y esta cubre el consumo de las horas sin sol.
  */
-export function simular(prod1kWp: Matriz, consumo: Matriz, kwp: number, p: Precios, factorProduccion = 1): Simulacion {
-  let produccion = 0, cons = 0, auto = 0, exc = 0, ahorroEnergia = 0, compensacion = 0;
+export function simular(prod1kWp: Matriz, consumo: Matriz, kwp: number, p: Precios, factorProduccion = 1, bateria = 0): Simulacion {
+  let produccion = 0, cons = 0, auto = 0, exc = 0, ahorroEnergia = 0, compensacion = 0, desdeBateria = 0;
   const porMes: Simulacion["porMes"] = [];
   for (let m = 0; m < 12; m++) {
-    let pm = 0, cm = 0, am = 0, em = 0;
-    for (let h = 0; h < 24; h++) {
-      const pr = prod1kWp[m][h] * kwp * factorProduccion;
-      const c = consumo[m][h];
-      const a = Math.min(pr, c);
-      pm += pr;
-      cm += c;
-      am += a;
-      em += pr - a;
+    let pm = 0, cm = 0, am = 0, em = 0, bm = 0;
+    // Día medio del mes; con batería se repite dos veces para empezar con la carga que deja la noche anterior.
+    let soc = 0;
+    for (let vuelta = bateria > 0 ? 0 : 1; vuelta < 2; vuelta++) {
+      pm = cm = am = em = bm = 0;
+      for (let h = 0; h < 24; h++) {
+        const pr = prod1kWp[m][h] * kwp * factorProduccion;
+        const c = consumo[m][h];
+        const directo = Math.min(pr, c);
+        const carga = Math.min(pr - directo, (bateria - soc) / RENDIMIENTO_BATERIA);
+        soc += carga * RENDIMIENTO_BATERIA;
+        const descarga = Math.min(c - directo, soc * RENDIMIENTO_BATERIA);
+        soc -= descarga / RENDIMIENTO_BATERIA;
+        pm += pr;
+        cm += c;
+        am += directo + descarga;
+        em += pr - directo - carga;
+        bm += descarga;
+      }
     }
     const d = DIAS_MES[m];
-    pm *= d; cm *= d; am *= d; em *= d;
+    pm *= d; cm *= d; am *= d; em *= d; bm *= d;
+    desdeBateria += bm;
     const ahorroMes = am * p.energia;
     const terminoEnergiaRestante = (cm - am) * p.energia;
     const compMes = Math.min(em * p.excedente, terminoEnergiaRestante);
@@ -140,6 +157,7 @@ export function simular(prod1kWp: Matriz, consumo: Matriz, kwp: number, p: Preci
     ahorroEnergia: ahorroEnergia * p.impuestos,
     compensacion: compensacion * p.impuestos,
     ahorro: (ahorroEnergia + compensacion) * p.impuestos,
+    desdeBateria,
     porMes,
   };
 }

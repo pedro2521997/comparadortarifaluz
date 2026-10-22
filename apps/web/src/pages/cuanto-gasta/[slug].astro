@@ -1,5 +1,6 @@
 ---
 import Base from "../../layouts/Base.astro";
+import Anuncio from "../../components/Anuncio.astro";
 import CalculadoraAparato from "../../components/CalculadoraAparato.astro";
 import { aparatos, articulo, dias, factorImpuestos, kwhMesAparato, kwhUsoAparato, type Aparato } from "../../lib/datos";
 import { mejoresHoras, resumen } from "../../lib/grafico";
@@ -80,6 +81,7 @@ const faq = {
       </div>
     </div>
   </section>
+  <Anuncio tipo="horizontal" seccion />
 
   <section class="section">
     <div class="wrap">

@@ -1,5 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
+import Anuncio from "../components/Anuncio.astro";
 import PrecioDia from "../components/PrecioDia.astro";
 import AvisoDiario from "../components/AvisoDiario.astro";
 import ExtrasDia from "../components/ExtrasDia.astro";
@@ -52,6 +53,7 @@ const schema = {
       <PrecioDia fecha={hoy} modo="hoy" />
     </div>
   </section>
+  <Anuncio tipo="horizontal" seccion />
   <ExtrasDia modo="hoy" />
   <AvisoDiario />
 </Base>

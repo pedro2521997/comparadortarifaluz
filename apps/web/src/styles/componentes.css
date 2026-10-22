@@ -1,12 +1,12 @@
 /* Componentes de página: barra de aviso, navegación, pie, gráfico de horas, usos. */
 
 /* ---------- Barra de aviso ---------- */
-.anuncio {
+.aviso-barra {
   background: var(--color-canopy);
   color: #fff;
   font-size: 14px;
 }
-.anuncio__in {
+.aviso-barra__in {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -16,7 +16,7 @@
   text-decoration: none;
   text-align: center;
 }
-.anuncio__in:hover span:first-child {
+.aviso-barra__in:hover span:first-child {
   text-decoration: underline;
 }
 
@@ -591,4 +591,217 @@
   .mapeo-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
+}
+
+/* ---------- Publicidad ---------- */
+/* Espacio reservado para que la página no salte al cargar el anuncio (CLS). */
+.anuncio {
+  display: block;
+  margin: 32px auto;
+  max-width: 970px;
+  text-align: center;
+  min-height: 280px;
+}
+.anuncio--articulo {
+  min-height: 250px;
+  margin: 2em 0;
+}
+.anuncio--lateral {
+  min-height: 600px;
+  margin: 0;
+}
+.anuncio--multiplex {
+  min-height: 320px;
+}
+.anuncio__l {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--color-slate);
+  margin-bottom: 4px;
+}
+.anuncio--muestra {
+  display: flex;
+  flex-direction: column;
+  border: 1px dashed var(--color-muted-slate);
+  border-radius: var(--radius-buttons);
+  background: repeating-linear-gradient(45deg, #f6f5f1, #f6f5f1 10px, #efede7 10px, #efede7 20px);
+  padding: 8px;
+}
+.anuncio--muestra .anuncio__m {
+  margin: auto;
+  font-size: 14px;
+  color: var(--color-slate);
+}
+.anuncio-seccion .anuncio {
+  margin: 48px auto;
+}
+@media (max-width: 640px) {
+  .anuncio {
+    min-height: 250px;
+  }
+}
+
+/* ---------- Herramientas: formulario a la izquierda, resultado a la derecha ---------- */
+.herr {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+}
+@media (min-width: 900px) {
+  .herr {
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    gap: 40px;
+  }
+  .herr__res {
+    position: sticky;
+    top: 88px;
+  }
+}
+.herr__form {
+  display: grid;
+  gap: 24px;
+  align-content: start;
+}
+.herr__form fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.herr__paso {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--color-bark);
+  margin-bottom: 12px;
+}
+.herr__paso b {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--color-canopy);
+  color: #fff;
+  font-size: 14px;
+}
+.herr__res {
+  background: var(--color-cream-paper);
+  border-radius: var(--radius-cards);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-self: start;
+}
+.herr__res .answer {
+  margin: 0;
+}
+.herr__filas {
+  display: grid;
+  gap: 6px;
+  font-size: 15px;
+}
+.herr__filas > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--color-pale-sage);
+  padding: 6px 0;
+}
+.herr__filas > div > span:last-child {
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  color: var(--color-bark);
+  text-align: right;
+}
+.seg {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+.seg label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 1px solid var(--color-pale-sage);
+  border-radius: var(--radius-buttons);
+  cursor: pointer;
+  font-size: 15px;
+  background: var(--color-sheet-white);
+}
+.seg label:has(input:checked) {
+  border-color: var(--color-canopy);
+  background: #f2f7f5;
+  font-weight: 500;
+}
+.seg input {
+  accent-color: var(--color-canopy);
+}
+.barra-comp {
+  display: grid;
+  gap: 8px;
+}
+.barra-comp__f {
+  display: grid;
+  grid-template-columns: 110px 1fr auto;
+  gap: 10px;
+  align-items: center;
+  font-size: 14px;
+}
+.barra-comp__b {
+  height: 14px;
+  border-radius: 7px;
+  background: var(--color-pale-sage);
+  overflow: hidden;
+}
+.barra-comp__b span {
+  display: block;
+  height: 100%;
+  background: var(--color-muted-slate);
+}
+.barra-comp__f--tu .barra-comp__b span {
+  background: var(--color-canopy);
+}
+
+/* ---------- Ayuda y preguntas bajo cada herramienta ---------- */
+.ayuda {
+  display: grid;
+  gap: 40px;
+}
+@media (min-width: 900px) {
+  .ayuda {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: 56px;
+  }
+}
+.ayuda__faq h2 {
+  font-size: 28px;
+  margin-bottom: 12px;
+}
+.ayuda__faq details {
+  border-bottom: 1px solid var(--color-pale-sage);
+  padding: 6px 0;
+}
+.ayuda__faq summary {
+  color: var(--color-bark);
+  cursor: pointer;
+  min-height: 32px;
+}
+.ayuda__faq details p {
+  padding: 4px 0 12px 20px;
+  color: var(--color-charcoal);
+}
+.ayuda__guias {
+  margin-top: 24px;
+  display: grid;
+  gap: 8px;
 }
