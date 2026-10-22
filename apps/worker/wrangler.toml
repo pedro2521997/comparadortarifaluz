@@ -4,6 +4,15 @@ name = "comparadortarifaluz"
 main = "src/index.ts"
 compatibility_date = "2026-10-01"
 
+# Dominio propio: Cloudflare crea el registro DNS y el certificado HTTPS al desplegar. Requiere que la
+# zona comparadortarifaluz.es esté «Activa» en esta cuenta (nameservers de Cloudflare puestos en OVH);
+# si no lo está, el despliegue falla con «zone not found»: espera a que se active y repite.
+# www y comparadortarifaluz.com NO van aquí: se redirigen a este dominio con una regla de redirección
+# de Cloudflare (ver «Desplegar» en el README), para no pasar cada visita por el Worker.
+routes = [{ pattern = "comparadortarifaluz.es", custom_domain = true }]
+# Mantiene también la dirección *.workers.dev para pruebas.
+workers_dev = true
+
 [assets]
 directory = "../web/dist"
 binding = "ASSETS"

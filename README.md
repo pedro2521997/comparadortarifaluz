@@ -49,6 +49,48 @@ docs              Plan, diseño y datos de validación (docs/datos)
 | Publicidad | Huecos de AdSense repartidos (ver abajo), apagados hasta la aprobación. |
 | Legal y transparencia | `/como-funciona/`, aviso legal, privacidad y cookies (borradores para revisión). |
 
+## Desplegar
+
+Todo corre en Cloudflare (plan gratuito): un Worker sirve la web estática (`apps/web/dist`), las rutas `/api/*` y el cron diario, con una base D1. El dominio está registrado en OVH y sus DNS los lleva Cloudflare.
+
+### Una sola vez
+
+1. **Dominio a Cloudflare.** Crea la cuenta en dash.cloudflare.com → *Agregar un dominio* → `comparadortarifaluz.es` → plan *Free*. Apunta los dos nameservers que te da. En OVH (*Web Cloud → Nombres de dominio → comparadortarifaluz.es*): desactiva **DNSSEC** si está activo y, en *Servidores DNS → Modificar*, sustituye `dns103.ovh.net` y `ns103.ovh.net` por los de Cloudflare. Espera al correo de «dominio activo» (minutos u horas). Si tienes el `.com`, lo mismo con él.
+2. **Entrar en Cloudflare desde el ordenador:** `npx wrangler login`.
+3. **Base de datos:** `npx wrangler d1 create comparadortarifaluz` y copia el `database_id` que imprime en `apps/worker/wrangler.toml` (donde pone `PENDIENTE`). Después, `npm run db:init`.
+4. **Secretos** (opcionales para empezar; `npx wrangler secret put NOMBRE` dentro de `apps/worker`): `ESIOS_TOKEN`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CANAL`; y `TELEGRAM_AVISOS`, `PANEL_USUARIO`, `PANEL_CLAVE` cuando se active el instalador.
+
+### Primer despliegue
+
+```bash
+npm run precios
+npm run desplegar
+```
+
+`desplegar` construye la web y sube el Worker. Con la zona activa, Cloudflare conecta `comparadortarifaluz.es` (crea el DNS y el certificado HTTPS). También queda la dirección `https://comparadortarifaluz.<tu-cuenta>.workers.dev`, marcada como no indexable, para pruebas. Si falla con «zone not found», la zona aún no está activa: espera y repite.
+
+### Redirecciones (en el panel de Cloudflare)
+
+No pasan por el Worker para no gastar peticiones; son reglas gratuitas de Cloudflare:
+
+- **www → sin www:** zona `comparadortarifaluz.es` → *DNS → Registros → Agregar*: tipo `AAAA`, nombre `www`, contenido `100::`, **proxy activado** (nube naranja). Después *Reglas → Reglas de redireccionamiento → Crear regla → Plantilla «Redirect from WWW to root»* → Implementar.
+- **.com → .es:** zona `comparadortarifaluz.com` → dos registros `AAAA` (`@` y `www`) con contenido `100::` y proxy activado; regla de redirección «Todas las solicitudes entrantes» → *URL dinámica* `concat("https://comparadortarifaluz.es", http.request.uri.path)`, código **301**, conservar la cadena de consulta.
+
+### Automático con GitHub
+
+1. Crea un repositorio **privado** y sube el código: `git remote add origin https://github.com/TU_USUARIO/comparadortarifaluz.git` y `git push -u origin main`.
+2. Cloudflare → *Mi perfil → Tokens de API → Crear token* con la plantilla **«Edit Cloudflare Workers»** y añade el permiso *Cuenta → D1 → Editar*.
+3. GitHub → *Settings → Secrets and variables → Actions*: `CLOUDFLARE_API_TOKEN` (el token) y `CLOUDFLARE_ACCOUNT_ID` (está en la columna derecha de *Workers y Pages*).
+4. GitHub → *Settings → Actions → General → Workflow permissions*: **Read and write permissions** y **Allow GitHub Actions to create and approve pull requests**.
+5. *Actions → Build diario → Run workflow* para probarlo. Desde entonces, cada tarde descarga el precio de mañana, construye y despliega; los días 1 y 15 abre un PR con el catálogo de la CNMC.
+
+### Después de publicar
+
+- **Google Search Console:** verifica el dominio (registro TXT en el DNS de Cloudflare) y envía `https://comparadortarifaluz.es/sitemap.xml`. Importa el sitio en **Bing Webmaster Tools**.
+- **Cloudflare Web Analytics:** *Analytics y registros → Web Analytics* → activar para el dominio (sin cookies; es lo que dice la política de privacidad).
+- **Correo:** *Email → Email Routing* para `hola@comparadortarifaluz.es` → tu correo, y cámbialo en `SITIO.correo` (`apps/web/src/config.ts`).
+- **AdSense:** solicítalo con la web publicada (ver «Publicidad»).
+
 ## Publicidad (Google AdSense)
 
 Los anuncios están **apagados** (`apps/web/src/anuncios.json` → `"activo": false`): en producción no sale nada, ni script ni huecos. Para ver dónde irán: `npm run dev` (huecos rayados de muestra) o `PREVIEW_ANUNCIOS=1 npx astro build`.
@@ -66,14 +108,13 @@ Para activarlos:
 
 - **Catálogo de tarifas:** 67 tarifas oficiales de la CNMC (`npm run tarifas`, también automático los días 1 y 15 con un PR para revisar) y 12 a mano en `data/tarifas-manuales.json` (Iberdrola, Naturgy, TotalEnergies). Incluye 4 indexadas (Lucera y Gana Energía con fórmula oficial; Octopus Flexi y Plan Ahora de TotalEnergies aproximadas) calculadas hora a hora con el OMIE y los ajustes mensuales de REE (`npm run precios` guarda ambos). Faltan las tarifas planas personalizadas (Holaluz) y Pepeenergy.
 - **Indexadas:** los costes de ajuste son la media nacional mensual de REE y las pérdidas, los coeficientes regulados; con un token de ESIOS se podrían usar los valores horarios reales.
-- **Dominio:** comprar `comparadortarifaluz.es` (y el .com) en un registrador: el DNS dice que están libres, pero solo el registrador lo confirma.
 - **Precios trimestrales:** `data/combustibles.json` (TUR del gas cada trimestre, butano cada dos meses) y `data/bono-social.json` (descuentos vigentes hasta el 31/12/2026, IPREM) llevan `verificar: true`.
 - **Regulados:** todos los valores de `data/regulados.json` llevan `verificar: true`. Confirmarlos en el BOE (en especial el bono social desde el 1/7/2026 y los peajes de potencia de 2026).
 - **Prueba de las 5 facturas** (±2 %) antes de publicar el comparador, y ficheros reales anonimizados para sustituir los sintéticos de `packages/csv/test`.
 - **Instalador:** apagado (`INSTALADOR.activo = false` en `config.ts`): no hay formulario de estudio ni recogida de datos, y los textos legales no lo mencionan. Al tener el acuerdo, ponerlo a `true` con nombre, zona y precios: el panel sale justo debajo del resultado de la calculadora solar.
 - **Instalador (datos):** nombre, zona y tabla de €/kWp en `apps/web/src/config.ts` y `ZONA_INSTALADOR` en `apps/worker/wrangler.toml`. Hoy hay precios orientativos marcados como provisionales.
 - **Textos legales:** aviso legal, condiciones de uso, privacidad y cookies con los datos del titular (`SITIO` en `config.ts`). Falta el código postal y la localidad del domicilio, los datos del instalador colaborador y, recomendable, una revisión profesional.
-- **Cloudflare:** cuenta nueva, base D1 (`npm run db:init -w @lst/worker` tras poner el `database_id`) y secretos (ver `wrangler.toml`). Token de ESIOS opcional: sin él se usa REData.
+- **Cloudflare:** seguir «Desplegar» (cuenta, nameservers en OVH, D1, primer despliegue y GitHub).
 - **Telegram:** crear bot y canal y poner `TELEGRAM_URL` en `config.ts`.
 - **Amazon Afiliados:** `AMAZON_TAG` en `config.ts`; sin etiqueta no se muestran enlaces.
 - **Capturas** de la guía de Datadis y de las distribuidoras.
