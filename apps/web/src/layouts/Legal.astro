@@ -3,11 +3,20 @@ import Base from "./Base.astro";
 interface Props {
   titulo: string;
   revisado: string;
+  descripcion?: string;
 }
-const { titulo, revisado } = Astro.props;
+const { titulo, revisado, descripcion } = Astro.props;
+const LEGALES = [
+  ["/aviso-legal/", "Aviso legal"],
+  ["/condiciones-de-uso/", "Condiciones de uso"],
+  ["/privacidad/", "Política de privacidad"],
+  ["/cookies/", "Política de cookies"],
+  ["/como-funciona/", "Cómo funciona y cómo ganamos dinero"],
+];
+const ruta = Astro.url.pathname;
 ---
 
-<Base titulo={titulo} noindex={false} anuncioFinal={false}>
+<Base titulo={titulo} descripcion={descripcion} noindex={false} anuncioFinal={false} migas={[[titulo]]}>
   <section class="hero hero--compacto">
     <div class="wrap wrap--narrow">
       <span class="eyebrow">Legal</span>
@@ -17,10 +26,29 @@ const { titulo, revisado } = Astro.props;
   </section>
   <section class="section section--white section--tight">
     <div class="wrap wrap--narrow">
-      <div class="notice notice--warn" style="margin-bottom:32px">
-        <p><strong>Borrador pendiente de revisión legal.</strong> Este texto debe revisarlo un profesional antes de publicar la web y completar los datos marcados entre corchetes.</p>
-      </div>
       <div class="prose"><slot /></div>
+      <nav class="legales" aria-label="Páginas legales">
+        <p class="eyebrow">Otras páginas legales</p>
+        <ul>
+          {LEGALES.filter(([h]) => h !== ruta).map(([h, t]) => <li><a href={h}>{t}</a></li>)}
+        </ul>
+      </nav>
     </div>
   </section>
 </Base>
+
+<style>
+  .legales {
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid var(--color-pale-sage);
+  }
+  .legales ul {
+    margin-top: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+    list-style: none;
+    padding: 0;
+  }
+</style>

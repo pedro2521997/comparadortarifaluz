@@ -2,40 +2,104 @@
 import { anunciosActivos } from "../lib/anuncios-html.mjs";
 import Legal from "../layouts/Legal.astro";
 import { SITIO, INSTALADOR } from "../config";
+const publicidad = anunciosActivos();
 ---
 
-<Legal titulo="Política de privacidad" revisado="21/10/2026">
-  <h2>Responsable</h2>
-  <p>{SITIO.titular}, NIF [NIF], {SITIO.correo}.</p>
-
-  <h2>Tu fichero de consumos: no lo recibimos</h2>
-  <p>El comparador procesa el fichero de consumos <strong>íntegramente en tu navegador</strong>. El fichero, tu CUPS y tus datos de consumo <strong>no se envían a nuestros servidores ni a terceros</strong>. Para pasar tu consumo a la calculadora solar se guarda un resumen (medias de consumo por mes y hora, sin CUPS) en el almacenamiento local de tu navegador; puedes borrarlo en la calculadora con «Borrar mis datos de este navegador» o borrando los datos del sitio en tu navegador.</p>
-
-  <h2>Petición de estudio de placas solares</h2>
+<Legal titulo="Política de privacidad" revisado="22/10/2026" descripcion="Qué datos tratamos (casi ninguno), para qué, con qué base legal, a quién se comunican, cuánto tiempo se guardan y cómo ejercer tus derechos.">
+  <h2>En resumen</h2>
   <ul>
-    <li><strong>Qué datos:</strong> nombre, teléfono o correo, código postal y el resumen del cálculo (tamaño de la instalación, producción y ahorro estimados, consumo anual, tipo de vivienda y superficie de tejado).</li>
-    <li><strong>Finalidad:</strong> que el instalador colaborador te contacte para hacerte un estudio y un presupuesto sin compromiso, y llevar el seguimiento de las peticiones con un código de referencia.</li>
-    <li><strong>Base legal:</strong> tu consentimiento expreso, que das marcando la casilla (nunca viene marcada).</li>
-    <li><strong>Destinatario:</strong> {INSTALADOR.nombre}, instalador colaborador, [DATOS DEL INSTALADOR]. No se ceden a nadie más.</li>
-    <li><strong>Conservación:</strong> mientras dure la gestión de tu petición. Los contactos que no siguen adelante se borran en un plazo de [PLAZO] meses.</li>
-    <li>Si tu código postal está fuera de la zona del instalador, solo guardamos tus datos si marcas la casilla para que te avisemos, con la misma base legal.</li>
+    <li>Puedes usar todas las herramientas <strong>sin dar ningún dato personal</strong> y sin registrarte.</li>
+    <li>Tu fichero de consumos, tu factura y tu CUPS se procesan <strong>en tu navegador</strong>: no nos llegan.</li>
+    <li>Solo tratamos tus datos si nos los das tú: al pedir un estudio de placas solares o al escribirnos.</li>
+    <li>No vendemos datos ni los usamos para enviarte publicidad.</li>
   </ul>
 
-  <h2>Tus derechos</h2>
-  <p>Puedes acceder, rectificar, suprimir, oponerte, limitar el tratamiento, pedir la portabilidad de tus datos y retirar el consentimiento en cualquier momento escribiendo a {SITIO.correo}. Si crees que no hemos tratado bien tus datos, puedes reclamar ante la <a href="https://www.aepd.es" rel="noopener">Agencia Española de Protección de Datos</a>.</p>
+  <h2>Responsable del tratamiento</h2>
+  <ul>
+    <li><strong>Responsable:</strong> {SITIO.titular}</li>
+    <li><strong>NIF:</strong> {SITIO.nif}</li>
+    <li><strong>Domicilio:</strong> {SITIO.domicilio}</li>
+    <li><strong>Contacto para protección de datos:</strong> <a href={`mailto:${SITIO.correo}`}>{SITIO.correo}</a></li>
+  </ul>
+  <p>Esta política se ajusta al Reglamento (UE) 2016/679 (RGPD) y a la Ley Orgánica 3/2018 de Protección de Datos Personales y garantía de los derechos digitales (LOPDGDD).</p>
 
-  <h2>Analítica</h2>
-  <p>Usamos analítica sin cookies (Cloudflare Web Analytics), que no identifica a los usuarios ni los sigue entre sitios.</p>
+  <h2>Datos que no recibimos</h2>
+  <p>
+    El comparador, el simulador de factura, el analizador de consumo y el resto de calculadoras funcionan <strong>íntegramente en tu navegador</strong>. El fichero de consumos, los kWh de tu factura, tu CUPS y los resultados no se envían a nuestros servidores ni a terceros. Para que no tengas que volver a subir el fichero al cambiar de herramienta, se guarda una copia en el almacenamiento de la pestaña (con el CUPS tapado), que desaparece al cerrarla; y, si usas la calculadora solar, un resumen sin CUPS en el almacenamiento local de tu navegador, que puedes borrar desde la propia calculadora. Los detalles están en la <a href="/cookies/">política de cookies</a>.
+  </p>
+
+  <h2>Tratamientos que sí hacemos</h2>
+
+  <h3>1. Petición de estudio de placas solares</h3>
+  <ul>
+    <li><strong>Datos:</strong> nombre, teléfono o correo electrónico, código postal y el resumen del cálculo (tamaño de la instalación, producción y ahorro estimados, consumo anual, tipo de vivienda y superficie de tejado).</li>
+    <li><strong>Finalidad:</strong> que el instalador colaborador te contacte para hacerte un estudio y un presupuesto sin compromiso, y llevar el seguimiento de tu petición con un código de referencia.</li>
+    <li><strong>Base legal:</strong> tu consentimiento expreso (art. 6.1.a RGPD), que das marcando una casilla que nunca viene marcada. Puedes retirarlo cuando quieras, sin que afecte a lo hecho antes.</li>
+    <li><strong>Destinatario:</strong> {INSTALADOR.nombre}, instalador colaborador, que tratará tus datos como responsable para preparar y gestionar su presupuesto. No se comunican a nadie más.</li>
+    <li><strong>Conservación:</strong> mientras se gestiona tu petición y, como máximo, 12 meses desde el último contacto, salvo que llegues a contratar la instalación (en ese caso, el tiempo necesario para atender obligaciones legales y reclamaciones).</li>
+  </ul>
+
+  <h3>2. Aviso cuando haya instalador en tu zona</h3>
+  <ul>
+    <li><strong>Datos:</strong> nombre, teléfono o correo y código postal.</li>
+    <li><strong>Finalidad:</strong> avisarte una sola vez cuando tengamos un instalador colaborador cerca de ti.</li>
+    <li><strong>Base legal:</strong> tu consentimiento expreso.</li>
+    <li><strong>Conservación:</strong> hasta que te avisemos o, como máximo, 24 meses. Puedes pedir que lo borremos antes.</li>
+  </ul>
+
+  <h3>3. Correos que nos envías</h3>
+  <ul>
+    <li><strong>Datos:</strong> tu dirección de correo y lo que nos cuentes.</li>
+    <li><strong>Finalidad:</strong> responderte.</li>
+    <li><strong>Base legal:</strong> nuestro interés legítimo en atender tu consulta (art. 6.1.f RGPD), que tú inicias.</li>
+    <li><strong>Conservación:</strong> el tiempo necesario para responderte y, como máximo, 12 meses.</li>
+  </ul>
+
+  <h3>4. Seguridad y funcionamiento del sitio</h3>
+  <ul>
+    <li><strong>Datos:</strong> dirección IP, navegador y páginas pedidas, que registra el proveedor de alojamiento al servir la web.</li>
+    <li><strong>Finalidad:</strong> servir el sitio, protegerlo frente a ataques y abusos y resolver errores.</li>
+    <li><strong>Base legal:</strong> interés legítimo en la seguridad del sitio (art. 6.1.f RGPD).</li>
+    <li><strong>Conservación:</strong> los registros técnicos se borran en un plazo breve, según los plazos del proveedor.</li>
+  </ul>
+
+  <h3>5. Estadísticas de visitas</h3>
+  <p>Contamos las visitas con Cloudflare Web Analytics, que no usa cookies, no crea identificadores persistentes y no sigue a los usuarios entre sitios. Solo obtenemos cifras agregadas (páginas vistas, país, tipo de dispositivo).</p>
 
   {
-    anunciosActivos() && (
+    publicidad && (
       <>
-        <h2>Publicidad</h2>
+        <h3>6. Publicidad</h3>
         <p>
-          La web se financia con anuncios de Google AdSense. Google, como responsable independiente, puede tratar datos de tu navegación (cookies, identificadores del dispositivo y tu dirección IP) para mostrar y medir anuncios y, solo si das tu consentimiento, para personalizarlos. Puedes dar, rechazar o retirar el consentimiento en el gestor de consentimiento de la web. Consulta la <a href="https://policies.google.com/privacy?hl=es" rel="noopener">política de privacidad de Google</a> y la <a href="/cookies/">política de cookies</a>.
+          La web se financia con anuncios de Google AdSense. Google Ireland Limited, como responsable independiente, puede tratar datos de tu navegación (cookies, identificadores del dispositivo y tu dirección IP) para mostrar y medir anuncios, prevenir el fraude y, solo si das tu consentimiento en el gestor de consentimiento del sitio, personalizarlos. Puedes dar, rechazar o retirar el consentimiento en cualquier momento desde ese gestor. Más información en la <a href="https://policies.google.com/privacy?hl=es" rel="noopener">política de privacidad de Google</a> y en la <a href="/cookies/">política de cookies</a>.
         </p>
-        <p>Los anuncios nunca reciben tu fichero de consumos ni los resultados de las calculadoras: se calculan en tu navegador y no salen de él.</p>
+        <p>Los anuncios nunca reciben tu fichero de consumos ni los resultados de las calculadoras.</p>
       </>
     )
   }
+
+  <h2>Encargados del tratamiento y transferencias internacionales</h2>
+  <p>Para prestar el servicio usamos proveedores que tratan datos por cuenta nuestra, con contrato y garantías conforme al artículo 28 del RGPD:</p>
+  <ul>
+    <li><strong>Cloudflare, Inc.</strong>: alojamiento de la web, base de datos de las peticiones de estudio, seguridad y estadísticas sin cookies. Puede tratar datos en Estados Unidos; Cloudflare está adherida al Marco de Privacidad de Datos UE-EE. UU. y aplica además cláusulas contractuales tipo.</li>
+    <li><strong>Telegram</strong>: recibimos un aviso interno con los datos de cada petición de estudio para gestionarla con rapidez. Telegram puede tratar datos fuera del Espacio Económico Europeo.</li>
+  </ul>
+  <p>No hay más cesiones de datos, salvo obligación legal.</p>
+
+  <h2>Tus derechos</h2>
+  <p>
+    Puedes ejercer tus derechos de acceso, rectificación, supresión, oposición, limitación del tratamiento y portabilidad, y retirar tu consentimiento en cualquier momento, escribiendo a <a href={`mailto:${SITIO.correo}`}>{SITIO.correo}</a> e indicando qué derecho ejerces. Te responderemos en el plazo de un mes. Si crees que no hemos tratado bien tus datos, puedes reclamar ante la <a href="https://www.aepd.es" rel="noopener">Agencia Española de Protección de Datos</a> (www.aepd.es).
+  </p>
+
+  <h2>Menores</h2>
+  <p>El sitio no está dirigido a menores de 14 años. Si eres menor de 14, no nos envíes datos personales.</p>
+
+  <h2>Seguridad</h2>
+  <p>Aplicamos medidas técnicas y organizativas adecuadas: conexión cifrada (HTTPS), acceso al panel de peticiones protegido con contraseña y limitado al titular, y el mínimo de datos necesario para cada fin.</p>
+
+  <h2>Decisiones automatizadas</h2>
+  <p>No tomamos decisiones con efectos jurídicos sobre ti de forma automatizada ni elaboramos perfiles. Los cálculos de las herramientas son simulaciones que haces tú en tu navegador.</p>
+
+  <h2>Cambios en esta política</h2>
+  <p>Si cambiamos esta política, actualizaremos la fecha de arriba. Si el cambio afecta a datos que ya nos has dado, te lo comunicaremos.</p>
 </Legal>

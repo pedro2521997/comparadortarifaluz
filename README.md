@@ -67,7 +67,7 @@ Para activarlos:
 - **Regulados:** todos los valores de `data/regulados.json` llevan `verificar: true`. Confirmarlos en el BOE (en especial el bono social desde el 1/7/2026 y los peajes de potencia de 2026).
 - **Prueba de las 5 facturas** (±2 %) antes de publicar el comparador, y ficheros reales anonimizados para sustituir los sintéticos de `packages/csv/test`.
 - **Instalador:** nombre, zona y tabla de €/kWp en `apps/web/src/config.ts` y `ZONA_INSTALADOR` en `apps/worker/wrangler.toml`. Hoy hay precios orientativos marcados como provisionales.
-- **Textos legales:** completar titular, NIF y datos del instalador, y revisarlos con un profesional.
+- **Textos legales:** aviso legal, condiciones de uso, privacidad y cookies con los datos del titular (`SITIO` en `config.ts`). Falta el código postal y la localidad del domicilio, los datos del instalador colaborador y, recomendable, una revisión profesional.
 - **Cloudflare:** cuenta nueva, base D1 (`npm run db:init -w @lst/worker` tras poner el `database_id`) y secretos (ver `wrangler.toml`). Token de ESIOS opcional: sin él se usa REData.
 - **Telegram:** crear bot y canal y poner `TELEGRAM_URL` en `config.ts`.
 - **Amazon Afiliados:** `AMAZON_TAG` en `config.ts`; sin etiqueta no se muestran enlaces.

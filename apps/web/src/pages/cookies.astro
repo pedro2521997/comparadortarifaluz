@@ -1,44 +1,63 @@
 ---
 import Legal from "../layouts/Legal.astro";
 import { anunciosActivos } from "../lib/anuncios-html.mjs";
+import { SITIO } from "../config";
 const publicidad = anunciosActivos();
 ---
 
-<Legal titulo="Política de cookies" revisado="22/10/2026">
+<Legal titulo="Política de cookies" revisado="22/10/2026" descripcion="Qué cookies y qué almacenamiento del navegador usa el sitio, para qué, cuánto duran y cómo borrarlos.">
+  <h2>Qué son</h2>
+  <p>
+    Las cookies son pequeños archivos que una web guarda en tu navegador. El almacenamiento local y el de sesión son mecanismos parecidos. Según el artículo 22.2 de la LSSI, las que son estrictamente necesarias para darte el servicio que pides no necesitan consentimiento; las demás (análisis con identificadores, publicidad), sí.
+  </p>
+
+  <h2>Lo que usamos</h2>
+  <div class="table-wrap" tabindex="0" role="region" aria-label="Almacenamiento que usa el sitio">
+    <table>
+      <thead>
+        <tr><th scope="col">Nombre</th><th scope="col">Tipo</th><th scope="col">Para qué</th><th scope="col">Duración</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>lst-fichero-sesion</code></td><td>Almacenamiento de sesión (técnico)</td><td>Guarda el fichero de consumos que has subido, con el CUPS tapado, para usarlo en otras herramientas sin volver a subirlo.</td><td>Hasta que cierras la pestaña</td></tr>
+        <tr><td><code>lst-perfil-consumo</code></td><td>Almacenamiento local (técnico)</td><td>Resumen de tu consumo por mes y hora, sin CUPS, para la calculadora solar. Solo se guarda si cargas tu fichero.</td><td>Hasta que lo borras desde la calculadora o borras los datos del sitio</td></tr>
+        <tr><td><code>lst-mi-precio</code></td><td>Almacenamiento local (técnico)</td><td>Recuerda el precio de tu tarifa que escribiste para compararlo con el precio de hoy.</td><td>Hasta que lo cambias o borras los datos del sitio</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Ninguno sale de tu navegador ni nos llega. Nuestras estadísticas de visitas (Cloudflare Web Analytics) <strong>no usan cookies</strong>. El proveedor de alojamiento, Cloudflare, puede usar alguna cookie técnica de seguridad para distinguir personas de robots en caso de ataque.</p>
+
   {
     publicidad ? (
       <>
-        <h2>Publicidad de Google</h2>
+        <h2>Cookies de publicidad (Google AdSense)</h2>
         <p>
-          Mostramos anuncios de Google AdSense para financiar la web y mantenerla gratis. Google y sus socios pueden usar cookies e identificadores para mostrar anuncios, medir su rendimiento y, si lo aceptas, personalizarlos según tus intereses.
+          Mostramos anuncios de Google AdSense para financiar la web y mantenerla gratis. Google y sus socios pueden usar cookies e identificadores para mostrar anuncios, limitar cuántas veces ves cada uno, medir su rendimiento, prevenir el fraude y, si lo aceptas, personalizarlos según tus intereses.
         </p>
         <p>
-          Antes de instalar cualquier cookie publicitaria te pedimos el consentimiento con el gestor de consentimiento certificado de Google (compatible con el marco TCF de IAB Europe). Rechazar es tan fácil como aceptar. Si rechazas, puedes seguir viendo anuncios no personalizados, que usan cookies solo para limitar la frecuencia y evitar el fraude.
+          <strong>Antes de instalarlas te pedimos el consentimiento</strong> con el gestor de consentimiento certificado de Google, compatible con el marco TCF de IAB Europe. Rechazar es tan fácil como aceptar y puedes elegir por finalidades. Si rechazas, puedes ver anuncios no personalizados o limitados.
         </p>
         <p>
-          Puedes cambiar tu elección cuando quieras desde el botón del gestor de consentimiento. Más información sobre <a href="https://policies.google.com/technologies/ads?hl=es" rel="noopener">cómo usa Google las cookies en publicidad</a> y en la <a href="https://adssettings.google.com/" rel="noopener">configuración de anuncios de Google</a>.
+          Puedes cambiar tu elección cuando quieras desde el botón del gestor de consentimiento, que está siempre visible en la página. Más información: <a href="https://policies.google.com/technologies/ads?hl=es" rel="noopener">cómo usa Google las cookies en publicidad</a> y <a href="https://adssettings.google.com/" rel="noopener">configuración de anuncios de Google</a>.
         </p>
       </>
     ) : (
       <>
-        <h2>No usamos cookies de seguimiento</h2>
-        <p>Ahora mismo no hay publicidad y este sitio no instala cookies publicitarias ni de análisis. Por eso no ves un banner de consentimiento.</p>
+        <h2>Publicidad</h2>
+        <p>Ahora mismo no hay publicidad y el sitio no instala cookies publicitarias ni de análisis. Por eso no ves un aviso de consentimiento. Si activamos publicidad, te pediremos el consentimiento con un gestor certificado antes de instalar ninguna cookie no técnica, con la opción de rechazar tan visible como la de aceptar, y actualizaremos esta página.</p>
       </>
     )
   }
 
-  <h2>Almacenamiento local</h2>
-  <p>El comparador guarda tu fichero de consumos en el almacenamiento de esta pestaña para que no tengas que volver a subirlo al cambiar de herramienta, y la calculadora solar puede guardar en tu navegador un resumen de tu consumo. Es técnico, no se envía a ningún servidor y lo puedes borrar desde las propias herramientas o cerrando la pestaña.</p>
+  <h2>Cómo borrarlas o bloquearlas</h2>
+  <p>Puedes borrar las cookies y el almacenamiento de este sitio, o bloquearlos, desde la configuración de tu navegador:</p>
+  <ul>
+    <li><a href="https://support.google.com/chrome/answer/95647?hl=es" rel="noopener">Chrome</a></li>
+    <li><a href="https://support.mozilla.org/es/kb/Borrar%20cookies" rel="noopener">Firefox</a></li>
+    <li><a href="https://support.apple.com/es-es/guide/safari/sfri11471/mac" rel="noopener">Safari</a></li>
+    <li><a href="https://support.microsoft.com/es-es/microsoft-edge/eliminar-las-cookies-en-microsoft-edge-63947406-40ac-c3b8-57b9-2a946a29ae09" rel="noopener">Edge</a></li>
+  </ul>
+  <p>Si bloqueas el almacenamiento del navegador, las herramientas siguen funcionando, pero tendrás que volver a subir tu fichero en cada una.</p>
 
-  <h2>Analítica sin cookies</h2>
-  <p>Medimos las visitas con Cloudflare Web Analytics, que no usa cookies ni identificadores persistentes.</p>
-
-  {
-    !publicidad && (
-      <>
-        <h2>Cuando haya publicidad</h2>
-        <p>Si activamos publicidad, antes de instalar cualquier cookie no técnica te pediremos el consentimiento con un gestor certificado, con la opción de rechazar tan visible como la de aceptar, y actualizaremos esta página.</p>
-      </>
-    )
-  }
+  <h2>Contacto</h2>
+  <p>Para cualquier duda sobre esta política, escríbenos a <a href={`mailto:${SITIO.correo}`}>{SITIO.correo}</a>. Más sobre tus datos en la <a href="/privacidad/">política de privacidad</a>.</p>
 </Legal>

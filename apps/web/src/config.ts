@@ -7,8 +7,13 @@ export const SITIO = {
   descripcion: "Compara gratis las tarifas de luz de todas las compañías con tu consumo real y descubre cuánto ahorrarías. Precio de la luz hoy por horas, ranking de tarifas y calculadora de factura. Sin registro.",
   /** Lema de la marca (la promesa de la web) */
   lema: "Tu tarifa de luz, sin trampa",
-  correo: "hola@comparadortarifaluz.es", // PENDIENTE: crear el buzón
-  titular: "[TITULAR DEL SITIO]", // PENDIENTE: nombre y NIF para el aviso legal
+  /** Correo de contacto y de protección de datos. Cuando exista hola@comparadortarifaluz.es se puede cambiar aquí. */
+  correo: "pedro.delareina@gmail.com",
+  /** Titular del sitio (aviso legal y responsable del tratamiento: persona física) */
+  titular: "Pedro López de la Reina García Cervigón",
+  nif: "71359449V",
+  /** PENDIENTE: completar con el código postal y la localidad (la LSSI pide el domicilio completo). */
+  domicilio: "Calle Cirugeda 67",
 };
 
 /** PENDIENTE: crear el canal. Mientras sea null, no se enlaza. */

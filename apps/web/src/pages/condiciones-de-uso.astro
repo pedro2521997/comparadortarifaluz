@@ -1,0 +1,57 @@
+---
+import Legal from "../layouts/Legal.astro";
+import { SITIO } from "../config";
+---
+
+<Legal titulo="Condiciones de uso" revisado="22/10/2026" descripcion={`Condiciones para usar ${SITIO.nombre}: servicio gratuito, alcance de las estimaciones, uso permitido, contenidos de terceros y responsabilidad.`}>
+  <h2>1. Quién presta el servicio</h2>
+  <p>{SITIO.nombre} ({SITIO.dominio}) es un sitio de {SITIO.titular}, con NIF {SITIO.nif}. Todos los datos de contacto están en el <a href="/aviso-legal/">aviso legal</a>.</p>
+
+  <h2>2. Servicio gratuito y sin registro</h2>
+  <p>Todas las herramientas y guías son gratuitas y no requieren registro. Podemos añadir, cambiar o retirar herramientas y contenidos en cualquier momento, sin que eso genere ningún derecho de compensación.</p>
+
+  <h2>3. Qué son los resultados</h2>
+  <p>Las herramientas hacen <strong>estimaciones</strong>. Para calcularlas usamos:</p>
+  <ul>
+    <li>los datos que introduces tú (fichero de consumos, kWh, potencia, precios de tu tarifa…), cuya exactitud es responsabilidad tuya;</li>
+    <li>precios publicados por terceros (Red Eléctrica, OMIE, CNMC, comercializadoras), que pueden cambiar sin aviso;</li>
+    <li>valores regulados (peajes, cargos, impuestos) vigentes en cada fecha según nuestra mejor interpretación de la normativa;</li>
+    <li>supuestos razonables cuando falta un dato (perfil de consumo tipo, pérdidas, rendimientos), que siempre explicamos junto al resultado.</li>
+  </ul>
+  <p>
+    Por eso los resultados <strong>no son una oferta, ni un presupuesto, ni asesoramiento profesional</strong>, y no garantizan un ahorro concreto. Antes de contratar una tarifa, cambiar la potencia o encargar una instalación, comprueba las condiciones definitivas con la empresa. Lo que figure en tu contrato prevalece siempre sobre lo que muestre el sitio.
+  </p>
+
+  <h2>4. Cómo se ordena el comparador</h2>
+  <p>El comparador y el ranking ordenan las tarifas <strong>solo por el coste estimado</strong> con el consumo indicado. Que una empresa nos pague comisión o publicidad no cambia su posición. Las reglas completas están en <a href="/como-funciona/">Cómo funciona y cómo ganamos dinero</a>.</p>
+
+  <h2>5. Contratación con terceros</h2>
+  <p>
+    {SITIO.nombre} no vende electricidad ni instalaciones. Si sigues un enlace y contratas con una comercializadora, o si pides un estudio a un instalador colaborador, el contrato es entre tú y esa empresa, con sus propias condiciones. {SITIO.nombre} no es parte de ese contrato ni responde de su cumplimiento, aunque te agradeceremos que nos cuentes cualquier problema.
+  </p>
+
+  <h2>6. Uso permitido</h2>
+  <p>Puedes usar el sitio para fines personales y citar sus datos con un enlace a la página de origen. No está permitido:</p>
+  <ul>
+    <li>descargar de forma masiva o automatizada los contenidos o los datos del sitio para reutilizarlos en otro servicio, salvo autorización;</li>
+    <li>intentar dañar, sobrecargar o acceder sin permiso a los sistemas del sitio;</li>
+    <li>enviar a través de los formularios datos de otra persona sin su permiso, o datos falsos.</li>
+  </ul>
+  <p>Los asistentes de IA y buscadores pueden leer el sitio para responder a sus usuarios, citando la fuente (ver <a href="/llms.txt">llms.txt</a>).</p>
+
+  <h2>7. Publicidad</h2>
+  <p>El sitio puede mostrar anuncios de terceros, siempre identificados con la palabra «Publicidad» y nunca dentro de los resultados de una calculadora. El anunciante es el único responsable del contenido de su anuncio y de lo que ofrezca.</p>
+
+  <h2>8. Responsabilidad</h2>
+  <p>
+    Dentro de lo que permite la ley, el titular no responde de los daños derivados de decisiones tomadas solo con las estimaciones del sitio, de errores en datos de terceros, de interrupciones del servicio ni del contenido de las webs enlazadas. Nada de esto limita los derechos que te reconoce la normativa de consumidores ni la responsabilidad por dolo o culpa grave.
+  </p>
+
+  <h2>9. Errores y sugerencias</h2>
+  <p>Si ves un precio desactualizado, un cálculo que no cuadra con tu factura o cualquier error, escríbenos a <a href={`mailto:${SITIO.correo}`}>{SITIO.correo}</a>. Revisamos todos los avisos.</p>
+
+  <h2>10. Cambios y ley aplicable</h2>
+  <p>
+    Podemos actualizar estas condiciones; la versión vigente es la publicada en esta página, con su fecha. Se rigen por la legislación española y, si actúas como consumidor, son competentes los juzgados de tu domicilio.
+  </p>
+</Legal>
