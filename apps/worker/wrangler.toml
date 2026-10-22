@@ -1,5 +1,5 @@
 # Worker de ComparadorTarifaLuz: sirve la web estática (apps/web/dist) y las rutas /api/*.
-# Cuenta de Cloudflare NUEVA y separada de la web existente (ver docs/ComparadorTarifaLuz.md §8).
+# Va en la misma cuenta de Cloudflare que elpisobarato.es; son Workers y zonas distintos, sin nada compartido.
 name = "comparadortarifaluz"
 main = "src/index.ts"
 compatibility_date = "2026-10-01"
@@ -27,7 +27,7 @@ crons = ["*/15 18-22 * * *"]
 [[d1_databases]]
 binding = "DB"
 database_name = "comparadortarifaluz"
-database_id = "PENDIENTE"
+database_id = "a8ce39f0-2038-402b-a176-d7055683d760"
 
 [vars]
 # Prefijos de CP de la zona del instalador (mismo valor que apps/web/src/config.ts)
