@@ -2,7 +2,7 @@
 // el usuario los revisa y le explicamos cada concepto, comprobamos si cuadra y le enseñamos qué pagaría
 // con otras tarifas. Nada sale del navegador.
 
-import { leerFactura, lineasDesdeTrozos, cupsValido, type DatosFactura, type TrozoTexto } from "@lst/factura";
+import { leerFactura, lineasDesdeTrozos, cupsValido, conceptosEn, type DatosFactura, type TrozoTexto, type ConceptoDetectado, type TipoConcepto } from "@lst/factura";
 import { calcularFactura, compararTarifas, generarLecturas, diasEntre, sumarDias, type Factura, type Regulados, type Tarifa, type Contexto } from "@lst/tarifa";
 import { cargarRango, cargarMercado } from "../lib/precios-cliente";
 import { eur, eur2, kwh, num, pct, fechaCorta } from "../lib/formato";
@@ -62,8 +62,46 @@ async function procesar(fichero: File) {
   }
   const d = leerFactura(lineas);
   const n = contar(d);
-  estado.innerHTML = `<div class="notice"><p><strong>Hemos leído ${n.encontrados} de ${n.total} datos de tu factura${d.comercializadora ? ` de ${esc(d.comercializadora)}` : ""}.</strong> Revísalos abajo${n.encontrados < n.total ? " y completa los que faltan" : ""} antes de ver la explicación.</p></div>`;
+  conceptos = conceptosEn(lineas);
+  estado.innerHTML = `<div class="notice"><p><strong>Hemos leído ${n.encontrados} de ${n.total} datos de tu factura${d.comercializadora ? ` de ${esc(d.comercializadora)}` : ""}</strong> y reconocido ${conceptos.length} conceptos, que te explicamos aquí abajo. Revisa los datos${n.encontrados < n.total ? " y completa los que faltan" : ""} para ver si tu factura cuadra y cuánto pagarías con otra tarifa.</p></div>`;
+  pintarConceptos();
   mostrarFormulario(d);
+}
+
+// ---------- Conceptos reconocidos (sirven aunque no saquemos todos los datos) ----------
+
+let conceptos: ConceptoDetectado[] = [];
+const ORDEN_TIPO: TipoConcepto[] = ["aviso", "coste", "ahorro", "regulado", "impuesto", "dato"];
+const NOMBRE_TIPO: Record<TipoConcepto, string> = {
+  aviso: "Para revisar",
+  coste: "Lo que pagas a tu compañía",
+  ahorro: "Lo que te descuentan",
+  regulado: "Costes regulados (iguales en todas las compañías)",
+  impuesto: "Impuestos",
+  dato: "Datos de tu contrato y tu consumo",
+};
+
+function pintarConceptos() {
+  const caja = $("ef-conceptos");
+  if (!conceptos.length) {
+    caja.hidden = true;
+    return;
+  }
+  caja.hidden = false;
+  caja.innerHTML = `<h2 class="ef-h">Tu factura, línea a línea</h2>
+    <p class="muted small">Lo que hemos reconocido en tu PDF, con la línea tal como aparece y qué significa.</p>
+    ${ORDEN_TIPO.map((t) => {
+      const lista = conceptos.filter((c) => c.tipo === t);
+      if (!lista.length) return "";
+      return `<h3 class="ef-tipo ef-tipo--${t}">${NOMBRE_TIPO[t]}</h3>
+        <ul class="ef-lineas">${lista
+          .map((c) => `<li>
+            <div class="ef-concepto__cab"><strong>${esc(c.titulo)}</strong>${c.importe !== undefined && c.tipo !== "dato" ? `<span>${eur2(c.importe)}</span>` : ""}</div>
+            <q class="ef-cita">${esc(c.linea)}</q>
+            <p class="small">${esc(c.explicacion)}</p>
+          </li>`)
+          .join("")}</ul>`;
+    }).join("")}`;
 }
 
 function contar(d: DatosFactura) {
@@ -276,12 +314,14 @@ function pintar(c: Contexto2) {
 
   // ¿Cuadra?
   let comprobacion = "";
+  // Una regularización (ajuste de facturas anteriores) no sale de este periodo: la quitamos para comparar.
+  const regularizacion = conceptos.find((x) => x.id === "regularizacion")?.importe ?? 0;
   if (calc) {
-    const dif = calc.total - c.total;
+    const dif = calc.total + regularizacion - c.total;
     const rel = Math.abs(dif) / c.total;
     comprobacion =
       rel <= 0.02
-        ? `<div class="notice"><p><strong>✓ Tu factura cuadra.</strong> Con tus precios y tu consumo nos sale ${eur2(calc.total)}, frente a los ${eur2(c.total)} que te cobran (${dif >= 0 ? "+" : "−"}${eur2(Math.abs(dif))}). Las diferencias de céntimos son redondeos.</p></div>`
+        ? `<div class="notice"><p><strong>✓ Tu factura cuadra.</strong> Con tus precios y tu consumo nos sale ${eur2(calc.total)}${regularizacion ? ` más una regularización de ${eur2(regularizacion)}` : ""}, frente a los ${eur2(c.total)} que te cobran (${dif >= 0 ? "+" : "−"}${eur2(Math.abs(dif))}). Las diferencias de céntimos son redondeos.</p></div>`
         : `<div class="notice notice--warn"><p><strong>Nos sale ${eur2(calc.total)} y te cobran ${eur2(c.total)}</strong> (${pct(rel)} de diferencia). Antes de reclamar, revisa: que los precios sean los de este periodo (pueden haber cambiado a mitad), que no haya conceptos que no hemos leído (regularizaciones, otros servicios, descuentos), los días del periodo y si la factura es estimada.${c.pvpc ? " Con PVPC calculamos con un reparto horario tipo, así que puede haber una diferencia pequeña." : ""} <a href="/guias/cortes-y-reclamaciones/">Cómo reclamar</a></p></div>`;
   } else {
     comprobacion = `<div class="notice"><p>Para comprobar si tu factura cuadra, escribe el precio de la energía (€/kWh) y de la potencia (€/kW·día), o marca que tienes PVPC.</p></div>`;
@@ -304,7 +344,10 @@ function pintar(c: Contexto2) {
   }
   const mes = (c.ktotal / c.dias) * 30.4;
   obs.push(`Consumes unos ${kwh(mes)} al mes${mes > 350 ? ", más que un hogar medio (200–300 kWh)" : mes < 150 ? ", menos que un hogar medio (200–300 kWh)" : ", como un hogar medio"}.`);
-  if (c.potencias.p1 >= 5.75) obs.push(`Tienes ${num(c.potencias.p1, 2)} kW contratados. Si no usas a la vez horno, vitro, lavadora y aire, quizá te sobra: <a href="/herramientas/potencia/">calcula tu potencia</a>.`);
+  const maxima = leida?.potenciaMaxima;
+  if (maxima && maxima < Math.min(c.potencias.p1, c.potencias.p2) * 0.75) {
+    obs.push(`<strong>Te sobra potencia:</strong> lo máximo que has usado en el último año son ${num(maxima, 2)} kW y tienes contratados ${num(c.potencias.p1, 2)} kW. Bajar potencia ahorra cada día. <a href="/herramientas/potencia/">Calcula cuánta necesitas</a>`);
+  } else if (c.potencias.p1 >= 5.75) obs.push(`Tienes ${num(c.potencias.p1, 2)} kW contratados. Si no usas a la vez horno, vitro, lavadora y aire, quizá te sobra: <a href="/herramientas/potencia/">calcula tu potencia</a>.`);
   const cups = txt("cups").replace(/\s/g, "").toUpperCase();
   if (cups && !cupsValido(cups)) obs.push(`El CUPS «${esc(cups)}» no pasa la comprobación de letras de control: revisa que esté bien copiado. <a href="/herramientas/distribuidora/">Comprobar CUPS</a>`);
 
@@ -415,11 +458,16 @@ zona.addEventListener("drop", (e) => {
   if (f) procesar(f);
 });
 $("ef-ejemplo").addEventListener("click", () => {
-  const d = leerFactura(facturaEjemplo());
-  estado.innerHTML = `<div class="notice"><p><strong>Factura de ejemplo cargada.</strong> Así se ven los datos leídos de una factura: revísalos y pulsa «Explicar mi factura».</p></div>`;
+  const lineas = facturaEjemplo();
+  const d = leerFactura(lineas);
+  conceptos = conceptosEn(lineas);
+  estado.innerHTML = `<div class="notice"><p><strong>Factura de ejemplo cargada.</strong> Así se ve una factura leída: los conceptos explicados aquí abajo y los datos para revisar. Pulsa «Explicar mi factura» para ver si cuadra.</p></div>`;
+  pintarConceptos();
   mostrarFormulario(d);
 });
 $("ef-manual").addEventListener("click", () => {
   estado.innerHTML = "";
+  conceptos = [];
+  pintarConceptos();
   mostrarFormulario(null);
 });

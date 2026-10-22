@@ -34,7 +34,11 @@ export interface DatosFactura {
   /** Servicios añadidos que hemos visto (mantenimiento, asistencia, seguros…) */
   servicios: { concepto: string; importe: number }[];
   consumoAnual?: number;
+  /** Potencia máxima demandada en el último año (kW), si la factura la trae */
+  potenciaMaxima?: number;
 }
+
+export { conceptosEn, CONCEPTOS, type ConceptoDetectado, type TipoConcepto } from "./conceptos";
 
 // ---------- Texto ----------
 
@@ -228,10 +232,45 @@ function periodosEn(l: string): Periodo[] {
     .map((x) => x.p);
 }
 
+// ---------- Palabras partidas ----------
+
+// Muchos PDF parten palabras con espacios sueltos («I mporte», «pote ncia», «sumin istro»). Recomponemos
+// las palabras clave admitiendo un espacio entre cualquier par de letras.
+const CLAVE = [
+  "potencia", "contratada", "energía", "consumida", "consumo", "importe", "impuesto", "electricidad", "alquiler", "equipos",
+  "medida", "contador", "factura", "facturación", "periodo", "total", "descuento", "bono social", "regularización",
+  "distribuidora", "comercializadora", "lectura", "estimada", "excedentes", "compensación", "punta", "llano", "valle",
+  "peajes", "cargos", "término", "días", "servicio", "mantenimiento", "financiación", "suministro", "código", "pagar",
+];
+const PARTIDAS = CLAVE.map((w) => ({
+  w,
+  re: new RegExp(
+    `(?<![\\p{L}])${[...w]
+      .map((ch) => (ch === " " ? "\\s+" : `[${ch}${ch.normalize("NFD")[0]}${ch.toUpperCase()}${ch.normalize("NFD")[0].toUpperCase()}]`))
+      .join("\\s?")}(?![\\p{L}])`,
+    "gu",
+  ),
+}));
+
+export function repararPalabras(linea: string): string {
+  let l = linea;
+  for (const { w, re } of PARTIDAS) {
+    l = l.replace(re, (m) => {
+      if (!/\s/.test(m)) return m;
+      // Respeta la mayúscula inicial y las mayúsculas sostenidas («TOTAL»).
+      const limpio = m.replace(/\s+/g, w.includes(" ") ? " " : "");
+      return limpio === limpio.toUpperCase() ? w.toUpperCase() : /^\p{Lu}/u.test(limpio) ? w[0].toUpperCase() + w.slice(1) : w;
+    });
+  }
+  return l;
+}
+
 // ---------- Lectura ----------
 
 export function leerFactura(lineasOTexto: string[] | string): DatosFactura {
-  const lineas = (Array.isArray(lineasOTexto) ? lineasOTexto : lineasOTexto.split(/\r?\n/)).map((l) => l.replace(/\s+/g, " ").trim()).filter(Boolean);
+  const lineas = (Array.isArray(lineasOTexto) ? lineasOTexto : lineasOTexto.split(/\r?\n/))
+    .map((l) => repararPalabras(l.replace(/\s+/g, " ").trim()))
+    .filter(Boolean);
   const texto = lineas.join("\n");
   const d: DatosFactura = {
     pvpc: /\bpvpc\b|precio voluntario para el peque[nñ]o consumidor/i.test(texto),
@@ -248,7 +287,7 @@ export function leerFactura(lineasOTexto: string[] | string): DatosFactura {
   Object.assign(d, buscarPeriodo(lineas));
 
   // Potencia contratada (kW) y su precio (€/kW·día).
-  const lPotencia = lineas.filter((l) => /potencia/i.test(l));
+  const lPotencia = lineas.filter((l) => /potencia/i.test(l) && !/m[aá]xim|max[ií]metro|excesos?/i.test(l));
   for (const l of [...lPotencia.filter((x) => /contratad/i.test(x)), ...lPotencia]) {
     const kws = conUnidad(l.replace(new RegExp(`(${NUM})\\s*${EUR_KW}`, "gi"), " "), String.raw`kw(?!h)`)
       .map((n) => (n > 50 ? n / 1000 : n))
@@ -302,6 +341,11 @@ export function leerFactura(lineasOTexto: string[] | string): DatosFactura {
   if (lTotal) d.kwh.total = conUnidad(lTotal.replace(new RegExp(`(${NUM})\\s*${EUR_KWH}`, "gi"), " "), KWH)[0];
   const suma = (d.kwh.p1 ?? 0) + (d.kwh.p2 ?? 0) + (d.kwh.p3 ?? 0);
   if (d.kwh.total === undefined && d.kwh.p1 !== undefined && d.kwh.p3 !== undefined) d.kwh.total = suma;
+  const lMax = lineas.find((l) => /potencias? m[aá]ximas?|max[ií]metro|m[aá]ximo de potencia/i.test(l) && conUnidad(l, String.raw`kw(?!h)`).length);
+  if (lMax) {
+    const xs = conUnidad(lMax, String.raw`kw(?!h)`).map((n) => (n > 50 ? n / 1000 : n)).filter((n) => n > 0 && n <= 30);
+    if (xs.length) d.potenciaMaxima = Math.max(...xs);
+  }
   const lAnual = lineas.find((l) => /(ultimos|últimos) (12|doce) meses|consumo anual|consumo (del|en el) [uú]ltimo a[nñ]o/i.test(l) && conUnidad(l, KWH).length);
   if (lAnual) d.consumoAnual = Math.max(...conUnidad(lAnual, KWH));
 
@@ -313,8 +357,8 @@ export function leerFactura(lineasOTexto: string[] | string): DatosFactura {
       if (xs.length) return ultimo ? xs[xs.length - 1] : xs[0];
     }
   };
-  d.importes.potencia = importe(/(por|t[eé]rmino( fijo)?( de)?) potencia|^potencia( contratada)?\b|facturaci[oó]n (por|de la) potencia/i, /€\s*\/\s*kwh|impuesto/i);
-  d.importes.energia = importe(/(por|t[eé]rmino( variable)?( de)?) energ[ií]a|^energ[ií]a( consumida| activa)?\b|facturaci[oó]n (por|de la) energ[ií]a/i, /impuesto|potencia|reactiva/i);
+  d.importes.potencia = importe(/(por|t[eé]rmino( fijo)?( de)?) potencia|^t[eé]rmino fijo\b|^potencia( contratada)?\b|facturaci[oó]n (por|de la) potencia/i, /€\s*\/\s*kwh|impuesto|m[aá]xim|exceso/i);
+  d.importes.energia = importe(/(por|t[eé]rmino( variable)?( de)?) energ[ií]a|^t[eé]rmino (de consumo|variable)\b|^energ[ií]a( consumida| activa)?\b|facturaci[oó]n (por|de la) (energ[ií]a|electricidad utilizada)/i, /impuesto|potencia|reactiva|excedent/i);
   d.importes.bonoSocial = importe(/bono social/i, /descuento/i);
   d.importes.impuestoElectrico = importe(/impuesto (especial )?(sobre la |de la )?electricidad|impuesto el[eé]ctrico|\biee\b/i);
   d.importes.alquiler = importe(/alquiler|equipos? de medida/i);

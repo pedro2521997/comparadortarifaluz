@@ -56,6 +56,7 @@ const schema = [
             <button class="btn btn--ghost btn--small" type="button" id="ef-manual">No tengo el PDF: escribo los datos</button>
           </p>
           <div id="ef-estado" aria-live="polite" style="margin-top:16px"></div>
+          <div id="ef-conceptos" class="card ef-conceptos-caja" hidden></div>
         </li>
 
         <li class="paso">
@@ -220,6 +221,42 @@ const schema = [
     padding-left: 16px;
     border-left: 3px solid var(--color-canopy);
     font-size: 15px;
+  }
+  .ef-conceptos-caja {
+    margin-top: 24px;
+  }
+  .ef-tipo {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--color-slate);
+    margin: 24px 0 8px;
+  }
+  .ef-tipo--aviso {
+    color: #8a6500;
+  }
+  .ef-lineas {
+    display: grid;
+    gap: 14px;
+    padding: 0;
+    list-style: none;
+  }
+  .ef-lineas li {
+    border-left: 3px solid var(--color-pale-sage);
+    padding-left: 14px;
+  }
+  .ef-cita {
+    display: block;
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-size: 13px;
+    color: var(--color-slate);
+    margin: 4px 0;
+    overflow-wrap: anywhere;
+  }
+  .ef-cita::before,
+  .ef-cita::after {
+    content: "";
   }
   .ef-alt {
     counter-reset: alt;

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { leerFactura, numero, cupsValido, lineasDesdeTrozos, camposEncontrados } from "../src/index";
+import { leerFactura, numero, cupsValido, lineasDesdeTrozos, camposEncontrados, conceptosEn, repararPalabras } from "../src/index";
 
 // CUPS con letras de control correctas (ES0021000012345678 → YX según el algoritmo módulo 529).
 const L = "TRWAGMYFPDXBNJZSQVHLCKE";
@@ -135,5 +135,49 @@ describe("líneas desde pdf.js", () => {
       { str: "Página dos", x: 50, y: 800, pagina: 2 },
     ]);
     expect(l).toEqual(["Cabecera", "TOTAL 64,72 €", "Página dos"]);
+  });
+});
+
+// Como sale de muchos PDF: palabras partidas, otro orden y conceptos poco habituales.
+const PARTIDA = `
+Repsol Comercializadora de Electricidad y Gas
+Periodo de factur ación 03/08/2026 - 01/09/2026 (30 días)
+Término fijo 11,20 €
+Término de consumo 39,10 €
+Financi ación bono social fijo 0,38 €
+Impuesto sobre la elec tricidad 2,57 €
+Alquiler de equipos de medida 0,80 €
+Regularización lecturas estimadas periodo anterior -12,40 €
+Servicio Asistente 24h 2,90 €
+IVA 21% 9,21 €
+TOT AL A PAGAR 53,76 €
+Potencia contratada (kW) P1 4,600 P2 4,600 kW
+Potencias máximas demandadas último año P1 2,9 kW P2 3,1 kW
+Lectura estimada
+Peaje de acceso 2.0TD
+Fecha fin de contrato 31/12/2026
+`;
+
+describe("factura con palabras partidas y conceptos variados", () => {
+  const d = leerFactura(PARTIDA);
+  it("recompone las palabras y lee los importes", () => {
+    expect(d.importes).toMatchObject({ potencia: 11.2, energia: 39.1, bonoSocial: 0.38, impuestoElectrico: 2.57, alquiler: 0.8, iva: 9.21, total: 53.76 });
+    expect(d).toMatchObject({ desde: "2026-08-03", hasta: "2026-09-01", dias: 30 });
+    expect(d.potencia).toEqual({ p1: 4.6, p2: 4.6 });
+    expect(d.potenciaMaxima).toBeCloseTo(3.1);
+    expect(d.servicios.map((s) => s.importe)).toEqual([2.9]);
+  });
+  it("detecta y explica los conceptos", () => {
+    const ids = conceptosEn(PARTIDA.split("\n")).map((c) => c.id);
+    for (const id of ["potencia", "energia", "bonoSocial", "iee", "alquiler", "regularizacion", "estimada", "servicios", "iva", "potenciaMaxima", "peaje20td", "finContrato"]) expect(ids).toContain(id);
+    expect(ids).not.toContain("descuentoBono");
+    const reg = conceptosEn(PARTIDA.split("\n")).find((c) => c.id === "regularizacion")!;
+    expect(reg.importe).toBeCloseTo(-12.4);
+    expect(reg.linea).toMatch(/Regularización/);
+  });
+  it("repara sin tocar lo que ya está bien", () => {
+    expect(repararPalabras("Pote ncia contratada")).toBe("Potencia contratada");
+    expect(repararPalabras("TOT AL")).toBe("TOTAL");
+    expect(repararPalabras("Subtotal de la factura")).toBe("Subtotal de la factura");
   });
 });
