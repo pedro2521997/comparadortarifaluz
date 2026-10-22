@@ -7,6 +7,7 @@ import { dias } from "../lib/datos";
 import { frase } from "../lib/grafico";
 import { fechaCorta, hoyMadrid } from "../lib/formato";
 import Anuncio from "../components/Anuncio.astro";
+import { GRUPOS_HERRAMIENTAS, HERRAMIENTAS } from "../lib/herramientas";
 import { anunciosActivos, clienteAdsense } from "../lib/anuncios-html.mjs";
 
 interface Props {
@@ -110,13 +111,41 @@ const aviso = ultimo
         <nav aria-label="Principal" class="nav__links" id="menu">
           <ul>
             {
-              NAV.map((n) => (
-                <li>
-                  <a href={n.href} aria-current={ruta.startsWith(n.href) ? "page" : undefined}>
-                    {n.texto}
-                  </a>
-                </li>
-              ))
+              NAV.map((n) =>
+                n.href === "/herramientas/" ? (
+                  <li class="nav__menu">
+                    <button type="button" class="nav__desplegar" aria-expanded="false" aria-controls="menu-herramientas" aria-current={HERRAMIENTAS.some((h) => ruta.startsWith(h.href)) || ruta.startsWith("/herramientas/") ? "page" : undefined}>
+                      {n.texto} <span aria-hidden="true" class="nav__flecha">▾</span>
+                    </button>
+                    <div class="nav__panel" id="menu-herramientas" hidden>
+                      <div class="nav__panel-in">
+                        {GRUPOS_HERRAMIENTAS.map((g) => (
+                          <div>
+                            <p class="nav__grupo">{g.titulo}</p>
+                            <ul>
+                              {g.items.map((h) => (
+                                <li>
+                                  <a href={h.href} aria-current={ruta === h.href ? "page" : undefined}>
+                                    {h.t}
+                                    {h.nueva && <span class="nav__nueva">Nueva</span>}
+                                  </a>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        ))}
+                      </div>
+                      <a class="nav__todas" href="/herramientas/">Ver todas las herramientas →</a>
+                    </div>
+                  </li>
+                ) : (
+                  <li>
+                    <a href={n.href} aria-current={ruta.startsWith(n.href) ? "page" : undefined}>
+                      {n.texto}
+                    </a>
+                  </li>
+                ),
+              )
             }
           </ul>
           <a class="btn btn--small nav__cta" href="/comparador/">Compara tu tarifa</a>
@@ -147,17 +176,9 @@ const aviso = ultimo
           <div>
             <p class="pie__titulo">Herramientas</p>
             <ul>
-              <li><a href="/precio-luz-hoy/">Precio de la luz hoy</a></li>
-              <li><a href="/precio-luz-manana/">Precio de la luz mañana</a></li>
+              {HERRAMIENTAS.map((h) => <li><a href={h.href}>{h.t}</a></li>)}
               <li><a href="/precio-luz-ayer/">Precio de la luz ayer</a></li>
               <li><a href="/precio-luz/">Archivo de precios</a></li>
-              <li><a href="/precio-luz/historico/">Histórico del precio</a></li>
-              <li><a href="/comparador/">Comparador con tu fichero</a></li>
-              <li><a href="/tarifas/">Ranking de tarifas</a></li>
-              <li><a href="/calcular-factura-luz/">Calcular factura de luz</a></li>
-              <li><a href="/analizador-consumo/">Analizador de consumo</a></li>
-              <li><a href="/cuanto-gasta/">Cuánto gasta cada aparato</a></li>
-              <li><a href="/placas-solares/">Calculadora de placas solares</a></li>
             </ul>
           </div>
           <div>
@@ -213,8 +234,27 @@ const aviso = ultimo
         boton.setAttribute("aria-expanded", String(!abierto));
         menu?.classList.toggle("is-open", !abierto);
       });
+      // Desplegable de herramientas: se abre con clic (y teclado), se cierra al salir o con Escape.
+      const desplegar = document.querySelector<HTMLButtonElement>(".nav__desplegar");
+      const panel = document.getElementById("menu-herramientas");
+      const cerrarPanel = () => {
+        desplegar?.setAttribute("aria-expanded", "false");
+        if (panel) panel.hidden = true;
+      };
+      desplegar?.addEventListener("click", () => {
+        const abierto = desplegar.getAttribute("aria-expanded") === "true";
+        desplegar.setAttribute("aria-expanded", String(!abierto));
+        if (panel) panel.hidden = abierto;
+      });
+      document.addEventListener("click", (e) => {
+        if (panel && !panel.hidden && !(e.target as Element).closest(".nav__menu")) cerrarPanel();
+      });
       document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && boton?.getAttribute("aria-expanded") === "true") {
+        if (e.key !== "Escape") return;
+        if (panel && !panel.hidden) {
+          cerrarPanel();
+          desplegar?.focus();
+        } else if (boton?.getAttribute("aria-expanded") === "true") {
           boton.setAttribute("aria-expanded", "false");
           menu?.classList.remove("is-open");
           boton.focus();

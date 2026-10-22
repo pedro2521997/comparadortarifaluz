@@ -1,0 +1,169 @@
+---
+import Base from "../../layouts/Base.astro";
+import AyudaHerramienta from "../../components/AyudaHerramienta.astro";
+import { esquemaFaq, esquemaHerramienta, type Pregunta } from "../../lib/faq";
+import comb from "../../../../../data/combustibles.json";
+import { SITIO } from "../../config";
+import { num } from "../../lib/formato";
+
+const g = comb.gas_tur;
+const config = { g };
+const c = (x: number) => num(x * 100, 2);
+const vigencia = g.vigencia.split(" a ").map((x) => x.split("-").reverse().join("/")).join(" al ");
+
+const preguntas: Pregunta[] = [
+  { p: "¿Cuánto cuesta la TUR del gas ahora?", r: `Del ${vigencia}: TUR 1 (hasta 5.000 kWh al año) ${num(g.tramos[0].fijo_mes, 2)} €/mes y ${c(g.tramos[0].variable_kwh)} céntimos/kWh; TUR 2 (5.000–15.000 kWh) ${num(g.tramos[1].fijo_mes, 2)} €/mes y ${c(g.tramos[1].variable_kwh)} céntimos/kWh; TUR 3 (15.000–50.000 kWh) ${num(g.tramos[2].fijo_mes, 2)} €/mes y ${c(g.tramos[2].variable_kwh)} céntimos/kWh, sin impuestos.` },
+  { p: "¿Quién puede tener la TUR?", r: "Los hogares con gas natural en baja presión y menos de 50.000 kWh al año, es decir, casi todos. Solo la ofrecen las comercializadoras de referencia." },
+  { p: "¿Cada cuánto cambia el precio?", r: "Cada tres meses (1 de enero, abril, julio y octubre), según el precio del gas en los mercados." },
+  { p: "¿Cómo paso los m³ de gas a kWh?", r: "Multiplica los m³ por el factor de conversión que viene en tu factura (normalmente entre 11 y 12 kWh por m³). Si no lo encuentras, usa 11,7." },
+];
+const schema = [
+  esquemaHerramienta("Calculadora de la factura del gas y la TUR", "Calcula cuánto pagas de gas al año con la TUR o con tu tarifa del mercado libre, y cuánto ahorrarías cambiando.", "/herramientas/factura-gas/", SITIO.url),
+  esquemaFaq(preguntas),
+];
+---
+
+<Base
+  titulo="Calculadora de la factura del gas: TUR o mercado libre"
+  descripcion="Calcula cuánto pagas de gas natural al año con la tarifa regulada TUR o con tu tarifa del mercado libre, con los precios de la TUR vigentes, y cuánto ahorrarías cambiando."
+  schema={schema}
+  migas={[["Herramientas", "/herramientas/"], ["Factura del gas"]]}
+>
+  <section class="hero hero--compacto">
+    <div class="wrap">
+      <p class="breadcrumbs"><a href="/herramientas/">Herramientas</a> / Factura del gas</p>
+      <h1>¿Cuánto pagas de gas y cuánto pagarías con la TUR?</h1>
+      <p class="lead">Con los precios de la tarifa regulada del gas (TUR) del trimestre actual. Si no sabes tu consumo, te lo estimamos con lo que usas.</p>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="wrap herr" data-gas={JSON.stringify(config)}>
+      <form class="herr__form card card--roomy" onsubmit="return false">
+        <fieldset>
+          <legend class="herr__paso"><b>1</b> Tu consumo de gas</legend>
+          <div class="seg">
+            <label><input type="radio" name="modo" value="kwh" checked /> Sé los kWh al año</label>
+            <label><input type="radio" name="modo" value="m3" /> Sé los m³ al año</label>
+            <label><input type="radio" name="modo" value="usos" /> No lo sé</label>
+          </div>
+          <div class="field" data-m="kwh" style="margin-top:12px">
+            <label for="ga-kwh">Consumo al año (kWh)</label>
+            <input id="ga-kwh" name="kwh" type="number" min="0" step="100" value="5500" inputmode="numeric" />
+            <span class="hint">Viene en tu factura de gas, en el gráfico o como «consumo anual»</span>
+          </div>
+          <div class="field" data-m="m3" style="margin-top:12px" hidden>
+            <label for="ga-m3">Consumo al año (m³)</label>
+            <input id="ga-m3" name="m3" type="number" min="0" step="10" value="470" inputmode="numeric" />
+            <span class="hint">Se pasa a kWh con 11,7 kWh/m³</span>
+          </div>
+          <div class="stack" data-m="usos" style="--stack:10px;margin-top:12px" hidden>
+            <label class="check"><input type="checkbox" name="agua" checked /> <span>Agua caliente</span></label>
+            <label class="check"><input type="checkbox" name="cocina" checked /> <span>Cocina</span></label>
+            <label class="check"><input type="checkbox" name="cale" checked /> <span>Calefacción</span></label>
+            <div class="form-grid form-grid--2">
+              <div class="field"><label for="ga-pers">Personas</label><input id="ga-pers" name="pers" type="number" min="1" max="10" value="3" inputmode="numeric" /></div>
+              <div class="field"><label for="ga-m2">Metros de la casa</label><input id="ga-m2" name="m2" type="number" min="20" max="500" step="5" value="90" inputmode="numeric" /></div>
+            </div>
+            <div class="field">
+              <label for="ga-zona">Zona</label>
+              <select id="ga-zona" name="zona">
+                <option value="35">Costa mediterránea o sur</option>
+                <option value="70" selected>Interior templado</option>
+                <option value="55">Costa norte</option>
+                <option value="110">Zona fría</option>
+              </select>
+            </div>
+          </div>
+          <p class="small muted" style="margin-top:8px">Consumo que usamos: <strong data-o="consumo">—</strong> al año.</p>
+        </fieldset>
+        <fieldset>
+          <legend class="herr__paso"><b>2</b> Tu tarifa actual (opcional)</legend>
+          <div class="form-grid form-grid--2">
+            <div class="field"><label for="ga-fijo">Término fijo (€/mes)</label><input id="ga-fijo" name="fijo" type="number" min="0" step="0.01" placeholder="Ej.: 9,50" inputmode="decimal" /></div>
+            <div class="field"><label for="ga-var">Término variable (€/kWh)</label><input id="ga-var" name="var" type="number" min="0" step="0.0001" placeholder="Ej.: 0,0790" inputmode="decimal" /></div>
+          </div>
+          <span class="hint">Sin impuestos, como vienen en tu factura o contrato. Si tienes la TUR, déjalo vacío.</span>
+        </fieldset>
+      </form>
+
+      <div class="herr__res" aria-live="polite">
+        <p class="eyebrow">Con la TUR pagarías</p>
+        <p class="answer"><strong data-o="tur">—</strong> al año</p>
+        <p class="muted" data-o="tramo"></p>
+        <div class="herr__filas" data-o="filas"></div>
+        <p data-o="comp"></p>
+        <p class="caption">Impuesto especial de hidrocarburos ({num(g.impuesto_hidrocarburos_kwh, 5)} €/kWh), alquiler del contador ({num(g.alquiler_contador_mes, 2)} €/mes) e IVA del {num(g.iva * 100)} % incluidos. Precios de la TUR: {g.norma}.</p>
+      </div>
+    </div>
+  </section>
+
+  <AyudaHerramienta
+    titulo="La TUR del gas, explicada"
+    preguntas={preguntas}
+    guias={[
+      { href: "/guias/tarifa-gas-tur/", t: "Tarifa de gas TUR: qué es y dónde contratarla" },
+      { href: "/herramientas/calefaccion/", t: "¿Qué calefacción sale más barata?" },
+    ]}
+  >
+    <div class="table-wrap" tabindex="0" role="region" aria-label="Precios de la TUR">
+      <table>
+        <thead><tr><th scope="col">Tarifa</th><th scope="col">Consumo al año</th><th scope="col">Término fijo</th><th scope="col">Término variable</th></tr></thead>
+        <tbody>
+          {g.tramos.map((t, i) => <tr><th scope="row">{t.id.replace("TUR", "TUR ")}</th><td>{i === 0 ? "Hasta" : `${num(g.tramos[i - 1].hasta_kwh)} a`} {num(t.hasta_kwh)} kWh</td><td>{num(t.fijo_mes, 2)} €/mes</td><td>{c(t.variable_kwh)} cent/kWh</td></tr>)}
+        </tbody>
+      </table>
+    </div>
+    <p>Precios sin impuestos, vigentes del {vigencia}. La comercializadora te asigna la TUR que corresponde a tu consumo.</p>
+  </AyudaHerramienta>
+</Base>
+
+<script>
+  import { eur, eur2, num } from "../../lib/formato";
+
+  const raiz = document.querySelector<HTMLElement>("[data-gas]")!;
+  const { g } = JSON.parse(raiz.dataset.gas!) as {
+    g: { tramos: { id: string; hasta_kwh: number; fijo_mes: number; variable_kwh: number }[]; impuesto_hidrocarburos_kwh: number; alquiler_contador_mes: number; iva: number };
+  };
+  const form = raiz.querySelector("form")!;
+  const o = (k: string) => raiz.querySelector<HTMLElement>(`[data-o="${k}"]`)!;
+  const v = (k: string) => parseFloat((form.elements.namedItem(k) as HTMLInputElement).value.replace(",", ".")) || 0;
+  const si = (k: string) => (form.elements.namedItem(k) as HTMLInputElement).checked;
+
+  const anual = (kwh: number, fijoMes: number, variable: number) =>
+    (fijoMes * 12 + kwh * (variable + g.impuesto_hidrocarburos_kwh) + g.alquiler_contador_mes * 12) * (1 + g.iva);
+
+  function calcular() {
+    const modo = form.querySelector<HTMLInputElement>('input[name="modo"]:checked')!.value;
+    for (const el of raiz.querySelectorAll<HTMLElement>("[data-m]")) el.hidden = el.dataset.m !== modo;
+    let kwh = v("kwh");
+    if (modo === "m3") kwh = v("m3") * 11.7;
+    if (modo === "usos") kwh = (si("agua") ? v("pers") * 900 : 0) + (si("cocina") ? 350 : 0) + (si("cale") ? (v("m2") * Number((form.elements.namedItem("zona") as HTMLSelectElement).value)) / 0.92 : 0);
+    o("consumo").textContent = `${num(kwh)} kWh`;
+    const tramo = g.tramos.find((t) => kwh <= t.hasta_kwh) ?? g.tramos[g.tramos.length - 1];
+    const tur = anual(kwh, tramo.fijo_mes, tramo.variable_kwh);
+    o("tur").textContent = eur(tur);
+    o("tramo").textContent = kwh > 50000 ? "Con más de 50.000 kWh al año no puedes acogerte a la TUR." : `Te corresponde la ${tramo.id.replace("TUR", "TUR ")}: unos ${eur(tur / 12)} al mes de media.`;
+    o("filas").innerHTML = `
+      <div><span>Término fijo</span><span>${eur2(tramo.fijo_mes * 12)}</span></div>
+      <div><span>Gas consumido</span><span>${eur2(kwh * tramo.variable_kwh)}</span></div>
+      <div><span>Impuesto de hidrocarburos</span><span>${eur2(kwh * g.impuesto_hidrocarburos_kwh)}</span></div>
+      <div><span>Alquiler del contador</span><span>${eur2(g.alquiler_contador_mes * 12)}</span></div>
+      <div><span>IVA</span><span>${eur2(tur - tur / (1 + g.iva))}</span></div>`;
+    const fijo = v("fijo");
+    const variable = v("var");
+    if (variable > 0) {
+      const tuya = anual(kwh, fijo, variable);
+      const dif = tuya - tur;
+      o("comp").innerHTML =
+        dif > 5
+          ? `Con tu tarifa pagas unos <strong>${eur(tuya)} al año</strong>. Con la TUR ahorrarías <strong>${eur(dif)} al año</strong>. Puedes contratarla con cualquier comercializadora de referencia, gratis y sin corte. <a href="/guias/tarifa-gas-tur/">Cómo pedirla</a>`
+          : dif < -5
+            ? `Con tu tarifa pagas unos <strong>${eur(tuya)} al año</strong>: ${eur(-dif)} menos que con la TUR. Mantén la tuya, pero revisa el precio cuando se renueve.`
+            : `Con tu tarifa pagas casi lo mismo que con la TUR (${eur(tuya)} al año).`;
+    } else o("comp").innerHTML = "";
+  }
+  form.addEventListener("input", calcular);
+  form.addEventListener("change", calcular);
+  calcular();
+</script>

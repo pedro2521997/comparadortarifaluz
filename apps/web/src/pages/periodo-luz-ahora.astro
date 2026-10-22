@@ -1,0 +1,214 @@
+---
+import Base from "../layouts/Base.astro";
+import AyudaHerramienta from "../components/AyudaHerramienta.astro";
+import { esquemaFaq, esquemaHerramienta, type Pregunta } from "../lib/faq";
+import { dias, festivos } from "../lib/datos";
+import { SITIO } from "../config";
+
+// Los dos últimos días con precio, por si el navegador no puede pedirlos.
+const precioHora: Record<string, number> = {};
+for (const d of dias.slice(-2)) d.precios.forEach((p, h) => p != null && (precioHora[`${d.fecha}-${h}`] = p));
+const datos = { festivos, precioHora };
+
+const preguntas: Pregunta[] = [
+  { p: "¿Qué horas son punta, llano y valle?", r: "De lunes a viernes laborables: punta de 10 a 14 h y de 18 a 22 h; llano de 8 a 10 h, de 14 a 18 h y de 22 a 24 h; valle de 0 a 8 h. Sábados, domingos y festivos nacionales, todo el día es valle." },
+  { p: "¿El horario cambia en verano o en invierno?", r: "No. Con la tarifa 2.0TD el horario es el mismo todo el año, en península, Baleares y Canarias (en Canarias, con su hora local)." },
+  { p: "¿Qué festivos cuentan como valle?", r: "Los festivos nacionales de fecha fija: 1 y 6 de enero, 1 de mayo, 15 de agosto, 12 de octubre, 1 de noviembre y 6, 8 y 25 de diciembre. Los autonómicos, locales y los de fecha variable (como Viernes Santo) no cuentan." },
+  { p: "¿Me afecta si tengo PVPC o una tarifa de precio único?", r: "Con PVPC el precio cambia cada hora, aunque los periodos marcan los peajes. Con una tarifa de precio único pagas lo mismo a cualquier hora por la energía. Donde más importa es en las tarifas de tres periodos." },
+  { p: "¿Y la potencia?", r: "La potencia tiene dos periodos: P1 (punta, de 8 a 24 h en laborables) y P2 (valle, de 0 a 8 h, fines de semana y festivos)." },
+];
+const schema = [
+  esquemaHerramienta("¿Qué periodo de luz es ahora?", "Punta, llano o valle en este momento, cuánto falta para el siguiente cambio y el horario de toda la semana.", "/periodo-luz-ahora/", SITIO.url),
+  esquemaFaq(preguntas),
+];
+---
+
+<Base
+  titulo="¿Qué periodo de luz es ahora? Punta, llano o valle"
+  descripcion="Mira si ahora es hora punta, llano o valle, cuánto falta para que cambie y el horario de la luz de toda la semana con los festivos. Horario de la tarifa 2.0TD."
+  schema={schema}
+  migas={[["Herramientas", "/herramientas/"], ["Periodo ahora"]]}
+>
+  <section class="hero hero--compacto">
+    <div class="wrap">
+      <p class="breadcrumbs"><a href="/herramientas/">Herramientas</a> / Periodo ahora</p>
+      <h1>¿Qué periodo de luz es ahora?</h1>
+      <p class="lead">Punta, llano o valle en este momento y cuánto falta para que cambie. El horario de la tarifa 2.0TD, la de casi todos los hogares.</p>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="wrap" style="max-width:900px">
+      <div id="pa-ahora" class="card card--roomy pa-ahora" aria-live="polite">
+        <div class="pa-top">
+          <span class="eyebrow">Ahora son las <span id="pa-reloj">--:--</span></span>
+          <label class="pa-zona">
+            <span class="sr-only">Zona horaria</span>
+            <select id="pa-zona">
+              <option value="Europe/Madrid">Península y Baleares</option>
+              <option value="Atlantic/Canary">Canarias</option>
+            </select>
+          </label>
+        </div>
+        <p class="pa-grande">Es <strong id="pa-periodo">…</strong></p>
+        <p id="pa-siguiente" class="lead"></p>
+        <p id="pa-consejo"></p>
+        <p id="pa-dia" class="small muted"></p>
+        <p id="pa-pvpc" class="small"></p>
+      </div>
+
+      <h2 class="pa-h2">Hoy, hora a hora</h2>
+      <div id="pa-hoy" class="pa-hoy" role="img" aria-label="Periodo de cada hora de hoy"></div>
+      <div class="pa-eje"><span>0 h</span><span>6</span><span>12</span><span>18</span><span>24 h</span></div>
+      <p class="leyenda pa-leyenda"><span><i class="pa-m pa-m--punta"></i> Punta</span><span><i class="pa-m pa-m--llano"></i> Llano</span><span><i class="pa-m pa-m--valle"></i> Valle</span></p>
+
+      <h2 class="pa-h2">Los próximos 7 días</h2>
+      <div class="table-wrap" tabindex="0" role="region" aria-label="Periodos de los próximos 7 días">
+        <table id="pa-semana" class="pa-semana"></table>
+      </div>
+    </div>
+  </section>
+
+  <script type="application/json" id="datos-periodo" set:html={JSON.stringify(datos)} />
+
+  <AyudaHerramienta
+    titulo="El horario de la luz, de un vistazo"
+    preguntas={preguntas}
+    guias={[
+      { href: "/guias/periodos-2-0td/", t: "Periodos de la tarifa 2.0TD" },
+      { href: "/guias/horas-mas-baratas-luz/", t: "Las horas más baratas de la luz" },
+      { href: "/precio-luz-hoy/", t: "Precio de la luz hoy" },
+    ]}
+  >
+    <div class="table-wrap" tabindex="0" role="region" aria-label="Horario de los periodos">
+      <table>
+        <thead><tr><th scope="col">Periodo</th><th scope="col">Lunes a viernes</th><th scope="col">Fines de semana y festivos</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Punta (P1)</th><td>10–14 h y 18–22 h</td><td>—</td></tr>
+          <tr><th scope="row">Llano (P2)</th><td>8–10 h, 14–18 h y 22–24 h</td><td>—</td></tr>
+          <tr><th scope="row">Valle (P3)</th><td>0–8 h</td><td>Todo el día</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Guarda esta página en la pantalla de inicio del móvil para mirarlo antes de poner la lavadora.</p>
+  </AyudaHerramienta>
+</Base>
+
+<script>
+  import "../scripts/periodo-ui";
+</script>
+
+<style is:global>
+  .pa-ahora {
+    border-top: 8px solid var(--color-pale-sage);
+  }
+  .pa-ahora[data-periodo="punta"] {
+    border-top-color: #c9a2ee;
+  }
+  .pa-ahora[data-periodo="llano"] {
+    border-top-color: #e8cf7f;
+  }
+  .pa-ahora[data-periodo="valle"] {
+    border-top-color: #7fe8b1;
+  }
+  .pa-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .pa-zona select {
+    min-height: 40px;
+    padding: 6px 10px;
+    width: auto;
+    font-size: 14px;
+  }
+  .pa-grande {
+    font-size: clamp(40px, 9vw, 72px);
+    font-weight: 300;
+    line-height: 1.05;
+    color: var(--color-ink);
+    margin: 12px 0;
+  }
+  .pa-grande strong {
+    font-weight: 600;
+  }
+  .pa-ahora > p + p {
+    margin-top: 8px;
+  }
+  .pa-h2 {
+    font-size: 24px;
+    margin: 40px 0 12px;
+  }
+  .pa-hoy {
+    display: grid;
+    grid-template-columns: repeat(24, 1fr);
+    gap: 2px;
+    height: 44px;
+  }
+  .pa-h,
+  .pa-c {
+    border-radius: 3px;
+  }
+  .pa-h--punta,
+  .pa-c--punta,
+  .pa-m--punta {
+    background: #c9a2ee;
+  }
+  .pa-h--llano,
+  .pa-c--llano,
+  .pa-m--llano {
+    background: #e8cf7f;
+  }
+  .pa-h--valle,
+  .pa-c--valle,
+  .pa-m--valle {
+    background: #7fe8b1;
+  }
+  .pa-h--ahora {
+    outline: 3px solid var(--color-ink);
+    outline-offset: -1px;
+  }
+  .pa-eje {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--color-slate);
+    margin-top: 4px;
+  }
+  .pa-m {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    vertical-align: -2px;
+    margin-right: 4px;
+  }
+  .pa-leyenda {
+    margin-top: 8px;
+  }
+  .pa-semana {
+    border-collapse: separate;
+    border-spacing: 2px;
+    min-width: 640px;
+    font-size: 12px;
+  }
+  .pa-semana th {
+    font-weight: 500;
+    text-align: left;
+    white-space: nowrap;
+    padding-right: 8px;
+    color: var(--color-slate);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .pa-semana thead th {
+    text-align: center;
+    padding: 0;
+  }
+  .pa-c {
+    height: 26px;
+    min-width: 18px;
+  }
+</style>

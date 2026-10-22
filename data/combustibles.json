@@ -1,0 +1,27 @@
+{
+  "_nota": "Precios de referencia para comparar calefacción y gas. Orientativos y editables en cada herramienta. Revisar cada trimestre (TUR) o cada dos meses (butano).",
+  "revisado": "2026-10-22",
+  "verificar": true,
+  "gas_tur": {
+    "vigencia": "2026-10-01 a 2026-12-31",
+    "norma": "Resolución de la DGPEM de 30 de septiembre de 2026 (TUR de gas natural, 4.º trimestre)",
+    "tramos": [
+      { "id": "TUR1", "hasta_kwh": 5000, "fijo_mes": 3.83, "variable_kwh": 0.0525259 },
+      { "id": "TUR2", "hasta_kwh": 15000, "fijo_mes": 8.17, "variable_kwh": 0.05042762 },
+      { "id": "TUR3", "hasta_kwh": 50000, "fijo_mes": 19.32, "variable_kwh": 0.04698799 }
+    ],
+    "impuesto_hidrocarburos_kwh": 0.00234,
+    "alquiler_contador_mes": 0.71,
+    "iva": 0.21
+  },
+  "butano": { "eur_bombona": 16.35, "kg": 12.5, "kwh_kg": 12.66, "nota": "Bombona regulada de 12,5 kg (revisión de marzo de 2026); se revisa cada dos meses." },
+  "gasoleo": { "eur_litro": 1.45, "kwh_litro": 10, "nota": "Gasóleo C de calefacción, media orientativa de 2026." },
+  "pellets": { "eur_saco": 5.2, "kg_saco": 15, "kwh_kg": 4.8, "nota": "Saco de 15 kg, media orientativa (índice de precios de AVEBIOM)." },
+  "fuentes": [
+    { "nombre": "BOE: tarifa de último recurso de gas natural", "url": "https://www.boe.es/" },
+    { "nombre": "Rastreator: TUR de gas, octubre de 2026", "url": "https://www.rastreator.com/tarifas-energia/guias/tarifa-ultimo-recurso-tur-gas-natural" },
+    { "nombre": "Endesa: precio de la bombona de butano", "url": "https://www.endesa.com/es/blog/blog-de-endesa/luz/precio-bombona-butano" },
+    { "nombre": "IDAE: precios de combustibles y carburantes", "url": "https://www.idae.es/estudios-informes-y-estadisticas" },
+    { "nombre": "AVEBIOM: índice de precios del pellet", "url": "https://www.avebiom.org/" }
+  ]
+}

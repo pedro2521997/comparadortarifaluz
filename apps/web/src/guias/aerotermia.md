@@ -6,7 +6,7 @@ revisado: "2026-10-22"
 publicado: "2026-10-22"
 orden: 41
 categoria: "Ahorrar luz"
-herramienta: { href: "/cuanto-gasta/bomba-de-calor/", texto: "Calcula cuánto te cuesta tu bomba de calor al mes con el precio de hoy." }
+herramienta: { href: "/herramientas/calefaccion/", texto: "Compara la aerotermia con tu calefacción actual: coste al año y ahorro." }
 fuentes:
   - { nombre: "IDAE: bombas de calor y aerotermia", url: "https://www.idae.es/" }
 faq:

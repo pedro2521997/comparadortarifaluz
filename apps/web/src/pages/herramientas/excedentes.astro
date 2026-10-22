@@ -1,0 +1,144 @@
+---
+import Base from "../../layouts/Base.astro";
+import AyudaHerramienta from "../../components/AyudaHerramienta.astro";
+import DondeEnFactura from "../../components/DondeEnFactura.astro";
+import { esquemaFaq, esquemaHerramienta, type Pregunta } from "../../lib/faq";
+import { REFERENCIA } from "../../lib/referencias";
+import { SITIO } from "../../config";
+
+const config = { factor: REFERENCIA.factor };
+
+const preguntas: Pregunta[] = [
+  { p: "¿Cuánto me tienen que pagar por los excedentes?", r: "Con la compensación simplificada no te pagan: te descuentan de la factura los kWh vertidos por el precio de compensación de tu contrato. En la PVPC ese precio lo fija el mercado cada hora; en el mercado libre, tu compañía (suele estar entre 0,04 y 0,08 €/kWh)." },
+  { p: "¿Por qué me compensan menos de lo que he vertido?", r: "Porque la compensación nunca puede superar lo que pagas por la energía consumida de la red ese mes. Lo que sobra se pierde, salvo que tengas una batería virtual o monedero solar." },
+  { p: "¿Me descuentan también la potencia y los impuestos?", r: "No. La compensación solo se resta del término de energía. La potencia, el alquiler del contador y el bono social se pagan igual; el impuesto eléctrico y el IVA se calculan sobre lo que queda." },
+  { p: "¿Qué es una batería virtual?", r: "Un servicio de algunas compañías que guarda en euros lo que no cabe en la compensación de un mes para descontarlo en otras facturas. Suele tener una cuota mensual: compara si te compensa." },
+];
+const schema = [
+  esquemaHerramienta("¿Me compensan bien los excedentes?", "Comprueba si la compensación de excedentes de tus placas solares en la factura está bien calculada y cuánto pierdes por el tope.", "/herramientas/excedentes/", SITIO.url),
+  esquemaFaq(preguntas),
+];
+---
+
+<Base
+  titulo="Compensación de excedentes: ¿te la calculan bien?"
+  descripcion="Comprueba con tu factura si te compensan bien los excedentes de las placas solares, cuánto pierdes por el tope de compensación y si te conviene una batería virtual."
+  schema={schema}
+  migas={[["Herramientas", "/herramientas/"], ["Excedentes"]]}
+>
+  <section class="hero hero--compacto">
+    <div class="wrap">
+      <p class="breadcrumbs"><a href="/herramientas/">Herramientas</a> / Excedentes</p>
+      <h1>¿Te compensan bien los excedentes de tus placas?</h1>
+      <p class="lead">Copia cuatro datos de tu factura y te decimos cuánto te deberían descontar, si se pierde algo por el tope y qué hacer para aprovecharlo.</p>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="wrap herr" data-exc={JSON.stringify(config)}>
+      <form class="herr__form card card--roomy" onsubmit="return false">
+        <fieldset>
+          <legend class="herr__paso"><b>1</b> Lo que vertiste</legend>
+          <div class="form-grid form-grid--2">
+            <div class="field">
+              <label for="ex-kwh">Excedentes del mes (kWh)</label>
+              <input id="ex-kwh" name="exc" type="number" min="0" step="1" value="180" inputmode="decimal" />
+              <span class="hint">«Energía excedentaria» o «energía vertida»</span>
+            </div>
+            <div class="field">
+              <label for="ex-precio">Precio de compensación (€/kWh)</label>
+              <input id="ex-precio" name="pexc" type="number" min="0" step="0.001" value="0.06" inputmode="decimal" />
+              <span class="hint">En tu contrato o en la línea de compensación</span>
+            </div>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend class="herr__paso"><b>2</b> Lo que compraste a la red</legend>
+          <div class="form-grid form-grid--2">
+            <div class="field">
+              <label for="ex-cons">Energía consumida de la red (kWh)</label>
+              <input id="ex-cons" name="cons" type="number" min="0" step="1" value="150" inputmode="decimal" />
+            </div>
+            <div class="field">
+              <label for="ex-pcons">Precio medio de la energía (€/kWh)</label>
+              <input id="ex-pcons" name="pcons" type="number" min="0" step="0.001" value={REFERENCIA.precioUnico} inputmode="decimal" />
+              <span class="hint">Sin impuestos</span>
+            </div>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend class="herr__paso"><b>3</b> Lo que pone tu factura (opcional)</legend>
+          <div class="field">
+            <label for="ex-fact">Compensación de excedentes que te han descontado (€)</label>
+            <input id="ex-fact" name="fact" type="number" min="0" step="0.01" placeholder="Ej.: 10,80" inputmode="decimal" />
+          </div>
+          <label class="check" style="margin-top:12px"><input type="checkbox" name="virtual" /> <span>Tengo batería virtual o monedero solar</span></label>
+        </fieldset>
+        <DondeEnFactura datos={["kwh", "precios"]} />
+      </form>
+
+      <div class="herr__res" aria-live="polite">
+        <p class="eyebrow">Te deberían descontar</p>
+        <p class="answer"><strong data-o="comp">—</strong></p>
+        <div class="herr__filas" data-o="filas"></div>
+        <p data-o="veredicto"></p>
+        <p data-o="consejo"></p>
+        <p class="caption">Compensación simplificada (Real Decreto 244/2019): lo vertido por su precio, con el tope de lo que pagas por la energía de la red ese mes. Sin impuestos.</p>
+      </div>
+    </div>
+  </section>
+
+  <AyudaHerramienta
+    titulo="Cómo funciona la compensación de excedentes"
+    preguntas={preguntas}
+    guias={[
+      { href: "/guias/autoconsumo-compensacion/", t: "Autoconsumo y compensación de excedentes" },
+      { href: "/guias/instalar-bateria-casa/", t: "¿Me compensa una batería física?" },
+      { href: "/placas-solares/", t: "Calculadora de placas solares" },
+    ]}
+  >
+    <ol>
+      <li>Cada kWh que viertes a la red vale el <strong>precio de compensación</strong> (bastante menos que lo que pagas por cada kWh que compras).</li>
+      <li>Se suma todo el mes y se <strong>resta del término de energía</strong>, nunca de la potencia ni de otros conceptos.</li>
+      <li>Si los excedentes valen más que la energía comprada, el término de energía queda a cero y <strong>el resto se pierde</strong>, salvo batería virtual.</li>
+    </ol>
+    <p>Por eso lo que más ahorra es <strong>consumir tú la energía de tus placas</strong>: poner lavadora, lavavajillas, termo o coche a mediodía.</p>
+  </AyudaHerramienta>
+</Base>
+
+<script>
+  import { eur, eur2, pct } from "../../lib/formato";
+
+  const raiz = document.querySelector<HTMLElement>("[data-exc]")!;
+  const form = raiz.querySelector("form")!;
+  const o = (k: string) => raiz.querySelector<HTMLElement>(`[data-o="${k}"]`)!;
+  const v = (k: string) => parseFloat((form.elements.namedItem(k) as HTMLInputElement).value.replace(",", ".")) || 0;
+
+  function calcular() {
+    const bruta = v("exc") * v("pexc");
+    const tope = v("cons") * v("pcons");
+    const aplicada = Math.min(bruta, tope);
+    const perdida = bruta - aplicada;
+    o("comp").textContent = eur2(aplicada);
+    o("filas").innerHTML = `
+      <div><span>Valor de tus excedentes</span><span>${eur2(bruta)}</span></div>
+      <div><span>Tope: tu término de energía</span><span>${eur2(tope)}</span></div>
+      <div><span>Se pierde por el tope</span><span>${eur2(perdida)}</span></div>
+      <div><span>Cada kWh vertido vale</span><span>${pct(v("pcons") ? v("pexc") / v("pcons") : 0)} de uno comprado</span></div>`;
+    const fact = v("fact");
+    o("veredicto").innerHTML = !fact
+      ? ""
+      : Math.abs(fact - aplicada) <= Math.max(0.1, aplicada * 0.02)
+        ? `<strong>✓ Cuadra</strong> con lo que te han descontado (${eur2(fact)}).`
+        : `<strong>No cuadra:</strong> te han descontado ${eur2(fact)} y debería ser ${eur2(aplicada)} (${fact < aplicada ? "te falta" : "te sobra"} ${eur2(Math.abs(aplicada - fact))}). Revisa el precio de compensación de tu contrato y los kWh; si sigue sin cuadrar, reclama a tu compañía.`;
+    o("consejo").innerHTML =
+      perdida > 1
+        ? form.querySelector<HTMLInputElement>('input[name="virtual"]')!.checked
+          ? `Los ${eur2(perdida)} que no caben deberían ir a tu batería virtual. Compruébalo en la factura.`
+          : `Este mes pierdes <strong>${eur2(perdida)}</strong> (unos ${eur(perdida * 12)} al año si se repite). Consume más a mediodía o valora una <strong>batería virtual</strong> si su cuota es menor que lo que pierdes.`
+        : `No pierdes nada por el tope. Para ahorrar más, usa tú la energía de las placas: cada kWh que consumes en vez de verter te ahorra ${eur2(v("pcons") - v("pexc"))} más.`;
+  }
+  form.addEventListener("input", calcular);
+  form.addEventListener("change", calcular);
+  calcular();
+</script>

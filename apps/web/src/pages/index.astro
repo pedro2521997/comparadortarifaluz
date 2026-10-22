@@ -1,6 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
 import Anuncio from "../components/Anuncio.astro";
+import { GRUPOS_HERRAMIENTAS, HERRAMIENTAS } from "../lib/herramientas";
 import AvisoDiario from "../components/AvisoDiario.astro";
 import { dias, tarifas, regulados, festivos, ajustesMercado } from "../lib/datos";
 import { compararTarifas, generarLecturas } from "@lst/tarifa";
@@ -130,14 +131,30 @@ const herramientas = [
       <div class="grid grid--3">
         {
           herramientas.map((h, i) => (
-            <a class:list={["card card--link card--roomy herr", { "herr--star": i === 0 }]} href={h.href}>
+            <a class:list={["card card--link card--roomy ini-herr", { "ini-herr--star": i === 0 }]} href={h.href}>
               <span class:list={["eyebrow", { "eyebrow--violet": i === 5 }]}>{h.eyebrow}</span>
-              <h3 class="herr__t">{h.t}</h3>
+              <h3 class="ini-herr__t">{h.t}</h3>
               <p class="muted">{h.d}</p>
               <span class="arrow">{h.cta} →</span>
             </a>
           ))
         }
+      </div>
+      <div class="ini-todas">
+        <h3 class="ini-todas__t">Y {HERRAMIENTAS.length - herramientas.length} herramientas más</h3>
+        <div class="ini-todas__grid">
+          {GRUPOS_HERRAMIENTAS.map((g) => (
+            <div>
+              <p class="ini-todas__g">{g.titulo}</p>
+              <ul>
+                {g.items.filter((h) => !herramientas.some((x) => x.href === h.href)).map((h) => (
+                  <li><a href={h.href}>{h.t}</a>{h.nueva && <span class="pill pill--barata ini-todas__nueva">Nueva</span>}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+        <p class="center" style="margin-top:24px"><a class="btn btn--ghost" href="/herramientas/">Ver todas las herramientas</a></p>
       </div>
     </div>
   </section>
@@ -328,7 +345,7 @@ const herramientas = [
     font-weight: 500;
     color: var(--color-canopy);
   }
-  .herr {
+  .ini-herr {
     min-height: 240px;
   }
   .portada__confianza {
@@ -395,13 +412,47 @@ const herramientas = [
     font-weight: 500;
     font-variant-numeric: tabular-nums;
   }
-  .herr__t {
+  .ini-herr__t {
     font-size: 28px;
     font-weight: 300;
     color: var(--color-ink);
     letter-spacing: -0.01em;
   }
-  .herr--star {
+  .ini-todas {
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 1px solid var(--color-pale-sage);
+  }
+  .ini-todas__t {
+    font-size: 24px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .ini-todas__grid {
+    display: grid;
+    gap: 24px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+  .ini-todas__g {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--color-slate);
+    margin-bottom: 8px;
+  }
+  .ini-todas ul {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+  }
+  .ini-todas__nueva {
+    margin-left: 6px;
+    font-size: 10px;
+    padding: 1px 6px;
+  }
+  .ini-herr--star {
     border-color: var(--color-canopy);
   }
   .confianza {

@@ -3,6 +3,7 @@ import type { APIRoute } from "astro";
 import { SITIO } from "../config";
 import { dias, aparatos, catalogoActualizado } from "../lib/datos";
 import { guias } from "../lib/guias";
+import { HERRAMIENTAS } from "../lib/herramientas";
 import { hoyMadrid } from "../lib/formato";
 
 export const GET: APIRoute = () => {
@@ -12,9 +13,10 @@ export const GET: APIRoute = () => {
   const catalogo = catalogoActualizado.slice(0, 10);
   // [ruta, última modificación]
   const rutas: [string, string?][] = [
-    ["/", ultimoDia], ["/precio-luz-hoy/", ultimoDia], ["/precio-luz-manana/", dias.at(-1)?.fecha], ["/precio-luz-ayer/", ultimoDia], ["/precio-luz/", ultimoDia], ["/precio-luz/historico/", ultimoDia],
-    ["/tarifas/", catalogo], ["/comparador/", catalogo], ["/calcular-factura-luz/"], ["/entender-factura-luz/"], ["/analizador-consumo/"], ["/cuanto-gasta/", ultimoDia],
-    ["/placas-solares/"], ["/herramientas/"], ["/herramientas/potencia/"], ["/herramientas/coche-electrico/"], ["/herramientas/distribuidora/"],
+    ["/", ultimoDia], ["/precio-luz-hoy/", ultimoDia], ["/precio-luz-manana/", dias.at(-1)?.fecha], ["/precio-luz/", ultimoDia], ["/precio-luz/historico/", ultimoDia],
+    ["/tarifas/", catalogo], ["/comparador/", catalogo], ["/cuanto-gasta/", ultimoDia],
+    ["/herramientas/"], ["/precio-luz-ayer/"],
+    ...HERRAMIENTAS.filter((h) => !["/", "/precio-luz-hoy/", "/precio-luz-manana/", "/precio-luz/historico/", "/tarifas/", "/comparador/", "/cuanto-gasta/"].includes(h.href)).map((h): [string, string?] => [h.href]),
     ["/guias/", ultimaGuia], ["/como-funciona/"], ["/aviso-legal/"], ["/condiciones-de-uso/"], ["/privacidad/"], ["/cookies/"],
     ...dias.map((d): [string, string] => [`/precio-luz/${d.fecha}/`, d.fecha]),
     ...aparatos.map((a): [string, string] => [`/cuanto-gasta/${a.slug}/`, ultimoDia]),

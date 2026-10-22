@@ -5,7 +5,7 @@ respuesta: "La bomba de calor da 3–4 kWh de calor por cada kWh de luz, así qu
 categoria: "Ahorrar luz"
 revisado: "2026-10-21"
 orden: 13
-herramienta: { href: "/cuanto-gasta/bomba-de-calor/", texto: "Calcula lo que te cuesta tu calefacción al mes con el precio de la luz de hoy." }
+herramienta: { href: "/herramientas/calefaccion/", texto: "Compara cuánto te cuesta al año cada sistema de calefacción en tu casa." }
 fuentes:
   - { nombre: "IDAE: Guía práctica de la energía", url: "https://www.idae.es/publicaciones/guia-practica-de-la-energia-consumo-eficiente-y-responsable" }
 ---

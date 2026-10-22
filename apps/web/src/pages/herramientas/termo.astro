@@ -1,0 +1,169 @@
+---
+import Base from "../../layouts/Base.astro";
+import AyudaHerramienta from "../../components/AyudaHerramienta.astro";
+import { esquemaFaq, esquemaHerramienta, type Pregunta } from "../../lib/faq";
+import { REFERENCIA } from "../../lib/referencias";
+import { SITIO } from "../../config";
+
+const config = { ref: REFERENCIA };
+
+const preguntas: Pregunta[] = [
+  { p: "¿Cuánto gasta un termo eléctrico?", r: "Un termo de 80 litros para dos personas gasta unos 3–4 kWh al día: unos 2,3 kWh para calentar el agua que usáis y 1–1,5 kWh que pierde por estar caliente todo el día. Al año son unos 1.200–1.400 kWh, a menudo la mayor parte de la factura de la luz." },
+  { p: "¿Es mejor dejarlo encendido o apagarlo?", r: "Es mejor programarlo: que caliente una vez al día, en las horas baratas, justo para el agua que vas a usar. Dejarlo siempre encendido no ahorra: mantiene el agua caliente todo el día y pierde calor sin parar." },
+  { p: "¿A qué temperatura lo pongo?", r: "A unos 55–60 °C. Más alto pierde más calor y gasta más; por debajo de 50–55 °C de forma continuada aumenta el riesgo de legionela, sobre todo en termos grandes. Si lo bajas, súbelo a 60 °C de vez en cuando." },
+  { p: "¿Qué temporizador necesito?", r: "Un programador de enchufe o, si va conectado a la red directamente, un temporizador en el cuadro eléctrico (lo pone un electricista). Muchos termos modernos ya traen programación." },
+];
+const schema = [
+  esquemaHerramienta("Calculadora del termo eléctrico", "Cuánto gasta tu termo eléctrico y cuánto ahorras programándolo en horas baratas o bajando la temperatura.", "/herramientas/termo/", SITIO.url),
+  esquemaFaq(preguntas),
+];
+---
+
+<Base
+  titulo="Termo eléctrico: cuánto gasta y cuánto ahorras"
+  descripcion="Calcula cuánto te cuesta el termo eléctrico al año y cuánto ahorras programándolo en las horas baratas, bajando la temperatura o apagándolo en vacaciones."
+  schema={schema}
+  migas={[["Herramientas", "/herramientas/"], ["Termo eléctrico"]]}
+>
+  <section class="hero hero--compacto">
+    <div class="wrap">
+      <p class="breadcrumbs"><a href="/herramientas/">Herramientas</a> / Termo eléctrico</p>
+      <h1>¿Cuánto gasta tu termo y cuánto puedes ahorrar?</h1>
+      <p class="lead">El termo eléctrico suele ser lo que más luz gasta en casa. Con un temporizador y la temperatura justa, la factura baja sin quedarte sin agua caliente.</p>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="wrap herr" data-termo={JSON.stringify(config)}>
+      <form class="herr__form card card--roomy" onsubmit="return false">
+        <fieldset>
+          <legend class="herr__paso"><b>1</b> Tu termo</legend>
+          <div class="form-grid form-grid--2">
+            <div class="field">
+              <label for="te-litros">Capacidad</label>
+              <select id="te-litros" name="litros">
+                <option value="30">30 litros</option>
+                <option value="50">50 litros</option>
+                <option value="80" selected>80 litros</option>
+                <option value="100">100 litros</option>
+                <option value="150">150 litros</option>
+                <option value="200">200 litros</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="te-personas">Personas en casa</label>
+              <input id="te-personas" name="personas" type="number" min="1" max="10" value="2" inputmode="numeric" />
+            </div>
+            <div class="field">
+              <label for="te-temp">Temperatura a la que está</label>
+              <select id="te-temp" name="temp">
+                <option value="50">50 °C</option>
+                <option value="55">55 °C</option>
+                <option value="60">60 °C</option>
+                <option value="65">65 °C</option>
+                <option value="70" selected>70 °C o al máximo (lo más habitual)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="te-ducha">Duchas</label>
+              <select id="te-ducha" name="ducha">
+                <option value="30">Cortas (unos 5 minutos)</option>
+                <option value="40" selected>Normales</option>
+                <option value="60">Largas o bañera</option>
+              </select>
+            </div>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend class="herr__paso"><b>2</b> Tu tarifa</legend>
+          <div class="seg">
+            <label><input type="radio" name="tarifa" value="periodos" checked /> Tres periodos (punta, llano, valle)</label>
+            <label><input type="radio" name="tarifa" value="unico" /> Precio único</label>
+          </div>
+          <div class="form-grid form-grid--3" style="margin-top:12px" data-o="periodos">
+            <div class="field"><label for="te-p1">Punta €/kWh</label><input id="te-p1" name="p1" type="number" step="0.001" value={REFERENCIA.punta} inputmode="decimal" /></div>
+            <div class="field"><label for="te-p2">Llano €/kWh</label><input id="te-p2" name="p2" type="number" step="0.001" value={REFERENCIA.llano} inputmode="decimal" /></div>
+            <div class="field"><label for="te-p3">Valle €/kWh</label><input id="te-p3" name="p3" type="number" step="0.001" value={REFERENCIA.valle} inputmode="decimal" /></div>
+          </div>
+          <div class="field" style="margin-top:12px" data-o="unico" hidden>
+            <label for="te-pu">Precio €/kWh</label><input id="te-pu" name="pu" type="number" step="0.001" value={REFERENCIA.precioUnico} inputmode="decimal" />
+          </div>
+          <p class="caption" style="margin-top:8px">Sin impuestos; vienen puestos los precios medianos del mercado. Con PVPC, elige tres periodos: el valle y las horas de sol suelen ser las más baratas.</p>
+        </fieldset>
+      </form>
+
+      <div class="herr__res" aria-live="polite">
+        <p class="eyebrow">Tu termo te cuesta</p>
+        <p class="answer"><strong data-o="anio">—</strong> al año</p>
+        <p class="muted" data-o="kwh"></p>
+        <p class="eyebrow" style="margin-top:12px">Cuánto puedes ahorrar</p>
+        <div class="herr__filas" data-o="medidas"></div>
+        <p data-o="total"></p>
+        <p class="caption">Estimación: 1,16 kWh por persona y día para el agua caliente, más las pérdidas del depósito (dependen del tamaño y la temperatura). Impuestos incluidos.</p>
+      </div>
+    </div>
+  </section>
+
+  <AyudaHerramienta
+    titulo="Tres cambios que más ahorran con el termo"
+    preguntas={preguntas}
+    guias={[
+      { href: "/cuanto-gasta/termo-electrico/", t: "Cuánto gasta un termo con el precio de hoy" },
+      { href: "/guias/reducir-consumo/", t: "15 trucos para gastar menos luz" },
+      { href: "/periodo-luz-ahora/", t: "¿Qué periodo es ahora?" },
+    ]}
+  >
+    <ol>
+      <li><strong>Prográmalo en horas baratas.</strong> Que caliente de madrugada (valle) o, con PVPC, al mediodía. El agua aguanta caliente todo el día.</li>
+      <li><strong>Baja la temperatura a 55–60 °C.</strong> Cuanto más caliente, más pierde. Súbelo a 60 °C de vez en cuando para evitar la legionela.</li>
+      <li><strong>Apágalo si te vas</strong> más de dos o tres días. Al volver, en un par de horas tienes agua caliente.</li>
+    </ol>
+  </AyudaHerramienta>
+</Base>
+
+<script>
+  import { eur, kwh, num } from "../../lib/formato";
+
+  const raiz = document.querySelector<HTMLElement>("[data-termo]")!;
+  const cfg = JSON.parse(raiz.dataset.termo!) as { ref: { factor: number } };
+  const form = raiz.querySelector("form")!;
+  const o = (k: string) => raiz.querySelector<HTMLElement>(`[data-o="${k}"]`)!;
+  const v = (k: string) => parseFloat((form.elements.namedItem(k) as HTMLInputElement).value.replace(",", ".")) || 0;
+  const radio = () => form.querySelector<HTMLInputElement>('input[name="tarifa"]:checked')!.value;
+
+  /** Pérdidas diarias del depósito (kWh): proporcionales a su superficie y a la diferencia con el ambiente. */
+  const perdidas = (litros: number, temp: number) => 0.0016 * Math.pow(litros, 2 / 3) * (temp - 20);
+
+  function calcular() {
+    const unico = radio() === "unico";
+    o("periodos").hidden = unico;
+    o("unico").hidden = !unico;
+    const [p1, p2, p3] = unico ? [v("pu"), v("pu"), v("pu")] : [v("p1"), v("p2"), v("p3")];
+    // Siempre encendido: repone el calor a lo largo del día, sobre todo tras las duchas (mañana y noche).
+    // Reparto del consumo en la semana: punta 35 %, llano 30 %, valle 35 % (fines de semana incluidos).
+    const precioSiempre = 0.35 * p1 + 0.3 * p2 + 0.35 * p3;
+    const litros = v("litros");
+    const temp = v("temp");
+    const agua = v("personas") * 1.163 * (v("ducha") / 40);
+    const kwhDia = agua + perdidas(litros, temp);
+    const anio = kwhDia * 365 * precioSiempre * cfg.ref.factor;
+    o("anio").textContent = eur(anio);
+    o("kwh").textContent = `${kwh(kwhDia * 365)} al año (${num(kwhDia, 1)} kWh al día, de ellos ${num(perdidas(litros, temp), 1)} de pérdidas por tenerlo caliente).`;
+
+    // Medidas: temporizador en valle (calienta una vez y pierde menos al estar caliente menos horas),
+    // bajar a 55 °C y apagarlo 15 días de vacaciones.
+    const tempNueva = Math.min(temp, 55);
+    const conTemporizador = (agua + perdidas(litros, temp) * 0.75) * 365 * p3 * cfg.ref.factor;
+    const conTemp = (agua + perdidas(litros, tempNueva)) * 365 * precioSiempre * cfg.ref.factor;
+    const todo = (agua + perdidas(litros, tempNueva) * 0.75) * (365 - 15) * p3 * cfg.ref.factor;
+    const fila = (t: string, ahorro: number) => `<div><span>${t}</span><span>${ahorro > 0.5 ? `−${eur(ahorro)}/año` : "—"}</span></div>`;
+    o("medidas").innerHTML =
+      fila(unico ? "Temporizador (con precio único ahorra solo pérdidas)" : "Temporizador en horas valle", anio - (unico ? (agua + perdidas(litros, temp) * 0.75) * 365 * p3 * cfg.ref.factor : conTemporizador)) +
+      fila(temp > 55 ? `Bajar de ${temp} a 55 °C` : "Ya está a 55 °C o menos", anio - conTemp) +
+      fila("Apagarlo 15 días de vacaciones", (anio * 15) / 365);
+    o("total").innerHTML = `Con las tres cosas pagarías unos <strong>${eur(todo)} al año</strong>: <strong>${eur(anio - todo)} menos</strong>.`;
+  }
+  form.addEventListener("input", calcular);
+  form.addEventListener("change", calcular);
+  calcular();
+</script>

@@ -5,7 +5,7 @@ respuesta: "La TUR es la tarifa regulada del gas, la pueden contratar los hogare
 categoria: "Gas y otros"
 revisado: "2026-10-21"
 orden: 24
-herramienta: { href: "/comparador/", texto: "Y para la luz, compara todas las tarifas con tu consumo real." }
+herramienta: { href: "/herramientas/factura-gas/", texto: "Calcula cuánto pagarías de gas con la TUR y cuánto ahorras frente a tu tarifa." }
 fuentes:
   - { nombre: "Ministerio para la Transición Ecológica: TUR de gas", url: "https://www.miteco.gob.es/" }
   - { nombre: "CNMC: comercializadoras de referencia", url: "https://www.cnmc.es/ambitos-de-actuacion/energia/comercializadoras-referencia" }

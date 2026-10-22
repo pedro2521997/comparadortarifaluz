@@ -5,7 +5,7 @@ respuesta: "El bono social de la luz descuenta un 42,5 % (vulnerables) o un 57,5
 categoria: "Tarifas y compañías"
 revisado: "2026-10-21"
 orden: 7
-herramienta: { href: "/precio-luz-hoy/", texto: "El bono social solo se aplica con la PVPC: mira cada día las horas más baratas para sacarle más partido." }
+herramienta: { href: "/herramientas/bono-social/", texto: "Comprueba en un minuto si tienes derecho al bono social y qué descuento te toca." }
 fuentes:
   - { nombre: "Ministerio: bonosocial.gob.es", url: "https://www.bonosocial.gob.es/" }
   - { nombre: "OCU: financiación del bono social 2026", url: "https://www.ocu.org/vivienda-y-energia/gas-luz/noticias/financiacion-bono-social-2026" }

@@ -5,7 +5,7 @@ respuesta: "En la tarifa 2.0TD la punta (P1) es de 10 a 14 h y de 18 a 22 h los 
 categoria: "Tu factura"
 revisado: "2026-10-21"
 orden: 2
-herramienta: { href: "/comparador/", texto: "Sube tu fichero y te decimos qué parte de tu consumo cae en punta, llano y valle, y cuánto ahorrarías moviendo un 10 % a la noche." }
+herramienta: { href: "/periodo-luz-ahora/", texto: "Mira qué periodo es ahora mismo y cuánto falta para el valle." }
 fuentes:
   - { nombre: "CNMC: Circular 3/2020 de peajes", url: "https://www.cnmc.es/" }
   - { nombre: "BOE: festivos nacionales", url: "https://www.boe.es/" }

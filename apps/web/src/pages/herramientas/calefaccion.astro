@@ -1,0 +1,192 @@
+---
+import Base from "../../layouts/Base.astro";
+import AyudaHerramienta from "../../components/AyudaHerramienta.astro";
+import { esquemaFaq, esquemaHerramienta, type Pregunta } from "../../lib/faq";
+import comb from "../../../../../data/combustibles.json";
+import { REFERENCIA } from "../../lib/referencias";
+import { SITIO } from "../../config";
+import { num, fechaCorta } from "../../lib/formato";
+
+const tur2 = comb.gas_tur.tramos[1];
+// €/kWh final (con impuestos) de cada energía, para empezar; todo editable.
+const precios = {
+  luz: +(REFERENCIA.precioUnico * REFERENCIA.factor).toFixed(4),
+  luzValle: +(REFERENCIA.valle * REFERENCIA.factor).toFixed(4),
+  gas: +((tur2.variable_kwh + comb.gas_tur.impuesto_hidrocarburos_kwh) * (1 + comb.gas_tur.iva)).toFixed(4),
+  butano: comb.butano.eur_bombona,
+  gasoleo: comb.gasoleo.eur_litro,
+  pellets: comb.pellets.eur_saco,
+};
+const config = { precios, comb: { butanoKwh: comb.butano.kg * comb.butano.kwh_kg, gasoleoKwh: comb.gasoleo.kwh_litro, pelletsKwh: comb.pellets.kg_saco * comb.pellets.kwh_kg } };
+
+const preguntas: Pregunta[] = [
+  { p: "¿Cuál es la calefacción más barata?", r: "Para calentar toda la casa, normalmente la bomba de calor (aire acondicionado con bomba de calor o aerotermia): da 3 o 4 kWh de calor por cada kWh de luz. Le siguen el gas natural y los pellets. Los radiadores eléctricos y el butano suelen ser los más caros por kWh de calor." },
+  { p: "¿Merece la pena cambiar de calefacción?", r: "Depende de cuánto uses la calefacción y de lo que cueste el cambio. Esta calculadora te da el ahorro al año; divide el coste de la nueva instalación entre ese ahorro para saber en cuántos años se paga." },
+  { p: "¿Los radiadores de aceite o los calefactores gastan menos?", r: "No: todos los aparatos eléctricos que dan calor con una resistencia (radiadores de aceite, calefactores, emisores térmicos, acumuladores) convierten 1 kWh de luz en 1 kWh de calor. Lo único que cambia es a qué hora gastas y cómo reparten el calor." },
+  { p: "¿Y si solo caliento una habitación?", r: "Para ratos cortos en una habitación, un aparato eléctrico puede ser razonable aunque cueste más el kWh, porque no calientas toda la casa. Marca «solo algunas habitaciones» para tenerlo en cuenta." },
+];
+const schema = [
+  esquemaHerramienta("¿Qué calefacción me sale más barata?", "Compara el coste al año de calentar tu casa con bomba de calor, aerotermia, radiadores eléctricos, gas natural, butano, gasóleo y pellets.", "/herramientas/calefaccion/", SITIO.url),
+  esquemaFaq(preguntas),
+];
+---
+
+<Base
+  titulo="¿Qué calefacción sale más barata? Calculadora"
+  descripcion="Compara cuánto te cuesta al año calentar tu casa con bomba de calor, aerotermia, radiadores eléctricos, gas natural, butano, gasóleo o pellets, según tus metros, tu zona y el aislamiento."
+  schema={schema}
+  migas={[["Herramientas", "/herramientas/"], ["Calefacción"]]}
+>
+  <section class="hero hero--compacto">
+    <div class="wrap">
+      <p class="breadcrumbs"><a href="/herramientas/">Herramientas</a> / Calefacción</p>
+      <h1>¿Qué calefacción te sale más barata?</h1>
+      <p class="lead">Dinos cómo es tu casa y dónde está. Te decimos cuánto cuesta al año calentarla con cada sistema y cuánto ahorrarías cambiando.</p>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="wrap herr" data-cal={JSON.stringify(config)}>
+      <form class="herr__form card card--roomy" onsubmit="return false">
+        <fieldset>
+          <legend class="herr__paso"><b>1</b> Tu casa</legend>
+          <div class="form-grid form-grid--2">
+            <div class="field">
+              <label for="cal-m2">Metros cuadrados</label>
+              <input id="cal-m2" name="m2" type="number" min="10" max="1000" step="5" value="90" inputmode="numeric" />
+            </div>
+            <div class="field">
+              <label for="cal-zona">Dónde está</label>
+              <select id="cal-zona" name="zona">
+                <option value="12">Canarias o costa muy cálida</option>
+                <option value="35">Costa mediterránea, Andalucía, Murcia, Baleares</option>
+                <option value="70" selected>Interior templado: Madrid, Zaragoza, Extremadura, interior de Cataluña y Valencia</option>
+                <option value="55">Costa norte: Galicia, Asturias, Cantabria, País Vasco</option>
+                <option value="110">Frío: Castilla y León, montaña, Teruel, Cuenca, Soria</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="cal-aisl">Aislamiento</label>
+              <select id="cal-aisl" name="aisl">
+                <option value="0.6">Bueno: casa de después de 2007 o reformada, ventanas dobles</option>
+                <option value="1" selected>Normal</option>
+                <option value="1.35">Malo: casa antigua, ventanas sencillas, se escapa el calor</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="cal-uso">Cuánto la usas</label>
+              <select id="cal-uso" name="uso">
+                <option value="0.6">Poco: solo algunas habitaciones o pocas horas</option>
+                <option value="1" selected>Normal: la casa caliente por la tarde y noche</option>
+                <option value="1.3">Mucho: casi todo el día</option>
+              </select>
+            </div>
+          </div>
+          <p class="small muted" style="margin-top:8px">Calor que necesita tu casa: <strong data-o="demanda">—</strong> al año.</p>
+        </fieldset>
+
+        <fieldset>
+          <legend class="herr__paso"><b>2</b> ¿Qué tienes ahora?</legend>
+          <select name="actual" id="cal-actual" aria-label="Tu calefacción actual">
+            <option value="radiador">Radiadores eléctricos, calefactores o acumuladores</option>
+            <option value="bomba">Aire acondicionado con bomba de calor</option>
+            <option value="aerotermia">Aerotermia (con radiadores o suelo radiante)</option>
+            <option value="gas" selected>Caldera de gas natural</option>
+            <option value="butano">Estufa o caldera de butano</option>
+            <option value="gasoleo">Caldera de gasóleo</option>
+            <option value="pellets">Estufa o caldera de pellets</option>
+          </select>
+        </fieldset>
+
+        <details>
+          <summary>Precios que usamos (puedes cambiarlos)</summary>
+          <div class="form-grid form-grid--2" style="padding-top:12px">
+            <div class="field"><label for="cal-p-luz">Luz (€/kWh con impuestos)</label><input id="cal-p-luz" name="luz" type="number" step="0.001" value={precios.luz} inputmode="decimal" /></div>
+            <div class="field"><label for="cal-p-gas">Gas natural (€/kWh con impuestos)</label><input id="cal-p-gas" name="gas" type="number" step="0.001" value={precios.gas} inputmode="decimal" /></div>
+            <div class="field"><label for="cal-p-butano">Bombona de butano (€)</label><input id="cal-p-butano" name="butano" type="number" step="0.01" value={precios.butano} inputmode="decimal" /></div>
+            <div class="field"><label for="cal-p-gasoleo">Gasóleo (€/litro)</label><input id="cal-p-gasoleo" name="gasoleo" type="number" step="0.01" value={precios.gasoleo} inputmode="decimal" /></div>
+            <div class="field"><label for="cal-p-pellets">Saco de pellets de 15 kg (€)</label><input id="cal-p-pellets" name="pellets" type="number" step="0.01" value={precios.pellets} inputmode="decimal" /></div>
+          </div>
+          <p class="caption" style="margin-top:8px">Luz: mediana de las tarifas de precio único del catálogo. Gas: TUR 2 ({comb.gas_tur.vigencia}). Butano, gasóleo y pellets: orientativos ({comb.revisado.split("-").reverse().join("/")}). El término fijo del gas no se incluye, porque lo pagas igual si además cocinas o calientas agua con gas.</p>
+        </details>
+      </form>
+
+      <div class="herr__res" aria-live="polite">
+        <p class="eyebrow">Lo más barato para tu casa</p>
+        <p class="answer"><strong data-o="mejor">—</strong></p>
+        <p data-o="ahorro"></p>
+        <div class="barra-comp" data-o="barras"></div>
+        <p class="caption">Coste de la energía al año, impuestos incluidos. No incluye la compra ni el mantenimiento de los equipos. Rendimientos medios: bomba de calor 3,5 (SCOP), caldera de gas 0,92, gasóleo 0,85, pellets 0,85, butano 0,95.</p>
+      </div>
+    </div>
+  </section>
+
+  <AyudaHerramienta
+    titulo="Cómo lo calculamos"
+    preguntas={preguntas}
+    guias={[
+      { href: "/guias/calefaccion/", t: "Calefacción eléctrica: qué gasta cada sistema" },
+      { href: "/guias/aerotermia/", t: "Aerotermia: precio, consumo y cuándo compensa" },
+      { href: "/cuanto-gasta/", t: "Cuánto gasta cada aparato" },
+    ]}
+  >
+    <ol>
+      <li><strong>Calor que necesita tu casa</strong>: metros × una demanda media por zona (de unos 12 kWh/m² al año en Canarias a 110 en zonas frías), ajustada por aislamiento y uso.</li>
+      <li><strong>Energía que gasta cada sistema</strong>: ese calor dividido entre su rendimiento. Una bomba de calor da unos 3,5 kWh de calor por cada kWh de luz; una caldera de gas, 0,92.</li>
+      <li><strong>Coste</strong>: esa energía por su precio con impuestos.</li>
+    </ol>
+    <p>Fuentes de los precios: {comb.fuentes.map((f, i) => <>{i > 0 && ", "}<a href={f.url} rel="noopener">{f.nombre}</a></>)}.</p>
+  </AyudaHerramienta>
+</Base>
+
+<script>
+  import { eur, num } from "../../lib/formato";
+
+  const raiz = document.querySelector<HTMLElement>("[data-cal]")!;
+  const cfg = JSON.parse(raiz.dataset.cal!) as { comb: { butanoKwh: number; gasoleoKwh: number; pelletsKwh: number } };
+  const form = raiz.querySelector("form")!;
+  const o = (k: string) => raiz.querySelector<HTMLElement>(`[data-o="${k}"]`)!;
+  const v = (k: string) => parseFloat((form.elements.namedItem(k) as HTMLInputElement).value.replace(",", ".")) || 0;
+  const s = (k: string) => (form.elements.namedItem(k) as HTMLSelectElement).value;
+
+  // [id, nombre, rendimiento, €/kWh de energía final]
+  function sistemas(): [string, string, number, number][] {
+    return [
+      ["bomba", "Bomba de calor (aire-aire)", 3.5, v("luz")],
+      ["aerotermia", "Aerotermia", 3.3, v("luz")],
+      ["gas", "Gas natural", 0.92, v("gas")],
+      ["pellets", "Pellets", 0.85, v("pellets") / cfg.comb.pelletsKwh],
+      ["gasoleo", "Gasóleo", 0.85, v("gasoleo") / cfg.comb.gasoleoKwh],
+      ["butano", "Butano", 0.95, v("butano") / cfg.comb.butanoKwh],
+      ["radiador", "Radiadores eléctricos", 1, v("luz")],
+    ];
+  }
+
+  function calcular() {
+    const demanda = v("m2") * Number(s("zona")) * Number(s("aisl")) * Number(s("uso"));
+    o("demanda").textContent = `${num(demanda)} kWh`;
+    const lista = sistemas()
+      .map(([id, nombre, rend, precio]) => ({ id, nombre, coste: (demanda / rend) * precio }))
+      .sort((a, b) => a.coste - b.coste);
+    const actual = lista.find((x) => x.id === s("actual"))!;
+    const mejor = lista[0];
+    o("mejor").textContent = `${mejor.nombre}: ${eur(mejor.coste)}/año`;
+    o("ahorro").innerHTML =
+      mejor.id === actual.id || (actual.id === "bomba" && mejor.id === "aerotermia") || (actual.id === "aerotermia" && mejor.id === "bomba")
+        ? `Ya tienes una de las opciones más baratas: <strong>${eur(actual.coste)} al año</strong>.`
+        : `Con lo que tienes pagas unos <strong>${eur(actual.coste)} al año</strong>. Con ${mejor.nombre.toLowerCase()} ahorrarías <strong>${eur(actual.coste - mejor.coste)} al año</strong>.`;
+    const max = Math.max(...lista.map((x) => x.coste), 1);
+    o("barras").innerHTML = lista
+      .map((x) => `<div class="barra-comp__f${x.id === actual.id ? " barra-comp__f--tu" : ""}"><span>${x.nombre}${x.id === actual.id ? " (la tuya)" : ""}</span><span class="barra-comp__b"><span style="width:${(x.coste / max) * 100}%"></span></span><span>${eur(x.coste)}</span></div>`)
+      .join("");
+  }
+  form.addEventListener("input", calcular);
+  form.addEventListener("change", calcular);
+  calcular();
+</script>
+
+<style>
+  [data-cal] :global(.barra-comp__f) {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) auto;
+  }
+</style>

@@ -1,0 +1,227 @@
+---
+import Base from "../../layouts/Base.astro";
+import AyudaHerramienta from "../../components/AyudaHerramienta.astro";
+import { esquemaFaq, esquemaHerramienta, type Pregunta } from "../../lib/faq";
+import bono from "../../../../../data/bono-social.json";
+import { SITIO } from "../../config";
+import { num, fechaCorta } from "../../lib/formato";
+
+const pct = (x: number) => `${num(x * 100, 1)} %`;
+const IPREM = bono.iprem_anual_14_pagas;
+const eurosUmbral = (m: number) => `${num(m * IPREM)} €`;
+
+const preguntas: Pregunta[] = [
+  { p: "¿Quién tiene derecho al bono social de la luz?", r: `Quien tenga la PVPC, hasta 10 kW de potencia en su vivienda habitual y cumpla uno de estos: renta de la unidad de convivencia por debajo del umbral (1,5 veces el IPREM para una persona sola, ${eurosUmbral(1.5)} al año, más 0,3 por adulto y 0,5 por menor), familia numerosa, pensionistas de jubilación o incapacidad con pensión mínima, o beneficiarios del Ingreso Mínimo Vital.` },
+  { p: "¿Cuánto descuenta el bono social en 2026?", r: `Un ${pct(bono.descuentos.vulnerable)} para consumidores vulnerables y un ${pct(bono.descuentos.severo)} para vulnerables severos hasta el ${fechaCorta(bono.descuentos.vigente_hasta)}. Después, salvo prórroga, ${pct(bono.descuentos.despues.vulnerable)} y ${pct(bono.descuentos.despues.severo)}. Se aplica a la potencia y a la energía hasta un límite de kWh al año.` },
+  { p: "¿Dónde se pide?", r: "Solo a las comercializadoras de referencia (las que ofrecen la PVPC): Curenergía, Energía XXI, Comercializadora Regulada, Baser COR, Régsiti y, en Ceuta y Melilla, sus comercializadoras de referencia. Por teléfono, correo, web o en sus oficinas." },
+  { p: "¿Tengo que cambiarme de compañía?", r: "Sí, si no tienes ya la PVPC con una comercializadora de referencia. El cambio es gratis y sin corte de luz, y puedes pedir el bono social a la vez." },
+  { p: "¿Hay que renovarlo?", r: "Cada dos años, o antes si cambia tu situación. Las familias numerosas, cuando caduque su título. La comercializadora avisa antes de que caduque." },
+];
+const schema = [
+  esquemaHerramienta("¿Tengo derecho al bono social de la luz?", "Comprueba si cumples los requisitos del bono social eléctrico, qué descuento te corresponde y cómo pedirlo.", "/herramientas/bono-social/", SITIO.url),
+  esquemaFaq(preguntas),
+];
+const config = { iprem: IPREM, u: bono.umbral, d: bono.descuentos, limites: bono.limites_kwh_anuales };
+---
+
+<Base
+  titulo="¿Tengo derecho al bono social de la luz? Compruébalo"
+  descripcion={`Responde unas preguntas y te decimos si puedes pedir el bono social eléctrico, si eres vulnerable o vulnerable severo, qué descuento te corresponde (${pct(bono.descuentos.vulnerable)} o ${pct(bono.descuentos.severo)} en 2026) y cómo solicitarlo.`}
+  schema={schema}
+  migas={[["Herramientas", "/herramientas/"], ["Bono social"]]}
+>
+  <section class="hero hero--compacto">
+    <div class="wrap">
+      <p class="breadcrumbs"><a href="/herramientas/">Herramientas</a> / Bono social</p>
+      <h1>¿Tengo derecho al bono social de la luz?</h1>
+      <p class="lead">Responde unas preguntas sobre tu casa y tus ingresos y te decimos si puedes pedirlo, qué descuento te toca y dónde solicitarlo. No guardamos nada.</p>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="wrap herr" data-bono={JSON.stringify(config)}>
+      <form class="herr__form card card--roomy" onsubmit="return false">
+        <fieldset>
+          <legend class="herr__paso"><b>1</b> ¿Quién vive en casa?</legend>
+          <div class="form-grid form-grid--2">
+            <div class="field">
+              <label for="bs-adultos">Personas adultas</label>
+              <input id="bs-adultos" name="adultos" type="number" min="1" max="12" value="1" inputmode="numeric" />
+              <span class="hint">Mayores de 18 empadronados contigo, tú incluido</span>
+            </div>
+            <div class="field">
+              <label for="bs-menores">Menores de 18</label>
+              <input id="bs-menores" name="menores" type="number" min="0" max="12" value="0" inputmode="numeric" />
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend class="herr__paso"><b>2</b> Ingresos de todos al año</legend>
+          <div class="field">
+            <label for="bs-renta">Ingresos anuales de la casa (€)</label>
+            <input id="bs-renta" name="renta" type="number" min="0" step="100" value="12000" inputmode="numeric" />
+            <span class="hint">Suma lo que ganan todos los que viven contigo en un año, antes de impuestos (base imponible de la renta). Es una estimación: Hacienda lo comprueba.</span>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend class="herr__paso"><b>3</b> ¿Se da alguno de estos casos?</legend>
+          <div class="stack" style="--stack:10px">
+            <label class="check"><input type="checkbox" name="numerosa" /> <span>Tenemos título de <strong>familia numerosa</strong></span></label>
+            <label class="check"><input type="checkbox" name="pensionistas" /> <span>Todos somos <strong>pensionistas</strong> de jubilación o incapacidad con la pensión mínima y sin otros ingresos de más de 500 € al año</span></label>
+            <label class="check"><input type="checkbox" name="imv" /> <span>Alguien cobra el <strong>Ingreso Mínimo Vital</strong></span></label>
+            <label class="check"><input type="checkbox" name="especial" /> <span>Alguien tiene <strong>discapacidad del 33 % o más</strong>, dependencia de grado II o III, es víctima de violencia de género o de terrorismo, depende de aparatos eléctricos para su salud, o es una <strong>familia monoparental</strong> con menores</span></label>
+            <label class="check"><input type="checkbox" name="sociales" /> <span>Los <strong>servicios sociales</strong> de mi ayuntamiento o comunidad pagan al menos la mitad de mi factura</span></label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend class="herr__paso"><b>4</b> Tu contrato de luz</legend>
+          <div class="stack" style="--stack:10px">
+            <label class="check"><input type="checkbox" name="habitual" checked /> <span>Es mi <strong>vivienda habitual</strong> y el contrato está a mi nombre</span></label>
+            <label class="check"><input type="checkbox" name="potencia" checked /> <span>Tengo <strong>10 kW o menos</strong> de potencia (lo normal en una casa)</span></label>
+            <label class="check"><input type="checkbox" name="pvpc" /> <span>Ya tengo la <strong>PVPC</strong> (tarifa regulada)</span></label>
+          </div>
+          <div class="field" style="margin-top:16px">
+            <label for="bs-factura">Lo que pagas de luz al mes (opcional)</label>
+            <input id="bs-factura" name="factura" type="number" min="0" step="1" placeholder="Ej.: 60" inputmode="numeric" />
+            <span class="hint">Para estimar cuánto ahorrarías</span>
+          </div>
+        </fieldset>
+      </form>
+
+      <div class="herr__res" aria-live="polite">
+        <p class="eyebrow">Resultado</p>
+        <p class="answer" data-o="veredicto">—</p>
+        <p data-o="detalle"></p>
+        <div class="herr__filas" data-o="filas"></div>
+        <div data-o="pasos"></div>
+        <p class="caption">Orientativo. La comercializadora de referencia comprueba tus datos con Hacienda y los demás organismos. Descuentos vigentes según {bono.descuentos.norma}; revisado el {fechaCorta(bono.revisado)}.</p>
+      </div>
+    </div>
+  </section>
+
+  <AyudaHerramienta
+    titulo="Cómo funciona el bono social"
+    preguntas={preguntas}
+    guias={[
+      { href: "/guias/bono-social/", t: "Bono social: la guía completa" },
+      { href: "/guias/pvpc-o-mercado-libre/", t: "PVPC o mercado libre" },
+      { href: "/guias/cambiar-de-compania/", t: "Cómo cambiar de compañía" },
+    ]}
+  >
+    <h3>Los umbrales de renta en 2026</h3>
+    <p>Se calculan con el IPREM de 14 pagas ({num(IPREM)} € al año):</p>
+    <div class="table-wrap" tabindex="0" role="region" aria-label="Umbrales de renta">
+      <table>
+        <thead><tr><th scope="col">Casa</th><th scope="col">Vulnerable</th><th scope="col">Severo</th></tr></thead>
+        <tbody>
+          <tr><td>1 adulto</td><td>{eurosUmbral(1.5)}</td><td>{eurosUmbral(0.75)}</td></tr>
+          <tr><td>2 adultos</td><td>{eurosUmbral(1.8)}</td><td>{eurosUmbral(0.9)}</td></tr>
+          <tr><td>2 adultos y 1 menor</td><td>{eurosUmbral(2.3)}</td><td>{eurosUmbral(1.15)}</td></tr>
+          <tr><td>2 adultos y 2 menores</td><td>{eurosUmbral(2.8)}</td><td>{eurosUmbral(1.4)}</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Si hay alguna circunstancia especial (discapacidad, dependencia, violencia de género, terrorismo, electrodependencia o familia monoparental), el umbral sube un IPREM más.</p>
+    <h3>Cuánta luz cubre el descuento</h3>
+    <ul>
+      {bono.limites_kwh_anuales.map((l) => <li>{l.caso}: <strong>{num(l.kwh)} kWh al año</strong></li>)}
+    </ul>
+    <p>Lo que pases de ese límite se paga a precio de PVPC normal. Fuentes: <a href={bono.fuentes[0].url} rel="noopener">{bono.fuentes[0].nombre}</a> y <a href={bono.fuentes[1].url} rel="noopener">{bono.fuentes[1].nombre}</a>.</p>
+  </AyudaHerramienta>
+</Base>
+
+<script>
+  import { eur, num } from "../../lib/formato";
+
+  const raiz = document.querySelector<HTMLElement>("[data-bono]")!;
+  const cfg = JSON.parse(raiz.dataset.bono!) as {
+    iprem: number;
+    u: { base: number; por_adulto_adicional: number; por_menor: number; circunstancias_especiales: number; severo_fraccion: number; severo_pensionistas_iprem: number; severo_familia_numerosa_iprem: number };
+    d: { vulnerable: number; severo: number; exclusion: number; vigente_hasta: string };
+    limites: { kwh: number; caso: string }[];
+  };
+  const form = raiz.querySelector("form")!;
+  const o = (k: string) => raiz.querySelector<HTMLElement>(`[data-o="${k}"]`)!;
+  const n = (k: string) => Math.max(0, parseFloat((form.elements.namedItem(k) as HTMLInputElement).value.replace(",", ".")) || 0);
+  const si = (k: string) => (form.elements.namedItem(k) as HTMLInputElement).checked;
+  const pct = (x: number) => `${num(x * 100, 1)} %`;
+  const REFERENCIA = `<a href="https://www.curenergia.es/" rel="noopener">Curenergía</a>, <a href="https://www.energiaxxi.com/" rel="noopener">Energía XXI</a>, <a href="https://www.comercializadoraregulada.es/" rel="noopener">Comercializadora Regulada</a>, <a href="https://www.basercor.es/" rel="noopener">Baser COR</a> o <a href="https://www.regsiti.com/" rel="noopener">Régsiti</a>`;
+
+  function calcular() {
+    const adultos = Math.max(1, Math.round(n("adultos")));
+    const menores = Math.round(n("menores"));
+    const renta = n("renta");
+    const especial = si("especial");
+    const mult = cfg.u.base + cfg.u.por_adulto_adicional * (adultos - 1) + cfg.u.por_menor * menores + (especial ? cfg.u.circunstancias_especiales : 0);
+    const umbral = mult * cfg.iprem;
+    const umbralSevero = umbral * cfg.u.severo_fraccion;
+
+    const porRenta = renta <= umbral;
+    const vulnerable = porRenta || si("numerosa") || si("pensionistas") || si("imv");
+    const severo =
+      vulnerable &&
+      (renta <= umbralSevero || (si("pensionistas") && renta <= cfg.u.severo_pensionistas_iprem * cfg.iprem) || (si("numerosa") && renta <= cfg.u.severo_familia_numerosa_iprem * cfg.iprem));
+    const exclusion = severo && si("sociales");
+    const requisitos = si("habitual") && si("potencia");
+
+    // Límite de kWh con descuento (anexo I del RD 897/2017).
+    const personas = adultos + menores;
+    const limite =
+      si("numerosa") || personas >= 5 || (personas === 4 && menores >= 3)
+        ? cfg.limites[3]
+        : personas === 4 || (personas === 3 && menores >= 2)
+          ? cfg.limites[2]
+          : personas === 3 || si("pensionistas") || (personas === 2 && menores >= 1)
+            ? cfg.limites[1]
+            : cfg.limites[0];
+    const desc = exclusion ? cfg.d.exclusion : severo ? cfg.d.severo : cfg.d.vulnerable;
+
+    if (!requisitos) {
+      o("veredicto").innerHTML = "<strong>No, con estos datos</strong>";
+      o("detalle").textContent = "El bono social solo se da en la vivienda habitual, con el contrato a nombre de quien lo pide y hasta 10 kW de potencia.";
+      o("filas").innerHTML = "";
+      o("pasos").innerHTML = "";
+      return;
+    }
+    if (!vulnerable) {
+      o("veredicto").innerHTML = "<strong>Probablemente no</strong>";
+      o("detalle").innerHTML = `Para tu casa el límite de ingresos es de <strong>${eur(umbral)} al año</strong> y has indicado ${eur(renta)}. Si se da alguno de los casos del paso 3, márcalo: puede darte derecho igualmente.`;
+      o("filas").innerHTML = "";
+      o("pasos").innerHTML = `<p class="small">Aunque no te toque, puedes pagar menos: <a href="/comparador/">compara tu tarifa</a>.</p>`;
+      return;
+    }
+    const nivel = exclusion ? "en riesgo de exclusión social" : severo ? "vulnerable severo" : "vulnerable";
+    o("veredicto").innerHTML = `<strong>Sí</strong>: ${nivel}`;
+    const motivo = porRenta
+      ? `tus ingresos (${eur(renta)}) están por debajo del límite de ${eur(umbral)} para tu casa${severo && renta <= umbralSevero ? ` y por debajo de ${eur(umbralSevero)}, el límite del nivel severo` : ""}`
+      : si("numerosa")
+        ? "sois familia numerosa"
+        : si("pensionistas")
+          ? "sois pensionistas con pensión mínima"
+          : "cobráis el Ingreso Mínimo Vital";
+    o("detalle").innerHTML = `Te correspondería porque ${motivo}.${exclusion ? " Con la ayuda de servicios sociales, la factura queda cubierta." : ""}`;
+
+    const factura = n("factura");
+    // El descuento se aplica a la potencia y la energía (≈ 75 % de una factura sin impuestos), hasta el límite de kWh.
+    const ahorroAnual = factura ? factura * 12 * 0.75 * desc * Math.min(1, limite.kwh / Math.max(1, (factura / 0.25) * 12)) : 0;
+    o("filas").innerHTML = `
+      <div><span>Descuento</span><span>${pct(desc)}</span></div>
+      <div><span>Hasta</span><span>${num(limite.kwh)} kWh al año</span></div>
+      ${factura ? `<div><span>Ahorro aproximado</span><span>${eur(ahorroAnual)} al año</span></div>` : ""}
+      <div><span>Límite de ingresos de tu casa</span><span>${eur(umbral)}</span></div>`;
+    o("pasos").innerHTML = `<p class="eyebrow" style="margin-top:12px">Cómo pedirlo</p>
+      <ol class="small" style="padding-left:1.2em;display:grid;gap:6px">
+        ${si("pvpc") ? "" : "<li>Pásate a la <strong>PVPC</strong> con una comercializadora de referencia (gratis y sin corte). Puedes pedir el bono a la vez.</li>"}
+        <li>Pídelo a ${REFERENCIA}: por teléfono, web, correo u oficina.</li>
+        <li>Ten a mano el <strong>DNI o NIE</strong> de todos, el <strong>certificado de empadronamiento</strong> y, si aplica, el título de familia numerosa o el certificado de la circunstancia especial.</li>
+        <li>Recibirás respuesta en unos 15 días hábiles. El descuento se aplica desde la siguiente factura.</li>
+      </ol>`;
+  }
+
+  form.addEventListener("input", calcular);
+  form.addEventListener("change", calcular);
+  calcular();
+</script>

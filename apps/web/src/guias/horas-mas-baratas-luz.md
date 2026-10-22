@@ -6,7 +6,7 @@ revisado: "2026-10-22"
 publicado: "2026-10-22"
 orden: 33
 categoria: "Ahorrar luz"
-herramienta: { href: "/precio-luz-hoy/", texto: "Mira las horas más baratas de hoy y añádelas a tu calendario." }
+herramienta: { href: "/periodo-luz-ahora/", texto: "Mira qué periodo es ahora mismo y cuánto falta para el valle." }
 fuentes:
   - { nombre: "Red Eléctrica (REData): PVPC horario", url: "https://www.ree.es/es/apidatos" }
   - { nombre: "CNMC: periodos de la tarifa 2.0TD", url: "https://www.cnmc.es/" }

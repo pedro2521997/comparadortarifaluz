@@ -2,23 +2,11 @@
 import type { APIRoute } from "astro";
 import { SITIO } from "../config";
 import { guias, CATEGORIAS } from "../lib/guias";
-import { tarifas, catalogoActualizado } from "../lib/datos";
+import { catalogoActualizado } from "../lib/datos";
+import { HERRAMIENTAS } from "../lib/herramientas";
 
-const HERRAMIENTAS: [string, string, string][] = [
-  ["Comparador de tarifas de luz", "/comparador/", "Calcula la factura de cada tarifa del mercado con el consumo del usuario (fichero horario, factura o lo que paga al mes) y las ordena solo por precio."],
-  ["Ranking de tarifas", "/tarifas/", `Las ${tarifas.length} tarifas del catálogo (CNMC y comercializadoras) ordenadas por coste anual para un hogar tipo, con todos sus precios.`],
-  ["Precio de la luz hoy", "/precio-luz-hoy/", "PVPC hora a hora de hoy, con las horas más baratas y más caras."],
-  ["Precio de la luz mañana", "/precio-luz-manana/", "PVPC de mañana en cuanto lo publica Red Eléctrica (hacia las 20:30)."],
-  ["Histórico del precio de la luz", "/precio-luz/historico/", "PVPC y mercado mayorista mes a mes desde 2021, y cambios de peajes e impuestos."],
-  ["Entender la factura de la luz", "/entender-factura-luz/", "Lee el PDF de la factura en el navegador del usuario, explica cada concepto, comprueba si el total cuadra y calcula la misma factura con las tarifas más baratas."],
-  ["Simulador de factura de luz", "/calcular-factura-luz/", "Calcula una factura completa (potencia, energía, bono social, impuesto eléctrico, contador e IVA) con los kWh de la factura o con el fichero de consumos."],
-  ["Analizador de consumo", "/analizador-consumo/", "Gráficas del consumo horario, consumo fantasma y picos a partir del fichero de la distribuidora."],
-  ["Cuánto gasta cada aparato", "/cuanto-gasta/", "Coste al mes de cada electrodoméstico con el precio de hoy."],
-  ["Calculadora de placas solares", "/placas-solares/", "Producción con PVGIS, autoconsumo, excedentes, batería opcional y amortización en dos escenarios."],
-  ["Calculadora de potencia", "/herramientas/potencia/", "Potencia recomendada (P1 y P2) según los aparatos que se usan a la vez."],
-  ["Coste de cargar el coche eléctrico", "/herramientas/coche-electrico/", "Coste al mes y al año de cargar en casa y fuera, frente a gasolina o diésel."],
-  ["Distribuidora por CUPS", "/herramientas/distribuidora/", "Identifica la distribuidora eléctrica a partir del CUPS y comprueba sus letras de control."],
-];
+// Las herramientas salen de la lista común (lib/herramientas.ts).
+const LISTA = HERRAMIENTAS.map((h): [string, string, string] => [h.t, h.href, h.d]);
 
 export const GET: APIRoute = () => {
   const u = (r: string) => `${SITIO.url}${r}`;
@@ -33,7 +21,7 @@ export const GET: APIRoute = () => {
     "",
     "## Herramientas",
     "",
-    ...HERRAMIENTAS.map(([t, r, d]) => `- [${t}](${u(r)}): ${d}`),
+    ...LISTA.map(([t, r, d]) => `- [${t}](${u(r)}): ${d}`),
     "",
     ...CATEGORIAS.flatMap((c) => {
       const lista = guias.filter((g) => (g.categoria ?? "Tu factura") === c);

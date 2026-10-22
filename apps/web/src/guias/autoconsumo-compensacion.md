@@ -5,7 +5,7 @@ respuesta: "Con la compensación simplificada, la energía de tus placas que no 
 categoria: "Placas solares y baterías"
 revisado: "2026-10-21"
 orden: 9
-herramienta: { href: "/placas-solares/", texto: "Calcula con tu consumo real qué parte de tu producción aprovecharías y cuánto valdrían tus excedentes." }
+herramienta: { href: "/herramientas/excedentes/", texto: "Comprueba con tu factura si te compensan bien los excedentes." }
 fuentes:
   - { nombre: "Real Decreto 244/2019 de autoconsumo (BOE)", url: "https://www.boe.es/buscar/act.php?id=BOE-A-2019-5089" }
   - { nombre: "IDAE: guía de autoconsumo", url: "https://www.idae.es/" }

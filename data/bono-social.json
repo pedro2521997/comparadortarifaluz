@@ -1,0 +1,34 @@
+{
+  "_nota": "Requisitos y descuentos del bono social eléctrico. Revisar cada año (IPREM en los Presupuestos) y cada vez que cambien los descuentos temporales.",
+  "revisado": "2026-10-22",
+  "verificar": true,
+  "iprem_anual_14_pagas": 8400,
+  "umbral": {
+    "base": 1.5,
+    "por_adulto_adicional": 0.3,
+    "por_menor": 0.5,
+    "circunstancias_especiales": 1,
+    "severo_fraccion": 0.5,
+    "severo_pensionistas_iprem": 1,
+    "severo_familia_numerosa_iprem": 2
+  },
+  "descuentos": {
+    "vulnerable": 0.425,
+    "severo": 0.575,
+    "exclusion": 1,
+    "vigente_hasta": "2026-12-31",
+    "norma": "Real Decreto-ley 7/2026, de 20 de marzo (tras la derogación de los RDL 16/2025 y 2/2026)",
+    "despues": { "vulnerable": 0.35, "severo": 0.5 }
+  },
+  "limites_kwh_anuales": [
+    { "kwh": 1587, "caso": "Una persona, o dos personas" },
+    { "kwh": 2222, "caso": "Tres personas, pensionistas con pensión mínima, o dos personas con un menor" },
+    { "kwh": 2698, "caso": "Cuatro personas, o tres personas con dos menores" },
+    { "kwh": 4761, "caso": "Cinco o más personas, cuatro con tres menores, o familia numerosa" }
+  ],
+  "fuentes": [
+    { "nombre": "Real Decreto 897/2017 (texto consolidado, BOE)", "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2017-11505" },
+    { "nombre": "Portal oficial del bono social", "url": "https://www.bonosocial.gob.es/" },
+    { "nombre": "Descuentos de 2026 y su cronología", "url": "https://ayuda-social.es/descuentos-bono-social-electrico/" }
+  ]
+}
