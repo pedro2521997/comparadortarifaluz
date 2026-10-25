@@ -4,6 +4,8 @@ import { SITIO } from "../config";
 import { dias, aparatos, catalogoActualizado } from "../lib/datos";
 import { guias } from "../lib/guias";
 import { HERRAMIENTAS } from "../lib/herramientas";
+import { marcas, urlTarifa, urlMarca } from "../lib/catalogo";
+import { tarifas } from "../lib/datos";
 import { hoyMadrid } from "../lib/formato";
 
 export const GET: APIRoute = () => {
@@ -21,6 +23,8 @@ export const GET: APIRoute = () => {
     ...dias.map((d): [string, string] => [`/precio-luz/${d.fecha}/`, d.fecha]),
     ...aparatos.map((a): [string, string] => [`/cuanto-gasta/${a.slug}/`, ultimoDia]),
     ...guias.map((g): [string, string] => [`/guias/${g.slug}/`, g.revisado]),
+    ...marcas().map((m): [string, string] => [urlMarca(m.marca), catalogo]),
+    ...tarifas.filter((t) => t.tipo !== "pvpc").map((t): [string, string] => [urlTarifa(t), t.fecha_comprobacion ?? catalogo]),
   ];
   const url = ([r, f]: [string, string?]) => `<url><loc>${SITIO.url}${r}</loc>${f ? `<lastmod>${f}</lastmod>` : ""}</url>`;
   const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${rutas.map(url).join("\n")}\n</urlset>`;

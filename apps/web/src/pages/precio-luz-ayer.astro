@@ -1,5 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
+import Anuncio from "../components/Anuncio.astro";
+import MasSobrePrecio from "../components/MasSobrePrecio.astro";
 import PrecioDia from "../components/PrecioDia.astro";
 import { hoyMadrid, fechaLarga, sumarDias } from "../lib/formato";
 
@@ -23,4 +25,6 @@ const ayer = sumarDias(hoyMadrid(), -1);
       <PrecioDia fecha={ayer} modo="ayer" />
     </div>
   </section>
+  <Anuncio tipo="horizontal" seccion />
+  <MasSobrePrecio fecha={ayer} />
 </Base>

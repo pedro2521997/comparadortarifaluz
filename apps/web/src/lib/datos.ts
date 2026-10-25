@@ -66,7 +66,7 @@ export function soloNumeros(d: DiaPrecios): number[] {
   return d.precios.filter((p): p is number => p !== null);
 }
 
-const FEMENINOS = new Set(["bomba-de-calor", "estufa-infrarrojos", "lavadora", "secadora", "placa-induccion", "vitroceramica", "freidora-de-aire", "nevera", "consola", "plancha"]);
+const FEMENINOS = new Set(["bomba-de-calor", "estufa-infrarrojos", "lavadora", "secadora", "placa-induccion", "vitroceramica", "freidora-de-aire", "nevera", "consola", "plancha", "bombilla-led", "bombilla-halogena", "cafetera", "tostadora", "plancha-pelo", "aspiradora", "campana-extractora", "depuradora-piscina", "manta-electrica", "olla-lenta", "bicicleta-electrica"]);
 /** "un" o "una" según el aparato. */
 export const articulo = (a: Aparato) => (FEMENINOS.has(a.slug) ? "una" : "un");
 

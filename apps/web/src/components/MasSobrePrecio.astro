@@ -1,0 +1,71 @@
+---
+// Bajo el precio de un día: los días de alrededor con su precio medio y lecturas relacionadas.
+// Da contexto a quien llega desde Google y separa los anuncios con contenido útil.
+import { dias } from "../lib/datos";
+import { resumen } from "../lib/grafico";
+import { ekwh, fechaCorta, sumarDias } from "../lib/formato";
+
+interface Props {
+  fecha: string;
+}
+const { fecha } = Astro.props;
+const porFecha = new Map(dias.map((d) => [d.fecha, d]));
+const alrededor = Array.from({ length: 7 }, (_, i) => sumarDias(fecha, i - 3))
+  .filter((f) => f !== fecha && porFecha.has(f))
+  .map((f) => ({ f, media: resumen(porFecha.get(f)!.precios).media }));
+const LEER = [
+  { href: "/guias/horas-mas-baratas-luz/", t: "¿A qué hora es más barata la luz?" },
+  { href: "/guias/por-que-sube-la-luz/", t: "Por qué sube y baja el precio de la luz" },
+  { href: "/precio-luz/historico/", t: "Histórico del precio, mes a mes" },
+  { href: "/periodo-luz-ahora/", t: "¿Qué periodo es ahora?" },
+];
+---
+
+<section class="section section--white section--tight">
+  <div class="wrap grid grid--2" style="gap:40px">
+    {
+      alrededor.length > 0 && (
+        <div>
+          <h2 class="msp-h">Otros días</h2>
+          <ul class="msp-dias">
+            {alrededor.map((d) => (
+              <li>
+                <a href={`/precio-luz/${d.f}/`}>{fechaCorta(d.f)}</a>
+                <span class="caption">media {ekwh(d.media)}</span>
+              </li>
+            ))}
+          </ul>
+          <p style="margin-top:12px"><a href="/precio-luz/">Todos los días →</a></p>
+        </div>
+      )
+    }
+    <div>
+      <h2 class="msp-h">Para entender el precio</h2>
+      <ul class="msp-leer">
+        {LEER.map((l) => <li><a href={l.href}>{l.t}</a></li>)}
+      </ul>
+      <p class="small muted" style="margin-top:12px">¿Te compensa la PVPC o una tarifa fija? <a href="/comparador/">Compáralo con tu consumo</a>.</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .msp-h {
+    font-size: 22px;
+    margin-bottom: 12px;
+  }
+  .msp-dias,
+  .msp-leer {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+  }
+  .msp-dias li {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    border-bottom: 1px solid var(--color-pale-sage);
+    padding-bottom: 6px;
+  }
+</style>

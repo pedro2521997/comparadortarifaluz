@@ -1,0 +1,227 @@
+---
+// Ficha de cada tarifa del catálogo: precios, lo que pagarías en tres situaciones, su puesto en el
+// ranking, condiciones y alternativas más baratas.
+import Base from "../../layouts/Base.astro";
+import Anuncio from "../../components/Anuncio.astro";
+import { esquemaFaq, type Pregunta } from "../../lib/faq";
+import { tarifas } from "../../lib/datos";
+import { ESCENARIOS, filaDe, filasEscenario, referencia, filaPvpc, slugTarifa, urlTarifa, urlMarca, tipoTexto } from "../../lib/catalogo";
+import { logoHtml, marca, nombrePlan, detalleHtml } from "../../lib/ranking";
+import { eur, eur2, num, fechaCorta } from "../../lib/formato";
+import { SITIO } from "../../config";
+import type { Tarifa } from "@lst/tarifa";
+
+export function getStaticPaths() {
+  return tarifas.filter((t) => t.tipo !== "pvpc").map((t) => ({ params: { slug: slugTarifa(t) }, props: { t } }));
+}
+const { t } = Astro.props as { t: Tarifa };
+
+const m = marca(t.comercializadora);
+const plan = nombrePlan(t.nombre);
+const medio = ESCENARIOS[1];
+const f = filaDe(t, medio);
+const total = filasEscenario(medio).length;
+const ref = referencia(medio);
+const pvpc = filaPvpc(medio);
+const difRef = f.anual - ref.anual;
+const difPvpc = pvpc ? f.anual - pvpc.anual : null;
+const hermanas = tarifas.filter((x) => x.id !== t.id && marca(x.comercializadora) === m).map((x) => filaDe(x, medio)).sort((a, b) => a.anual - b.anual);
+const masBaratas = filasEscenario(medio)
+  .filter((x) => x.anual < f.anual - 5 && !x.incompleta && !(x.porRevisar && x.tarifa.tipo !== "pvpc") && marca(x.tarifa.comercializadora) !== m)
+  .slice(0, 3);
+const e = t.energia;
+const pot = t.potencia;
+const precioTexto =
+  t.tipo === "indexada"
+    ? `la energía sigue al mercado hora a hora (con un hogar medio ha salido a ${num(f.factura.energia / f.factura.kwh, 4)} €/kWh de media)`
+    : e && t.tipo === "fijo"
+      ? `${num(e.p1, 4)} €/kWh a cualquier hora`
+      : e
+        ? `${num(e.p1, 4)} €/kWh en punta, ${num(e.p2, 4)} en llano y ${num(e.p3, 4)} en valle`
+        : "";
+const valoracion =
+  Math.abs(difRef) < 15 ? "Es de las más baratas del mercado" : difRef < 60 ? "Está cerca de las más baratas" : difRef < 150 ? "Está en la zona media del mercado" : "Es de las más caras del mercado";
+
+const preguntas: Pregunta[] = [
+  { p: `¿Cuánto cuesta la tarifa ${plan} de ${m}?`, r: `Para un hogar medio (${num(medio.anual)} kWh al año y ${num(medio.p1, 1)} kW), unos ${eur(f.anual)} al año, ${eur2(f.mensual)} al mes de media, impuestos incluidos. Precio de la energía: ${precioTexto}.${pot ? ` Potencia: ${num(pot.p1, 6)} €/kW·día en punta y ${num(pot.p2, 6)} en valle.` : ""}` },
+  { p: `¿Es buena la tarifa ${plan}?`, r: `${valoracion}: puesto ${f.pos} de ${total} para un hogar medio${difRef >= 1 ? `, ${eur(difRef)} al año más que la más barata` : ""}${difPvpc !== null ? ` y ${eur(Math.abs(difPvpc))} al año ${difPvpc > 0 ? "más cara" : "más barata"} que la PVPC` : ""}. Con tu consumo real puede cambiar: compruébalo en el comparador.` },
+  { p: `¿${plan} tiene permanencia?`, r: t.permanencia_meses ? `Sí. ${t.info?.penalizacion ? t.info.penalizacion.split("\n")[0].slice(0, 220) : "Si te vas antes, pueden cobrarte una penalización."}` : "No, según las condiciones publicadas no tiene permanencia." },
+  { p: `¿Para quién compensa ${plan}?`, r: t.tipo === "periodos" ? "Al ser de tres periodos, compensa si concentras buena parte del consumo de 0 a 8 h y los fines de semana (termo programado, lavadora de noche, coche eléctrico)." : t.tipo === "indexada" ? "Al seguir al mercado, compensa si puedes mover consumo a las horas baratas y aceptas que la factura varíe de un mes a otro." : "Al tener el mismo precio a todas horas, compensa si no puedes o no quieres pendiente de la hora: la factura depende solo de cuánto gastas." },
+];
+const schema = [
+  esquemaFaq(preguntas),
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: `${plan} (${m})`,
+    brand: { "@type": "Brand", name: m },
+    category: "Tarifa de electricidad",
+    description: `Tarifa de luz ${tipoTexto(t)} de ${m}.`,
+  },
+];
+const titulo = `${plan}: precio y opinión con datos (${m})`;
+---
+
+<Base
+  titulo={titulo.length <= 70 ? titulo : `${plan} de ${m}: precio`.slice(0, 70)}
+  descripcion={`Tarifa ${plan} de ${m}: ${precioTexto.slice(0, 70)}. Unos ${eur(f.anual)} al año para un hogar medio, puesto ${f.pos} de ${total}.`.slice(0, 158)}
+  schema={schema}
+  migas={[["Comercializadoras", "/comercializadoras/"], [m, urlMarca(m)], [plan]]}
+>
+  <section class="hero hero--compacto">
+    <div class="wrap">
+      <p class="breadcrumbs"><a href="/tarifas/">Tarifas</a> / <a href={urlMarca(m)}>{m}</a> / {plan}</p>
+      <div class="tf-cab">
+        <Fragment set:html={logoHtml(t)} />
+        <h1>{plan} <span class="tf-de">de {m}</span></h1>
+      </div>
+      <p class="lead">
+        Tarifa {tipoTexto(t)}. Para un hogar medio pagarías unos <strong>{eur(f.anual)} al año</strong> ({eur2(f.mensual)} al mes), impuestos incluidos: puesto <strong>{f.pos} de {total}</strong> en el ranking.
+      </p>
+      {f.porRevisar && <p class="notice notice--warn" style="margin-top:12px">Precio pendiente de comprobar: puede haber cambiado. Confírmalo en la web de la compañía.</p>}
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="wrap stack" style="--stack:32px">
+      <div class="card tf-resp">
+        <span class="eyebrow">En pocas palabras</span>
+        <p>{valoracion}{difRef >= 1 ? `: ${eur(difRef)} al año más que la más barata` : ""}{difPvpc !== null ? ` y ${eur(Math.abs(difPvpc))} al año ${difPvpc > 0 ? "más cara" : "más barata"} que la PVPC` : ""}. Energía: {precioTexto}. {t.permanencia_meses ? "Tiene permanencia." : "Sin permanencia."}</p>
+      </div>
+
+      <div>
+        <h2 class="tf-h">Lo que pagarías según tu consumo</h2>
+        <div class="grid grid--3">
+          {
+            ESCENARIOS.map((esc) => {
+              const x = filaDe(t, esc);
+              return (
+                <div class="stat">
+                  <span class="stat__label">{esc.nombre}</span>
+                  <span class="stat__value">{eur(x.anual)}<small>/año</small></span>
+                  <span class="stat__sub">{eur2(x.mensual)}/mes · {num(esc.anual)} kWh · {num(esc.p1, 2)} kW · puesto {x.pos}</span>
+                </div>
+              );
+            })
+          }
+        </div>
+        <p class="caption" style="margin-top:8px">Con el precio de cada hora de los últimos 12 meses, impuestos incluidos y sin promociones del primer año.</p>
+      </div>
+
+      <div>
+        <h2 class="tf-h">Precios, desglose y condiciones</h2>
+        <div class="tf-det" set:html={detalleHtml(f, null)} />
+      </div>
+
+      <Anuncio tipo="horizontal" />
+
+      {
+        masBaratas.length > 0 && (
+          <div>
+            <h2 class="tf-h">Alternativas más baratas</h2>
+            <div class="grid grid--3">
+              {masBaratas.map((x) => (
+                <a class="card card--link" href={urlTarifa(x.tarifa)}>
+                  <span class="tf-alt"><Fragment set:html={logoHtml(x.tarifa)} /><span><strong>{marca(x.tarifa.comercializadora)}</strong><br /><span class="small">{nombrePlan(x.tarifa.nombre)}</span></span></span>
+                  <span class="caption">{eur(x.anual)}/año · {eur(f.anual - x.anual)} menos</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        )
+      }
+
+      <section aria-labelledby="faq-tf">
+        <h2 id="faq-tf" class="tf-h">Preguntas frecuentes</h2>
+        {
+          preguntas.map((p) => (
+            <details class="faq">
+              <summary>{p.p}</summary>
+              <p>{p.r}</p>
+            </details>
+          ))
+        }
+      </section>
+
+      {
+        hermanas.length > 0 && (
+          <div>
+            <h2 class="tf-h">Otras tarifas de {m}</h2>
+            <ul class="tf-lista">
+              {hermanas.map((x) => (
+                <li><a href={urlTarifa(x.tarifa)}>{nombrePlan(x.tarifa.nombre)}</a> <span class="caption">· {eur(x.anual)}/año</span></li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+
+      <div class="card tf-cta">
+        <strong>¿Te conviene con tu consumo real?</strong>
+        <p class="muted small">Sube tu fichero de consumos o escribe los datos de tu factura y la comparamos con todas las demás.</p>
+        <p class="btn-row"><a class="btn btn--mint" href="/comparador/">Comparar con mi consumo</a><a class="btn btn--ghost" href="/entender-factura-luz/">Subir mi factura</a></p>
+      </div>
+      <p class="caption">Fuente: {t.origen === "cnmc" ? "comparador oficial de la CNMC" : "web de la comercializadora"}{t.fecha_comprobacion ? `, comprobado el ${fechaCorta(t.fecha_comprobacion)}` : ""}. {SITIO.nombre} no vende electricidad: los precios definitivos son los del contrato.</p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .tf-cab {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .tf-cab :global(.rk-logo) {
+    width: 56px;
+    height: 56px;
+    flex: none;
+  }
+  .tf-de {
+    font-weight: 300;
+    color: var(--color-slate);
+  }
+  .tf-h {
+    font-size: 24px;
+    margin-bottom: 12px;
+  }
+  .tf-resp {
+    background: var(--color-cream-paper);
+  }
+  .tf-det {
+    background: var(--color-cream-paper);
+    border-radius: var(--radius-cards);
+    padding: 20px;
+  }
+  .tf-alt {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .tf-alt :global(.rk-logo) {
+    width: 36px;
+    height: 36px;
+    font-size: 12px;
+    padding: 4px;
+  }
+  .tf-lista {
+    padding-left: 1.2em;
+    display: grid;
+    gap: 6px;
+  }
+  .tf-cta {
+    display: grid;
+    gap: 8px;
+  }
+  .faq {
+    border-bottom: 1px solid var(--color-pale-sage);
+    padding: 6px 0;
+  }
+  .faq summary {
+    color: var(--color-bark);
+    cursor: pointer;
+  }
+  .faq p {
+    padding: 4px 0 12px 20px;
+  }
+</style>

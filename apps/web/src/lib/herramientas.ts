@@ -22,6 +22,7 @@ export const GRUPOS_HERRAMIENTAS: GrupoHerramientas[] = [
     items: [
       { href: "/comparador/", t: "Comparador de tarifas", d: "Todas las tarifas calculadas con tu consumo, tu factura o lo que pagas al mes, ordenadas solo por precio.", cta: "Comparar mi tarifa" },
       { href: "/tarifas/", t: "Ranking de tarifas", d: "Todas las tarifas ordenadas por lo que pagaría un hogar tipo. Cambia el consumo y se recalcula.", cta: "Ver el ranking" },
+      { href: "/comercializadoras/", t: "Compañías de luz", d: "Cada comercializadora con todas sus tarifas, lo que pagarías y su puesto en el ranking.", cta: "Ver las compañías", nueva: true },
       { href: "/herramientas/bono-social/", t: "¿Tengo derecho al bono social?", d: "Unas preguntas y te decimos si puedes pedirlo, qué descuento te toca y dónde solicitarlo.", cta: "Comprobarlo", nueva: true },
     ],
   },

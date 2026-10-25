@@ -559,6 +559,478 @@
     "nombre": "Fichas técnicas de fabricantes (rango habitual del mercado)",
     "url": "https://eprel.ec.europa.eu/"
    }
+  },
+  {
+   "slug": "cargador-movil",
+   "nombre": "Cargador de móvil",
+   "grupo": "Ocio y oficina",
+   "tipo": "ciclo",
+   "kwh_ciclo": 0.022,
+   "rango": [
+    0.012,
+    0.04
+   ],
+   "ciclos_semana": 7,
+   "ventana_h": 2,
+   "desplazable": true,
+   "nota": "Una carga completa de un móvil de 5.000 mAh (unos 19 Wh) más las pérdidas del cargador; con carga rápida la energía es casi la misma, solo que entra antes.",
+   "truco": "Cargar el móvil cuesta menos de 2 € al año. El cargador enchufado sin móvil gasta menos de 0,1 W: no compensa obsesionarse, pero sí apagar las regletas de la tele y el ordenador.",
+   "fuente": {
+    "nombre": "Cálculo con valores típicos de fabricante",
+    "url": "/guias/cargador-movil-carga-rapida/"
+   }
+  },
+  {
+   "slug": "portatil",
+   "nombre": "Ordenador portátil",
+   "grupo": "Ocio y oficina",
+   "tipo": "potencia",
+   "potencia_w": 45,
+   "rango": [
+    20,
+    90
+   ],
+   "horas_dia": 6,
+   "dias_mes": 22,
+   "ventana_h": 1,
+   "desplazable": false,
+   "nota": "Consumo medio de un portátil trabajando (navegador, ofimática y videollamadas); el cargador pone en la etiqueta el máximo, no lo que gasta siempre.",
+   "truco": "Un portátil gasta 3–5 veces menos que un ordenador de sobremesa con monitor: para teletrabajar es la opción más barata.",
+   "fuente": {
+    "nombre": "IDAE, Guía práctica de la energía",
+    "url": "https://www.idae.es/publicaciones/guia-practica-de-la-energia-consumo-eficiente-y-responsable"
+   }
+  },
+  {
+   "slug": "ordenador-gaming",
+   "nombre": "Ordenador gaming",
+   "grupo": "Ocio y oficina",
+   "tipo": "potencia",
+   "potencia_w": 400,
+   "rango": [
+    250,
+    700
+   ],
+   "horas_dia": 3,
+   "dias_mes": 30,
+   "ventana_h": 3,
+   "desplazable": false,
+   "nota": "Torre con tarjeta gráfica de gama media-alta jugando, más el monitor. En reposo o navegando baja a 80–150 W.",
+   "truco": "Activa el límite de FPS o la sincronización vertical: la gráfica deja de trabajar al máximo para fotogramas que tu monitor no muestra y el consumo baja mucho.",
+   "fuente": {
+    "nombre": "IDAE, Guía práctica de la energía",
+    "url": "https://www.idae.es/publicaciones/guia-practica-de-la-energia-consumo-eficiente-y-responsable"
+   }
+  },
+  {
+   "slug": "monitor",
+   "nombre": "Monitor de ordenador",
+   "grupo": "Ocio y oficina",
+   "tipo": "potencia",
+   "potencia_w": 25,
+   "rango": [
+    15,
+    60
+   ],
+   "horas_dia": 8,
+   "dias_mes": 22,
+   "ventana_h": 1,
+   "desplazable": false,
+   "nota": "Monitor de 24–27 pulgadas con brillo medio; los de alta frecuencia o 4K grandes pasan de 50 W.",
+   "truco": "Bajar el brillo al 50–60 % reduce el consumo del monitor casi a la mitad y cansa menos la vista.",
+   "fuente": {
+    "nombre": "IDAE, Guía práctica de la energía",
+    "url": "https://www.idae.es/publicaciones/guia-practica-de-la-energia-consumo-eficiente-y-responsable"
+   }
+  },
+  {
+   "slug": "bombilla-led",
+   "nombre": "Bombilla LED",
+   "grupo": "Iluminación",
+   "tipo": "potencia",
+   "potencia_w": 9,
+   "rango": [
+    4,
+    15
+   ],
+   "horas_dia": 5,
+   "dias_mes": 30,
+   "ventana_h": 1,
+   "desplazable": false,
+   "nota": "LED de 9 W, que da la misma luz que una incandescente de 60 W (unos 806 lúmenes).",
+   "truco": "Cambiar una halógena de 50 W por un LED de 7 W que alumbre lo mismo ahorra unos 80 % en esa bombilla: en las lámparas que más horas usas se paga en meses.",
+   "fuente": {
+    "nombre": "Cálculo con valores típicos de fabricante",
+    "url": "/guias/bombillas-led/"
+   }
+  },
+  {
+   "slug": "bombilla-halogena",
+   "nombre": "Bombilla halógena",
+   "grupo": "Iluminación",
+   "tipo": "potencia",
+   "potencia_w": 53,
+   "rango": [
+    28,
+    70
+   ],
+   "horas_dia": 5,
+   "dias_mes": 30,
+   "ventana_h": 1,
+   "desplazable": false,
+   "nota": "Halógena de 53 W, la sustituta de la incandescente de 70 W. Ya no se venden, pero quedan muchas en casa.",
+   "truco": "Una LED de 9–10 W da la misma luz con un 80 % menos de consumo: es el cambio más rentable de la casa.",
+   "fuente": {
+    "nombre": "Cálculo con valores típicos de fabricante",
+    "url": "/guias/bombillas-led/"
+   }
+  },
+  {
+   "slug": "cafetera",
+   "nombre": "Cafetera de cápsulas",
+   "grupo": "Cocina",
+   "tipo": "ciclo",
+   "kwh_ciclo": 0.04,
+   "rango": [
+    0.02,
+    0.08
+   ],
+   "ciclos_semana": 14,
+   "ventana_h": 1,
+   "desplazable": false,
+   "nota": "Un café espresso incluido el calentamiento. Si se queda encendida en espera, el gasto sube bastante.",
+   "truco": "Activa el apagado automático a los pocos minutos: mantener el agua caliente todo el rato gasta más que los propios cafés.",
+   "fuente": {
+    "nombre": "IDAE, Guía práctica de la energía",
+    "url": "https://www.idae.es/publicaciones/guia-practica-de-la-energia-consumo-eficiente-y-responsable"
+   }
+  },
+  {
+   "slug": "tostadora",
+   "nombre": "Tostadora",
+   "grupo": "Cocina",
+   "tipo": "potencia",
+   "potencia_w": 900,
+   "rango": [
+    700,
+    1200
+   ],
+   "horas_dia": 0.1,
+   "dias_mes": 25,
+   "ventana_h": 1,
+   "desplazable": false,
+   "nota": "Unos 6 minutos al día a potencia completa.",
+   "truco": "Gasta muy poco: menos de 1 € al mes. No compensa usar el horno para tostar pan.",
+   "fuente": {
+    "nombre": "IDAE, Guía práctica de la energía",
+    "url": "https://www.idae.es/publicaciones/guia-practica-de-la-energia-consumo-eficiente-y-responsable"
+   }
+  },
+  {
+   "slug": "secador-pelo",
+   "nombre": "Secador de pelo",
+   "grupo": "Cuidado personal",
+   "tipo": "potencia",
+   "potencia_w": 1800,
+   "rango": [
+    1200,
+    2400
+   ],
+   "horas_dia": 0.15,
+   "dias_mes": 30,
+   "ventana_h": 1,
+   "desplazable": false,
+   "nota": "Unos 9 minutos al día a la potencia máxima; con la temperatura media gasta bastante menos.",
+   "truco": "Quita el exceso de agua con la toalla antes de secar y usa la temperatura media: tarda casi lo mismo y gasta menos.",
+   "fuente": {
+    "nombre": "IDAE, Guía práctica de la energía",
+    "url": "https://www.idae.es/publicaciones/guia-practica-de-la-energia-consumo-eficiente-y-responsable"
+   }
+  },
+  {
+   "slug": "plancha-pelo",
+   "nombre": "Plancha de pelo",
+   "grupo": "Cuidado personal",
+   "tipo": "potencia",
+   "potencia_w": 50,
+   "rango": [
+    30,
+    80
+   ],
+   "horas_dia": 0.3,
+   "dias_mes": 30,
+   "ventana_h": 1,
+   "desplazable": false,
+   "nota": "Plancha alisadora mientras se usa; casi todo el gasto es calentarse.",
+   "truco": "Gasta muy poco (céntimos al mes), pero apágala al terminar: muchas se quedan encendidas sin que nadie la use.",
+   "fuente": {
+    "nombre": "IDAE, Guía práctica de la energía",
+    "url": "https://www.idae.es/publicaciones/guia-practica-de-la-energia-consumo-eficiente-y-responsable"
+   }
+  },
+  {
+   "slug": "aspiradora",
+   "nombre": "Aspiradora",
+   "grupo": "Lavado",
+   "tipo": "potencia",
+   "potencia_w": 800,
+   "rango": [
+    500,
+    1500
+   ],
+   "horas_dia": 0.5,
+   "dias_mes": 8,
+   "ventana_h": 1,
+   "desplazable": true,
+   "nota": "Aspiradora de trineo a potencia media, media hora dos veces por semana.",
+   "truco": "Vacía el depósito y limpia el filtro a menudo: con el filtro sucio pierde fuerza y tardas más en aspirar.",
+   "fuente": {
+    "nombre": "IDAE, Guía práctica de la energía",
+    "url": "https://www.idae.es/publicaciones/guia-practica-de-la-energia-consumo-eficiente-y-responsable"
+   }
+  },
+  {
+   "slug": "robot-aspirador",
+   "nombre": "Robot aspirador",
+   "grupo": "Lavado",
+   "tipo": "ciclo",
+   "kwh_ciclo": 0.04,
+   "rango": [
+    0.02,
+    0.07
+   ],
+   "ciclos_semana": 5,
+   "ventana_h": 2,
+   "desplazable": true,
+   "nota": "Una carga de la batería del robot (unos 30–60 Wh) más el consumo de la base.",
+   "truco": "Prográmalo en las horas baratas: no te molesta y además gasta muy poco.",
+   "fuente": {
+    "nombre": "IDAE, Guía práctica de la energía",
+    "url": "https://www.idae.es/publicaciones/guia-practica-de-la-energia-consumo-eficiente-y-responsable"
+   }
+  },
+  {
+   "slug": "campana-extractora",
+   "nombre": "Campana extractora",
+   "grupo": "Cocina",
+   "tipo": "potencia",
+   "potencia_w": 150,
+   "rango": [
+    80,
+    300
+   ],
+   "horas_dia": 1,
+   "dias_mes": 30,
+   "ventana_h": 1,
+   "desplazable": false,
+   "nota": "Motor a velocidad media y luces, una hora al día.",
+   "truco": "Usa la velocidad mínima mientras cocinas y la alta solo al freír; y cambia las luces halógenas de la campana por LED.",
+   "fuente": {
+    "nombre": "IDAE, Guía práctica de la energía",
+    "url": "https://www.idae.es/publicaciones/guia-practica-de-la-energia-consumo-eficiente-y-responsable"
+   }
+  },
+  {
+   "slug": "depuradora-piscina",
+   "nombre": "Depuradora de piscina",
+   "grupo": "Exterior",
+   "tipo": "potencia",
+   "potencia_w": 750,
+   "rango": [
+    370,
+    1500
+   ],
+   "horas_dia": 6,
+   "dias_mes": 30,
+   "ventana_h": 6,
+   "desplazable": true,
+   "nota": "Bomba de 1 CV funcionando 6 horas al día en temporada; en invierno se usa mucho menos.",
+   "truco": "Prográmala en las horas más baratas (con PVPC, al mediodía) y ajusta las horas al uso real: muchas filtran más de lo necesario.",
+   "fuente": {
+    "nombre": "Cálculo con valores típicos de fabricante",
+    "url": "/guias/piscina-depuradora/"
+   }
+  },
+  {
+   "slug": "manta-electrica",
+   "nombre": "Manta eléctrica",
+   "grupo": "Clima",
+   "tipo": "potencia",
+   "potencia_w": 60,
+   "rango": [
+    40,
+    120
+   ],
+   "horas_dia": 2,
+   "dias_mes": 30,
+   "ventana_h": 1,
+   "desplazable": false,
+   "nota": "Manta de una plaza a potencia media, dos horas al día.",
+   "truco": "Calentar solo la cama o el sofá con una manta gasta 20–30 veces menos que calentar toda la habitación con un radiador.",
+   "fuente": {
+    "nombre": "IDAE, Guía práctica de la energía",
+    "url": "https://www.idae.es/publicaciones/guia-practica-de-la-energia-consumo-eficiente-y-responsable"
+   }
+  },
+  {
+   "slug": "toallero-electrico",
+   "nombre": "Toallero eléctrico",
+   "grupo": "Clima",
+   "tipo": "potencia",
+   "potencia_w": 400,
+   "rango": [
+    250,
+    800
+   ],
+   "horas_dia": 3,
+   "dias_mes": 30,
+   "ventana_h": 2,
+   "desplazable": true,
+   "nota": "Radiador toallero de baño de 400 W, unas tres horas al día.",
+   "truco": "Ponle un temporizador para que caliente solo antes de la ducha: encendido todo el día es de lo que más gasta en el baño.",
+   "fuente": {
+    "nombre": "IDAE, Guía práctica de la energía",
+    "url": "https://www.idae.es/publicaciones/guia-practica-de-la-energia-consumo-eficiente-y-responsable"
+   }
+  },
+  {
+   "slug": "purificador-aire",
+   "nombre": "Purificador de aire",
+   "grupo": "Clima",
+   "tipo": "potencia",
+   "potencia_w": 30,
+   "rango": [
+    10,
+    60
+   ],
+   "horas_dia": 10,
+   "dias_mes": 30,
+   "ventana_h": 1,
+   "desplazable": false,
+   "nota": "Purificador con filtro HEPA a velocidad media, 10 horas al día.",
+   "truco": "Usa el modo automático: con el aire limpio baja de velocidad y gasta mucho menos.",
+   "fuente": {
+    "nombre": "IDAE, Guía práctica de la energía",
+    "url": "https://www.idae.es/publicaciones/guia-practica-de-la-energia-consumo-eficiente-y-responsable"
+   }
+  },
+  {
+   "slug": "robot-cocina",
+   "nombre": "Robot de cocina",
+   "grupo": "Cocina",
+   "tipo": "ciclo",
+   "kwh_ciclo": 0.25,
+   "rango": [
+    0.1,
+    0.5
+   ],
+   "ciclos_semana": 5,
+   "ventana_h": 1,
+   "desplazable": false,
+   "nota": "Una receta media con calentamiento (tipo Thermomix); las que solo pican o amasan gastan muy poco.",
+   "truco": "Para guisos largos, una olla exprés o una olla lenta gasta menos que el robot calentando una hora.",
+   "fuente": {
+    "nombre": "IDAE, Guía práctica de la energía",
+    "url": "https://www.idae.es/publicaciones/guia-practica-de-la-energia-consumo-eficiente-y-responsable"
+   }
+  },
+  {
+   "slug": "olla-lenta",
+   "nombre": "Olla lenta",
+   "grupo": "Cocina",
+   "tipo": "potencia",
+   "potencia_w": 200,
+   "rango": [
+    150,
+    300
+   ],
+   "horas_dia": 6,
+   "dias_mes": 8,
+   "ventana_h": 6,
+   "desplazable": true,
+   "nota": "Olla de cocción lenta en baja, seis horas, dos días por semana.",
+   "truco": "Gasta parecido a una bombilla antigua: es de las formas más baratas de hacer guisos largos.",
+   "fuente": {
+    "nombre": "IDAE, Guía práctica de la energía",
+    "url": "https://www.idae.es/publicaciones/guia-practica-de-la-energia-consumo-eficiente-y-responsable"
+   }
+  },
+  {
+   "slug": "altavoz-inteligente",
+   "nombre": "Altavoz inteligente",
+   "grupo": "Ocio y oficina",
+   "tipo": "continuo",
+   "kwh_anual": 26,
+   "rango": [
+    15,
+    40
+   ],
+   "ventana_h": 1,
+   "desplazable": false,
+   "nota": "Altavoz tipo Alexa o Google Home siempre encendido (unos 3 W de media).",
+   "truco": "Gasta poco, pero son 24 horas al día todo el año. Si tienes varios, quita los que no uses.",
+   "fuente": {
+    "nombre": "Cálculo con valores típicos de fabricante",
+    "url": "/guias/consumo-fantasma/"
+   }
+  },
+  {
+   "slug": "bicicleta-electrica",
+   "nombre": "Bicicleta eléctrica",
+   "grupo": "Movilidad",
+   "tipo": "ciclo",
+   "kwh_ciclo": 0.55,
+   "rango": [
+    0.3,
+    0.8
+   ],
+   "ciclos_semana": 2,
+   "ventana_h": 4,
+   "desplazable": true,
+   "nota": "Una carga completa de una batería de 500 Wh más las pérdidas del cargador.",
+   "truco": "Recorrer 1.000 km cuesta 2–4 € de luz: carga en las horas baratas y no dejes la batería al 100 % mucho tiempo.",
+   "fuente": {
+    "nombre": "Cálculo con valores típicos de fabricante",
+    "url": "/guias/coche-electrico/"
+   }
+  },
+  {
+   "slug": "acuario",
+   "nombre": "Acuario",
+   "grupo": "Ocio y oficina",
+   "tipo": "continuo",
+   "kwh_anual": 400,
+   "rango": [
+    150,
+    900
+   ],
+   "ventana_h": 1,
+   "desplazable": false,
+   "nota": "Acuario tropical de 100 litros con calentador, filtro y luz LED, encendido todo el año.",
+   "truco": "Una tapa bien ajustada y el acuario lejos de ventanas y corrientes reducen mucho lo que trabaja el calentador.",
+   "fuente": {
+    "nombre": "IDAE, Guía práctica de la energía",
+    "url": "https://www.idae.es/publicaciones/guia-practica-de-la-energia-consumo-eficiente-y-responsable"
+   }
+  },
+  {
+   "slug": "frigorifico-americano",
+   "nombre": "Frigorífico americano",
+   "grupo": "Cocina",
+   "tipo": "continuo",
+   "kwh_anual": 420,
+   "rango": [
+    300,
+    600
+   ],
+   "ventana_h": 1,
+   "desplazable": false,
+   "nota": "Frigorífico de dos puertas con dispensador de agua, según su etiqueta energética.",
+   "truco": "Desactiva el dispensador de hielo si no lo usas y revisa las gomas de las puertas: es de lo que más gasta un americano.",
+   "fuente": {
+    "nombre": "Etiqueta energética europea (EPREL)",
+    "url": "https://eprel.ec.europa.eu/"
+   }
   }
  ]
 }

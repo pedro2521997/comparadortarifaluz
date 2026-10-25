@@ -4,6 +4,7 @@ import { SITIO } from "../config";
 import { guias, CATEGORIAS } from "../lib/guias";
 import { catalogoActualizado } from "../lib/datos";
 import { HERRAMIENTAS } from "../lib/herramientas";
+import { marcas, urlMarca, ESCENARIOS, filaDe } from "../lib/catalogo";
 
 // Las herramientas salen de la lista común (lib/herramientas.ts).
 const LISTA = HERRAMIENTAS.map((h): [string, string, string] => [h.t, h.href, h.d]);
@@ -27,6 +28,13 @@ export const GET: APIRoute = () => {
       const lista = guias.filter((g) => (g.categoria ?? "Tu factura") === c);
       return lista.length ? [`## Guías: ${c}`, "", ...lista.map((g) => `- [${g.titulo}](${u(`/guias/${g.slug}/`)}): ${g.respuesta ?? g.resumen}`), ""] : [];
     }),
+    "## Comercializadoras",
+    "",
+    ...marcas().map((m) => {
+      const mejor = m.tarifas.map((t) => filaDe(t, ESCENARIOS[1])).sort((a, b) => a.anual - b.anual)[0];
+      return `- [${m.marca}](${u(urlMarca(m.marca))}): ${m.tarifas.length} tarifas; la más barata para un hogar medio, unos ${Math.round(mejor.anual)} €/año.`;
+    }),
+    "",
     "## Opcional",
     "",
     `- [Cómo funciona y cómo nos financiamos](${u("/como-funciona/")})`,

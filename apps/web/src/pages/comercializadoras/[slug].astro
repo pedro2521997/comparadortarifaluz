@@ -1,0 +1,234 @@
+---
+// Página de cada comercializadora: sus tarifas con lo que pagarías en tres situaciones típicas,
+// su puesto en el ranking y cómo contratar o darse de baja. Todo sale del catálogo y del motor de cálculo.
+import Base from "../../layouts/Base.astro";
+import Anuncio from "../../components/Anuncio.astro";
+import { esquemaFaq, type Pregunta } from "../../lib/faq";
+import { ESCENARIOS, filaDe, filasEscenario, referencia, filaPvpc, marcas, urlTarifa, urlMarca, tipoTexto, dominioWeb, ALIAS } from "../../lib/catalogo";
+import { logoHtml, nombrePlan } from "../../lib/ranking";
+import { catalogoActualizado } from "../../lib/datos";
+import { eur, eur2, num, fechaMedia, fechaCorta, hoyMadrid, nombreMes } from "../../lib/formato";
+import { SITIO } from "../../config";
+
+export function getStaticPaths() {
+  return marcas().map((m) => ({ params: { slug: m.slug }, props: { m } }));
+}
+const { m } = Astro.props as { m: ReturnType<typeof marcas>[number] };
+
+const medio = ESCENARIOS[1];
+const alias = ALIAS[m.marca];
+const nombreLargo = alias ? `${m.marca} (${alias})` : m.marca;
+const todas = filasEscenario(medio);
+const propias = m.tarifas.map((t) => filaDe(t, medio)).sort((a, b) => a.factura.total - b.factura.total);
+const mejor = propias[0];
+const ref = referencia(medio);
+const pvpc = filaPvpc(medio);
+const total = todas.length;
+const mes = nombreMes(hoyMadrid().slice(0, 7)).replace(" de ", " ");
+const web = dominioWeb(mejor.tarifa);
+const conPermanencia = m.tarifas.filter((t) => t.permanencia_meses > 0).length;
+const renovables = m.tarifas.filter((t) => t.info?.verde).length;
+const online = m.tarifas.some((t) => t.info?.contratacion?.internet);
+const tipos = [...new Set(m.tarifas.map((t) => tipoTexto(t)))];
+const difRef = mejor.anual - ref.anual;
+const difPvpc = pvpc ? mejor.anual - pvpc.anual : null;
+const veredicto =
+  Math.abs(difRef) < 15
+    ? `está entre las más baratas del mercado`
+    : difRef < 60
+      ? `está cerca de las más baratas (${eur(difRef)} al año más que la mejor)`
+      : `no está entre las más baratas: la mejor del mercado sale ${eur(difRef)} al año más barata`;
+
+// Otras compañías con precio parecido, para comparar.
+const parecidas = marcas()
+  .filter((x) => x.slug !== m.slug)
+  .map((x) => ({ x, f: x.tarifas.map((t) => filaDe(t, medio)).sort((a, b) => a.anual - b.anual)[0] }))
+  .sort((a, b) => Math.abs(a.f.anual - mejor.anual) - Math.abs(b.f.anual - mejor.anual))
+  .slice(0, 6);
+
+const preguntas: Pregunta[] = [
+  { p: `¿Cuál es la tarifa de luz más barata de ${m.marca}?`, r: `Para un hogar medio (${num(medio.anual)} kWh al año y ${num(medio.p1, 1)} kW), «${nombrePlan(mejor.tarifa.nombre)}», con unos ${eur(mejor.anual)} al año (${eur2(mejor.mensual)} al mes) impuestos incluidos. Con otro consumo puede cambiar.` },
+  { p: `¿${m.marca} es una compañía de luz barata?`, r: `Con nuestros cálculos, su mejor tarifa ${veredicto}. Ocupa el puesto ${mejor.pos} de ${total} tarifas del ranking para un hogar medio${difPvpc !== null ? `, y sale ${eur(Math.abs(difPvpc))} al año ${difPvpc > 0 ? "más cara" : "más barata"} que la tarifa regulada (PVPC)` : ""}.` },
+  { p: `¿Las tarifas de ${m.marca} tienen permanencia?`, r: conPermanencia ? `${conPermanencia} de sus ${m.tarifas.length} tarifas tienen permanencia: si te vas antes de tiempo te pueden cobrar una penalización. Revisa las condiciones de cada una en su ficha.` : `Ninguna de sus ${m.tarifas.length} tarifas del catálogo tiene permanencia, según los datos publicados.` },
+  { p: `¿Cómo me cambio a ${m.marca}?`, r: `Contratas la tarifa en su web${web ? ` (${web})` : ""} con tu DNI, el CUPS de tu factura y tu cuenta bancaria. ${m.marca} se encarga de dar de baja a tu compañía actual: no hay corte de luz ni cambio de contador, y el cambio es gratis.` },
+  { p: `¿Cómo me doy de baja de ${m.marca}?`, r: `Lo más sencillo es contratar con otra compañía: la nueva tramita la baja por ti, sin corte y sin coste (salvo penalización si tu tarifa tiene permanencia). Solo tienes que pedir tú la baja si te vas de la vivienda.` },
+];
+const schema = [
+  esquemaFaq(preguntas),
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: `Tarifas de luz de ${m.marca}`,
+    itemListElement: propias.map((f, i) => ({ "@type": "ListItem", position: i + 1, name: nombrePlan(f.tarifa.nombre), url: new URL(urlTarifa(f.tarifa), SITIO.url).href })),
+  },
+];
+---
+
+<Base
+  titulo={`${nombreLargo}: tarifas de luz y precios en ${mes}`.length <= 68 ? `${nombreLargo}: tarifas de luz y precios en ${mes}` : `${nombreLargo}: tarifas de luz y precios`}
+  descripcion={`${m.tarifas.length === 1 ? "La tarifa" : `Las ${m.tarifas.length} tarifas`} de luz de ${nombreLargo} con lo que pagarías al año. La más barata, ${nombrePlan(mejor.tarifa.nombre)}: ${eur(mejor.anual)}/año. Puesto ${mejor.pos} de ${total}.`.slice(0, 158)}
+  schema={schema}
+  migas={[["Comercializadoras", "/comercializadoras/"], [m.marca]]}
+>
+  <section class="hero hero--compacto">
+    <div class="wrap">
+      <p class="breadcrumbs"><a href="/comercializadoras/">Comercializadoras</a> / {m.marca}</p>
+      <div class="cm-cab">
+        <Fragment set:html={logoHtml(mejor.tarifa)} />
+        <h1>Tarifas de luz de {m.marca}{alias && <span class="cm-alias"> · {alias}</span>}</h1>
+      </div>
+      <p class="lead">
+        {m.tarifas.length === 1 ? "Su tarifa" : `Sus ${m.tarifas.length} tarifas`} ({tipos.join(", ")}) calculadas con los precios reales del último año. Para un hogar medio, la más barata es <strong>{nombrePlan(mejor.tarifa.nombre)}</strong>: unos <strong>{eur(mejor.anual)} al año</strong>, puesto {mejor.pos} de {total} en el ranking.
+      </p>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="wrap stack" style="--stack:32px">
+      <div class="card respuesta-cm">
+        <span class="eyebrow">En pocas palabras</span>
+        <p>
+          La mejor tarifa de {m.marca} {veredicto}{difPvpc !== null ? ` y sale ${eur(Math.abs(difPvpc))} al año ${difPvpc > 0 ? "más cara" : "más barata"} que la PVPC` : ""}.
+          {conPermanencia ? ` ${conPermanencia} de sus tarifas tienen permanencia.` : " Sin permanencia en las tarifas del catálogo."}
+          {renovables ? ` ${renovables === m.tarifas.length ? "Todas son" : `${renovables} son`} de energía 100 % renovable.` : ""}
+        </p>
+      </div>
+
+      <div>
+        <h2 class="cm-h">Lo que pagarías con cada tarifa</h2>
+        <p class="muted small">Al año, impuestos incluidos y sin promociones, con el precio de cada hora de los últimos 12 meses.</p>
+        <div class="table-wrap" tabindex="0" role="region" aria-label={`Tarifas de ${m.marca}`}>
+          <table class="cm-tabla">
+            <thead>
+              <tr>
+                <th scope="col">Tarifa</th>
+                {ESCENARIOS.map((e) => <th scope="col" class="r">{e.nombre}<br /><span class="caption">{num(e.anual)} kWh · {num(e.p1, 2)} kW</span></th>)}
+                <th scope="col" class="r">Puesto</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                propias.map((f) => (
+                  <tr>
+                    <th scope="row"><a href={urlTarifa(f.tarifa)}>{nombrePlan(f.tarifa.nombre)}</a><br /><span class="caption">{tipoTexto(f.tarifa)}{f.tarifa.permanencia_meses ? " · permanencia" : ""}{f.porRevisar ? " · precio por revisar" : ""}</span></th>
+                    {ESCENARIOS.map((e) => <td class="r num">{eur(filaDe(f.tarifa, e).anual)}</td>)}
+                    <td class="r num">{f.pos}º de {total}</td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <Anuncio tipo="horizontal" />
+
+      <div class="grid grid--2" style="gap:24px">
+        <div class="card">
+          <h2 class="cm-h">Comparada con el mercado</h2>
+          <div class="herr__filas">
+            <div><span>Su mejor tarifa (hogar medio)</span><span>{eur(mejor.anual)}/año</span></div>
+            <div><span>La más barata del mercado</span><span><a href={urlTarifa(ref.tarifa)}>{eur(ref.anual)}/año</a></span></div>
+            {pvpc && <div><span>Tarifa regulada (PVPC)</span><span>{eur(pvpc.anual)}/año</span></div>}
+            <div><span>Diferencia con la más barata</span><span>{difRef < 1 ? "—" : `+${eur(difRef)}/año`}</span></div>
+          </div>
+          <p class="btn-row" style="margin-top:16px"><a class="btn btn--mint" href="/comparador/">Calcular con mi consumo</a><a class="btn btn--ghost" href="/tarifas/">Ver el ranking</a></p>
+        </div>
+        <div class="card">
+          <h2 class="cm-h">Datos de la compañía</h2>
+          <div class="herr__filas">
+            <div><span>Razón social</span><span>{m.razon}</span></div>
+            {web && <div><span>Web</span><span><a href={`https://${web}`} rel="noopener">{web}</a></span></div>}
+            <div><span>Tarifas en el catálogo</span><span>{m.tarifas.length}</span></div>
+            <div><span>Contratación por internet</span><span>{online ? "Sí" : "Consultar"}</span></div>
+            <div><span>Precios comprobados</span><span>{fechaCorta(m.tarifas.map((t) => t.fecha_comprobacion ?? "").sort().at(-1) || catalogoActualizado.slice(0, 10))}</span></div>
+          </div>
+          <p class="caption" style="margin-top:12px">Precios del comparador oficial de la CNMC y de la web de la compañía. Catálogo actualizado el {fechaMedia(catalogoActualizado)}.</p>
+        </div>
+      </div>
+
+      <section class="faqs-cm" aria-labelledby="faq-cm">
+        <h2 id="faq-cm" class="cm-h">Preguntas frecuentes sobre {m.marca}</h2>
+        {
+          preguntas.map((p) => (
+            <details class="faq">
+              <summary>{p.p}</summary>
+              <p>{p.r}</p>
+            </details>
+          ))
+        }
+      </section>
+
+      <div>
+        <h2 class="cm-h">Compañías con precios parecidos</h2>
+        <div class="grid grid--3">
+          {
+            parecidas.map(({ x, f }) => (
+              <a class="card card--link cm-par" href={urlMarca(x.marca)}>
+                <span class="cm-par__n"><Fragment set:html={logoHtml(f.tarifa)} /><strong>{x.marca}</strong></span>
+                <span class="caption">Desde {eur(f.anual)} al año · {x.tarifas.length} {x.tarifas.length === 1 ? "tarifa" : "tarifas"}</span>
+              </a>
+            ))
+          }
+        </div>
+        <p style="margin-top:16px"><a href="/comercializadoras/">Todas las comercializadoras →</a></p>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .cm-cab {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .cm-cab :global(.rk-logo) {
+    width: 56px;
+    height: 56px;
+  }
+  .cm-alias {
+    font-weight: 300;
+    color: var(--color-slate);
+  }
+  .cm-h {
+    font-size: 24px;
+    margin-bottom: 12px;
+  }
+  .respuesta-cm {
+    background: var(--color-cream-paper);
+  }
+  .cm-tabla {
+    min-width: 640px;
+    font-size: 14px;
+  }
+  .cm-tabla tbody th {
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--color-bark);
+  }
+  .faq {
+    border-bottom: 1px solid var(--color-pale-sage);
+    padding: 6px 0;
+  }
+  .faq summary {
+    color: var(--color-bark);
+    cursor: pointer;
+  }
+  .faq p {
+    padding: 4px 0 12px 20px;
+  }
+  .cm-par__n {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .cm-par__n :global(.rk-logo) {
+    width: 36px;
+    height: 36px;
+    font-size: 12px;
+    padding: 4px;
+  }
+</style>

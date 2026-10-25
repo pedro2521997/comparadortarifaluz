@@ -12,6 +12,8 @@ export const CATEGORIAS = [
   "Precio y mercado",
   "Placas solares y baterías",
   "Coche eléctrico",
+  "Hogar y aparatos",
+  "Contratos y trámites",
   "Gas y otros",
 ] as const;
 export type Categoria = (typeof CATEGORIAS)[number];
@@ -81,9 +83,10 @@ export function conAnuncios(html: string, anuncio: string): string {
   if (!anuncio) return html;
   const partes = html.split(/(?=<h2[\s>])/);
   const nH2 = partes.length - 1;
-  if (nH2 < 4) return html;
+  if (nH2 < 3) return html;
+  // Uno cada dos apartados desde el segundo, y nunca antes del último (así siempre hay texto entre anuncios).
   return partes
-    .map((p, i) => (i >= 3 && (i - 3) % 3 === 0 && i < nH2 ? anuncio + p : p))
+    .map((p, i) => (i >= 2 && (i - 2) % 2 === 0 && i < nH2 ? anuncio + p : p))
     .join("");
 }
 

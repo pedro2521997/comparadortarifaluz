@@ -70,6 +70,7 @@ const schema = faqs.length && g.faq !== true
         }
         <div class="prose" set:html={html} />
 
+        {faqs.length > 0 && g.faq !== true && <Anuncio tipo="horizontal" />}
         {
           faqs.length > 0 && g.faq !== true && (
             <section class="faqs" aria-labelledby="faqs-t">

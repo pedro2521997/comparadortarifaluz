@@ -3,7 +3,7 @@ import Base from "../layouts/Base.astro";
 import Anuncio from "../components/Anuncio.astro";
 import { GRUPOS_HERRAMIENTAS, HERRAMIENTAS } from "../lib/herramientas";
 import AvisoDiario from "../components/AvisoDiario.astro";
-import { dias, tarifas, regulados, festivos, ajustesMercado } from "../lib/datos";
+import { dias, tarifas, regulados, festivos, ajustesMercado, aparatos } from "../lib/datos";
 import { compararTarifas, generarLecturas } from "@lst/tarifa";
 import { aFilas, marca, nombrePlan, logoHtml } from "../lib/ranking";
 import { eur, nombreMes, sumarDias, num } from "../lib/formato";
@@ -42,7 +42,7 @@ const herramientas = [
   { href: "/calcular-factura-luz/", eyebrow: "¿Te cobran bien?", t: "Calcula tu factura", d: "Tus facturas mes a mes con tu fichero y tu tarifa, como las calcula tu compañía. Si no coinciden, reclama.", cta: "Calcular mis facturas" },
   { href: "/analizador-consumo/", eyebrow: "Tu consumo en gráficas", t: "Analizador de consumo", d: "A qué horas gastas, tu consumo fantasma, tus picos y si te sobra potencia.", cta: "Analizar mi consumo" },
   { href: "/precio-luz-hoy/", eyebrow: "Cada día", t: "Precio de la luz hoy", d: "Hora a hora, con las mejores horas para la lavadora o el coche y de dónde viene la luz.", cta: "Ver el precio de hoy" },
-  { href: "/cuanto-gasta/", eyebrow: "27 aparatos", t: "Cuánto gasta cada aparato", d: "Aire acondicionado, termo, horno, coche eléctrico… lo que cuesta al mes con el precio de hoy.", cta: "Calcular un aparato" },
+  { href: "/cuanto-gasta/", eyebrow: `${aparatos.length} aparatos`, t: "Cuánto gasta cada aparato", d: "Aire acondicionado, termo, horno, coche eléctrico… lo que cuesta al mes con el precio de hoy.", cta: "Calcular un aparato" },
   { href: "/placas-solares/", eyebrow: "Autoconsumo", t: "¿Te compensan las placas?", d: "Producción real de tu zona cruzada con tu consumo hora a hora. En rangos, sin promesas.", cta: "Calcular mis placas" },
 ];
 ---

@@ -91,6 +91,22 @@ export function logoHtml(t: Tarifa): string {
     : `<span class="rk-logo" aria-hidden="true">${esc(iniciales(marca(t.comercializadora)))}</span>`;
 }
 
+// ---------- Direcciones de las fichas (también se usan en el navegador: sin datos del catálogo) ----------
+
+export const slug = (s: string) =>
+  s
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+export const slugMarca = (m: string) => slug(m.replace(/\(.*?\)/g, ""));
+export const slugTarifa = (t: Tarifa) => slug(`${marca(t.comercializadora)} ${nombrePlan(t.nombre)}`).slice(0, 70).replace(/-$/, "");
+// La PVPC no tiene ficha propia (es la regulada): se enlaza a su guía. Las tarifas escritas por el usuario, a ninguna.
+export const urlTarifa = (t: Tarifa) => (t.tipo === "pvpc" ? "/guias/pvpc-o-mercado-libre/" : `/tarifas/${slugTarifa(t)}/`);
+export const urlMarca = (m: string) => `/comercializadoras/${slugMarca(m)}/`;
+const conFicha = (t: Tarifa) => !["otra", "tuya"].includes(t.id);
+
 /** Nombre del plan en un formato legible (muchos vienen en mayúsculas). */
 export function nombrePlan(nombre: string): string {
   const letras = nombre.replace(/[^\p{L}]/gu, "");
@@ -295,7 +311,7 @@ export function tablaRanking(filas: Fila[], o: OpcionesTabla): string {
       <td class="rk-pos" data-label="Puesto"><span>${f.pos ?? i + 1}º</span></td>
       <th scope="row" class="rk-tarifa" data-label="Tarifa"><div class="rk-tarifa__in">
         ${logoHtml(t)}
-        <span class="rk-nombre"><span class="rk-marca">${esc(m)}</span><span class="rk-plan">${esc(nombrePlan(t.nombre))}</span><span class="rk-badges">${insignias(t, f.porRevisar, esActual, f.incompleta)}</span></span>
+        <span class="rk-nombre">${conFicha(t) && t.tipo !== "pvpc" ? `<a class="rk-marca" href="${urlMarca(m)}">${esc(m)}</a>` : `<span class="rk-marca">${esc(m)}</span>`}${conFicha(t) ? `<a class="rk-plan" href="${urlTarifa(t)}">${esc(nombrePlan(t.nombre))}</a>` : `<span class="rk-plan">${esc(nombrePlan(t.nombre))}</span>`}<span class="rk-badges">${insignias(t, f.porRevisar, esActual, f.incompleta)}</span></span>
       </div></th>
       <td class="rk-precios" data-label="Tipo y precios"><span class="rk-tipo">${tipoTexto(t)}</span>${precios(t, f.factura)}</td>
       <td class="rk-c-rep" data-label="Reparto">${reparto(f)}</td>

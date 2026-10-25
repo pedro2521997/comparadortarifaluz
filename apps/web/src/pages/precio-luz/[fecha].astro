@@ -1,6 +1,8 @@
 ---
 // Archivo histórico: una página por día con datos reales. Nunca se generan páginas vacías.
 import Base from "../../layouts/Base.astro";
+import Anuncio from "../../components/Anuncio.astro";
+import MasSobrePrecio from "../../components/MasSobrePrecio.astro";
 import PrecioDia from "../../components/PrecioDia.astro";
 import { dias, type DiaPrecios } from "../../lib/datos";
 import { fechaLarga, fechaCorta, sumarDias, ekwh } from "../../lib/formato";
@@ -47,4 +49,6 @@ const schema = {
       <PrecioDia fecha={dia.fecha} modo="archivo" />
     </div>
   </section>
+  <Anuncio tipo="horizontal" seccion />
+  <MasSobrePrecio fecha={dia.fecha} />
 </Base>

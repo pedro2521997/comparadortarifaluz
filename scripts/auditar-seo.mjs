@@ -40,4 +40,19 @@ console.log(`${paginas.length} páginas · ${malas.length} con la descripción f
 for (const [k, g] of [...grupos].sort((a, b) => b[1].max - a[1].max)) console.log(`  ${g.min === g.max ? g.max : `${g.min}–${g.max}`} car. · ${k}${g.n > 1 ? ` (${g.n} páginas)` : ""}`);
 const titulos = paginas.filter((p) => p.titulo > 70);
 if (titulos.length) console.log(`${titulos.length} títulos de más de 70 caracteres (Google los recorta):`, titulos.slice(0, 10).map((p) => `${p.titulo} ${p.ruta}`));
-process.exitCode = malas.length ? 1 : 0;
+// Enlaces internos rotos: cada href="/..." tiene que corresponder a una página construida.
+const rutas = new Set(paginas.map((p) => p.ruta));
+const ESTATICO = /\.(xml|txt|svg|png|webp|jpe?g|ico|pdf|js|css|json|woff2?|mjs)$/;
+const rotos = new Map();
+for (const p of paginas) {
+  const html = readFileSync(join(DIST, p.ruta.slice(1), p.ruta.endsWith("/") ? "index.html" : ""), "utf8");
+  for (const m of html.matchAll(/href="(\/[^"#?]*)/g)) {
+    let u = m[1];
+    if (u.includes("${") || ESTATICO.test(u) || u.startsWith("/_astro/") || u.startsWith("/logos/") || u.startsWith("/api/")) continue;
+    if (!u.endsWith("/")) u += "/";
+    if (!rutas.has(u)) rotos.set(u, [...(rotos.get(u) ?? []), p.ruta]);
+  }
+}
+console.log(`${rotos.size} enlaces internos rotos`);
+for (const [u, desde] of rotos) console.log(`  ${u}  ← ${desde.slice(0, 3).join(", ")}${desde.length > 3 ? ` y ${desde.length - 3} más` : ""}`);
+process.exitCode = malas.length || rotos.size ? 1 : 0;
