@@ -11,6 +11,10 @@ on:
   push:
     branches: [main]
 
+# Necesario para guardar los precios nuevos en el repositorio (git push con el token de la acción).
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -35,4 +39,4 @@ jobs:
           git config user.name "comparadortarifaluz-bot"
           git config user.email "bot@comparadortarifaluz.es"
           git add data/precios
-          git diff --cached --quiet || (git commit -m "Precios PVPC $(date +%F)" && git push)
+          git diff --cached --quiet || (git commit -m "Precios PVPC $(date +%F)" && git pull --rebase origin main && git push)

@@ -228,6 +228,36 @@ const aviso = ultimo
       )
     }
     <script>
+      // Enlaces a otras webs: en una pestaña nueva, para no perder la página (ni el cálculo hecho en ella).
+      // Se marcan al cargar y, para los que se pintan después (ranking, calculadoras), justo al pulsarlos.
+      const esExterno = (a: HTMLAnchorElement) => {
+        if (!/^https?:$/.test(a.protocol) || a.hasAttribute("download")) return false;
+        const host = a.hostname.replace(/^www\./, "");
+        return host !== location.hostname.replace(/^www\./, "") && !host.endsWith(".comparadortarifaluz.es") && host !== "comparadortarifaluz.es";
+      };
+      const marcar = (a: HTMLAnchorElement) => {
+        if (a.dataset.externo || !esExterno(a)) return;
+        a.dataset.externo = "1";
+        if (!a.target) a.target = "_blank";
+        const rel = new Set((a.rel || "").split(/\s+/).filter(Boolean));
+        rel.add("noopener");
+        a.rel = [...rel].join(" ");
+        // Para lectores de pantalla: avisar de que se abre en otra pestaña.
+        const aviso = document.createElement("span");
+        aviso.className = "sr-only";
+        aviso.textContent = " (se abre en una pestaña nueva)";
+        a.append(aviso);
+      };
+      document.querySelectorAll<HTMLAnchorElement>("a[href]").forEach(marcar);
+      document.addEventListener(
+        "click",
+        (e) => {
+          const a = (e.target as Element | null)?.closest?.<HTMLAnchorElement>("a[href]");
+          if (a) marcar(a);
+        },
+        true,
+      );
+
       const boton = document.querySelector<HTMLButtonElement>(".nav__toggle");
       const menu = document.getElementById("menu");
       boton?.addEventListener("click", () => {
