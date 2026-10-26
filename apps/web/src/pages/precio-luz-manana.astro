@@ -4,26 +4,34 @@ import Anuncio from "../components/Anuncio.astro";
 import PrecioDia from "../components/PrecioDia.astro";
 import AvisoDiario from "../components/AvisoDiario.astro";
 import ExtrasDia from "../components/ExtrasDia.astro";
-import { hoyMadrid, fechaLarga, sumarDias, ekwh, hh } from "../lib/formato";
-import { preciosDe } from "../lib/datos";
-import { resumen } from "../lib/grafico";
+import ResumenDia from "../components/ResumenDia.astro";
+import MasSobrePrecio from "../components/MasSobrePrecio.astro";
+import { hoyMadrid, fechaLarga, fechaMedia, sumarDias, fechaCorta } from "../lib/formato";
+import { infoDia, tituloDia, descripcionDia, entradillaDia, preguntasDia, esquemaDia } from "../lib/dia";
+import { esquemaFaq } from "../lib/faq";
+import { SITIO } from "../config";
 
 const manana = sumarDias(hoyMadrid(), 1);
-const diaM = preciosDe(manana);
-const rM = diaM ? resumen(diaM.precios) : null;
-const fechaTitulo = fechaLarga(manana).split(", ")[1].replace(/ de \d{4}$/, "");
-const titulo = rM ? `Precio de la luz mañana ${fechaTitulo}: más barata a las ${hh(rM.min.h)} (${ekwh(rM.min.p)})` : `Precio de la luz mañana, ${fechaTitulo}, por horas`;
+const i = infoDia(manana);
+const titulo = i ? tituloDia(i, "mañana") : `Precio de la luz mañana ${fechaMedia(manana)} por horas`;
+const descripcion = i
+  ? descripcionDia(i, "mañana")
+  : `Precio de la luz de mañana, ${fechaMedia(manana)}, hora a hora en cuanto lo publica Red Eléctrica (hacia las 20:15), con las mejores horas para la lavadora.`;
+const schema = i ? [esquemaDia(i, new URL("/precio-luz-manana/", SITIO.url).href), esquemaFaq(preguntasDia(i))] : undefined;
 ---
 
-<Base
-  titulo={titulo}
-  descripcion="Precio de la luz de mañana hora a hora en cuanto lo publica Red Eléctrica, con las mejores horas para la lavadora, el horno o cargar el coche."
->
+<Base titulo={titulo} descripcion={descripcion} schema={schema} migas={[["Precio de la luz", "/precio-luz/"], ["Mañana"]]}>
   <section class="hero hero--compacto">
     <div class="wrap">
       <span class="eyebrow">Precio de la luz mañana</span>
       <h1>Precio de la luz mañana, <span data-fecha-texto>{fechaLarga(manana)}</span></h1>
-      <p class="lead">Red Eléctrica publica el precio del día siguiente cada tarde. Planifica la lavadora, el lavavajillas o la carga del coche antes de irte a dormir.</p>
+      {
+        i ? (
+          <p class="lead" data-dia-fijo={manana}>{entradillaDia(i)}</p>
+        ) : (
+          <p class="lead">Red Eléctrica publica el precio del día siguiente cada tarde. Planifica la lavadora, el lavavajillas o la carga del coche antes de irte a dormir.</p>
+        )
+      }
       <div class="btn-row">
         <a class="btn btn--ghost" href="/precio-luz-hoy/">Precio de hoy</a>
         <a class="btn btn--ghost" href="/precio-luz/">Días anteriores</a>
@@ -33,9 +41,13 @@ const titulo = rM ? `Precio de la luz mañana ${fechaTitulo}: más barata a las 
   <section class="section section--tight">
     <div class="wrap">
       <PrecioDia fecha={manana} modo="manana" />
+      {i && <p class="caption" data-dia-fijo={manana} style="margin-top:12px">Enlace fijo a este día: <a href={`/precio-luz/${manana}/`}>precio de la luz del {fechaCorta(manana)}</a>.</p>}
     </div>
   </section>
   <Anuncio tipo="horizontal" seccion />
+  {i && <ResumenDia i={i} />}
   <ExtrasDia modo="manana" />
+  <Anuncio tipo="horizontal" seccion />
+  <MasSobrePrecio fecha={manana} />
   <AvisoDiario />
 </Base>

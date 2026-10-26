@@ -4,43 +4,32 @@ import Anuncio from "../components/Anuncio.astro";
 import PrecioDia from "../components/PrecioDia.astro";
 import AvisoDiario from "../components/AvisoDiario.astro";
 import ExtrasDia from "../components/ExtrasDia.astro";
-import { hoyMadrid, fechaLarga, sumarDias } from "../lib/formato";
+import ResumenDia from "../components/ResumenDia.astro";
+import MasSobrePrecio from "../components/MasSobrePrecio.astro";
+import { hoyMadrid, fechaLarga, sumarDias, fechaCorta } from "../lib/formato";
 import { preciosDe } from "../lib/datos";
-import { resumen } from "../lib/grafico";
-import { ekwh, hh } from "../lib/formato";
+import { infoDia, tituloDia, descripcionDia, entradillaDia, preguntasDia, esquemaDia } from "../lib/dia";
+import { esquemaFaq } from "../lib/faq";
+import { SITIO } from "../config";
 
 const hoy = hoyMadrid();
 const hayManana = preciosDe(sumarDias(hoy, 1)) !== null;
-const diaHoy = preciosDe(hoy);
-const rHoy = diaHoy ? resumen(diaHoy.precios) : null;
-const fechaTitulo = fechaLarga(hoy).split(", ")[1].replace(/ de \d{4}$/, "");
-// Títulos con el dato del día: es lo que busca la gente y lo que hace clicar (se regeneran cada día en el build).
-const titulo = rHoy ? `Precio de la luz hoy ${fechaTitulo}: ${ekwh(rHoy.min.p)} a las ${hh(rHoy.min.h)}` : "Precio de la luz hoy por horas (PVPC)";
-const descripcion = rHoy
-  ? `Precio de la luz hoy ${fechaTitulo} por horas: lo más barato a las ${hh(rHoy.min.h)} (${ekwh(rHoy.min.p)}) y lo más caro a las ${hh(rHoy.max.h)}. Las mejores horas para la lavadora.`
+// Títulos con el dato del día: es lo que busca la gente y lo que hace clicar. El build se repite
+// cada noche a las 00:05 para que la fecha que ve Google sea siempre la de hoy.
+const i = infoDia(hoy);
+const titulo = i ? tituloDia(i, "hoy") : "Precio de la luz hoy por horas (PVPC)";
+const descripcion = i
+  ? descripcionDia(i, "hoy")
   : "Precio de la luz de hoy hora a hora, las horas más baratas para poner la lavadora, el lavavajillas o cargar el coche, con datos de Red Eléctrica.";
-const schema = {
-  "@context": "https://schema.org",
-  "@type": "Dataset",
-  name: `Precio de la luz PVPC por horas, ${fechaLarga(hoy)}`,
-  description: "Precio horario del PVPC 2.0TD (peajes y cargos incluidos, sin impuestos) publicado por Red Eléctrica.",
-  temporalCoverage: hoy,
-  creator: { "@type": "Organization", name: "Red Eléctrica" },
-  license: "https://www.ree.es/es/apidatos",
-  isAccessibleForFree: true,
-};
+const schema = i ? [esquemaDia(i, new URL("/precio-luz-hoy/", SITIO.url).href), esquemaFaq(preguntasDia(i))] : undefined;
 ---
 
-<Base
-  titulo={titulo}
-  descripcion={descripcion}
-  schema={schema}
->
+<Base titulo={titulo} descripcion={descripcion} schema={schema} migas={[["Precio de la luz", "/precio-luz/"], ["Hoy"]]}>
   <section class="hero hero--compacto">
     <div class="wrap">
       <span class="eyebrow">Precio de la luz hoy</span>
       <h1>Precio de la luz hoy, <span data-fecha-texto>{fechaLarga(hoy)}</span></h1>
-      <p class="lead">Tarifa regulada (PVPC) hora a hora. Si tienes precio fijo, esto no cambia lo que pagas, pero te dice cuándo hay más presión en la red.</p>
+      {i ? <p class="lead" data-dia-fijo={hoy}>{entradillaDia(i)}</p> : <p class="lead">Tarifa regulada (PVPC) hora a hora, con datos de Red Eléctrica.</p>}
       <div class="btn-row">
         <a class="btn btn--ghost" href="/precio-luz-manana/">{hayManana ? "Ya está el precio de mañana" : "Precio de mañana"}</a>
         <a class="btn btn--ghost" href="/precio-luz-ayer/">Ayer</a>
@@ -51,9 +40,13 @@ const schema = {
   <section class="section section--tight">
     <div class="wrap">
       <PrecioDia fecha={hoy} modo="hoy" />
+      {i && <p class="caption" data-dia-fijo={hoy} style="margin-top:12px">Enlace fijo a este día: <a href={`/precio-luz/${hoy}/`}>precio de la luz del {fechaCorta(hoy)}</a>.</p>}
     </div>
   </section>
   <Anuncio tipo="horizontal" seccion />
+  {i && <ResumenDia i={i} />}
   <ExtrasDia modo="hoy" />
+  <Anuncio tipo="horizontal" seccion />
+  <MasSobrePrecio fecha={hoy} />
   <AvisoDiario />
 </Base>

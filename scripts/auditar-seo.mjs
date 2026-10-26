@@ -42,7 +42,7 @@ const titulos = paginas.filter((p) => p.titulo > 70);
 if (titulos.length) console.log(`${titulos.length} títulos de más de 70 caracteres (Google los recorta):`, titulos.slice(0, 10).map((p) => `${p.titulo} ${p.ruta}`));
 // Enlaces internos rotos: cada href="/..." tiene que corresponder a una página construida.
 const rutas = new Set(paginas.map((p) => p.ruta));
-const ESTATICO = /\.(xml|txt|svg|png|webp|jpe?g|ico|pdf|js|css|json|woff2?|mjs)$/;
+const ESTATICO = /\.(xml|txt|svg|png|webp|jpe?g|ico|pdf|js|css|json|woff2?|mjs|webmanifest)$/;
 const rotos = new Map();
 for (const p of paginas) {
   const html = readFileSync(join(DIST, p.ruta.slice(1), p.ruta.endsWith("/") ? "index.html" : ""), "utf8");

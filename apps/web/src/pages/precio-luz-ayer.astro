@@ -3,17 +3,24 @@ import Base from "../layouts/Base.astro";
 import Anuncio from "../components/Anuncio.astro";
 import MasSobrePrecio from "../components/MasSobrePrecio.astro";
 import PrecioDia from "../components/PrecioDia.astro";
+import ResumenDia from "../components/ResumenDia.astro";
 import { hoyMadrid, fechaLarga, sumarDias } from "../lib/formato";
+import { infoDia, tituloDia, descripcionDia, entradillaDia } from "../lib/dia";
 
 const ayer = sumarDias(hoyMadrid(), -1);
+const i = infoDia(ayer);
 ---
 
-<Base titulo="Precio de la luz ayer por horas (PVPC)" descripcion="Precio de la luz de ayer hora a hora, con datos de Red Eléctrica, para comprobar tu factura o comparar con hoy.">
+<Base
+  titulo={i ? tituloDia(i, "ayer") : "Precio de la luz ayer por horas (PVPC)"}
+  descripcion={i ? descripcionDia(i, "ayer") : "Precio de la luz de ayer hora a hora, con datos de Red Eléctrica, para comprobar tu factura o comparar con hoy."}
+  migas={[["Precio de la luz", "/precio-luz/"], ["Ayer"]]}
+>
   <section class="hero hero--compacto">
     <div class="wrap">
       <span class="eyebrow">Precio de la luz ayer</span>
       <h1>Precio de la luz ayer, <span data-fecha-texto>{fechaLarga(ayer)}</span></h1>
-      <p class="lead">Útil para comprobar lo que te costó la lavadora o el coche de anoche.</p>
+      {i ? <p class="lead" data-dia-fijo={ayer}>{entradillaDia(i)}</p> : <p class="lead">Útil para comprobar lo que te costó la lavadora o el coche de anoche.</p>}
       <div class="btn-row">
         <a class="btn btn--ghost" href="/precio-luz-hoy/">Precio de hoy</a>
         <a class="btn btn--ghost" href="/precio-luz/">Archivo de precios</a>
@@ -26,5 +33,6 @@ const ayer = sumarDias(hoyMadrid(), -1);
     </div>
   </section>
   <Anuncio tipo="horizontal" seccion />
+  {i && <ResumenDia i={i} />}
   <MasSobrePrecio fecha={ayer} />
 </Base>

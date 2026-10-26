@@ -1,0 +1,12 @@
+{
+  "name": "Precio de la luz hoy · ComparadorTarifaLuz",
+  "short_name": "Precio luz",
+  "description": "El precio de la luz de hoy y de mañana por horas, con las horas más baratas.",
+  "lang": "es-ES",
+  "start_url": "/precio-luz-hoy/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#104336",
+  "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

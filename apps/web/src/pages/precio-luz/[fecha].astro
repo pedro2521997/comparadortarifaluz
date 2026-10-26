@@ -1,46 +1,40 @@
 ---
 // Archivo histórico: una página por día con datos reales. Nunca se generan páginas vacías.
+// Es la página que Google enseña para «precio luz 26 octubre 2026», también cuando ese día es hoy o mañana.
 import Base from "../../layouts/Base.astro";
 import Anuncio from "../../components/Anuncio.astro";
 import MasSobrePrecio from "../../components/MasSobrePrecio.astro";
 import PrecioDia from "../../components/PrecioDia.astro";
+import ResumenDia from "../../components/ResumenDia.astro";
 import { dias, type DiaPrecios } from "../../lib/datos";
-import { fechaLarga, fechaCorta, sumarDias, ekwh } from "../../lib/formato";
-import { resumen } from "../../lib/grafico";
+import { fechaLarga, fechaCorta, sumarDias } from "../../lib/formato";
+import { infoDia, tituloDia, descripcionDia, entradillaDia, preguntasDia, esquemaDia } from "../../lib/dia";
+import { esquemaFaq } from "../../lib/faq";
+import { SITIO } from "../../config";
 
 export function getStaticPaths() {
   return dias.map((dia) => ({ params: { fecha: dia.fecha }, props: { dia } }));
 }
 
 const { dia } = Astro.props as { dia: DiaPrecios };
-const r = resumen(dia.precios);
+const i = infoDia(dia.fecha)!;
 const fechas = new Set(dias.map((d) => d.fecha));
 const anterior = sumarDias(dia.fecha, -1);
 const siguiente = sumarDias(dia.fecha, 1);
-const schema = {
-  "@context": "https://schema.org",
-  "@type": "Dataset",
-  name: `Precio de la luz PVPC por horas, ${fechaLarga(dia.fecha)}`,
-  description: `Precio horario del PVPC 2.0TD del ${fechaLarga(dia.fecha)}: media ${ekwh(r.media)}, mínimo ${ekwh(r.min.p)}, máximo ${ekwh(r.max.p)}.`,
-  temporalCoverage: dia.fecha,
-  creator: { "@type": "Organization", name: "Red Eléctrica" },
-  isAccessibleForFree: true,
-};
+const schema = [esquemaDia(i, new URL(`/precio-luz/${dia.fecha}/`, SITIO.url).href), esquemaFaq(preguntasDia(i))];
+const enVivo = i.etiqueta === "hoy" ? "/precio-luz-hoy/" : i.etiqueta === "mañana" ? "/precio-luz-manana/" : null;
 ---
 
-<Base
-  titulo={`Precio de la luz el ${fechaLarga(dia.fecha).split(", ")[1]}: más barata a las ${String(r.min.h).padStart(2, "0")}:00`}
-  descripcion={`Precio de la luz PVPC del ${fechaLarga(dia.fecha)}: hora más barata ${String(r.min.h).padStart(2, "0")}:00 (${ekwh(r.min.p)}), media ${ekwh(r.media)}.`}
-  schema={schema}
->
+<Base titulo={tituloDia(i, "archivo")} descripcion={descripcionDia(i, "archivo")} schema={schema} migas={[["Precio de la luz", "/precio-luz/"], [fechaCorta(dia.fecha)]]}>
   <section class="hero hero--compacto">
     <div class="wrap">
       <p class="breadcrumbs"><a href="/precio-luz/">Archivo de precios</a> / {fechaCorta(dia.fecha)}</p>
-      <h1>Precio de la luz del {fechaLarga(dia.fecha)}</h1>
+      <h1>Precio de la luz {i.etiqueta === "hoy" || i.etiqueta === "mañana" ? `${i.etiqueta}, ` : "del "}{fechaLarga(dia.fecha)}</h1>
+      <p class="lead">{entradillaDia(i)}</p>
       <div class="btn-row">
         {fechas.has(anterior) && <a class="btn btn--ghost btn--small" href={`/precio-luz/${anterior}/`}>← {fechaCorta(anterior)}</a>}
         {fechas.has(siguiente) && <a class="btn btn--ghost btn--small" href={`/precio-luz/${siguiente}/`}>{fechaCorta(siguiente)} →</a>}
-        <a class="btn btn--ghost btn--small" href="/precio-luz-hoy/">Hoy</a>
+        <a class="btn btn--ghost btn--small" href={enVivo ?? "/precio-luz-hoy/"}>{enVivo ? "Con la hora actual" : "Hoy"}</a>
       </div>
     </div>
   </section>
@@ -49,6 +43,8 @@ const schema = {
       <PrecioDia fecha={dia.fecha} modo="archivo" />
     </div>
   </section>
+  <Anuncio tipo="horizontal" seccion />
+  <ResumenDia i={i} />
   <Anuncio tipo="horizontal" seccion />
   <MasSobrePrecio fecha={dia.fecha} />
 </Base>

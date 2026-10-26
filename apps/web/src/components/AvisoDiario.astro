@@ -1,22 +1,39 @@
 ---
+// Para que el precio diario se convierta en costumbre: canal de Telegram (cuando exista) y
+// añadir la página a la pantalla de inicio del móvil (manifest.webmanifest abre /precio-luz-hoy/).
 import { TELEGRAM_URL } from "../config";
 ---
 
 <section class="section section--white">
   <div class="wrap wrap--narrow center stack" style="--stack:16px">
-    <span class="eyebrow eyebrow--violet">Aviso diario</span>
-    <h2>Las horas baratas de mañana, cada tarde en tu móvil</h2>
+    <span class="eyebrow eyebrow--violet">Cada día</span>
+    <h2>El precio de la luz, a un toque desde tu móvil</h2>
     <p class="lead">
-      Un mensaje al día en Telegram: «Mañana, la hora más barata es de 14:00 a 16:00 (0,080 €/kWh). Evita de 20:00 a 22:00». Nada más.
+      Esta página se actualiza sola cada día: a medianoche con el precio de hoy y por la tarde con el de mañana, en cuanto lo publica Red Eléctrica.
     </p>
-    <div class="btn-row">
-      {
-        TELEGRAM_URL ? (
-          <a class="btn btn--mint" href={TELEGRAM_URL}>Unirme al canal de Telegram</a>
-        ) : (
-          <span class="pill pill--aviso">Canal de Telegram: muy pronto</span>
-        )
-      }
+    <div class="btn-row" style="justify-content:center">
+      <button type="button" class="btn btn--mint" data-instalar hidden>Añadir a mi pantalla de inicio</button>
+      {TELEGRAM_URL ? <a class="btn btn--ghost" href={TELEGRAM_URL}>Aviso diario en Telegram</a> : <span class="pill pill--aviso">Aviso diario en Telegram: muy pronto</span>}
     </div>
+    <p class="small muted" data-instalar-ayuda>
+      Guárdala en el móvil: en Android, menú ⋮ del navegador → «Añadir a pantalla de inicio»; en iPhone, botón Compartir → «Añadir a pantalla de inicio». En el ordenador, Ctrl+D para guardarla en favoritos.
+    </p>
   </div>
 </section>
+
+<script>
+  // Chrome y Edge avisan de que se puede instalar: entonces se ofrece el botón directo.
+  let aviso: (Event & { prompt: () => Promise<void> }) | null = null;
+  const boton = document.querySelector<HTMLButtonElement>("[data-instalar]");
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    aviso = e as typeof aviso;
+    if (boton) boton.hidden = false;
+  });
+  boton?.addEventListener("click", async () => {
+    if (!aviso) return;
+    await aviso.prompt();
+    aviso = null;
+    boton.hidden = true;
+  });
+</script>

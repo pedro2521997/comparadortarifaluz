@@ -17,7 +17,7 @@ export const GET: APIRoute = () => {
   const rutas: [string, string?][] = [
     ["/", ultimoDia], ["/precio-luz-hoy/", ultimoDia], ["/precio-luz-manana/", dias.at(-1)?.fecha], ["/precio-luz/", ultimoDia], ["/precio-luz/historico/", ultimoDia],
     ["/tarifas/", catalogo], ["/comparador/", catalogo], ["/cuanto-gasta/", ultimoDia],
-    ["/herramientas/"], ["/precio-luz-ayer/"],
+    ["/herramientas/"], ["/precio-luz-ayer/", dias.filter((d) => d.fecha < hoy).at(-1)?.fecha],
     ...HERRAMIENTAS.filter((h) => !["/", "/precio-luz-hoy/", "/precio-luz-manana/", "/precio-luz/historico/", "/tarifas/", "/comparador/", "/cuanto-gasta/"].includes(h.href)).map((h): [string, string?] => [h.href]),
     ["/guias/", ultimaGuia], ["/como-funciona/"], ["/aviso-legal/"], ["/condiciones-de-uso/"], ["/privacidad/"], ["/cookies/"],
     ...dias.map((d): [string, string] => [`/precio-luz/${d.fecha}/`, d.fecha]),

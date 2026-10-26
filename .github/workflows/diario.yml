@@ -7,11 +7,20 @@ name: Build diario
 on:
   schedule:
     - cron: "45 19 * * *" # 21:45 Madrid en verano, 20:45 en invierno
+    - cron: "30 21 * * *" # repaso por si Red Eléctrica publicó tarde
+    # Justo después de medianoche (Madrid) para que «hoy», «ayer» y sus títulos cambien de día.
+    # Son dos horas UTC para cubrir verano (22:05) e invierno (23:05); la otra ejecución no hace daño.
+    - cron: "5 22,23 * * *"
   workflow_dispatch:
   push:
     branches: [main]
 
 # Necesario para guardar los precios nuevos en el repositorio (git push con el token de la acción).
+# Si coinciden dos ejecuciones (p. ej. las dos de medianoche), la segunda espera a la primera.
+concurrency:
+  group: build-diario
+  cancel-in-progress: false
+
 permissions:
   contents: write
 
@@ -34,6 +43,15 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      # Avisa a Bing (y otros buscadores con IndexNow) de que las páginas del día han cambiado.
+      # La clave es pública a propósito: está en apps/web/public/<clave>.txt.
+      - name: Avisar a los buscadores (IndexNow)
+        continue-on-error: true
+        run: |
+          HOY=$(TZ=Europe/Madrid date +%F); MANANA=$(TZ=Europe/Madrid date -d tomorrow +%F); AYER=$(TZ=Europe/Madrid date -d yesterday +%F)
+          B=https://comparadortarifaluz.es
+          curl -sS -X POST https://api.indexnow.org/indexnow -H "Content-Type: application/json; charset=utf-8" -d "{\"host\":\"comparadortarifaluz.es\",\"key\":\"c49c4772c9f6fee5ecdcab50ed8c7c4a\",\"keyLocation\":\"$B/c49c4772c9f6fee5ecdcab50ed8c7c4a.txt\",\"urlList\":[\"$B/precio-luz-hoy/\",\"$B/precio-luz-manana/\",\"$B/precio-luz-ayer/\",\"$B/precio-luz/\",\"$B/precio-luz/$HOY/\",\"$B/precio-luz/$MANANA/\",\"$B/precio-luz/$AYER/\",\"$B/\"]}" -w "IndexNow: %{http_code}
+"
       - name: Guardar los precios nuevos en el repositorio
         run: |
           git config user.name "comparadortarifaluz-bot"
