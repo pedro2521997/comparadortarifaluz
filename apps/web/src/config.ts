@@ -12,8 +12,8 @@ export const SITIO = {
   /** Titular del sitio (aviso legal y responsable del tratamiento: persona física) */
   titular: "Pedro López de la Reina García Cervigón",
   nif: "71359449V",
-  /** PENDIENTE: completar con el código postal y la localidad (la LSSI pide el domicilio completo). */
-  domicilio: "Calle Cirugeda 67",
+  /** Domicilio completo (art. 10 LSSI), el mismo que en elpisobarato.es. */
+  domicilio: "C/ Cirugeda, 67, 13240 La Solana (Ciudad Real)",
 };
 
 /** PENDIENTE: crear el canal. Mientras sea null, no se enlaza. */
