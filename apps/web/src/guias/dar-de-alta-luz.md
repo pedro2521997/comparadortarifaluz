@@ -19,6 +19,8 @@ faq:
 
 Si te mudas a un piso donde no hay luz, el proceso depende de **si el suministro estaba dado de baja hace poco o si nunca ha tenido**.
 
+Es lo habitual en los pisos que llevan tiempo vacíos, como muchos **pisos de bancos y de subastas**. Si todavía estás buscando casa, en [El Piso Barato](https://elpisobarato.es/) tienes subastas, pisos de bancos y viviendas por debajo de su precio en toda España.
+
 ## Tres situaciones distintas
 
 1. **Cambio de titular**: el piso tiene luz y el contrato está a nombre de otra persona (el anterior inquilino o el propietario). Es lo más sencillo: ver [cambiar el titular de la luz](/guias/cambiar-titular-luz/).

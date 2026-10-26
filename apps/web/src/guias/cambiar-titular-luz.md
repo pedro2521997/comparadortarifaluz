@@ -17,6 +17,8 @@ faq:
 
 Al mudarte, lo normal es que la luz esté a nombre del anterior inquilino o del propietario. Ponerla a tu nombre es sencillo.
 
+Ojo si has comprado un **piso de banco o de subasta**, como los que reúne [El Piso Barato](https://elpisobarato.es/): suelen llevar tiempo vacíos y con el suministro dado de baja. En ese caso no es un cambio de titular, sino un alta: ver [dar de alta la luz en una vivienda](/guias/dar-de-alta-luz/).
+
 ## Qué necesitas
 
 - **DNI o NIE** del nuevo titular.
