@@ -17,7 +17,11 @@
     "tarifas": "node scripts/importar-cnmc.mjs",
     "desplegar": "npm run build && npm run deploy -w @lst/worker",
     "db:init": "npm run db:init -w @lst/worker",
-    "seo": "node scripts/auditar-seo.mjs"
+    "seo": "node scripts/auditar-seo.mjs",
+    "precios:global": "node scripts/precios-global.mjs",
+    "build:global": "npm run build -w @lst/global",
+    "seo:global": "node scripts/auditar-seo.mjs apps/global/dist",
+    "desplegar:global": "npm run build:global && npm run deploy -w @lst/worker-global"
   },
   "devDependencies": {
     "typescript": "^5.9.0",

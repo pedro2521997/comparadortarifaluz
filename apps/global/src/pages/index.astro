@@ -1,0 +1,52 @@
+---
+// Portada global (inglés): el precio de hoy en cada país, con enlace a su página en su idioma.
+import Base from "../layouts/Base.astro";
+import Anuncio from "../components/Anuncio.astro";
+import { SITIO } from "../config";
+import { MERCADOS, info, hoyDe, alternativas } from "../lib/datos";
+import { TEXTOS } from "../lib/textos";
+import { hh, valor } from "../lib/bloque";
+
+const filas = MERCADOS.filter((m) => m.principal).map((m) => ({ m, i: info(m, hoyDe(m)) }));
+---
+
+<Base
+  titulo="Electricity prices today in Europe, hour by hour"
+  descripcion="Today's and tomorrow's hourly electricity spot prices in Norway, Sweden, Denmark, Finland, Germany, Austria, France, Italy, Netherlands, Belgium, Portugal."
+  lang="en"
+  alternativas={alternativas("hoy")}
+>
+  <section class="hero hero--compacto">
+    <div class="wrap">
+      <span class="eyebrow">{SITIO.nombre}</span>
+      <h1>Electricity prices today, country by country</h1>
+      <p class="lead">Hourly day-ahead spot prices in each country's own language and currency, with the cheapest hours to run the washing machine or charge the car. Updated every day.</p>
+    </div>
+  </section>
+  <section class="section section--tight">
+    <div class="wrap grid grid--3">
+      {
+        filas.map(({ m, i }) => (
+          <a class="card card--link" href={m.ruta} hreflang={m.pais.locale}>
+            <strong>{m.pais.nombre} <span class="muted small">· {m.pais.nombreEn}</span></strong>
+            <span>{TEXTOS[m.pais.lang].precio} {TEXTOS[m.pais.lang].hoy}</span>
+            {i && <span class="caption">{TEXTOS[m.pais.lang].media}: {valor(i.f, i.r.media)} · {TEXTOS[m.pais.lang].horaBarata}: {hh(i.r.min.h)}</span>}
+          </a>
+        ))
+      }
+      <a class="card card--link" href={SITIO.espana} hreflang="es-ES">
+        <strong>España <span class="muted small">· Spain</span></strong>
+        <span>Precio de la luz hoy (PVPC)</span>
+        <span class="caption">comparadortarifaluz.es</span>
+      </a>
+    </div>
+  </section>
+  <Anuncio tipo="horizontal" seccion />
+  <section class="section section--white">
+    <div class="wrap wrap--narrow prose">
+      <h2>What these prices are</h2>
+      <p>They are the wholesale prices of the European day-ahead market for each bidding zone, published around 13:00 CET for the next day. Households on dynamic or hourly tariffs pay them directly, plus VAT, grid fees, taxes and the supplier's margin. On fixed-price contracts they show when the grid is under more pressure.</p>
+      <p>Since October 2025 the market clears every 15 minutes; we show the average of each clock hour in local time. Sources: ENTSO-E Transparency Platform and Bundesnetzagentur | SMARD.de (CC BY 4.0). Currency conversion with the daily reference rates of the European Central Bank.</p>
+    </div>
+  </section>
+</Base>

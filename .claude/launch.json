@@ -4,8 +4,27 @@
     {
       "name": "web",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev", "-w", "@lst/web", "--", "--port", "4321"],
+      "runtimeArgs": [
+        "run",
+        "dev",
+        "-w",
+        "@lst/web",
+        "--",
+        "--port",
+        "4321"
+      ],
       "port": 4321
+    },
+    {
+      "name": "global",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev",
+        "-w",
+        "@lst/global"
+      ],
+      "port": 4322
     }
   ]
 }

@@ -1,0 +1,14 @@
+---
+// Hueco de anuncio. No pinta nada si la publicidad está apagada (salvo huecos de muestra en desarrollo).
+import { anuncioHtml } from "../lib/anuncios-html.mjs";
+
+interface Props {
+  tipo?: "horizontal" | "articulo" | "lateral" | "multiplex";
+  /** Envuelve el anuncio en un .wrap con margen vertical (para ponerlo entre secciones) */
+  seccion?: boolean;
+}
+const { tipo = "horizontal", seccion = false } = Astro.props;
+const html = anuncioHtml(tipo, { dev: import.meta.env.DEV });
+---
+
+{html && (seccion ? <div class="wrap anuncio-seccion" set:html={html} /> : <Fragment set:html={html} />)}

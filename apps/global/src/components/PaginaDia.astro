@@ -1,0 +1,213 @@
+---
+// Página del precio de un día en una zona: hoy, mañana o una fecha fija. Mismo esquema que la web española:
+// el dato arriba (sin anuncios encima), anuncio, precio por tramos y preguntas, anuncio, otros días y zonas.
+// En «hoy» y «mañana» el navegador comprueba que el día del build sigue siendo el que toca y, si no, carga
+// el JSON del día correcto (/data/<zona>/<fecha>.json) y oculta los textos fijos del build.
+import Base from "../layouts/Base.astro";
+import Anuncio from "./Anuncio.astro";
+import { TEXTOS } from "../lib/textos";
+import { bloque, noPublicado, hh, valor, fechaLocal, sumarDias } from "../lib/bloque";
+import {
+  MERCADOS, diasDe, diaDe, info, titulo, descripcion, entradilla, preguntas, esquemaFaq, esquemaDataset, alternativas,
+  urlManana, urlFecha, etiquetaZona, formato, type Mercado, type Pagina,
+} from "../lib/datos";
+
+interface Props {
+  m: Mercado;
+  pag: Pagina;
+  fecha: string;
+}
+const { m, pag, fecha } = Astro.props;
+const L = TEXTOS[m.pais.lang];
+const i = info(m, fecha);
+const f = formato(m.pais);
+const dia = diaDe(m.zona.id, fecha);
+const fuente = dia?.fuente ?? "ENTSO-E";
+const ruta = Astro.url.pathname;
+const cuando = pag === "hoy" ? L.hoy : pag === "manana" ? L.manana : "";
+const z = etiquetaZona(m);
+const h1 = [L.precio, z, cuando].filter(Boolean).join(" ");
+const tit = i ? titulo(i, pag) : `${h1} ${fechaLocal(fecha, m.pais.locale)}`;
+const desc = i ? descripcion(i, pag) : `${h1} ${fechaLocal(fecha, m.pais.locale)}. ${L.noPublicado}`;
+const schema = i ? [esquemaDataset(i, ruta, fuente), esquemaFaq(preguntas(i))] : undefined;
+const hermanas = MERCADOS.filter((x) => x.pais.cc === m.pais.cc);
+const fechas = new Set(diasDe(m.zona.id).map((d) => d.fecha));
+const alrededor = Array.from({ length: 9 }, (_, k) => sumarDias(fecha, k - 4)).filter((x) => x !== fecha && fechas.has(x));
+const conMedia = i ? i.tramos.filter((t) => t.media !== null) : [];
+const masBarato = conMedia.length ? conMedia.reduce((a, t) => (t.media! < a.media! ? t : a)) : null;
+const datosCliente = JSON.stringify({ zona: m.zona.id, tz: m.pais.tz, modo: pag, f });
+---
+
+<Base titulo={tit} descripcion={desc} lang={m.pais.lang} locale={m.pais.locale} schema={schema} alternativas={m.principal && pag !== "fecha" ? alternativas(pag) : []}>
+  <section class="hero hero--compacto">
+    <div class="wrap">
+      <span class="eyebrow">{m.pais.nombre}{z && ` · ${m.zona.nombre}`}</span>
+      <h1>{h1}, <span data-fecha-texto>{fechaLocal(fecha, m.pais.locale)}</span></h1>
+      {i && <p class="lead" data-dia-fijo>{entradilla(i)}</p>}
+      <div class="btn-row">
+        <a class="btn btn--ghost btn--small" href={m.ruta} aria-current={pag === "hoy" ? "page" : undefined}>{L.hoy[0].toUpperCase() + L.hoy.slice(1)}</a>
+        <a class="btn btn--ghost btn--small" href={urlManana(m)} aria-current={pag === "manana" ? "page" : undefined}>{L.manana[0].toUpperCase() + L.manana.slice(1)}</a>
+        {pag === "fecha" && fechas.has(sumarDias(fecha, -1)) && <a class="btn btn--ghost btn--small" href={urlFecha(m, sumarDias(fecha, -1))}>← {sumarDias(fecha, -1)}</a>}
+        {pag === "fecha" && fechas.has(sumarDias(fecha, 1)) && <a class="btn btn--ghost btn--small" href={urlFecha(m, sumarDias(fecha, 1))}>{sumarDias(fecha, 1)} →</a>}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="wrap">
+      <div class="precio-dia" data-g={datosCliente} data-fecha={fecha} aria-live="polite">
+        <div data-contenido set:html={i ? bloque(f, fecha, i.precios) : noPublicado(m.pais.lang)} />
+      </div>
+      <p class="caption" style="margin-top:12px">
+        {L.nota} {L.fuente}: {fuente}.
+        {i && pag !== "fecha" && <span data-dia-fijo> <a href={urlFecha(m, fecha)}>{L.enlaceFijo}: {fechaLocal(fecha, m.pais.locale)}</a>.</span>}
+      </p>
+    </div>
+  </section>
+
+  <Anuncio tipo="horizontal" seccion />
+
+  {
+    i && (
+      <section class="section section--white section--tight" data-dia-fijo>
+        <div class="wrap grid grid--2" style="gap:40px">
+          <div>
+            <h2 class="g-h">{L.tramosT}</h2>
+            <table class="g-tabla">
+              <tbody>
+                {conMedia.map((t) => (
+                  <tr class={t === masBarato ? "g-mejor" : undefined}>
+                    <th scope="row">{t.nombre}{t === masBarato && <span class="pill pill--barata">{L.tramoBarato}</span>}</th>
+                    <td>{hh(t.desde)}–{hh(t.hasta)}</td>
+                    <td class="num">{valor(f, t.media!)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div>
+            <h2 class="g-h">{L.preguntasT}</h2>
+            {preguntas(i).map((q) => (
+              <details class="g-faq">
+                <summary>{q.p}</summary>
+                <p>{q.r}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <Anuncio tipo="horizontal" seccion />
+
+  <section class="section section--tight">
+    <div class="wrap grid grid--2" style="gap:40px">
+      {
+        alrededor.length > 0 && (
+          <div>
+            <h2 class="g-h">{L.otrosDias}</h2>
+            <ul class="g-lista">
+              {alrededor.map((x) => (
+                <li><a href={urlFecha(m, x)}>{fechaLocal(x, m.pais.locale)}</a></li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+      {
+        hermanas.length > 1 && (
+          <div>
+            <h2 class="g-h">{L.zonas}</h2>
+            <ul class="g-lista">
+              {hermanas.map((x) => (
+                <li><a href={pag === "manana" ? urlManana(x) : x.ruta} aria-current={x === m ? "page" : undefined}>{x.zona.nombre}</a></li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+    </div>
+  </section>
+</Base>
+
+<script>
+  import { bloque, noPublicado, hoyEn, horaEn, sumarDias, fechaLocal } from "../lib/bloque";
+
+  const raiz = document.querySelector<HTMLElement>(".precio-dia");
+  if (raiz) {
+    const g = JSON.parse(raiz.dataset.g!);
+    if (g.modo !== "fecha") {
+      const hoy = hoyEn(g.tz);
+      const objetivo = g.modo === "hoy" ? hoy : sumarDias(hoy, 1);
+      const ahora = g.modo === "hoy" ? horaEn(g.tz) : null;
+      const contenido = raiz.querySelector<HTMLElement>("[data-contenido]")!;
+      const pintar = (precios: (number | null)[] | null) => {
+        contenido.innerHTML = precios ? bloque(g.f, objetivo, precios, ahora) : noPublicado(g.f.lang);
+      };
+      if (raiz.dataset.fecha === objetivo) {
+        // Mismo día que el build: solo se marca la hora actual.
+        if (ahora !== null) fetch(`/data/${g.zona}/${objetivo}.json`).then((r) => (r.ok ? r.json() : null)).then((d) => d && pintar(d.precios)).catch(() => {});
+      } else {
+        for (const el of document.querySelectorAll<HTMLElement>("[data-dia-fijo]")) el.hidden = true;
+        for (const el of document.querySelectorAll<HTMLElement>("[data-fecha-texto]")) el.textContent = fechaLocal(objetivo, g.f.locale);
+        fetch(`/data/${g.zona}/${objetivo}.json`)
+          .then((r) => (r.ok ? r.json() : null))
+          .then((d) => pintar(d ? d.precios : null))
+          .catch(() => pintar(null));
+      }
+    }
+  }
+</script>
+
+<style>
+  .g-h {
+    font-size: 22px;
+    margin-bottom: 12px;
+  }
+  .g-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+  }
+  .g-tabla th,
+  .g-tabla td {
+    text-align: left;
+    padding: 8px 6px;
+    border-bottom: 1px solid var(--color-pale-sage);
+  }
+  .g-tabla .num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .g-tabla th {
+    font-weight: 500;
+  }
+  .g-tabla .pill {
+    margin-left: 8px;
+  }
+  .g-mejor {
+    background: #f2faf6;
+  }
+  .g-faq {
+    border-bottom: 1px solid var(--color-pale-sage);
+    padding: 6px 0;
+  }
+  .g-faq summary {
+    color: var(--color-bark);
+    cursor: pointer;
+  }
+  .g-faq p {
+    padding: 4px 0 12px 20px;
+  }
+  .g-lista {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+  }
+  .btn[aria-current="page"] {
+    background: var(--color-canopy);
+    color: #fff;
+  }
+</style>

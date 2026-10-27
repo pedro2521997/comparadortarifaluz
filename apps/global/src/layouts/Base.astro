@@ -1,0 +1,147 @@
+---
+// Plantilla de la web global. Usa los estilos de la web española (mismo diseño) y añade idioma, hreflang
+// y el selector de país. AdSense igual que en la web española (lib/anuncios-html.mjs + anuncios.json).
+import "../../../web/src/styles/global.css";
+import "../../../web/src/styles/componentes.css";
+import Anuncio from "../components/Anuncio.astro";
+import { SITIO } from "../config";
+import { PAISES_CON_DATOS } from "../lib/datos";
+import { TEXTOS, type Idioma } from "../lib/textos";
+import { codigoAdsense, clienteAdsense, cuentaAdsense } from "../lib/anuncios-html.mjs";
+
+interface Props {
+  titulo: string;
+  descripcion: string;
+  lang: Idioma;
+  /** «nb-NO», «de-AT»… (para og:locale) */
+  locale?: string;
+  schema?: Record<string, unknown> | Record<string, unknown>[];
+  alternativas?: { lang: string; href: string }[];
+  anuncioFinal?: boolean;
+  noindex?: boolean;
+}
+const { titulo, descripcion, lang, locale = "en", schema, alternativas = [], anuncioFinal = true, noindex = false } = Astro.props;
+const canonical = new URL(Astro.url.pathname, SITIO.url).href;
+const tituloCompleto = titulo.length > 50 ? titulo : `${titulo} | ${SITIO.nombre}`;
+const esquemas = schema ? (Array.isArray(schema) ? schema : [schema]) : [];
+const L = TEXTOS[lang];
+const ruta = Astro.url.pathname;
+---
+
+<!doctype html>
+<html lang={lang === "no" ? "nb" : lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{tituloCompleto}</title>
+    <meta name="description" content={descripcion} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    {alternativas.map((a) => <link rel="alternate" hreflang={a.lang} href={a.href} />)}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#104336" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content={locale.replace("-", "_")} />
+    <meta property="og:site_name" content={SITIO.nombre} />
+    <meta property="og:title" content={titulo} />
+    <meta property="og:description" content={descripcion} />
+    <meta property="og:url" content={canonical} />
+    {esquemas.length > 0 && <script type="application/ld+json" set:html={JSON.stringify(esquemas.length === 1 ? esquemas[0] : esquemas)} />}
+    {cuentaAdsense() && <meta name="google-adsense-account" content={cuentaAdsense()} />}
+    {codigoAdsense() && <script async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${clienteAdsense()}`} crossorigin="anonymous" />}
+  </head>
+  <body>
+    <a class="sr-only" href="#contenido">Skip to content</a>
+    <header class="nav">
+      <div class="wrap nav__in g-nav">
+        <a href="/" class="g-logo">⚡ {SITIO.nombre}</a>
+        <nav aria-label="Countries" class="g-paises">
+          {
+            PAISES_CON_DATOS.map((p) => (
+              <a href={`/${p.cc}/`} aria-current={ruta.startsWith(`/${p.cc}/`) ? "page" : undefined} title={p.nombre}>
+                {p.cc.toUpperCase()}
+              </a>
+            ))
+          }
+          <a href={SITIO.espana} title="España" hreflang="es">ES</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="contenido">
+      <slot />
+      {anuncioFinal && <Anuncio tipo="multiplex" seccion />}
+    </main>
+
+    <footer class="pie">
+      <div class="wrap">
+        <div class="pie__grid">
+          <div class="pie__marca">
+            <p><strong>⚡ {SITIO.nombre}</strong></p>
+            <p>{L.nota}</p>
+          </div>
+          <div>
+            <p class="pie__titulo">{L.otrosPaises}</p>
+            <ul>
+              {PAISES_CON_DATOS.map((p) => <li><a href={`/${p.cc}/`}>{TEXTOS[p.lang].precio} {TEXTOS[p.lang].hoy} · {p.nombre}</a></li>)}
+              <li><a href={SITIO.espana} hreflang="es">Precio de la luz hoy · España</a></li>
+            </ul>
+          </div>
+          <div>
+            <p class="pie__titulo">{SITIO.nombre}</p>
+            <ul>
+              <li><a href="/legal/">{L.legal}</a></li>
+            </ul>
+          </div>
+        </div>
+        <p class="pie__legal">
+          {L.aviso} {L.fuente}: ENTSO-E Transparency Platform · Bundesnetzagentur | SMARD.de (CC BY 4.0) · ECB. © {new Date().getFullYear()} {SITIO.nombre}
+        </p>
+      </div>
+    </footer>
+    {
+      codigoAdsense() && (
+        <script is:inline>
+          document.querySelectorAll("ins.adsbygoogle:not([data-adsbygoogle-status])").forEach(function () {
+            (window.adsbygoogle = window.adsbygoogle || []).push({});
+          });
+        </script>
+      )
+    }
+  </body>
+</html>
+
+<style>
+  .g-nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 24px;
+  }
+  .g-logo {
+    font-weight: 700;
+    font-size: 20px;
+    color: var(--color-ink);
+    text-decoration: none;
+  }
+  .g-paises {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .g-paises a {
+    font-size: 13px;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: var(--radius-buttons);
+    text-decoration: none;
+    color: var(--color-bark);
+    border: 1px solid var(--color-sage-mist);
+  }
+  .g-paises a[aria-current="page"] {
+    background: var(--color-canopy);
+    border-color: var(--color-canopy);
+    color: #fff;
+  }
+</style>

@@ -1,0 +1,10 @@
+# Worker de la web global: solo sirve la web estática de apps/global/dist (sin código propio).
+# PENDIENTE: dominio. Hasta tenerlo, no se despliega (ver GLOBAL_ACTIVO en .github/workflows/diario.yml).
+name = "lst-global"
+compatibility_date = "2026-10-01"
+# routes = [{ pattern = "kwhclock.com", custom_domain = true }]
+workers_dev = true
+
+[assets]
+directory = "../global/dist"
+not_found_handling = "404-page"

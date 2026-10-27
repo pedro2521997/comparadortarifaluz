@@ -1,11 +1,12 @@
 // Revisa la web construida (apps/web/dist): longitud del título y de la meta descripción de cada página.
 // Bing y Google cortan la descripción a ~160 caracteres y avisan si baja de 25; el título, a ~60.
-// Uso: npm run build && node scripts/auditar-seo.mjs   (sale con error si alguna descripción se pasa)
+// Uso: npm run build && node scripts/auditar-seo.mjs [carpeta dist]   (sale con error si alguna descripción se pasa)
 
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 
-const DIST = new URL("../apps/web/dist", import.meta.url).pathname.replace(/^\/([A-Z]:)/, "$1");
+// Carpeta a revisar: la web española por defecto, o la que se pase (p. ej. apps/global/dist).
+const DIST = process.argv[2] ? join(process.cwd(), process.argv[2]) : new URL("../apps/web/dist", import.meta.url).pathname.replace(/^\/([A-Z]:)/, "$1");
 const entidades = (s) => s.replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
 const largo = (s) => [...s].length;
 
@@ -25,7 +26,7 @@ const paginas = [];
 })(DIST);
 
 // Agrupa las páginas que salen de una misma plantilla para no listar cientos de fechas.
-const plantilla = (r) => r.replace(/\/precio-luz\/\d{4}-\d{2}-\d{2}\//, "/precio-luz/[fecha]/").replace(/^\/cuanto-gasta\/[^/]+\/$/, "/cuanto-gasta/[aparato]/");
+const plantilla = (r) => r.replace(/\/\d{4}-\d{2}-\d{2}\//, "/[fecha]/").replace(/^\/cuanto-gasta\/[^/]+\/$/, "/cuanto-gasta/[aparato]/");
 const malas = paginas.filter((p) => p.desc > 160 || p.desc < 25);
 const grupos = new Map();
 for (const p of malas) {

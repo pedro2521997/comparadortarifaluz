@@ -1,0 +1,81 @@
+{
+  "_nota": "Países y zonas de precio de la web global. 'eic' es el código de la zona en ENTSO-E (fuente principal, con token). 'ec' es la zona en Energy-Charts solo si su licencia es CC BY 4.0 (uso comercial permitido): sirve de respaldo y para probar sin token. La primera zona de cada país es la que se muestra en la página del país.",
+  "paises": [
+    {
+      "cc": "no", "lang": "no", "locale": "nb-NO", "nombre": "Norge", "nombreEn": "Norway", "tz": "Europe/Oslo",
+      "moneda": "NOK", "unidad": "øre/kWh", "factor": 0.1, "decimales": 1,
+      "zonas": [
+        { "id": "NO1", "slug": "", "nombre": "Øst (Oslo)", "eic": "10YNO-1--------2", "ec": null },
+        { "id": "NO2", "slug": "no2", "nombre": "Sør (Kristiansand)", "eic": "10YNO-2--------T", "ec": "NO2" },
+        { "id": "NO3", "slug": "no3", "nombre": "Midt (Trondheim)", "eic": "10YNO-3--------J", "ec": null },
+        { "id": "NO4", "slug": "no4", "nombre": "Nord (Tromsø)", "eic": "10YNO-4--------9", "ec": null },
+        { "id": "NO5", "slug": "no5", "nombre": "Vest (Bergen)", "eic": "10Y1001A1001A48H", "ec": null }
+      ]
+    },
+    {
+      "cc": "se", "lang": "sv", "locale": "sv-SE", "nombre": "Sverige", "nombreEn": "Sweden", "tz": "Europe/Stockholm",
+      "moneda": "SEK", "unidad": "öre/kWh", "factor": 0.1, "decimales": 1,
+      "zonas": [
+        { "id": "SE3", "slug": "", "nombre": "SE3 (Stockholm)", "eic": "10Y1001A1001A46L", "ec": null },
+        { "id": "SE1", "slug": "se1", "nombre": "SE1 (Luleå)", "eic": "10Y1001A1001A44P", "ec": null },
+        { "id": "SE2", "slug": "se2", "nombre": "SE2 (Sundsvall)", "eic": "10Y1001A1001A45N", "ec": null },
+        { "id": "SE4", "slug": "se4", "nombre": "SE4 (Malmö)", "eic": "10Y1001A1001A47J", "ec": "SE4" }
+      ]
+    },
+    {
+      "cc": "dk", "lang": "da", "locale": "da-DK", "nombre": "Danmark", "nombreEn": "Denmark", "tz": "Europe/Copenhagen",
+      "moneda": "DKK", "unidad": "øre/kWh", "factor": 0.1, "decimales": 1,
+      "zonas": [
+        { "id": "DK2", "slug": "", "nombre": "Østdanmark (DK2)", "eic": "10YDK-2--------M", "ec": "DK2" },
+        { "id": "DK1", "slug": "dk1", "nombre": "Vestdanmark (DK1)", "eic": "10YDK-1--------W", "ec": "DK1" }
+      ]
+    },
+    {
+      "cc": "fi", "lang": "fi", "locale": "fi-FI", "nombre": "Suomi", "nombreEn": "Finland", "tz": "Europe/Helsinki",
+      "moneda": "EUR", "unidad": "c/kWh", "factor": 0.1, "decimales": 2,
+      "zonas": [{ "id": "FI", "slug": "", "nombre": "Suomi", "eic": "10YFI-1--------U", "ec": null }]
+    },
+    {
+      "cc": "de", "lang": "de", "locale": "de-DE", "nombre": "Deutschland", "nombreEn": "Germany", "tz": "Europe/Berlin",
+      "moneda": "EUR", "unidad": "ct/kWh", "factor": 0.1, "decimales": 2,
+      "zonas": [{ "id": "DE-LU", "slug": "", "nombre": "Deutschland", "eic": "10Y1001A1001A82H", "ec": "DE-LU" }]
+    },
+    {
+      "cc": "at", "lang": "de", "locale": "de-AT", "nombre": "Österreich", "nombreEn": "Austria", "tz": "Europe/Vienna",
+      "moneda": "EUR", "unidad": "ct/kWh", "factor": 0.1, "decimales": 2,
+      "zonas": [{ "id": "AT", "slug": "", "nombre": "Österreich", "eic": "10YAT-APG------L", "ec": "AT" }]
+    },
+    {
+      "cc": "pt", "lang": "pt", "locale": "pt-PT", "nombre": "Portugal", "nombreEn": "Portugal", "tz": "Europe/Lisbon",
+      "moneda": "EUR", "unidad": "€/kWh", "factor": 0.001, "decimales": 4,
+      "zonas": [{ "id": "PT", "slug": "", "nombre": "Portugal", "eic": "10YPT-REN------W", "ec": null }]
+    },
+    {
+      "cc": "fr", "lang": "fr", "locale": "fr-FR", "nombre": "France", "nombreEn": "France", "tz": "Europe/Paris",
+      "moneda": "EUR", "unidad": "€/kWh", "factor": 0.001, "decimales": 4,
+      "zonas": [{ "id": "FR", "slug": "", "nombre": "France", "eic": "10YFR-RTE------C", "ec": "FR" }]
+    },
+    {
+      "cc": "it", "lang": "it", "locale": "it-IT", "nombre": "Italia", "nombreEn": "Italy", "tz": "Europe/Rome",
+      "moneda": "EUR", "unidad": "€/kWh", "factor": 0.001, "decimales": 4,
+      "zonas": [
+        { "id": "IT-NORD", "slug": "", "nombre": "Nord", "eic": "10Y1001A1001A73I", "ec": "IT-North" },
+        { "id": "IT-CNOR", "slug": "centro-nord", "nombre": "Centro-Nord", "eic": "10Y1001A1001A70O", "ec": null },
+        { "id": "IT-CSUD", "slug": "centro-sud", "nombre": "Centro-Sud", "eic": "10Y1001A1001A71M", "ec": null },
+        { "id": "IT-SUD", "slug": "sud", "nombre": "Sud", "eic": "10Y1001A1001A788", "ec": null },
+        { "id": "IT-SICI", "slug": "sicilia", "nombre": "Sicilia", "eic": "10Y1001A1001A75E", "ec": null },
+        { "id": "IT-SARD", "slug": "sardegna", "nombre": "Sardegna", "eic": "10Y1001A1001A74G", "ec": null }
+      ]
+    },
+    {
+      "cc": "nl", "lang": "nl", "locale": "nl-NL", "nombre": "Nederland", "nombreEn": "Netherlands", "tz": "Europe/Amsterdam",
+      "moneda": "EUR", "unidad": "€/kWh", "factor": 0.001, "decimales": 4,
+      "zonas": [{ "id": "NL", "slug": "", "nombre": "Nederland", "eic": "10YNL----------L", "ec": "NL" }]
+    },
+    {
+      "cc": "be", "lang": "nl", "locale": "nl-BE", "nombre": "België", "nombreEn": "Belgium", "tz": "Europe/Brussels",
+      "moneda": "EUR", "unidad": "€/kWh", "factor": 0.001, "decimales": 4,
+      "zonas": [{ "id": "BE", "slug": "", "nombre": "België", "eic": "10YBE----------2", "ec": "BE" }]
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "_nota": "AdSense de la web global (misma cuenta que la española; el sitio se da de alta aparte en AdSense). Mismo funcionamiento que apps/web/src/anuncios.json.",
+  "activo": false,
+  "codigo": true,
+  "cliente": "ca-pub-2003300660156726",
+  "bloques": { "horizontal": "0000000000", "articulo": "0000000000", "lateral": "0000000000", "multiplex": "0000000000" }
+}
