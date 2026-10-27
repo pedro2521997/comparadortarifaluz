@@ -69,8 +69,7 @@ jobs:
         run: |
           HOY=$(TZ=Europe/Madrid date +%F); MANANA=$(TZ=Europe/Madrid date -d tomorrow +%F); AYER=$(TZ=Europe/Madrid date -d yesterday +%F)
           B=https://comparadortarifaluz.es
-          curl -sS -X POST https://api.indexnow.org/indexnow -H "Content-Type: application/json; charset=utf-8" -d "{\"host\":\"comparadortarifaluz.es\",\"key\":\"c49c4772c9f6fee5ecdcab50ed8c7c4a\",\"keyLocation\":\"$B/c49c4772c9f6fee5ecdcab50ed8c7c4a.txt\",\"urlList\":[\"$B/precio-luz-hoy/\",\"$B/precio-luz-manana/\",\"$B/precio-luz-ayer/\",\"$B/precio-luz/\",\"$B/precio-luz/$HOY/\",\"$B/precio-luz/$MANANA/\",\"$B/precio-luz/$AYER/\",\"$B/\"]}" -w "IndexNow: %{http_code}
-"
+          curl -sS -X POST https://api.indexnow.org/indexnow -H "Content-Type: application/json; charset=utf-8" -d "{\"host\":\"comparadortarifaluz.es\",\"key\":\"c49c4772c9f6fee5ecdcab50ed8c7c4a\",\"keyLocation\":\"$B/c49c4772c9f6fee5ecdcab50ed8c7c4a.txt\",\"urlList\":[\"$B/precio-luz-hoy/\",\"$B/precio-luz-manana/\",\"$B/precio-luz-ayer/\",\"$B/precio-luz/\",\"$B/precio-luz/$HOY/\",\"$B/precio-luz/$MANANA/\",\"$B/precio-luz/$AYER/\",\"$B/\"]}" -w "IndexNow: %{http_code}\n"
       - name: Guardar los precios nuevos en el repositorio
         run: |
           git config user.name "comparadortarifaluz-bot"
