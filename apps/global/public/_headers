@@ -11,6 +11,6 @@
   Cache-Control: public, max-age=31536000, immutable
 
 
-# La dirección de pruebas *.workers.dev no debe aparecer en Google (el sitio bueno es kwhclock.com).
+# La dirección de pruebas *.workers.dev no debe aparecer en Google (el sitio bueno es powerpricenow.com).
 https://:worker.:cuenta.workers.dev/*
   X-Robots-Tag: noindex
