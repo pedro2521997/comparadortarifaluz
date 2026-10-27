@@ -1,0 +1,121 @@
+---
+// Todas las gasolineras de un municipio con sus precios de hoy, ordenadas de la más barata a la más cara.
+import Base from "../../../layouts/Base.astro";
+import Anuncio from "../../../components/Anuncio.astro";
+import TablaEstaciones from "../../../components/TablaEstaciones.astro";
+import { esquemaFaq } from "../../../lib/faq";
+import { fechaMedia } from "../../../lib/formato";
+import { FECHA, HORA, MUNICIPIOS, PRODUCTOS, stats, masBaratas, bonito, eurL, eurL2, ahorroDeposito, urlProvincia, urlMunicipio, type Municipio, type Producto } from "../../../lib/gasolineras";
+
+export function getStaticPaths() {
+  return MUNICIPIOS.map((m) => ({ params: { provincia: m.prov.slug, municipio: m.slug }, props: { m } }));
+}
+const { m } = Astro.props as { m: Municipio };
+const fecha = fechaMedia(FECHA);
+const g = stats(m.estaciones, "g95");
+const d = stats(m.estaciones, "diesel");
+const gp = stats(m.prov.estaciones, "g95");
+const prods = (["g95", "diesel", "g98", "dieselPremium", "glp"] as Producto[]).filter((k) => m.estaciones.some((e) => e.p[k]));
+const orden = prods[0];
+const lista = [...m.estaciones].sort((a, b) => (a.p[orden] ?? 99) - (b.p[orden] ?? 99));
+const barataG = g ? masBaratas(m.estaciones, "g95", 1)[0] : null;
+const barataD = d ? masBaratas(m.estaciones, "diesel", 1)[0] : null;
+// Municipios cercanos de la misma provincia (por coordenadas de su primera gasolinera).
+const c = m.estaciones.find((e) => e.lat && e.lon);
+const cerca = c
+  ? MUNICIPIOS.filter((x) => x.prov === m.prov && x !== m)
+      .map((x) => {
+        const e = x.estaciones.find((y) => y.lat && y.lon);
+        return { x, dist: e ? Math.hypot(e.lat! - c.lat!, (e.lon! - c.lon!) * Math.cos((c.lat! * Math.PI) / 180)) : 99 };
+      })
+      .sort((a, b) => a.dist - b.dist)
+      .slice(0, 8)
+      .map((y) => y.x)
+  : [];
+const preguntas = [
+  ...(barataG && g ? [{ p: `¿Cuál es la gasolinera más barata de ${m.nombre}?`, r: `Hoy, ${fecha}, la gasolina 95 más barata de ${m.nombre} está en ${bonito(barataG.rotulo) || "la gasolinera"} (${bonito(barataG.dir)}), a ${eurL(barataG.p.g95!)}. La media del municipio es ${eurL(g.media)}.` }] : []),
+  ...(barataD && d ? [{ p: `¿Dónde está el diésel más barato en ${m.nombre}?`, r: `En ${bonito(barataD.rotulo) || "la gasolinera"} (${bonito(barataD.dir)}), a ${eurL(barataD.p.diesel!)}. Entre la más barata y la más cara del municipio hay ${eurL2(ahorroDeposito(d.max, d.min))} de diferencia en un depósito de 50 litros.` }] : []),
+  { p: `¿Cuántas gasolineras hay en ${m.nombre}?`, r: `Hay ${m.estaciones.length} gasolineras de venta al público que informan de sus precios al Ministerio para la Transición Ecológica.` },
+];
+const titulo = g ? `Gasolineras en ${m.nombre}: precio hoy desde ${eurL(g.min)}` : `Gasolineras en ${m.nombre} (${m.prov.nombre}): precios hoy`;
+---
+
+<Base
+  titulo={titulo.length <= 70 ? titulo : `Gasolineras en ${m.nombre}: precios hoy`.slice(0, 70)}
+  descripcion={`Precio de la gasolina y el diésel hoy en las ${m.estaciones.length} gasolineras de ${m.nombre} (${m.prov.nombre})${g ? `: gasolina 95 desde ${eurL(g.min)}` : ""}${d ? `, diésel desde ${eurL(d.min)}` : ""}.`.slice(0, 160)}
+  schema={esquemaFaq(preguntas)}
+  migas={[["Gasolineras baratas", "/gasolineras-baratas/"], [m.prov.nombre, urlProvincia(m.prov)], [m.nombre]]}
+>
+  <section class="hero hero--compacto">
+    <div class="wrap">
+      <p class="breadcrumbs"><a href="/gasolineras-baratas/">Gasolineras baratas</a> / <a href={urlProvincia(m.prov)}>{m.prov.nombre}</a> / {m.nombre}</p>
+      <h1>Gasolineras en {m.nombre}</h1>
+      <p class="lead">
+        Las {m.estaciones.length} gasolineras de {m.nombre} con sus precios de hoy, {fecha} ({HORA}).
+        {g && <> Gasolina 95: <strong>{eurL(g.media)}</strong> de media{gp && `, ${g.media > gp.media ? "por encima" : "por debajo"} de la media de la provincia (${eurL(gp.media)})`}.</>}
+        {d && <> Diésel: <strong>{eurL(d.media)}</strong>.</>}
+      </p>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="wrap">
+      <TablaEstaciones estaciones={lista} productos={prods} caption={`Gasolineras de ${m.nombre}`} />
+      <p class="caption" style="margin-top:8px">Ordenadas por precio de {PRODUCTOS[orden].nombre.toLowerCase()}. €/litro con impuestos. Fuente: Ministerio para la Transición Ecológica ({fecha}, {HORA}).</p>
+    </div>
+  </section>
+
+  <Anuncio tipo="horizontal" seccion />
+
+  <section class="section section--white section--tight">
+    <div class="wrap grid grid--2" style="gap:40px">
+      <div>
+        <h2 style="font-size:22px;margin-bottom:12px">Preguntas frecuentes</h2>
+        {preguntas.map((q) => (
+          <details class="faq-c">
+            <summary>{q.p}</summary>
+            <p>{q.r}</p>
+          </details>
+        ))}
+      </div>
+      {
+        cerca.length > 0 && (
+          <div>
+            <h2 style="font-size:22px;margin-bottom:12px">Gasolineras cerca de {m.nombre}</h2>
+            <ul class="lista-cerca">
+              {cerca.map((x) => {
+                const s = stats(x.estaciones, "g95");
+                return (
+                  <li>
+                    <a href={urlMunicipio(x)}>{x.nombre}</a>
+                    {s && <span class="caption"> · gasolina {eurL(s.media)}</span>}
+                  </li>
+                );
+              })}
+            </ul>
+            <p style="margin-top:12px"><a href={urlProvincia(m.prov)}>Todas las de {m.prov.nombre} →</a></p>
+          </div>
+        )
+      }
+    </div>
+  </section>
+</Base>
+
+<style>
+  .faq-c {
+    border-bottom: 1px solid var(--color-pale-sage);
+    padding: 6px 0;
+  }
+  .faq-c summary {
+    color: var(--color-bark);
+  }
+  .faq-c p {
+    padding: 4px 0 12px 20px;
+  }
+  .lista-cerca {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+  }
+</style>

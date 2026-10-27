@@ -1,0 +1,72 @@
+---
+// Índice de gasolineras baratas: todas las provincias con su media de gasolina y gasóleo de hoy.
+import Base from "../../layouts/Base.astro";
+import Anuncio from "../../components/Anuncio.astro";
+import SinDatosCarburantes from "../../components/SinDatosCarburantes.astro";
+import { HAY_GASOLINERAS, ESTACIONES, FECHA, HORA, PROVINCIAS, stats, eurL, urlProvincia } from "../../lib/gasolineras";
+import { fechaMedia } from "../../lib/formato";
+
+const filas = PROVINCIAS.map((p) => ({ p, g: stats(p.estaciones, "g95"), d: stats(p.estaciones, "diesel") }));
+const g = HAY_GASOLINERAS ? stats(ESTACIONES, "g95") : null;
+const d = HAY_GASOLINERAS ? stats(ESTACIONES, "diesel") : null;
+---
+
+{
+  !HAY_GASOLINERAS ? (
+    <SinDatosCarburantes />
+  ) : (
+    <Base
+      titulo={`Gasolineras baratas hoy en España, por provincias (${fechaMedia(FECHA).replace(/ de \d{4}$/, "")})`}
+      descripcion={`Las gasolineras más baratas de cada provincia y municipio, con los precios de hoy: gasolina 95 a ${eurL(g!.media)} y diésel a ${eurL(d!.media)} de media.`}
+      migas={[["Gasolineras baratas"]]}
+    >
+      <section class="hero hero--compacto">
+        <div class="wrap">
+          <span class="eyebrow">Actualizado {fechaMedia(FECHA)} a las {HORA}</span>
+          <h1>Gasolineras baratas en España</h1>
+          <p class="lead">
+            Elige tu provincia para ver las gasolineras más baratas y el precio de cada una, municipio a municipio. Hoy la gasolina 95 está a <strong>{eurL(g!.media)}</strong> y el diésel a <strong>{eurL(d!.media)}</strong> de media.
+          </p>
+          <div class="btn-row">
+            <a class="btn btn--ghost" href="/precio-gasolina-hoy/">Precio de la gasolina hoy</a>
+            <a class="btn btn--ghost" href="/precio-gasoil-hoy/">Precio del gasoil hoy</a>
+            <a class="btn btn--ghost" href="/precio-glp-hoy/">GLP</a>
+          </div>
+        </div>
+      </section>
+      <section class="section section--tight">
+        <div class="wrap">
+          <div class="table-wrap" tabindex="0" role="region" aria-label="Provincias">
+            <table class="tabla-precios">
+              <thead><tr><th scope="col">Provincia</th><th scope="col" class="num">Gasolina 95</th><th scope="col" class="num">Diésel</th><th scope="col" class="num">Gasolineras</th></tr></thead>
+              <tbody>
+                {filas.map(({ p, g: a, d: b }) => (
+                  <tr>
+                    <td><a href={urlProvincia(p)}>{p.nombre}</a></td>
+                    <td class="num">{a ? eurL(a.media) : "—"}</td>
+                    <td class="num">{b ? eurL(b.media) : "—"}</td>
+                    <td class="num">{p.estaciones.length}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p class="caption" style="margin-top:8px">Medias de las gasolineras de venta al público, €/litro con impuestos. Fuente: Ministerio para la Transición Ecológica y el Reto Demográfico.</p>
+        </div>
+      </section>
+      <Anuncio tipo="horizontal" seccion />
+      <section class="section section--white">
+        <div class="wrap wrap--narrow prose">
+          <h2>Cómo encontrar la gasolinera más barata</h2>
+          <ul>
+            <li><strong>Mira tu municipio, no solo la provincia</strong>: dentro de una misma ciudad hay diferencias de 10–20 céntimos por litro.</li>
+            <li><strong>Las gasolineras automáticas y las de hipermercado</strong> suelen ser las más baratas; las de autopista, las más caras.</li>
+            <li><strong>Compara el precio con impuestos por litro</strong>, no los descuentos con tarjeta: muchas veces la gasolinera barata sale mejor que el descuento de la cara.</li>
+            <li><strong>Un depósito de 50 litros</strong> con 10 céntimos de diferencia son 5 € cada vez que llenas.</li>
+          </ul>
+          <p>Más trucos en <a href="/guias/ahorrar-gasolina/">cómo gastar menos gasolina</a> y en <a href="/guias/cuando-repostar-mas-barato/">cuándo es más barato repostar</a>.</p>
+        </div>
+      </section>
+    </Base>
+  )
+}

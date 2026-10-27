@@ -62,6 +62,17 @@ export const GRUPOS_HERRAMIENTAS: GrupoHerramientas[] = [
       { href: "/herramientas/coche-electrico/", t: "Coste de cargar el coche", d: "Lo que cuesta cargar en casa y fuera frente a gasolina o diésel, y a qué hora cargar.", cta: "Calcular mi coche" },
     ],
   },
+  {
+    titulo: "Gasolina y diésel",
+    items: [
+      { href: "/gasolineras-baratas/", t: "Gasolineras baratas", d: "Las gasolineras más baratas de cada provincia y municipio, con los precios de hoy del Ministerio.", cta: "Buscar gasolinera", nueva: true },
+      { href: "/precio-gasolina-hoy/", t: "Precio de la gasolina hoy", d: "Media de España, las más baratas y la evolución de la gasolina 95 y 98.", cta: "Ver la gasolina", nueva: true },
+      { href: "/precio-gasoil-hoy/", t: "Precio del gasoil hoy", d: "Lo que cuesta hoy el diésel en España, por provincias y gasolineras.", cta: "Ver el gasoil", nueva: true },
+      { href: "/precio-glp-hoy/", t: "Precio del GLP (autogás)", d: "El GLP más barato y las gasolineras que lo venden.", cta: "Ver el GLP", nueva: true },
+      { href: "/precio-gasoleo-calefaccion/", t: "Gasóleo de calefacción", d: "Precio semanal del gasóleo C, cuánto cuestan 1.000 litros y cuándo comprar.", cta: "Ver el gasóleo C", nueva: true },
+      { href: "/carburantes-europa/", t: "Gasolina en Europa", d: "Lo que cuesta el litro en cada país de la UE frente a España, para tus viajes.", cta: "Comparar países", nueva: true },
+    ],
+  },
 ];
 
 export const HERRAMIENTAS = GRUPOS_HERRAMIENTAS.flatMap((g) => g.items);

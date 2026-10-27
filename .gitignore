@@ -8,3 +8,4 @@ dist/
 
 # Facturas reales de ejemplo para afinar el lector de PDF: nunca al repositorio
 docs/facturas-ejemplo/
+data/carburantes/estaciones.json

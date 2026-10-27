@@ -1,0 +1,47 @@
+---
+// Tabla de gasolineras con sus precios. La primera columna de precio es la que ordena; la fila más barata se resalta.
+import { PRODUCTOS, bonito, eurL, mapa, type Estacion, type Producto } from "../lib/gasolineras";
+
+interface Props {
+  estaciones: Estacion[];
+  productos: Producto[];
+  /** Mostrar el municipio debajo de la dirección (listas de provincia o de España) */
+  municipio?: boolean;
+  /** Nombre de la provincia por id (listas de España) */
+  provincias?: Record<string, string>;
+  caption?: string;
+}
+const { estaciones, productos, municipio = false, provincias, caption } = Astro.props;
+const k0 = productos[0];
+const minimo = Math.min(...estaciones.map((e) => e.p[k0] ?? Infinity));
+---
+
+<div class="table-wrap" tabindex="0" role="region" aria-label={caption ?? "Gasolineras"}>
+  <table class="tabla-precios">
+    {caption && <caption class="sr-only">{caption}</caption>}
+    <thead>
+      <tr>
+        <th scope="col">Gasolinera</th>
+        {productos.map((k) => <th scope="col" class="num">{PRODUCTOS[k].corto}</th>)}
+      </tr>
+    </thead>
+    <tbody>
+      {
+        estaciones.map((e) => (
+          <tr class={e.p[k0] === minimo ? "mejor" : undefined}>
+            <td>
+              <strong>{bonito(e.rotulo) || "Gasolinera"}</strong>
+              <span class="sub">
+                {bonito(e.dir)}
+                {municipio && <> · {e.mun}{provincias?.[e.prov] && ` (${provincias[e.prov]})`}</>}
+                {mapa(e) && <> · <a href={mapa(e)} rel="noopener nofollow">mapa</a></>}
+              </span>
+              {e.horario && <span class="sub">{e.horario}</span>}
+            </td>
+            {productos.map((k) => <td class="num">{e.p[k] ? eurL(e.p[k]!) : "—"}</td>)}
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</div>

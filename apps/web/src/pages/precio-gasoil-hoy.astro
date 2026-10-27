@@ -1,0 +1,7 @@
+---
+import PaginaCarburante from "../components/PaginaCarburante.astro";
+import SinDatosCarburantes from "../components/SinDatosCarburantes.astro";
+import { HAY_GASOLINERAS } from "../lib/gasolineras";
+---
+
+{HAY_GASOLINERAS ? <PaginaCarburante k="diesel" extra={["dieselPremium"]} ue="diesel" articulo="el gasoil" nombreSeo="Precio del gasoil (diésel)" ruta="/precio-gasoil-hoy/" /> : <SinDatosCarburantes />}

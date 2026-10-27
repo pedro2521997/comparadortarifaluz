@@ -1,0 +1,14 @@
+---
+// Si en un build no se ha podido descargar la lista de gasolineras del Ministerio, la página sale igual
+// (sin datos y sin indexar) en lugar de romper el despliegue de toda la web.
+import Base from "../layouts/Base.astro";
+---
+
+<Base titulo="Precios de carburantes" descripcion="Precios de la gasolina y el gasóleo en España con datos del Ministerio para la Transición Ecológica." noindex anuncioFinal={false}>
+  <section class="section">
+    <div class="wrap wrap--narrow prose">
+      <h1>Precios de carburantes</h1>
+      <p>Ahora mismo no podemos mostrar los precios de las gasolineras: la fuente del Ministerio no ha respondido. Vuelve a intentarlo en unos minutos.</p>
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,159 @@
+---
+// Precio de hoy de un carburante en España: media nacional, gasolineras más baratas, provincias, evolución
+// diaria y semanal, y comparación con Europa. La usan /precio-gasolina-hoy/, /precio-gasoil-hoy/ y /precio-glp-hoy/.
+import Base from "../layouts/Base.astro";
+import Anuncio from "./Anuncio.astro";
+import TablaEstaciones from "./TablaEstaciones.astro";
+import { esquemaFaq } from "../lib/faq";
+import { fechaMedia } from "../lib/formato";
+import {
+  ESTACIONES, FECHA, HORA, PROVINCIAS, PRODUCTOS, HISTORICO, stats, masBaratas, eurL, eurL2, urlProvincia, serieDiaria, ahorroDeposito, type Producto,
+} from "../lib/gasolineras";
+import { graficaLineas } from "../lib/compartido/grafica-svg";
+import { ultimas, ultimo, nombrePais, type ProductoUE } from "../lib/compartido/carburantes-ue";
+
+interface Props {
+  k: Producto;
+  /** Otros carburantes que se muestran en las tablas (p. ej. gasolina 98) */
+  extra?: Producto[];
+  ue?: ProductoUE;
+  /** «la gasolina», «el gasoil», «el GLP» */
+  articulo: string;
+  nombreSeo: string;
+  ruta: string;
+}
+const { k, extra = [], ue, articulo, nombreSeo, ruta } = Astro.props;
+const prods: Producto[] = [k, ...extra];
+const s = stats(ESTACIONES, k)!;
+const ayer = HISTORICO.length > 1 ? HISTORICO.at(-2)?.nacional[k]?.media ?? null : null;
+const top = masBaratas(ESTACIONES, k, 15);
+const caro = [...ESTACIONES].filter((e) => e.p[k]).sort((a, b) => b.p[k]! - a.p[k]!)[0];
+const nombresProv = Object.fromEntries(PROVINCIAS.map((p) => [p.id, p.nombre]));
+const provs = PROVINCIAS.map((p) => ({ p, s: stats(p.estaciones, k) })).filter((x) => x.s).sort((a, b) => a.s!.media - b.s!.media);
+const fecha = fechaMedia(FECHA);
+const titulo = `Precio ${articulo.replace(/^la |^el /, (m) => (m === "la " ? "de la " : "del "))} hoy ${fecha}: ${eurL(s.media)} de media`;
+const desc = `Precio ${articulo.replace(/^la |^el /, (m) => (m === "la " ? "de la " : "del "))} hoy en España: media ${eurL(s.media)}, desde ${eurL(s.min)}. Las ${s.n.toLocaleString("es-ES")} gasolineras y las más baratas de cada provincia.`.slice(0, 160);
+const diaria = serieDiaria(k);
+const semanal = ue ? ultimas("ES", ue, 156) : null;
+const semanalUE = ue ? ultimas("EU", ue, 156) : null;
+const uES = ue ? ultimo("ES", ue) : null;
+const uPT = ue ? ultimo("PT", ue) : null;
+const uFR = ue ? ultimo("FR", ue) : null;
+const uEU = ue ? ultimo("EU", ue) : null;
+const mesCorto = (f: string) => new Date(`${f}T12:00:00Z`).toLocaleDateString("es-ES", { month: "short", year: "numeric" });
+const preguntas = [
+  { p: `¿Cuánto cuesta ${articulo} hoy en España?`, r: `Hoy, ${fecha}, ${articulo} (${PRODUCTOS[k].nombre}) cuesta de media ${eurL(s.media)} en las ${s.n.toLocaleString("es-ES")} gasolineras que informan al Ministerio. La más barata está a ${eurL(s.min)} y la más cara a ${eurL(s.max)}.` },
+  { p: `¿Dónde está ${articulo} más barat${articulo.startsWith("la") ? "a" : "o"}?`, r: `Por provincias, la media más baja hoy es la de ${provs[0].p.nombre} (${eurL(provs[0].s!.media)}) y la más alta la de ${provs.at(-1)!.p.nombre} (${eurL(provs.at(-1)!.s!.media)}). Canarias, Ceuta y Melilla tienen impuestos más bajos. Dentro de cada ciudad, las gasolineras automáticas o de hipermercado suelen ser las más baratas.` },
+  { p: "¿Cuánto me ahorro llenando en la gasolinera más barata?", r: `En un depósito de 50 litros, entre una gasolinera de precio medio (${eurL(s.media)}) y una de las más baratas de tu zona puedes ahorrar fácilmente 3–6 €. Entre la más cara y la más barata de España hay ${eurL2(ahorroDeposito(s.max, s.min))} por depósito.` },
+  ...(uES && uEU ? [{ p: `¿Es más barat${articulo.startsWith("la") ? "a" : "o"} ${articulo} en España que en Europa?`, r: `Según el Boletín Petrolero de la Comisión Europea (semana del ${fechaMedia(uES.semana)}), en España cuesta ${eurL(uES.valor)} de media frente a ${eurL(uEU.valor)} de media en la UE${uPT ? `, ${eurL(uPT.valor)} en Portugal` : ""}${uFR ? ` y ${eurL(uFR.valor)} en Francia` : ""}.` }] : []),
+];
+const schema = [
+  esquemaFaq(preguntas),
+  { "@context": "https://schema.org", "@type": "Dataset", name: `Precio ${articulo.replace(/^la |^el /, "")} en España, ${fecha}`, description: desc, temporalCoverage: FECHA, spatialCoverage: "España", creator: { "@type": "Organization", name: "Ministerio para la Transición Ecológica y el Reto Demográfico" }, isAccessibleForFree: true },
+];
+---
+
+<Base titulo={titulo.length <= 70 ? titulo : titulo.replace(" de media", "")} descripcion={desc} schema={schema} migas={[["Gasolineras baratas", "/gasolineras-baratas/"], [nombreSeo]]}>
+  <section class="hero hero--compacto">
+    <div class="wrap">
+      <span class="eyebrow">Carburantes · actualizado {fecha} a las {HORA}</span>
+      <h1>{nombreSeo} hoy, {fecha}</h1>
+      <p class="lead">
+        {PRODUCTOS[k].nombre}: <strong>{eurL(s.media)}</strong> de media en España{ayer && ` (${s.media > ayer ? "sube" : s.media < ayer ? "baja" : "igual que"} ${s.media !== ayer ? `${Math.abs((s.media - ayer) * 100).toLocaleString("es-ES", { maximumFractionDigits: 1 })} céntimos desde ayer` : "ayer"})`}. La gasolinera más barata la tiene a {eurL(s.min)}.
+      </p>
+      <div class="btn-row">
+        <a class="btn btn--mint" href="/gasolineras-baratas/">Gasolineras baratas en tu provincia</a>
+        <a class="btn btn--ghost" href="/carburantes-europa/">Precios en Europa</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="wrap stack" style="--stack:32px">
+      <div class="grid grid--4 stats">
+        <div class="stat"><span class="stat__label">Media de España</span><span class="stat__value">{eurL(s.media).replace(" €/l", "")}<small> €/l</small></span><span class="stat__sub">{s.n.toLocaleString("es-ES")} gasolineras</span></div>
+        <div class="stat"><span class="stat__label">La más barata</span><span class="stat__value">{eurL(s.min).replace(" €/l", "")}<small> €/l</small></span><span class="stat__sub">{top[0].mun} ({nombresProv[top[0].prov]})</span></div>
+        <div class="stat"><span class="stat__label">La más cara</span><span class="stat__value">{eurL(s.max).replace(" €/l", "")}<small> €/l</small></span><span class="stat__sub">{caro.mun} ({nombresProv[caro.prov]})</span></div>
+        <div class="stat"><span class="stat__label">Provincia más barata</span><span class="stat__value" style="font-size:24px">{provs[0].p.nombre}</span><span class="stat__sub">media {eurL(provs[0].s!.media)}</span></div>
+      </div>
+      <div>
+        <h2 style="font-size:24px;margin-bottom:12px">Las gasolineras con {articulo} más barat{articulo.startsWith("la") ? "a" : "o"} de España hoy</h2>
+        <TablaEstaciones estaciones={top} productos={prods} municipio provincias={nombresProv} caption={`Gasolineras más baratas de España: ${PRODUCTOS[k].nombre}`} />
+        <p class="caption" style="margin-top:8px">Precios en €/litro con impuestos, comunicados por cada gasolinera al Ministerio para la Transición Ecológica ({fecha}, {HORA}). Pueden cambiar durante el día.</p>
+      </div>
+    </div>
+  </section>
+
+  <Anuncio tipo="horizontal" seccion />
+
+  <section class="section section--white section--tight">
+    <div class="wrap stack" style="--stack:16px">
+      <h2 style="font-size:24px">{nombreSeo} por provincias</h2>
+      <div class="table-wrap" tabindex="0" role="region" aria-label="Precio por provincias">
+        <table class="tabla-precios">
+          <thead><tr><th scope="col">Provincia</th><th scope="col" class="num">Media</th><th scope="col" class="num">Más barata</th><th scope="col" class="num">Gasolineras</th></tr></thead>
+          <tbody>
+            {provs.map(({ p, s: x }, i) => (
+              <tr class={i === 0 ? "mejor" : undefined}>
+                <td><a href={urlProvincia(p)}>{p.nombre}</a></td>
+                <td class="num">{eurL(x!.media)}</td>
+                <td class="num">{eurL(x!.min)}</td>
+                <td class="num">{x!.n}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  {
+    (diaria.filter((d) => d.valor !== null).length > 6 || semanal) && (
+      <section class="section section--tight">
+        <div class="wrap grid grid--2" style="gap:40px">
+          {diaria.filter((d) => d.valor !== null).length > 6 && (
+            <div>
+              <h2 style="font-size:22px;margin-bottom:12px">Evolución diaria en España</h2>
+              <Fragment set:html={graficaLineas([{ nombre: "Media de España", valores: diaria.map((d) => d.valor) }], { etiquetas: diaria.map((d) => fechaMedia(d.fecha).replace(/ de \d{4}$/, "")), formato: (n) => n.toFixed(3).replace(".", ","), resumen: `Media diaria de ${PRODUCTOS[k].nombre} en España` })} />
+            </div>
+          )}
+          {semanal && semanalUE && (
+            <div>
+              <h2 style="font-size:22px;margin-bottom:12px">Los últimos tres años, España y la UE</h2>
+              <Fragment set:html={graficaLineas([{ nombre: "España", valores: semanal.valores }, { nombre: nombrePais("EU", "es"), valores: semanalUE.valores }], { etiquetas: semanal.fechas.map(mesCorto), formato: (n) => n.toFixed(2).replace(".", ","), resumen: `Precio semanal en España y en la UE desde ${mesCorto(semanal.fechas[0])}` })} />
+              <p class="caption">€/litro con impuestos. Fuente: Comisión Europea, Boletín Petrolero semanal.</p>
+            </div>
+          )}
+        </div>
+      </section>
+    )
+  }
+
+  <section class="section section--white section--tight">
+    <div class="wrap wrap--narrow">
+      <h2 style="font-size:24px;margin-bottom:12px">Preguntas frecuentes</h2>
+      {preguntas.map((q) => (
+        <details class="faq-c">
+          <summary>{q.p}</summary>
+          <p>{q.r}</p>
+        </details>
+      ))}
+      <p class="small" style="margin-top:20px">
+        Más: <a href="/guias/ahorrar-gasolina/">cómo gastar menos gasolina</a> · <a href="/guias/gasolina-95-o-98/">¿gasolina 95 o 98?</a> · <a href="/guias/cuando-repostar-mas-barato/">cuándo es más barato repostar</a> · <a href={ruta === "/precio-gasolina-hoy/" ? "/precio-gasoil-hoy/" : "/precio-gasolina-hoy/"}>{ruta === "/precio-gasolina-hoy/" ? "precio del gasoil hoy" : "precio de la gasolina hoy"}</a>
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .faq-c {
+    border-bottom: 1px solid var(--color-pale-sage);
+    padding: 6px 0;
+  }
+  .faq-c summary {
+    color: var(--color-bark);
+  }
+  .faq-c p {
+    padding: 4px 0 12px 20px;
+  }
+</style>

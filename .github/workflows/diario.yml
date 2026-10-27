@@ -36,6 +36,11 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run precios -- 45
+      # Gasolineras de España (Ministerio, cada build) y precios europeos (Comisión Europea, semanal).
+      # Si falla, las páginas de gasolineras salen sin datos pero el resto de la web se despliega igual.
+      - name: Precios de carburantes
+        continue-on-error: true
+        run: npm run carburantes
       - run: npm test
       - run: npm run build
       # Web global (apps/global): mismos datos y código, otro dominio. Se construye siempre (así se prueba),
@@ -74,5 +79,5 @@ jobs:
         run: |
           git config user.name "comparadortarifaluz-bot"
           git config user.email "bot@comparadortarifaluz.es"
-          git add data/precios data/mercado-ajustes.json data/global
+          git add data/precios data/mercado-ajustes.json data/global data/carburantes/resumen data/carburantes-ue.json
           git diff --cached --quiet || (git commit -m "Precios PVPC $(date +%F)" && git pull --rebase --autostash origin main && git push)

@@ -1,0 +1,164 @@
+---
+// Gasolineras baratas de una provincia: medias frente a España, las más baratas de gasolina y de diésel
+// y todos los municipios con su media (enlazan a la página de cada municipio).
+import Base from "../../../layouts/Base.astro";
+import Anuncio from "../../../components/Anuncio.astro";
+import TablaEstaciones from "../../../components/TablaEstaciones.astro";
+import { esquemaFaq } from "../../../lib/faq";
+import { fechaMedia } from "../../../lib/formato";
+import { graficaLineas } from "../../../lib/compartido/grafica-svg";
+import {
+  ESTACIONES, FECHA, HORA, PROVINCIAS, MUNICIPIOS, PRODUCTOS, stats, masBaratas, eurL, eurL2, urlMunicipio, serieDiaria, ahorroDeposito, type Provincia, type Producto,
+} from "../../../lib/gasolineras";
+
+export function getStaticPaths() {
+  return PROVINCIAS.map((p) => ({ params: { provincia: p.slug }, props: { p } }));
+}
+const { p } = Astro.props as { p: Provincia };
+const fecha = fechaMedia(FECHA);
+const OTROS: Producto[] = ["g98", "dieselPremium", "glp", "gnc", "adblue"];
+const sp = (k: Producto) => stats(p.estaciones, k);
+const se = (k: Producto) => stats(ESTACIONES, k);
+const g = sp("g95");
+const d = sp("diesel");
+const munis = MUNICIPIOS.filter((m) => m.prov === p).map((m) => ({ m, g: stats(m.estaciones, "g95"), d: stats(m.estaciones, "diesel") }));
+const masBaratoG = [...munis].filter((x) => x.g).sort((a, b) => a.g!.media - b.g!.media)[0];
+const rank = PROVINCIAS.map((x) => ({ x, s: stats(x.estaciones, "g95") })).filter((x) => x.s).sort((a, b) => a.s!.media - b.s!.media);
+const puesto = rank.findIndex((r) => r.x === p) + 1;
+const comp = (a: number, b: number) => `${Math.abs((a - b) * 100).toLocaleString("es-ES", { maximumFractionDigits: 1 })} céntimos ${a > b ? "más cara" : "más barata"} que la media de España`;
+const preguntas = [
+  ...(g ? [{ p: `¿Dónde está la gasolina más barata en ${p.nombre}?`, r: `Hoy, ${fecha}, la gasolina 95 más barata de la provincia de ${p.nombre} cuesta ${eurL(g.min)} en ${masBaratas(p.estaciones, "g95", 1)[0].mun}. La media provincial es ${eurL(g.media)}, ${comp(g.media, se("g95")!.media)}.` }] : []),
+  ...(d ? [{ p: `¿Cuánto cuesta el diésel en ${p.nombre} hoy?`, r: `El gasóleo A cuesta de media ${eurL(d.media)} en ${p.nombre}; la gasolinera más barata lo tiene a ${eurL(d.min)} y la más cara a ${eurL(d.max)}. Llenar 50 litros en la más barata en vez de en la más cara ahorra ${eurL2(ahorroDeposito(d.max, d.min))}.` }] : []),
+  ...(g ? [{ p: `¿${p.nombre} es de las provincias más baratas para repostar?`, r: `Por precio medio de la gasolina 95, ${p.nombre} está en el puesto ${puesto} de ${rank.length} provincias (1 = la más barata).` }] : []),
+];
+const diaria = serieDiaria("g95", p.id);
+const diariaD = serieDiaria("diesel", p.id);
+const titulo = g ? `Gasolineras baratas en ${p.nombre} hoy: gasolina desde ${eurL(g.min)}` : `Gasolineras baratas en ${p.nombre} hoy`;
+---
+
+<Base
+  titulo={titulo.length <= 70 ? titulo : `Gasolineras baratas en ${p.nombre} hoy`}
+  descripcion={`Precio de la gasolina y el diésel hoy en ${p.nombre}: ${g ? `gasolina 95 a ${eurL(g.media)}` : ""}${d ? `, diésel a ${eurL(d.media)}` : ""} de media. Las ${p.estaciones.length} gasolineras, municipio a municipio.`.slice(0, 160)}
+  schema={esquemaFaq(preguntas)}
+  migas={[["Gasolineras baratas", "/gasolineras-baratas/"], [p.nombre]]}
+>
+  <section class="hero hero--compacto">
+    <div class="wrap">
+      <p class="breadcrumbs"><a href="/gasolineras-baratas/">Gasolineras baratas</a> / {p.nombre}</p>
+      <h1>Gasolineras baratas en {p.nombre}</h1>
+      <p class="lead">
+        Precios de hoy, {fecha} ({HORA}), en las {p.estaciones.length} gasolineras de la provincia.{g && <> Gasolina 95: <strong>{eurL(g.media)}</strong> de media, {comp(g.media, se("g95")!.media)}.</>}
+      </p>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="wrap stack" style="--stack:32px">
+      <div class="grid grid--4 stats">
+        {
+          (["g95", "diesel", "g98", "glp"] as Producto[]).map((k) => {
+            const x = sp(k);
+            return x ? (
+              <div class="stat">
+                <span class="stat__label">{PRODUCTOS[k].nombre}</span>
+                <span class="stat__value">{eurL(x.media).replace(" €/l", "")}<small> €/l</small></span>
+                <span class="stat__sub">desde {eurL(x.min)} · {x.n} gasolineras</span>
+              </div>
+            ) : null;
+          })
+        }
+      </div>
+      {
+        g && (
+          <div>
+            <h2 style="font-size:24px;margin-bottom:12px">Gasolina 95 más barata en {p.nombre}</h2>
+            <TablaEstaciones estaciones={masBaratas(p.estaciones, "g95", 10)} productos={["g95", "diesel"]} municipio caption={`Gasolina más barata en ${p.nombre}`} />
+          </div>
+        )
+      }
+    </div>
+  </section>
+
+  <Anuncio tipo="horizontal" seccion />
+
+  <section class="section section--white section--tight">
+    <div class="wrap stack" style="--stack:32px">
+      {
+        d && (
+          <div>
+            <h2 style="font-size:24px;margin-bottom:12px">Diésel más barato en {p.nombre}</h2>
+            <TablaEstaciones estaciones={masBaratas(p.estaciones, "diesel", 10)} productos={["diesel", "g95"]} municipio caption={`Diésel más barato en ${p.nombre}`} />
+          </div>
+        )
+      }
+      {
+        munis.length > 0 && (
+          <div>
+            <h2 style="font-size:24px;margin-bottom:12px">Precio por municipio</h2>
+            {masBaratoG && <p class="muted" style="margin-bottom:12px">El municipio con la gasolina más barata de media es {masBaratoG.m.nombre} ({eurL(masBaratoG.g!.media)}).</p>}
+            <div class="table-wrap" tabindex="0" role="region" aria-label="Municipios">
+              <table class="tabla-precios">
+                <thead><tr><th scope="col">Municipio</th><th scope="col" class="num">Gasolina 95</th><th scope="col" class="num">Diésel</th><th scope="col" class="num">Gasolineras</th></tr></thead>
+                <tbody>
+                  {munis.map(({ m, g: a, d: b }) => (
+                    <tr>
+                      <td><a href={urlMunicipio(m)}>{m.nombre}</a></td>
+                      <td class="num">{a ? eurL(a.media) : "—"}</td>
+                      <td class="num">{b ? eurL(b.media) : "—"}</td>
+                      <td class="num">{m.estaciones.length}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p class="caption" style="margin-top:8px">Municipios con al menos dos gasolineras. Medias en €/litro con impuestos.</p>
+          </div>
+        )
+      }
+    </div>
+  </section>
+
+  {
+    diaria.filter((x) => x.valor !== null).length > 6 && (
+      <section class="section section--tight">
+        <div class="wrap wrap--narrow">
+          <h2 style="font-size:22px;margin-bottom:12px">Evolución en {p.nombre}</h2>
+          <Fragment set:html={graficaLineas([{ nombre: "Gasolina 95", valores: diaria.map((x) => x.valor) }, { nombre: "Diésel", valores: diariaD.map((x) => x.valor) }], { etiquetas: diaria.map((x) => fechaMedia(x.fecha).replace(/ de \d{4}$/, "")), formato: (n) => n.toFixed(3).replace(".", ","), resumen: `Precio medio diario en ${p.nombre}` })} />
+        </div>
+      </section>
+    )
+  }
+
+  <Anuncio tipo="horizontal" seccion />
+
+  <section class="section section--white section--tight">
+    <div class="wrap wrap--narrow">
+      <h2 style="font-size:24px;margin-bottom:12px">Preguntas frecuentes</h2>
+      {preguntas.map((q) => (
+        <details class="faq-c">
+          <summary>{q.p}</summary>
+          <p>{q.r}</p>
+        </details>
+      ))}
+      {OTROS.some((k) => sp(k)) && (
+        <p class="small" style="margin-top:16px">
+          Otros carburantes en {p.nombre}: {OTROS.filter((k) => sp(k)).map((k) => `${PRODUCTOS[k].corto} ${eurL(sp(k)!.media)}`).join(" · ")}.
+        </p>
+      )}
+      <p class="caption" style="margin-top:16px">Fuente: Ministerio para la Transición Ecológica y el Reto Demográfico (geoportal de gasolineras), {fecha}, {HORA}. Precios con impuestos, solo gasolineras de venta al público.</p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .faq-c {
+    border-bottom: 1px solid var(--color-pale-sage);
+    padding: 6px 0;
+  }
+  .faq-c summary {
+    color: var(--color-bark);
+  }
+  .faq-c p {
+    padding: 4px 0 12px 20px;
+  }
+</style>

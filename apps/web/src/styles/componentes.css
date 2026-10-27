@@ -920,3 +920,44 @@
   display: grid;
   gap: 8px;
 }
+
+/* Gráficas de evolución (lib/compartido/grafica-svg.ts) y tablas de precios de carburantes. */
+.g-svg {
+  margin: 0;
+}
+.g-leyenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin-top: 6px;
+}
+.g-leyenda__l {
+  display: inline-block;
+  width: 18px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+.tabla-precios {
+  width: 100%;
+  font-size: 15px;
+}
+.tabla-precios td.num,
+.tabla-precios th.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.tabla-precios .mejor {
+  background: #f2faf6;
+}
+.tabla-precios .sub {
+  display: block;
+  font-size: 13px;
+  color: var(--color-slate);
+}
+.sube {
+  color: #b42318;
+}
+.baja {
+  color: var(--color-canopy);
+}
