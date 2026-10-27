@@ -1,0 +1,54 @@
+---
+// Mapas de gasolineras en el idioma de cada sección: /fr/carte-stations-service/ (mapa de Francia),
+// /de/tankstellen-karte/ (índice, porque Alemania no tiene mapa) y /de/tankstellen-karte/frankreich/ (para viajar).
+import Base from "../../../layouts/Base.astro";
+import PaginaMapa from "../../../components/PaginaMapa.astro";
+import { nombrePais } from "../../../../../web/src/lib/compartido/carburantes-ue";
+import { PAISES_C, CC, en, slugTexto } from "../../../lib/carburantes";
+import { MAPAS, mapaPropio, tieneMapas, urlMapa, estaciones } from "../../../lib/mapa";
+import { lista, TEXTOS_C } from "../../../lib/textos-carburantes";
+import { TEXTOS_M } from "../../../lib/textos-mapa";
+import { recortarFrases, type Pais } from "../../../lib/datos";
+
+export function getStaticPaths() {
+  return PAISES_C.filter(tieneMapas).flatMap((p) => {
+    const slug = TEXTOS_M[p.lang]!.slug;
+    return [
+      { params: { pais: p.cc, mapa: slug, destino: undefined }, props: { p, cc: mapaPropio(p) ? CC(p) : null } },
+      ...MAPAS.filter((cc) => cc !== CC(p)).map((cc) => ({ params: { pais: p.cc, mapa: slug, destino: slugTexto(nombrePais(cc, p.locale)) }, props: { p, cc } })),
+    ];
+  });
+}
+const { p, cc } = Astro.props as { p: Pais; cc: string | null };
+const T = TEXTOS_M[p.lang]!;
+const nf = new Intl.NumberFormat(p.locale);
+const y = TEXTOS_C[p.lang]!.y;
+const nombres = lista(p.lang, MAPAS.map((x) => nombrePais(x, p.locale)), y);
+const enes = lista(p.lang, MAPAS.map((x) => en(p, x)), y);
+const lead = T.indiceLead(nombres, enes);
+---
+
+{
+  cc ? (
+    <PaginaMapa p={p} cc={cc} />
+  ) : (
+    <Base titulo={T.indiceT} descripcion={recortarFrases(lead, 158)} lang={p.lang} locale={p.locale}>
+      <section class="hero hero--compacto">
+        <div class="wrap">
+          <h1>{T.indiceT}</h1>
+          <p class="lead">{lead}</p>
+        </div>
+      </section>
+      <section class="section section--tight">
+        <div class="wrap grid grid--2">
+          {MAPAS.map((x) => (
+            <a class="card card--link" href={urlMapa(p, x)}>
+              <strong>{T.titulo(en(p, x))}</strong>
+              <span class="muted small">{T.estaciones(estaciones(x)!.e.length, nf.format(estaciones(x)!.e.length))}</span>
+            </a>
+          ))}
+        </div>
+      </section>
+    </Base>
+  )
+}

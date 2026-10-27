@@ -25,6 +25,19 @@
         "@lst/global"
       ],
       "port": 4322
+    },
+    {
+      "name": "global-dist",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "astro",
+        "preview",
+        "--root",
+        "apps/global",
+        "--port",
+        "4323"
+      ],
+      "port": 4323
     }
   ]
 }

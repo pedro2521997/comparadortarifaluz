@@ -8,6 +8,8 @@ import { ultimo, ultimas, ranking, nombrePais, FUENTE_UE } from "../../../../../
 import { PAISES_C, textosC, CC, urlPrecios, urlEuropa, urlDestino, destinos, en, litro, dinero, fechaC, mesC, PRODUCTOS, hay, slugTexto, VECINOS } from "../../../lib/carburantes";
 import { esquemaFaq, recortarFrases, type Pais } from "../../../lib/datos";
 import { lista, semanaIso } from "../../../lib/textos-carburantes";
+import { MAPAS, tieneMapas, urlMapa } from "../../../lib/mapa";
+import { TEXTOS_M } from "../../../lib/textos-mapa";
 
 export function getStaticPaths() {
   return PAISES_C.flatMap((p) =>
@@ -50,6 +52,7 @@ const recorta = (t: string, n: number) => (t.length <= n ? t : t.slice(0, t.last
       <p class="breadcrumbs"><a href={urlEuropa(p)}>{T.tituloEuropa}</a> / {nombreD}</p>
       <h1>{T.tituloDestino(enD)}</h1>
       <p class="lead">{lead}</p>
+      {tieneMapas(p) && MAPAS.includes(d) && <div class="btn-row"><a class="btn btn--mint btn--small" href={urlMapa(p, d)}>{TEXTOS_M[p.lang]!.titulo(enD)}</a></div>}
     </div>
   </section>
   <section class="section section--tight">

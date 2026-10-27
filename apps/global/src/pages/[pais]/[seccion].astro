@@ -8,6 +8,8 @@ import { graficaLineas } from "../../../../web/src/lib/compartido/grafica-svg";
 import { ultimo, ultimas, ranking, partImpuestos, nombrePais, FUENTE_UE, type ProductoUE } from "../../../../web/src/lib/compartido/carburantes-ue";
 import { PAISES_C, textosC, CC, urlPrecios, urlCalefaccion, urlEuropa, urlDestino, en, litro, dinero, pct, fechaC, mesC, VECINOS, PRODUCTOS, hay } from "../../lib/carburantes";
 import { lista, semanaIso } from "../../lib/textos-carburantes";
+import { tieneMapas, urlMapa } from "../../lib/mapa";
+import { TEXTOS_M } from "../../lib/textos-mapa";
 import { TEXTOS } from "../../lib/textos";
 import type { Pais } from "../../lib/datos";
 import { esquemaFaq, MERCADOS, recortarFrases } from "../../lib/datos";
@@ -86,6 +88,7 @@ const serie = (k: ProductoUE, c = cc) => ultimas(c, k, 156);
         <a class="btn btn--ghost btn--small" href={urlPrecios(p)} aria-current={s === "precios" ? "page" : undefined}>{T.productos.euro95} / {T.productos.diesel}</a>
         {hay(cc, "calefaccion") && <a class="btn btn--ghost btn--small" href={urlCalefaccion(p)} aria-current={s === "calefaccion" ? "page" : undefined}>{T.productos.calefaccion}</a>}
         <a class="btn btn--ghost btn--small" href={urlEuropa(p)} aria-current={s === "europa" ? "page" : undefined}>{T.tituloEuropa}</a>
+        {tieneMapas(p) && <a class="btn btn--ghost btn--small" href={urlMapa(p)}>{TEXTOS_M[p.lang]!.boton}</a>}
         {MERCADOS.some((m) => m.pais.cc === p.cc) && <a class="btn btn--ghost btn--small" href={`/${p.cc}/`}>{L.precio} {L.hoy}</a>}
       </div>
     </div>

@@ -24,3 +24,9 @@ export function leerJsons<T>(carpeta: string): T[] {
         .map((f) => JSON.parse(readFileSync(join(raiz, e.name, f), "utf8")) as T),
     );
 }
+
+/** Un JSON de data/ (ruta relativa a data/), o null si no existe. */
+export function leerJson<T>(ruta: string): T | null {
+  const f = join(carpetaData(), ruta);
+  return existsSync(f) ? (JSON.parse(readFileSync(f, "utf8")) as T) : null;
+}

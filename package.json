@@ -19,6 +19,7 @@
     "db:init": "npm run db:init -w @lst/worker",
     "seo": "node scripts/auditar-seo.mjs",
     "precios:global": "node scripts/precios-global.mjs",
+    "estaciones:global": "node scripts/estaciones-global.mjs",
     "carburantes": "node scripts/carburantes.mjs",
     "build:global": "npm run build -w @lst/global",
     "seo:global": "node scripts/auditar-seo.mjs apps/global/dist",

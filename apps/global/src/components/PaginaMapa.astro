@@ -1,0 +1,383 @@
+---
+// Mapa de gasolineras de un país (FR, ES, IT, PT) en el idioma de una sección de la web global: mapa con
+// buscador, «cerca de mí» y lista de las más baratas de la zona (en el navegador), y debajo las cifras del día
+// en HTML para quien no tiene JavaScript y para los buscadores.
+import Base from "../layouts/Base.astro";
+import Anuncio from "./Anuncio.astro";
+import { nombrePais } from "../../../web/src/lib/compartido/carburantes-ue";
+import { CC, en, urlPrecios, urlDestino, PAISES_C, textosC } from "../lib/carburantes";
+import { estaciones, resumen, masBaratas, autopista, soloContinente, urlMapa, urlDatos, alternativasMapa, MAPAS, GASOLINA, LIMITES, FUENTE_MAPA, type Comb } from "../lib/mapa";
+import { TEXTOS_M } from "../lib/textos-mapa";
+import { TEXTOS } from "../lib/textos";
+import { esquemaFaq, recortarFrases, type Pais } from "../lib/datos";
+
+interface Props { p: Pais; cc: string }
+const { p, cc } = Astro.props;
+const T = TEXTOS_M[p.lang]!;
+const L = TEXTOS[p.lang];
+const d = estaciones(cc)!;
+const enX = en(p, cc);
+const sep = p.lang === "fr" ? " : " : ": ";
+const nf = (dec: number) => new Intl.NumberFormat(p.locale, { minimumFractionDigits: dec, maximumFractionDigits: dec });
+const litro = (x: number) => `${nf(3).format(x)} €/l`;
+const pct = (x: number) => new Intl.NumberFormat(p.locale, { style: "percent", maximumFractionDigits: 0 }).format(x);
+const hora = new Intl.DateTimeFormat(p.locale, { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit", timeZone: p.tz }).format(new Date(d.actualizado));
+
+const G = GASOLINA[cc];
+const D: Comb = "diesel";
+const rG = resumen(cc, G)!;
+const rD = resumen(cc, D)!;
+const lead = T.lead({ n: nf(0).format(d.e.length), enX, G: T.comb[G], g: litro(rG.media), d: litro(rD.media), dArt: T.combArt[D], gArt: T.combArt[G] });
+
+/** «Total, Rue X» o solo la dirección (las gasolineras francesas no traen nombre). */
+const sitio = (f: (typeof d.e)[number]) => [f[2], f[3]].filter(Boolean).join(", ") || T.estacion;
+const tablas = [D, G].map((k) => ({ k, filas: masBaratas(cc, k) }));
+const bD = tablas[0].filas[0];
+const au = autopista(cc, D);
+const auFrase = au && au.a > au.r ? T.autopistaFrase(T.combArt[D], pct(au.a / au.r - 1), litro(au.a), litro(au.r)) : null;
+const preguntas = [
+  { p: T.pBarata(T.combArt[D], enX), r: T.rBarata({ cArt: T.combArt[D], enX, sitio: sitio(bD.f), lugar: bD.f[4], precio: litro(bD.precio), media: litro(rD.media) }) },
+  { p: T.pActual, r: T.rActual(T.fuentes[cc as keyof typeof T.fuentes], hora) },
+  ...(auFrase ? [{ p: T.pAutopista, r: auFrase }] : []),
+];
+
+// Carburantes con datos de verdad (al menos 50 gasolineras), en el orden del fichero.
+const combs = d.combustibles.filter((k) => (resumen(cc, k)?.n ?? 0) >= 50);
+const config = {
+  datos: urlDatos(cc),
+  cc,
+  locale: p.locale,
+  limites: LIMITES[cc],
+  inicial: G,
+  combustibles: Object.fromEntries(combs.map((k) => [k, T.comb[k]])),
+  t: {
+    vacio: T.vacio, ruta: T.ruta, precioDel: T.precioDel("{f}"), autopista: T.autopista, sinDatos: T.sinDatos, sinUbicacion: T.sinUbicacion,
+    estacion: T.estacion, lugares: T.lugares, estaciones: [T.estaciones(1, "1"), T.estaciones(2, "{n}")], nada: T.nada, gestos: T.gestos,
+  },
+};
+const configJson = JSON.stringify(config).replace(/</g, "\\u003c");
+const otros = MAPAS.filter((x) => x !== cc);
+const propio = cc === CC(p);
+const enlaceFuel = propio ? urlPrecios(p) : PAISES_C.includes(p) ? urlDestino(p, cc) : null;
+---
+
+<Base titulo={T.tituloSeo(enX).length <= 70 ? T.tituloSeo(enX) : T.titulo(enX)} descripcion={recortarFrases(lead, 158)} lang={p.lang} locale={p.locale} schema={esquemaFaq(preguntas)} alternativas={alternativasMapa(cc)}>
+  <section class="hero hero--compacto">
+    <div class="wrap">
+      <span class="eyebrow">{nombrePais(cc, p.locale)} · {hora}</span>
+      <h1>{T.titulo(enX)}</h1>
+      <p class="lead">{lead}</p>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="wrap mapa" data-mapa>
+      <div class="mapa__barra">
+        <div class="mapa__buscar" role="search">
+          <label class="visually-hidden" for="mapa-buscar">{T.buscar}</label>
+          <input id="mapa-buscar" type="search" placeholder={T.placeholder} autocomplete="off" role="combobox" aria-expanded="false" aria-controls="mapa-resultados" data-buscar />
+          <ul id="mapa-resultados" class="mapa__resultados" role="listbox" hidden data-resultados></ul>
+        </div>
+        <button type="button" class="btn btn--ghost btn--small" data-cerca>⌖ {T.cerca}</button>
+      </div>
+      <div class="mapa__combustibles" role="group" aria-label={T.combustible} data-combustibles>
+        {combs.map((k) => <button type="button" class="mapa__chip" data-comb={k} aria-pressed={k === G ? "true" : "false"}>{T.comb[k]}</button>)}
+      </div>
+      <div class="mapa__cuerpo">
+        <div class="mapa__lienzo" data-lienzo aria-label={T.titulo(enX)}>
+          <p class="mapa__estado" data-estado>{T.cargando}</p>
+          <div class="mapa__leyenda" data-leyenda hidden>
+            <span data-min></span><span class="mapa__degradado" aria-hidden="true"></span><span data-max></span>
+          </div>
+        </div>
+        <aside class="mapa__lista">
+          <h2>{T.baratasZona}</h2>
+          <ol data-lista></ol>
+        </aside>
+      </div>
+      <p class="caption">{L.fuente}{sep}<a href={FUENTE_MAPA[cc].url} rel="noopener">{FUENTE_MAPA[cc].nombre}</a>. {T.aviso}</p>
+    </div>
+    <script type="application/json" id="mapa-config" set:html={configJson} />
+  </section>
+
+  <Anuncio tipo="horizontal" seccion />
+
+  <section class="section section--white section--tight">
+    <div class="wrap stack" style="--stack:32px">
+      <div class="grid grid--4 stats">
+        <div class="stat"><span class="stat__label">{T.statN}</span><span class="stat__value" style="font-size:28px">{nf(0).format(d.e.length)}</span><span class="stat__sub"></span></div>
+        <div class="stat"><span class="stat__label">{T.statMedia(T.comb[G])}</span><span class="stat__value" style="font-size:28px">{litro(rG.media)}</span><span class="stat__sub">{T.statMin(T.comb[G])}{sep}{litro(rG.min)}</span></div>
+        <div class="stat"><span class="stat__label">{T.statMedia(T.comb[D])}</span><span class="stat__value" style="font-size:28px">{litro(rD.media)}</span><span class="stat__sub">{T.statMin(T.comb[D])}{sep}{litro(rD.min)}</span></div>
+        {au && au.a > au.r && <div class="stat"><span class="stat__label">{T.comb[D]} · {T.autopista}</span><span class="stat__value" style="font-size:28px">{litro(au.a)}</span><span class="stat__sub">+{pct(au.a / au.r - 1)}</span></div>}
+      </div>
+      <div class="grid grid--2" style="gap:32px">
+        {tablas.map(({ k, filas }) => (
+          <div style="min-width:0">
+            <h2 style="font-size:20px;margin-bottom:12px">{T.baratasT(T.comb[k], T.combArt[k], enX)}</h2>
+            <div class="table-wrap" tabindex="0" role="region" aria-label={T.baratasT(T.comb[k], T.combArt[k], enX)}>
+              <table class="tabla-precios">
+                <thead><tr><th scope="col">{T.colEstacion}</th><th scope="col">{T.colLugar}</th><th scope="col" class="num">{T.colPrecio}</th></tr></thead>
+                <tbody>
+                  {filas.map(({ f, precio }) => (
+                    <tr><td>{sitio(f)}</td><td>{f[4]}</td><td class="num">{litro(precio)}</td></tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        ))}
+      </div>
+      {soloContinente(cc) && <p class="caption">{T.notaContinente}</p>}
+    </div>
+  </section>
+
+  <section class="section section--white">
+    <div class="wrap wrap--narrow">
+      <h2 style="font-size:22px;margin-bottom:12px">{textosC(p).preguntasT}</h2>
+      {preguntas.map((q) => (
+        <details class="g-faq">
+          <summary>{q.p}</summary>
+          <p>{q.r}</p>
+        </details>
+      ))}
+      {
+        (otros.length > 0 || enlaceFuel) && (
+          <>
+            <h2 style="font-size:22px;margin:32px 0 12px">{T.otrosMapas}</h2>
+            <div class="btn-row">
+              {otros.map((x) => <a class="btn btn--ghost btn--small" href={urlMapa(p, x)}>{nombrePais(x, p.locale)}</a>)}
+              {enlaceFuel && <a class="btn btn--ghost btn--small" href={enlaceFuel}>{L.carburantes}</a>}
+            </div>
+          </>
+        )
+      }
+    </div>
+  </section>
+</Base>
+
+<script>
+  import "../scripts/mapa";
+</script>
+
+<style>
+  .mapa {
+    display: grid;
+    gap: 12px;
+  }
+  .mapa__barra {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .mapa__buscar {
+    position: relative;
+    flex: 1 1 260px;
+  }
+  .mapa__buscar input {
+    width: 100%;
+  }
+  .mapa__resultados {
+    position: absolute;
+    z-index: 20;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    margin: 0;
+    padding: 4px;
+    list-style: none;
+    background: var(--color-sheet-white);
+    border: 1px solid var(--color-pale-sage);
+    border-radius: var(--radius-cards);
+    box-shadow: 0 8px 24px rgba(16, 67, 54, 0.15);
+    max-height: 320px;
+    overflow-y: auto;
+  }
+  .mapa__resultados :global(li) {
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .mapa__resultados :global(li[aria-selected="true"]),
+  .mapa__resultados :global(li:hover) {
+    background: var(--color-sage-mist);
+  }
+  .mapa__resultados :global(.cab) {
+    font-size: 12px;
+    color: var(--color-slate);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    cursor: default;
+    background: none !important;
+  }
+  .mapa__resultados :global(small) {
+    color: var(--color-slate);
+    white-space: nowrap;
+  }
+  .mapa__combustibles {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .mapa__chip {
+    font: inherit;
+    font-size: 14px;
+    padding: 6px 12px;
+    border-radius: var(--radius-pills);
+    border: 1px solid var(--color-pale-sage);
+    background: var(--color-sheet-white);
+    color: var(--color-bark);
+    cursor: pointer;
+  }
+  .mapa__chip[aria-pressed="true"] {
+    background: var(--color-canopy);
+    border-color: var(--color-canopy);
+    color: #fff;
+  }
+  .mapa__cuerpo {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 16px;
+  }
+  .mapa__lienzo {
+    position: relative;
+    height: min(70vh, 620px);
+    min-height: 380px;
+    border-radius: var(--radius-cards);
+    overflow: hidden;
+    background: var(--color-sage-mist);
+  }
+  .mapa__estado {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    margin: 0;
+    padding: 24px;
+    text-align: center;
+    color: var(--color-slate);
+    z-index: 1;
+    pointer-events: none;
+  }
+  .mapa__leyenda {
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    font-size: 12px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 6px;
+  }
+  .mapa__degradado {
+    width: 80px;
+    height: 8px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #1a9850, #f2c94c, #d73027);
+  }
+  .mapa__lista h2 {
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+  .mapa__lista ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 4px;
+    max-height: calc(min(70vh, 620px) - 32px);
+    overflow-y: auto;
+  }
+  .mapa__lista :global(button) {
+    width: 100%;
+    text-align: left;
+    font: inherit;
+    font-size: 14px;
+    background: var(--color-sheet-white);
+    border: 1px solid var(--color-pale-sage);
+    border-radius: 8px;
+    padding: 8px 10px;
+    cursor: pointer;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 2px 10px;
+  }
+  .mapa__lista :global(button:hover) {
+    border-color: var(--color-canopy);
+  }
+  .mapa__lista :global(.precio) {
+    font-weight: var(--font-weight-bold);
+    color: var(--color-canopy);
+    grid-row: span 2;
+    align-self: center;
+  }
+  .mapa__lista :global(.donde) {
+    color: var(--color-slate);
+    font-size: 13px;
+  }
+  .mapa__lista :global(.vacio) {
+    color: var(--color-slate);
+    font-size: 14px;
+  }
+  .mapa :global(.maplibregl-popup-content) {
+    font-family: inherit;
+    font-size: 14px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    min-width: 200px;
+  }
+  .mapa :global(.popup__precios) {
+    margin: 8px 0;
+    padding: 0;
+    list-style: none;
+  }
+  .mapa :global(.popup__precios li) {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .mapa :global(.popup__precios .actual) {
+    font-weight: var(--font-weight-bold);
+    color: var(--color-canopy);
+  }
+  .mapa :global(.popup__pie) {
+    font-size: 12px;
+    color: var(--color-slate);
+  }
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .g-faq {
+    border-bottom: 1px solid var(--color-pale-sage);
+    padding: 6px 0;
+  }
+  .g-faq summary {
+    color: var(--color-bark);
+    cursor: pointer;
+  }
+  .g-faq p {
+    padding: 4px 0 12px 20px;
+  }
+  @media (max-width: 860px) {
+    .mapa__cuerpo {
+      grid-template-columns: 1fr;
+    }
+    .mapa__lienzo {
+      height: 60vh;
+    }
+    .mapa__lista ol {
+      max-height: none;
+    }
+  }
+</style>

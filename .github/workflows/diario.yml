@@ -59,6 +59,25 @@ jobs:
         run: npm run precios:global -- 400
         env:
           ENTSOE_TOKEN: ${{ secrets.ENTSOE_TOKEN }}
+      # Gasolineras de los mapas (Francia, España, Italia, Portugal). No van al repositorio: se guarda la última
+      # copia buena en la caché de GitHub y, si un país falla, se usa la de la vez anterior.
+      - name: Recuperar las gasolineras de la última vez
+        uses: actions/cache/restore@v4
+        with:
+          path: data/estaciones
+          key: estaciones-${{ github.run_id }}
+          restore-keys: estaciones-
+      - name: Gasolineras para los mapas de la web global
+        continue-on-error: true
+        timeout-minutes: 10
+        run: npm run estaciones:global
+      - name: Guardar las gasolineras para la próxima vez
+        if: hashFiles('data/estaciones/*.json') != ''
+        continue-on-error: true
+        uses: actions/cache/save@v4
+        with:
+          path: data/estaciones
+          key: estaciones-${{ github.run_id }}
       # Sin límite, Node llega a ~5,6 GB y el runner (privado: ~7 GB) se queda sin memoria y se cuelga.
       # Con 1,5 GB de heap el build tarda lo mismo y no pasa de ~3 GB.
       - name: Construir la web global
