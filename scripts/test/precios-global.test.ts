@@ -47,3 +47,23 @@ describe("porHoras", () => {
     expect(completo(dia)).toBe(false);
   });
 });
+
+// @ts-expect-error módulo .mjs sin tipos
+import { leerSeries, mixPorDia } from "../precios-global.mjs";
+
+describe("Mix de generación (A75)", () => {
+  const serie = (psr: string, q: number, consumo = false) => `<TimeSeries><mRID>1</mRID>${consumo ? "<outBiddingZone_Domain.mRID>X</outBiddingZone_Domain.mRID>" : "<inBiddingZone_Domain.mRID>X</inBiddingZone_Domain.mRID>"}<MktPSRType><psrType>${psr}</psrType></MktPSRType><Period><timeInterval><start>2026-10-26T23:00Z</start><end>2026-10-27T01:00Z</end></timeInterval><resolution>PT60M</resolution><Point><position>1</position><quantity>${q}</quantity></Point><Point><position>2</position><quantity>${q * 2}</quantity></Point></Period></TimeSeries>`;
+
+  it("lee cada tecnología y separa el consumo de bombeo", () => {
+    const s = leerSeries(`<GL_MarketDocument>${serie("B19", 100)}${serie("B10", 50, true)}</GL_MarketDocument>`);
+    expect(s.map((x: { psr: string; consumo: boolean }) => [x.psr, x.consumo])).toEqual([["B19", false], ["B10", true]]);
+  });
+
+  it("agrupa eólica terrestre y marina y suma por hora local", () => {
+    const s = leerSeries(`<GL_MarketDocument>${serie("B19", 100)}${serie("B18", 10)}${serie("B10", 50, true)}${serie("B16", 0)}</GL_MarketDocument>`);
+    const dia = mixPorDia(s, "Europe/Berlin").get("2026-10-27");
+    expect(dia.eolica.slice(0, 2)).toEqual([110, 220]);
+    expect(dia.hidraulica).toBeUndefined();
+    expect(dia.solar.slice(0, 2)).toEqual([0, 0]);
+  });
+});

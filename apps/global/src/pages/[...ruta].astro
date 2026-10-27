@@ -2,7 +2,7 @@
 // Todas las páginas de precio: /<país>/[<zona>/] (hoy), …/<mañana>/ y …/<AAAA-MM-DD>/ (archivo).
 // «Hoy» y «mañana» se calculan con la fecha del país en el momento del build (se reconstruye varias veces al día).
 import PaginaDia from "../components/PaginaDia.astro";
-import { MERCADOS, diasDe, hoyDe, urlManana, urlFecha } from "../lib/datos";
+import { MERCADOS, diasConPagina, hoyDe, urlManana, urlFecha } from "../lib/datos";
 import { sumarDias } from "../lib/bloque";
 
 export function getStaticPaths() {
@@ -12,7 +12,7 @@ export function getStaticPaths() {
     return [
       { params: { ruta: quitar(m.ruta) }, props: { m, pag: "hoy" as const, fecha: hoy } },
       { params: { ruta: quitar(urlManana(m)) }, props: { m, pag: "manana" as const, fecha: sumarDias(hoy, 1) } },
-      ...diasDe(m.zona.id).map((d) => ({ params: { ruta: quitar(urlFecha(m, d.fecha)) }, props: { m, pag: "fecha" as const, fecha: d.fecha } })),
+      ...diasConPagina(m).map((d) => ({ params: { ruta: quitar(urlFecha(m, d.fecha)) }, props: { m, pag: "fecha" as const, fecha: d.fecha } })),
     ];
   });
 }

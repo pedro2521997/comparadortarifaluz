@@ -47,7 +47,7 @@ jobs:
       # pero solo se despliega cuando la variable del repositorio GLOBAL_ACTIVO vale "true".
       - name: Precios de la web global
         continue-on-error: true
-        run: npm run precios:global -- 45
+        run: npm run precios:global -- 400
         env:
           ENTSOE_TOKEN: ${{ secrets.ENTSOE_TOKEN }}
       - name: Construir la web global
@@ -79,5 +79,5 @@ jobs:
         run: |
           git config user.name "comparadortarifaluz-bot"
           git config user.email "bot@comparadortarifaluz.es"
-          git add data/precios data/mercado-ajustes.json data/global data/carburantes/resumen data/carburantes-ue.json
+          git add data/precios data/mercado-ajustes.json data/global data/global-mix data/global-prevision data/carburantes/resumen data/carburantes-ue.json
           git diff --cached --quiet || (git commit -m "Precios PVPC $(date +%F)" && git pull --rebase --autostash origin main && git push)

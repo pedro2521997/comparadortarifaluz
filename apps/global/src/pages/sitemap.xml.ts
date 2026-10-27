@@ -1,6 +1,6 @@
 // Mapa del sitio de la web global con la fecha de cada página de día.
 import type { APIRoute } from "astro";
-import { MERCADOS, diasDe, hoyDe, urlManana, urlFecha, absoluta } from "../lib/datos";
+import { MERCADOS, diasDe, diasConPagina, hoyDe, urlManana, urlFecha, absoluta } from "../lib/datos";
 import { PAISES_C, CC, urlPrecios, urlCalefaccion, urlEuropa, urlDestino, destinos, hay } from "../lib/carburantes";
 import { ACTUALIZADO } from "../../../web/src/lib/compartido/carburantes-ue";
 import { GUIAS, urlGuia, urlGuias } from "../lib/guias";
@@ -10,7 +10,7 @@ export const GET: APIRoute = () => {
   for (const m of MERCADOS) {
     const ultimo = diasDe(m.zona.id).filter((d) => d.fecha <= hoyDe(m)).at(-1)?.fecha;
     rutas.push([m.ruta, ultimo], [urlManana(m), diasDe(m.zona.id).at(-1)?.fecha]);
-    for (const d of diasDe(m.zona.id)) rutas.push([urlFecha(m, d.fecha), d.fecha]);
+    for (const d of diasConPagina(m)) rutas.push([urlFecha(m, d.fecha), d.fecha]);
   }
   for (const p of PAISES_C) {
     rutas.push([urlPrecios(p), ACTUALIZADO], [urlEuropa(p), ACTUALIZADO]);

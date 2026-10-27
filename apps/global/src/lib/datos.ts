@@ -48,6 +48,14 @@ export const urlFecha = (m: Mercado, fecha: string) => `${m.ruta}${fecha}/`;
 export const absoluta = (ruta: string) => new URL(ruta, SITIO.url).href;
 export const hoyDe = (m: Mercado) => hoyEn(m.pais.tz);
 
+/**
+ * Se guarda un año de precios (para precios negativos y medias mensuales), pero solo los últimos DIAS_PAGINA
+ * días tienen página propia: Cloudflare admite como mucho 20.000 ficheros por web.
+ */
+export const DIAS_PAGINA = 60;
+export const conPagina = (m: Mercado, fecha: string) => fecha >= sumarDias(hoyDe(m), -DIAS_PAGINA);
+export const diasConPagina = (m: Mercado) => diasDe(m.zona.id).filter((d) => conPagina(m, d.fecha));
+
 /** Nombre de la zona para títulos: solo si el país tiene varias («NO2», «Sicilia»). */
 export const etiquetaZona = (m: Mercado) => (m.principal ? "" : m.zona.id.startsWith("IT-") ? m.zona.nombre : m.zona.id);
 /** «: » (y « : » en francés) */

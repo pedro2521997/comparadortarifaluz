@@ -10,7 +10,7 @@ import { PAISES_C, textosC, urlPrecios, urlCalefaccion, en, hay, CC } from "../l
 import { TEXTOS } from "../lib/textos";
 import { bloque, noPublicado, hh, valor, fechaLocal, sumarDias } from "../lib/bloque";
 import {
-  MERCADOS, diasDe, diaDe, info, titulo, descripcion, entradilla, preguntas, esquemaFaq, esquemaDataset, alternativas,
+  MERCADOS, diasConPagina, diaDe, info, titulo, descripcion, entradilla, preguntas, esquemaFaq, esquemaDataset, alternativas,
   urlManana, urlFecha, etiquetaZona, formato, type Mercado, type Pagina,
 } from "../lib/datos";
 
@@ -33,7 +33,7 @@ const tit = i ? titulo(i, pag) : `${h1} ${fechaLocal(fecha, m.pais.locale)}`;
 const desc = i ? descripcion(i, pag) : `${h1} ${fechaLocal(fecha, m.pais.locale)}. ${L.noPublicado}`;
 const schema = i ? [esquemaDataset(i, ruta, fuente), esquemaFaq(preguntas(i))] : undefined;
 const hermanas = MERCADOS.filter((x) => x.pais.cc === m.pais.cc);
-const fechas = new Set(diasDe(m.zona.id).map((d) => d.fecha));
+const fechas = new Set(diasConPagina(m).map((d) => d.fecha));
 const alrededor = Array.from({ length: 9 }, (_, k) => sumarDias(fecha, k - 4)).filter((x) => x !== fecha && fechas.has(x));
 const conMedia = i ? i.tramos.filter((t) => t.media !== null) : [];
 const masBarato = conMedia.length ? conMedia.reduce((a, t) => (t.media! < a.media! ? t : a)) : null;

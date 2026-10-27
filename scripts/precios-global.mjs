@@ -77,15 +77,119 @@ export function leerEntsoe(xml) {
 
 const fmtEntsoe = (iso) => iso.replace(/-/g, "") + "0000";
 
-async function entsoe(zona, desde, hasta) {
-  const url = `https://web-api.tp.entsoe.eu/api?securityToken=${TOKEN}&documentType=A44&in_Domain=${zona.eic}&out_Domain=${zona.eic}&periodStart=${fmtEntsoe(sumar(desde, -1))}&periodEnd=${fmtEntsoe(sumar(hasta, 1))}`;
+/** Petición a la API de ENTSO-E (texto XML). Sin datos para el periodo devuelve un Acknowledgement_MarketDocument: "". */
+async function pedirEntsoe(params, desde, hasta) {
+  const url = `https://web-api.tp.entsoe.eu/api?securityToken=${TOKEN}&${params}&periodStart=${fmtEntsoe(sumar(desde, -1))}&periodEnd=${fmtEntsoe(sumar(hasta, 1))}`;
   for (let i = 1; i <= 3; i++) {
     const r = await fetch(url);
-    if (r.ok) return leerEntsoe(await r.text());
-    if (r.status === 400 || r.status === 401) throw new Error(`ENTSO-E ${r.status} en ${zona.id}`);
+    const xml = await r.text();
+    if (r.ok) return xml.includes("Acknowledgement_MarketDocument") ? "" : xml;
+    if (r.status === 400 && xml.includes("No matching data")) return "";
+    if (r.status === 400 || r.status === 401) throw new Error(`ENTSO-E ${r.status}: ${/<text>([^<]+)/.exec(xml)?.[1] ?? ""}`.slice(0, 200));
     await espera(3000 * i);
   }
-  throw new Error(`ENTSO-E no responde (${zona.id})`);
+  throw new Error("ENTSO-E no responde");
+}
+
+/** Precios del mercado diario. La API admite como mucho un año por petición: se trocea. */
+async function entsoe(zona, desde, hasta) {
+  const puntos = [];
+  for (let a = desde; a <= hasta; a = sumar(a, 300)) {
+    const b = sumar(a, 299) < hasta ? sumar(a, 299) : hasta;
+    puntos.push(...leerEntsoe(await pedirEntsoe(`documentType=A44&in_Domain=${zona.eic}&out_Domain=${zona.eic}`, a, b)));
+  }
+  return [...new Map(puntos).entries()].sort((x, y) => x[0] - y[0]);
+}
+
+/** Series de cantidades (MW) de un documento de ENTSO-E, separadas por tipo de generación (psrType). */
+export function leerSeries(xml) {
+  const series = [];
+  for (const ts of xml.split("<TimeSeries>").slice(1)) {
+    const psr = /<psrType>(\w+)<\/psrType>/.exec(ts)?.[1] ?? "total";
+    // En la generación real, las series con outBiddingZone son consumo (bombeo, baterías): no cuentan.
+    const consumo = ts.includes("<outBiddingZone_Domain.mRID") && !ts.includes("<inBiddingZone_Domain.mRID");
+    const puntos = [];
+    for (const per of ts.split("<Period>").slice(1)) {
+      const ini = Date.parse(/<start>([^<]+)<\/start>/.exec(per)[1]);
+      const fin = Date.parse(/<end>([^<]+)<\/end>/.exec(per)[1]);
+      const min = Number(/<resolution>PT(\d+)M<\/resolution>/.exec(per)?.[1] ?? 60);
+      const total = Math.round((fin - ini) / (min * 60000));
+      const valores = new Map([...per.matchAll(/<position>(\d+)<\/position>\s*<quantity>([-\d.]+)<\/quantity>/g)].map((m) => [Number(m[1]), Number(m[2])]));
+      let ultimo = null;
+      for (let pos = 1; pos <= total; pos++) {
+        if (valores.has(pos)) ultimo = valores.get(pos);
+        if (ultimo !== null) puntos.push([ini + (pos - 1) * min * 60000, ultimo]);
+      }
+    }
+    series.push({ psr, consumo, puntos });
+  }
+  return series;
+}
+
+/** Tipo de generación de ENTSO-E (psrType) → grupo que se muestra. */
+export const GRUPO_PSR = {
+  B01: "biomasa", B02: "carbon", B03: "carbon", B04: "gas", B05: "carbon", B06: "petroleo", B07: "petroleo", B08: "petroleo",
+  B09: "otrasRenovables", B10: "hidraulica", B11: "hidraulica", B12: "hidraulica", B13: "otrasRenovables", B14: "nuclear",
+  B15: "otrasRenovables", B16: "solar", B17: "otras", B18: "eolica", B19: "eolica", B20: "otras", B25: "otras",
+};
+
+/** Series por tipo → Map fecha → { grupo: [24 MWh] } (media de cada hora de reloj en la hora local). */
+export function mixPorDia(series, tz) {
+  const dias = new Map();
+  for (const s of series) {
+    if (s.consumo) continue;
+    const g = GRUPO_PSR[s.psr] ?? "otras";
+    for (const [fecha, horas] of porHoras(s.puntos, tz)) {
+      const dia = dias.get(fecha) ?? {};
+      const acc = dia[g] ?? Array(24).fill(null);
+      horas.forEach((v, h) => v !== null && (acc[h] = Math.round(((acc[h] ?? 0) + v) * 10) / 10));
+      dia[g] = acc;
+      dias.set(fecha, dia);
+    }
+  }
+  return dias;
+}
+
+const DIR_MIX = new URL("../data/global-mix/", import.meta.url);
+const DIR_PREV = new URL("../data/global-prevision/", import.meta.url);
+
+/** Generación real por tecnología de los últimos `dias` días (y la de hoy hasta ahora). */
+async function mix(pais, zona, dias) {
+  const hoy = fechaEn(new Date(), pais.tz);
+  const dir = new URL(`${zona.id}/`, DIR_MIX);
+  mkdirSync(dir, { recursive: true });
+  const faltan = [];
+  for (let f = sumar(hoy, -dias); f <= hoy; f = sumar(f, 1)) if (f >= sumar(hoy, -2) || !existsSync(new URL(`${f}.json`, dir))) faltan.push(f);
+  if (!faltan.length) return 0;
+  const xml = await pedirEntsoe(`documentType=A75&processType=A16&in_Domain=${zona.eic}`, faltan[0], faltan.at(-1));
+  let n = 0;
+  for (const [fecha, grupos] of mixPorDia(leerSeries(xml), pais.tz)) {
+    if (!faltan.includes(fecha)) continue;
+    const horas = Math.max(...Object.values(grupos).map((v) => v.filter((x) => x !== null).length));
+    if (horas < 3) continue;
+    writeFileSync(new URL(`${fecha}.json`, dir), JSON.stringify({ fecha, zona: zona.id, completo: horas >= 23, horas: grupos }) + "\n");
+    n++;
+  }
+  return n;
+}
+
+/** Previsión del día siguiente (y de hoy): eólica, solar y demanda, hora a hora. */
+async function prevision(pais, zona) {
+  const hoy = fechaEn(new Date(), pais.tz);
+  const manana = sumar(hoy, 1);
+  const dir = new URL(`${zona.id}/`, DIR_PREV);
+  mkdirSync(dir, { recursive: true });
+  const renov = mixPorDia(leerSeries(await pedirEntsoe(`documentType=A69&processType=A01&in_Domain=${zona.eic}`, hoy, manana)), pais.tz);
+  const demanda = porHoras(leerSeries(await pedirEntsoe(`documentType=A65&processType=A01&outBiddingZone_Domain=${zona.eic}`, hoy, manana)).flatMap((s) => s.puntos), pais.tz);
+  let n = 0;
+  for (const fecha of [hoy, manana]) {
+    const r = renov.get(fecha);
+    const d = demanda.get(fecha);
+    if (!r && !d) continue;
+    writeFileSync(new URL(`${fecha}.json`, dir), JSON.stringify({ fecha, zona: zona.id, eolica: r?.eolica ?? null, solar: r?.solar ?? null, demanda: d ?? null }) + "\n");
+    n++;
+  }
+  return n;
 }
 
 async function energyCharts(zona, desde, hasta) {
@@ -153,6 +257,26 @@ async function main() {
     }
   }
   console.log(`${escritos} días nuevos o actualizados`);
+
+  // Mix de generación real (35 días) y previsión de eólica, solar y demanda para hoy y mañana. Solo con token.
+  if (!TOKEN) return;
+  let nMix = 0;
+  let nPrev = 0;
+  for (const pais of paisesJson.paises) {
+    for (const zona of pais.zonas) {
+      try {
+        nMix += await mix(pais, zona, 35);
+      } catch (e) {
+        console.warn(`Mix ${zona.id}: ${e.message}`);
+      }
+      try {
+        nPrev += await prevision(pais, zona);
+      } catch (e) {
+        console.warn(`Previsión ${zona.id}: ${e.message}`);
+      }
+    }
+  }
+  console.log(`Mix: ${nMix} días · Previsión: ${nPrev} días`);
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1])) main();
