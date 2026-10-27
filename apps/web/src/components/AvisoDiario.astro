@@ -13,7 +13,7 @@ import { TELEGRAM_URL } from "../config";
     </p>
     <div class="btn-row" style="justify-content:center">
       <button type="button" class="btn btn--mint" data-instalar hidden>Añadir a mi pantalla de inicio</button>
-      {TELEGRAM_URL ? <a class="btn btn--ghost" href={TELEGRAM_URL}>Aviso diario en Telegram</a> : <span class="pill pill--aviso">Aviso diario en Telegram: muy pronto</span>}
+      {TELEGRAM_URL && <a class="btn btn--ghost" href={TELEGRAM_URL}>Aviso diario en Telegram</a>}
     </div>
     <p class="small muted" data-instalar-ayuda>
       Guárdala en el móvil: en Android, menú ⋮ del navegador → «Añadir a pantalla de inicio»; en iPhone, botón Compartir → «Añadir a pantalla de inicio». En el ordenador, Ctrl+D para guardarla en favoritos.

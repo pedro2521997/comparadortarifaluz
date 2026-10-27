@@ -8,7 +8,7 @@ import { frase } from "../lib/grafico";
 import { fechaCorta, hoyMadrid } from "../lib/formato";
 import Anuncio from "../components/Anuncio.astro";
 import { GRUPOS_HERRAMIENTAS, HERRAMIENTAS } from "../lib/herramientas";
-import { anunciosActivos, clienteAdsense, cuentaAdsense } from "../lib/anuncios-html.mjs";
+import { codigoAdsense, clienteAdsense, cuentaAdsense } from "../lib/anuncios-html.mjs";
 
 interface Props {
   titulo: string;
@@ -22,7 +22,7 @@ interface Props {
   migas?: [string, string?][];
 }
 const { titulo, descripcion = SITIO.descripcion, schema, noindex = false, anuncioFinal = true, migas } = Astro.props;
-const adsense = anunciosActivos();
+const adsense = codigoAdsense();
 // Datos estructurados comunes: la web y, si hay, las migas de pan (ayudan a Google y a los buscadores con IA).
 const esquemas = [
   ...(schema ? (Array.isArray(schema) ? schema : [schema]) : []),
@@ -83,7 +83,7 @@ const aviso = ultimo
     <meta property="og:description" content={descripcion} />
     <meta property="og:url" content={canonical} />
     {esquemas.length > 0 && <script type="application/ld+json" set:html={JSON.stringify(esquemas.length === 1 ? esquemas[0] : esquemas)} />}
-    {/* Verificación de AdSense: solo una etiqueta, sin cargar nada de Google ni poner cookies. */}
+    {/* Verificación de AdSense: la etiqueta meta y, con «codigo» o anuncios activos, el script en el <head>. */}
     {cuentaAdsense() && <meta name="google-adsense-account" content={cuentaAdsense()} />}
     {
       adsense && (
@@ -198,6 +198,7 @@ const aviso = ultimo
             <p class="pie__titulo">Transparencia</p>
             <ul>
               <li><a href="/como-funciona/">Cómo funciona y cómo ganamos dinero</a></li>
+              <li><a href="/contacto/">Contacto</a></li>
               <li><a href="/aviso-legal/">Aviso legal</a></li>
               <li><a href="/condiciones-de-uso/">Condiciones de uso</a></li>
               <li><a href="/privacidad/">Privacidad</a></li>

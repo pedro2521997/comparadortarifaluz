@@ -16,6 +16,8 @@ export function verHuecos(dev = false) {
 }
 
 export const anunciosActivos = () => config.activo;
+/** ¿Se carga el script de AdSense (y con él su gestor de consentimiento)? Siempre que haya bloques activos, o en revisión con «codigo». */
+export const codigoAdsense = () => config.activo || config.codigo === true;
 export const clienteAdsense = () => config.cliente;
 /** ID de editor real (no el de ejemplo): basta para la etiqueta meta y ads.txt, que no cargan nada de Google. */
 export const cuentaAdsense = () => (/^ca-pub-(?!0+$)\d{10,}$/.test(config.cliente) ? config.cliente : null);

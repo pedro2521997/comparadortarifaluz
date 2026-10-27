@@ -1,0 +1,45 @@
+---
+// Contacto y quién está detrás de la web: lo que esperan ver los usuarios (y los revisores de AdSense).
+import Base from "../layouts/Base.astro";
+import { SITIO } from "../config";
+---
+
+<Base titulo="Contacto y quiénes somos" descripcion={`Quién hace ${SITIO.nombre} y cómo escribirnos: dudas sobre tu factura, errores en una tarifa o sugerencias para la web.`} migas={[["Contacto"]]}>
+  <section class="hero hero--compacto">
+    <div class="wrap wrap--narrow">
+      <span class="eyebrow">Contacto</span>
+      <h1>Contacto y quiénes somos</h1>
+      <p class="lead">{SITIO.nombre} es un proyecto independiente para que cualquiera pueda entender y pagar menos luz, con datos públicos y sin vender nada.</p>
+    </div>
+  </section>
+  <section class="section section--white section--tight">
+    <div class="wrap wrap--narrow prose">
+      <h2>Quién está detrás</h2>
+      <p>
+        La web la hace {SITIO.titular}, desde La Solana (Ciudad Real). No trabajamos para ninguna comercializadora ni distribuidora: los precios de la luz salen de Red Eléctrica y las tarifas, del comparador oficial de la CNMC y de las webs de cada compañía. Cómo calculamos todo y cómo se financia la web está explicado en <a href="/como-funciona/">cómo funciona y cómo ganamos dinero</a>.
+      </p>
+
+      <h2>Escríbenos</h2>
+      <p>
+        Correo: <a href={`mailto:${SITIO.correo}`}><strong>{SITIO.correo}</strong></a>. Respondemos normalmente en 2–3 días laborables.
+      </p>
+      <p>Nos ayuda mucho que nos escribas si:</p>
+      <ul>
+        <li><strong>Una tarifa tiene un precio mal</strong> o ha cambiado: dinos cuál y, si puedes, el enlace a la oferta.</li>
+        <li><strong>Algo no funciona</strong> en una calculadora o el lector de facturas no reconoce un concepto de tu factura (sin enviarnos datos personales).</li>
+        <li><strong>Echas en falta una guía o una herramienta.</strong></li>
+        <li>Eres una comercializadora y quieres que revisemos los datos de tus tarifas.</li>
+      </ul>
+
+      <h2>Lo que no podemos hacer</h2>
+      <ul>
+        <li>No gestionamos contratos, altas ni cambios de compañía: eso lo hace tu comercializadora.</li>
+        <li>No atendemos averías ni cortes de luz: llama al teléfono de averías de tu distribuidora, que aparece en tu factura.</li>
+        <li>No pidas ayuda enviando tu factura completa, tu DNI o tu CUPS por correo: no lo necesitamos. Nuestras herramientas funcionan en tu navegador sin enviarnos nada.</li>
+      </ul>
+
+      <h2>Datos legales</h2>
+      <p>Titular, NIF y domicilio en el <a href="/aviso-legal/">aviso legal</a>. Cómo tratamos los datos, en la <a href="/privacidad/">política de privacidad</a>.</p>
+    </div>
+  </section>
+</Base>

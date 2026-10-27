@@ -1,6 +1,7 @@
 {
-  "_nota": "Configuración de Google AdSense. Con un 'cliente' real y 'activo' a false, la web está en modo verificación: publica la etiqueta meta google-adsense-account y la línea de Google en /ads.txt, pero no carga ningún script ni anuncio de Google (no hay cookies). En desarrollo (o con PREVIEW_ANUNCIOS=1) se ven huecos grises para revisar el reparto. Cuando AdSense apruebe la web: configura el mensaje de consentimiento en AdSense > Privacidad y mensajes (CMP certificado de Google), crea los bloques de anuncio, copia sus IDs en 'bloques' y pon 'activo' a true.",
+  "_nota": "Configuración de Google AdSense. 'codigo' a true carga el script de AdSense en el <head> de todas las páginas (lo que pide Google para revisar la web) y su mensaje de consentimiento, pero sin bloques de anuncio propios: mientras la web no esté aprobada, Google no muestra nada. Con 'codigo' y 'activo' a false solo se publica la etiqueta meta y /ads.txt. En desarrollo (o con PREVIEW_ANUNCIOS=1) se ven huecos grises. Cuando AdSense apruebe la web: crea los bloques de anuncio, copia sus IDs en 'bloques' y pon 'activo' a true.",
   "activo": false,
+  "codigo": true,
   "cliente": "ca-pub-2003300660156726",
   "bloques": {
     "horizontal": "0000000000",
