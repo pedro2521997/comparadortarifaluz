@@ -59,9 +59,14 @@ jobs:
         run: npm run precios:global -- 400
         env:
           ENTSOE_TOKEN: ${{ secrets.ENTSOE_TOKEN }}
+      # Sin límite, Node llega a ~5,6 GB y el runner (privado: ~7 GB) se queda sin memoria y se cuelga.
+      # Con 1,5 GB de heap el build tarda lo mismo y no pasa de ~3 GB.
       - name: Construir la web global
         continue-on-error: true
+        timeout-minutes: 20
         run: npm run build:global
+        env:
+          NODE_OPTIONS: --max-old-space-size=1536
       - name: Desplegar la web global
         if: vars.GLOBAL_ACTIVO == 'true'
         continue-on-error: true

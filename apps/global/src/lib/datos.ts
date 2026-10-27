@@ -6,6 +6,7 @@ import fxJson from "../../../../data/global/fx.json";
 import { TEXTOS, type Idioma, type Cuando } from "./textos";
 import { fechaLocal, hoyEn, mejorFranja, porcentaje, resumen, sumarDias, valor, type Formato, type Precios } from "./bloque";
 import { SITIO } from "../config";
+import { leerJsons } from "./ficheros";
 
 export interface Zona { id: string; slug: string; nombre: string; eic: string; ec: string | null }
 export interface Pais {
@@ -18,9 +19,8 @@ export interface Dia { fecha: string; zona: string; fuente: string; precios: Pre
 export const PAISES = paisesJson.paises as Pais[];
 const fx = fxJson as Record<string, number | string>;
 
-const ficheros = import.meta.glob<Dia>("../../../../data/global/*/*.json", { eager: true, import: "default" });
 const porZona = new Map<string, Dia[]>();
-for (const d of Object.values(ficheros)) porZona.set(d.zona, [...(porZona.get(d.zona) ?? []), d]);
+for (const d of leerJsons<Dia>("global")) porZona.set(d.zona, [...(porZona.get(d.zona) ?? []), d]);
 for (const l of porZona.values()) l.sort((a, b) => a.fecha.localeCompare(b.fecha));
 
 export const diasDe = (zona: string) => porZona.get(zona) ?? [];

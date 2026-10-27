@@ -3,13 +3,14 @@
 
 import { diasDe, hoyDe, type Mercado } from "./datos";
 import { sumarDias } from "./bloque";
+import { leerJsons } from "./ficheros";
 import { TEXTOS_E, FACTOR_CO2, RENOVABLES, type Grupo, type TextosEnergia } from "./textos-energia";
 
 interface DiaMix { fecha: string; zona: string; completo: boolean; horas: Partial<Record<Grupo, (number | null)[]>> }
 interface DiaPrevision { fecha: string; zona: string; eolica: (number | null)[] | null; solar: (number | null)[] | null; demanda: (number | null)[] | null }
 
-const mixes = Object.values(import.meta.glob<DiaMix>("../../../../data/global-mix/*/*.json", { eager: true, import: "default" }));
-const previsiones = Object.values(import.meta.glob<DiaPrevision>("../../../../data/global-prevision/*/*.json", { eager: true, import: "default" }));
+const mixes = leerJsons<DiaMix>("global-mix");
+const previsiones = leerJsons<DiaPrevision>("global-prevision");
 
 export const textosE = (m: Mercado) => TEXTOS_E[m.pais.lang] as TextosEnergia;
 export const tieneEnergia = (m: Mercado) => !!TEXTOS_E[m.pais.lang];
