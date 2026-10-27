@@ -84,9 +84,18 @@ export function conAnuncios(html: string, anuncio: string): string {
   const partes = html.split(/(?=<h2[\s>])/);
   const nH2 = partes.length - 1;
   if (nH2 < 3) return html;
-  // Uno cada dos apartados desde el segundo, y nunca antes del último (así siempre hay texto entre anuncios).
+  // Uno cada dos apartados desde el segundo, nunca antes del último, y solo si hay bastante texto desde el
+  // anuncio anterior y hasta el final (debajo de la guía viene otro): ningún anuncio queda pegado a otro.
+  const texto = (h: string) => h.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").length;
+  const largos = partes.map(texto);
+  let desdeAnterior = 0;
   return partes
-    .map((p, i) => (i >= 2 && (i - 2) % 2 === 0 && i < nH2 ? anuncio + p : p))
+    .map((p, i) => {
+      const restante = largos.slice(i).reduce((a, b) => a + b, 0);
+      const poner = i >= 2 && (i - 2) % 2 === 0 && i < nH2 && desdeAnterior >= 600 && restante >= 600;
+      desdeAnterior = (poner ? 0 : desdeAnterior) + largos[i];
+      return poner ? anuncio + p : p;
+    })
     .join("");
 }
 

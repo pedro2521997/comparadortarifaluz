@@ -1,5 +1,6 @@
 ---
 import Base from "../../layouts/Base.astro";
+import Anuncio from "../../components/Anuncio.astro";
 import { dias } from "../../lib/datos";
 import { nombreMes, ekwh, eur2 } from "../../lib/formato";
 import { resumen } from "../../lib/grafico";
@@ -29,7 +30,9 @@ const dia = (f: string) => Number(f.slice(8));
   <section class="section section--tight">
     <div class="wrap stack" style="--stack:40px">
       {
-        meses.map((m) => (
+        meses.map((m, n) => (
+          <>
+          {n === 2 && <Anuncio tipo="horizontal" />}
           <div class="mes">
             <div class="mes__cab">
               <h2 class="mes__titulo">{nombreMes(m.mes)}</h2>
@@ -49,6 +52,7 @@ const dia = (f: string) => Number(f.slice(8));
               })}
             </ul>
           </div>
+          </>
         ))
       }
       <p class="caption">Cifras de cada casilla: precio medio del día en €/kWh, sin impuestos.</p>

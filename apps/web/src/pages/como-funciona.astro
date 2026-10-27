@@ -1,5 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
+import Anuncio from "../components/Anuncio.astro";
 import { INSTALADOR } from "../config";
 import { regulados, tarifas } from "../lib/datos";
 import { fechaCorta, num } from "../lib/formato";
@@ -70,6 +71,8 @@ const periodo = (d: string, h: string | null) => `${fechaCorta(d)} – ${h ? fec
         <li><strong>Peajes y cargos</strong> de energía vigentes, y la <strong>cuota o margen</strong> de cada comercializadora.</li>
       </ul>
       <p>Es una aproximación: las comercializadoras liquidan con datos horarios de ESIOS que no son públicos sin acceso. Cuando una comercializadora no publica su fórmula completa, la tarifa lleva la etiqueta «Fórmula aproximada». El precio de un año no garantiza el del siguiente: depende del mercado.</p>
+
+      <Anuncio tipo="articulo" />
 
       <h2 id="impuestos">Impuestos y regulados, con su fecha</h2>
       <p>Los impuestos cambian. Por eso guardamos cada valor con su fecha de inicio y fin, y cada día de tu fichero se calcula con el que tocaba.</p>
