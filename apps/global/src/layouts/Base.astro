@@ -7,6 +7,8 @@ import Anuncio from "../components/Anuncio.astro";
 import { SITIO } from "../config";
 import { PAISES_CON_DATOS } from "../lib/datos";
 import { PAISES_C, textosC, urlPrecios, en, CC } from "../lib/carburantes";
+import { GUIAS, urlGuias, TITULO_GUIAS } from "../lib/guias";
+import { PAISES } from "../lib/datos";
 import { TEXTOS, type Idioma } from "../lib/textos";
 import { codigoAdsense, clienteAdsense, cuentaAdsense } from "../lib/anuncios-html.mjs";
 
@@ -97,6 +99,10 @@ const ruta = Astro.url.pathname;
           <div>
             <p class="pie__titulo">{SITIO.nombre}</p>
             <ul>
+              {[...new Set(GUIAS.map((g) => g.cc))].map((cc) => {
+                const p = PAISES.find((x) => x.cc === cc)!;
+                return <li><a href={urlGuias(cc)} hreflang={p.locale}>{TITULO_GUIAS[p.lang]} · {p.nombre}</a></li>;
+              })}
               <li><a href="/legal/">{L.legal}</a></li>
             </ul>
           </div>

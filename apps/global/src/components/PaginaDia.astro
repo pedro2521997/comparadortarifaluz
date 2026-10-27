@@ -5,6 +5,7 @@
 // el JSON del día correcto (/data/<zona>/<fecha>.json) y oculta los textos fijos del build.
 import Base from "../layouts/Base.astro";
 import Anuncio from "./Anuncio.astro";
+import { guiasDe, urlGuia, TITULO_GUIAS } from "../lib/guias";
 import { PAISES_C, textosC, urlPrecios, urlCalefaccion, en, hay, CC } from "../lib/carburantes";
 import { TEXTOS } from "../lib/textos";
 import { bloque, noPublicado, hh, valor, fechaLocal, sumarDias } from "../lib/bloque";
@@ -132,6 +133,19 @@ const datosCliente = JSON.stringify({ zona: m.zona.id, tz: m.pais.tz, modo: pag,
       }
     </div>
   </section>
+
+{
+  guiasDe(m.pais.lang).length > 0 && (
+    <section class="section section--tight">
+      <div class="wrap">
+        <h2 style="font-size:24px;margin-bottom:16px">{TITULO_GUIAS[m.pais.lang]}</h2>
+        <div class="grid grid--2">
+          {guiasDe(m.pais.lang).map((x) => <a class="card card--link" href={urlGuia(x)}><strong>{x.titulo}</strong><span class="muted small">{x.resumen}</span></a>)}
+        </div>
+      </div>
+    </section>
+  )
+}
 </Base>
 
 <script>

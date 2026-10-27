@@ -1,0 +1,50 @@
+---
+// Una guía en su idioma, con hreflang a sus traducciones y las demás guías del mismo idioma.
+import Base from "../../../layouts/Base.astro";
+import Anuncio from "../../../components/Anuncio.astro";
+import { GUIAS, guiasDe, urlGuia, urlGuias, traducciones, TITULO_GUIAS, type Guia } from "../../../lib/guias";
+import { PAISES } from "../../../lib/datos";
+import { SITIO } from "../../../config";
+
+export function getStaticPaths() {
+  return GUIAS.map((g) => ({ params: { pais: g.cc, slug: g.slug }, props: { g } }));
+}
+const { g } = Astro.props as { g: Guia };
+const p = PAISES.find((x) => x.cc === g.cc)!;
+const html = (await g.md.compiledContent()).replace(/<table>([\s\S]*?)<\/table>/g, '<div class="table-wrap" tabindex="0" role="region"><table>$1</table></div>');
+const otras = guiasDe(g.lang).filter((x) => x !== g);
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: g.titulo,
+  description: g.resumen,
+  inLanguage: p.locale,
+  author: { "@type": "Organization", name: SITIO.nombre, url: SITIO.url },
+  publisher: { "@type": "Organization", name: SITIO.nombre, url: SITIO.url },
+  mainEntityOfPage: new URL(urlGuia(g), SITIO.url).href,
+};
+---
+
+<Base titulo={g.titulo.length <= 70 ? g.titulo : g.titulo.split(/[?:]/)[0] + (g.titulo.includes("?") ? "?" : "")} descripcion={g.resumen.slice(0, 158)} lang={g.lang} locale={p.locale} schema={schema} alternativas={traducciones(g)}>
+  <section class="hero hero--compacto">
+    <div class="wrap wrap--narrow">
+      <p class="breadcrumbs"><a href={urlGuias(g.cc)}>{TITULO_GUIAS[g.lang]}</a></p>
+      <h1 style="font-size:clamp(30px,5vw,44px)">{g.titulo}</h1>
+      <p class="lead">{g.resumen}</p>
+    </div>
+  </section>
+  <section class="section section--white section--tight">
+    <div class="wrap wrap--narrow">
+      <article class="prose" set:html={html} />
+    </div>
+  </section>
+  <Anuncio tipo="horizontal" seccion />
+  <section class="section section--tight">
+    <div class="wrap">
+      <h2 style="font-size:24px;margin-bottom:16px">{TITULO_GUIAS[g.lang]}</h2>
+      <div class="grid grid--3">
+        {otras.map((o) => <a class="card card--link" href={urlGuia(o)}><strong>{o.titulo}</strong><span class="muted small">{o.resumen}</span></a>)}
+      </div>
+    </div>
+  </section>
+</Base>

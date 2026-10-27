@@ -3,6 +3,7 @@
 // (/de/heizoelpreise/) y ranking europeo (/de/spritpreise-europa/). Datos semanales de la Comisión Europea.
 import Base from "../../layouts/Base.astro";
 import Anuncio from "../../components/Anuncio.astro";
+import { guiasDe, urlGuia, TITULO_GUIAS } from "../../lib/guias";
 import { graficaLineas } from "../../../../web/src/lib/compartido/grafica-svg";
 import { ultimo, ultimas, ranking, partImpuestos, nombrePais, FUENTE_UE, type ProductoUE } from "../../../../web/src/lib/compartido/carburantes-ue";
 import { PAISES_C, textosC, CC, urlPrecios, urlCalefaccion, urlEuropa, urlDestino, en, litro, dinero, pct, fechaC, mesC, VECINOS, PRODUCTOS, hay } from "../../lib/carburantes";
@@ -211,6 +212,19 @@ const serie = (k: ProductoUE, c = cc) => ultimas(c, k, 156);
       <p class="caption" style="margin-top:16px">{T.aviso} <a href={FUENTE_UE.url} rel="noopener">{FUENTE_UE.nombre}</a></p>
     </div>
   </section>
+
+{
+  guiasDe(p.lang).length > 0 && (
+    <section class="section section--tight">
+      <div class="wrap">
+        <h2 style="font-size:24px;margin-bottom:16px">{TITULO_GUIAS[p.lang]}</h2>
+        <div class="grid grid--2">
+          {guiasDe(p.lang).map((x) => <a class="card card--link" href={urlGuia(x)}><strong>{x.titulo}</strong><span class="muted small">{x.resumen}</span></a>)}
+        </div>
+      </div>
+    </section>
+  )
+}
 </Base>
 
 <style>

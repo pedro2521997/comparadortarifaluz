@@ -1,0 +1,26 @@
+---
+// Índice de guías de un idioma (en el país de ese idioma).
+import Base from "../../../layouts/Base.astro";
+import { GUIAS, guiasDe, urlGuia, TITULO_GUIAS } from "../../../lib/guias";
+import { PAISES } from "../../../lib/datos";
+
+export function getStaticPaths() {
+  return [...new Set(GUIAS.map((g) => g.cc))].map((cc) => ({ params: { pais: cc }, props: { p: PAISES.find((x) => x.cc === cc)! } }));
+}
+const { p } = Astro.props;
+const lista = guiasDe(p.lang);
+---
+
+<Base titulo={`${TITULO_GUIAS[p.lang]} · ${p.nombre}`} descripcion={lista.map((g) => g.titulo).join(" · ").slice(0, 155)} lang={p.lang} locale={p.locale}>
+  <section class="hero hero--compacto">
+    <div class="wrap">
+      <span class="eyebrow">{p.nombre}</span>
+      <h1>{TITULO_GUIAS[p.lang]}</h1>
+    </div>
+  </section>
+  <section class="section section--tight">
+    <div class="wrap grid grid--2">
+      {lista.map((g) => <a class="card card--link card--roomy" href={urlGuia(g)}><strong style="font-size:20px">{g.titulo}</strong><span class="muted">{g.resumen}</span></a>)}
+    </div>
+  </section>
+</Base>

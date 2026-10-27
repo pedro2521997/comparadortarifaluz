@@ -3,6 +3,7 @@ import type { APIRoute } from "astro";
 import { MERCADOS, diasDe, hoyDe, urlManana, urlFecha, absoluta } from "../lib/datos";
 import { PAISES_C, CC, urlPrecios, urlCalefaccion, urlEuropa, urlDestino, destinos, hay } from "../lib/carburantes";
 import { ACTUALIZADO } from "../../../web/src/lib/compartido/carburantes-ue";
+import { GUIAS, urlGuia, urlGuias } from "../lib/guias";
 
 export const GET: APIRoute = () => {
   const rutas: [string, string?][] = [["/"], ["/legal/"]];
@@ -16,6 +17,8 @@ export const GET: APIRoute = () => {
     if (hay(CC(p), "calefaccion")) rutas.push([urlCalefaccion(p), ACTUALIZADO]);
     for (const d of destinos(p)) rutas.push([urlDestino(p, d), ACTUALIZADO]);
   }
+  for (const cc of new Set(GUIAS.map((g) => g.cc))) rutas.push([urlGuias(cc), "2026-10-27"]);
+  for (const g of GUIAS) rutas.push([urlGuia(g), "2026-10-27"]);
   const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${rutas.map(([r, f]) => `<url><loc>${absoluta(r)}</loc>${f ? `<lastmod>${f}</lastmod>` : ""}</url>`).join("\n")}\n</urlset>`;
   return new Response(xml, { headers: { "Content-Type": "application/xml" } });
 };
