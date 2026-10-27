@@ -1,0 +1,142 @@
+---
+// Horas con precio negativo en el mercado mayorista (OMIE, España) en los últimos 12 meses, mes a mes.
+// El PVPC nunca baja de cero (lleva peajes y cargos), pero las tarifas indexadas sí lo notan.
+import Base from "../../layouts/Base.astro";
+import Anuncio from "../../components/Anuncio.astro";
+import { esquemaFaq } from "../../lib/faq";
+import { dias } from "../../lib/datos";
+import { fechaMedia, hh, hoyMadrid, sumarDias } from "../../lib/formato";
+
+const hoy = hoyMadrid();
+const desde = sumarDias(hoy, -365);
+const lista = dias.filter((d) => d.fecha >= desde && d.fecha <= hoy && d.spot);
+const fechasConPagina = new Set(dias.map((d) => d.fecha));
+let horas = 0;
+let diasNeg = 0;
+let ceros = 0;
+let min: { fecha: string; h: number; p: number } | null = null;
+let ultima: { fecha: string; h: number; p: number } | null = null;
+const porMes = new Map<string, number>();
+for (const d of lista) {
+  let hay = false;
+  d.spot!.forEach((p, h) => {
+    if (p === null) return;
+    if (!min || p < min.p) min = { fecha: d.fecha, h, p };
+    if (p === 0) ceros++;
+    if (p < 0) {
+      horas++;
+      hay = true;
+      ultima = { fecha: d.fecha, h, p };
+      porMes.set(d.fecha.slice(0, 7), (porMes.get(d.fecha.slice(0, 7)) ?? 0) + 1);
+    }
+  });
+  if (hay) diasNeg++;
+}
+const meses = [...new Set(lista.map((d) => d.fecha.slice(0, 7)))].sort().map((mes) => ({ mes, horas: porMes.get(mes) ?? 0 }));
+const maxMes = Math.max(...meses.map((x) => x.horas), 1);
+const nombreMes = (m: string) => new Date(`${m}-15T12:00:00Z`).toLocaleDateString("es-ES", { month: "long", year: "numeric", timeZone: "UTC" });
+const eur = (n: number) => `${n.toLocaleString("es-ES", { minimumFractionDigits: 3, maximumFractionDigits: 3 })} €/kWh`;
+const mesTop = [...meses].sort((a, b) => b.horas - a.horas)[0];
+const preguntas = [
+  { p: "¿Cuántas horas ha tenido la luz precio negativo en España?", r: `En los últimos 12 meses, el mercado mayorista (OMIE) ha tenido ${horas} horas con precio negativo, repartidas en ${diasNeg} días, y ${ceros} horas a cero.${mesTop?.horas ? ` El mes con más fue ${nombreMes(mesTop.mes)} (${mesTop.horas} horas).` : ""}` },
+  { p: "¿Por qué el precio de la luz es negativo?", r: "Cuando hay mucha producción solar y eólica y poca demanda (mediodías de primavera, fines de semana y festivos), algunas centrales siguen produciendo. Los productores llegan a pagar por vender su electricidad y el precio del mercado baja de cero." },
+  { p: "¿Me pagan por consumir luz cuando el precio es negativo?", r: "No. El PVPC y las tarifas indexadas suman peajes, cargos, impuestos y el margen de la comercializadora, así que el precio final siempre es positivo. Pero esas horas son las más baratas del día: ideales para la lavadora, el termo o el coche eléctrico." },
+  { p: "¿Qué pasa con mis placas solares cuando el precio es negativo?", r: "Con compensación simplificada, los excedentes de esas horas se valoran a un precio muy bajo o nulo. Por eso conviene consumir lo máximo posible de tu propia producción al mediodía." },
+];
+---
+
+<Base
+  titulo={`Precios negativos de la luz en España: ${horas} horas en 12 meses`}
+  descripcion={`Horas con precio negativo en el mercado eléctrico español (OMIE): ${horas} en los últimos 12 meses, en ${diasNeg} días. Mes a mes, el último y el más bajo.`.slice(0, 160)}
+  schema={esquemaFaq(preguntas)}
+  migas={[["Precio de la luz", "/precio-luz/"], ["Precios negativos"]]}
+>
+  <section class="hero hero--compacto">
+    <div class="wrap">
+      <span class="eyebrow">Mercado mayorista (OMIE)</span>
+      <h1>Precios negativos de la luz en España</h1>
+      <p class="lead">En los últimos 12 meses, el precio del mercado eléctrico ha estado por debajo de cero <strong>{horas} horas</strong>, repartidas en {diasNeg} días. Ocurre sobre todo al mediodía de primavera, cuando sobra energía solar.</p>
+      <div class="btn-row">
+        <a class="btn btn--ghost" href="/precio-luz-hoy/">Precio de la luz hoy</a>
+        <a class="btn btn--ghost" href="/precio-luz/historico/">Histórico mes a mes</a>
+      </div>
+    </div>
+  </section>
+  <section class="section section--tight">
+    <div class="wrap stack" style="--stack:32px">
+      <div class="grid grid--4 stats">
+        <div class="stat"><span class="stat__label">Horas negativas</span><span class="stat__value">{horas}</span><span class="stat__sub">últimos 12 meses</span></div>
+        <div class="stat"><span class="stat__label">Días con alguna</span><span class="stat__value">{diasNeg}</span><span class="stat__sub">{ceros} horas más a cero</span></div>
+        <div class="stat"><span class="stat__label">Precio más bajo</span><span class="stat__value" style="font-size:24px">{min ? eur(min.p) : "—"}</span><span class="stat__sub">{min && (fechasConPagina.has(min.fecha) ? <a href={`/precio-luz/${min.fecha}/`}>{fechaMedia(min.fecha)}, {hh(min.h)}</a> : `${fechaMedia(min.fecha)}, ${hh(min.h)}`)}</span></div>
+        <div class="stat"><span class="stat__label">Último negativo</span><span class="stat__value" style="font-size:24px">{ultima ? hh(ultima.h) : "ninguno"}</span><span class="stat__sub">{ultima && (fechasConPagina.has(ultima.fecha) ? <a href={`/precio-luz/${ultima.fecha}/`}>{fechaMedia(ultima.fecha)}</a> : fechaMedia(ultima.fecha))}</span></div>
+      </div>
+      <div>
+        <h2 style="font-size:22px;margin-bottom:12px">Horas con precio negativo, mes a mes</h2>
+        <ul class="neg-meses">
+          {meses.map((x) => (
+            <li>
+              <span>{nombreMes(x.mes)}</span>
+              <span class="neg-barra" aria-hidden="true"><span style={`width:${Math.max(x.horas ? 2 : 0, (x.horas / maxMes) * 100)}%`} /></span>
+              <span class="num">{x.horas} h</span>
+            </li>
+          ))}
+        </ul>
+        <p class="caption" style="margin-top:8px">Precio horario del mercado diario para España (OMIE), sin peajes, cargos ni impuestos. Fuente: Red Eléctrica (REData).</p>
+      </div>
+    </div>
+  </section>
+  <Anuncio tipo="horizontal" seccion />
+  <section class="section section--white">
+    <div class="wrap wrap--narrow">
+      <h2 style="font-size:24px;margin-bottom:12px">Preguntas frecuentes</h2>
+      {preguntas.map((q) => (
+        <details class="faq-c" open>
+          <summary>{q.p}</summary>
+          <p>{q.r}</p>
+        </details>
+      ))}
+      <p class="small" style="margin-top:20px">Más: <a href="/guias/horas-mas-baratas-luz/">a qué hora es más barata la luz</a> · <a href="/guias/por-que-sube-la-luz/">por qué sube y baja el precio</a> · <a href="/comparador/">¿te conviene una tarifa indexada?</a></p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .neg-meses {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 6px;
+  }
+  .neg-meses li {
+    display: grid;
+    grid-template-columns: minmax(120px, 170px) 1fr 60px;
+    gap: 12px;
+    align-items: center;
+    font-size: 15px;
+  }
+  .neg-barra {
+    background: var(--color-pale-sage);
+    border-radius: 4px;
+    height: 14px;
+    overflow: hidden;
+  }
+  .neg-barra span {
+    display: block;
+    height: 100%;
+    background: var(--color-mint-pulse);
+  }
+  .neg-meses .num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .faq-c {
+    border-bottom: 1px solid var(--color-pale-sage);
+    padding: 6px 0;
+  }
+  .faq-c summary {
+    color: var(--color-bark);
+  }
+  .faq-c p {
+    padding: 4px 0 12px 20px;
+  }
+</style>

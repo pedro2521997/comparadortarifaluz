@@ -18,7 +18,7 @@ export const GET: APIRoute = () => {
   const catalogo = catalogoActualizado.slice(0, 10);
   // [ruta, última modificación]
   const rutas: [string, string?][] = [
-    ["/", ultimoDia], ["/precio-luz-hoy/", ultimoDia], ["/precio-luz-manana/", dias.at(-1)?.fecha], ["/precio-luz/", ultimoDia], ["/precio-luz/historico/", ultimoDia],
+    ["/", ultimoDia], ["/precio-luz-hoy/", ultimoDia], ["/precio-luz-manana/", dias.at(-1)?.fecha], ["/precio-luz/", ultimoDia], ["/precio-luz/historico/", ultimoDia], ["/precio-luz/precios-negativos/", ultimoDia],
     ["/tarifas/", catalogo], ["/comparador/", catalogo], ["/cuanto-gasta/", ultimoDia],
     ["/herramientas/"], ["/precio-luz-ayer/", dias.filter((d) => d.fecha < hoy).at(-1)?.fecha],
     ...HERRAMIENTAS.filter((h) => !["/", "/precio-luz-hoy/", "/precio-luz-manana/", "/precio-luz/historico/", "/tarifas/", "/comparador/", "/cuanto-gasta/"].includes(h.href)).map((h): [string, string?] => [h.href, h.href.includes("gasol") || h.href.includes("glp") || h.href.includes("carburantes") ? (h.href.includes("europa") || h.href.includes("calefaccion") ? ACTUALIZADO_UE : FECHA_GASOLINERAS || undefined) : undefined]),
