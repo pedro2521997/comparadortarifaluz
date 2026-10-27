@@ -1,22 +1,36 @@
 ---
-// Todas las páginas de precio: /<país>/[<zona>/] (hoy), …/<mañana>/ y …/<AAAA-MM-DD>/ (archivo).
+// Todas las páginas de cada zona: /<país>/[<zona>/] (hoy), …/<mañana>/, …/<AAAA-MM-DD>/ (archivo),
+// …/<mix>/ (generación), …/<negativos>/ (precios negativos), …/<meses>/ y …/<meses>/<AAAA-MM>/ (medias mensuales).
 // «Hoy» y «mañana» se calculan con la fecha del país en el momento del build (se reconstruye varias veces al día).
 import PaginaDia from "../components/PaginaDia.astro";
-import { MERCADOS, diasConPagina, hoyDe, urlManana, urlFecha } from "../lib/datos";
+import PaginaMix from "../components/PaginaMix.astro";
+import PaginaNegativos from "../components/PaginaNegativos.astro";
+import PaginaMeses from "../components/PaginaMeses.astro";
+import { MERCADOS, diasConPagina, hoyDe, urlManana, urlFecha, type Mercado } from "../lib/datos";
+import { tieneEnergia, tieneMix, meses, urlMix, urlNegativos, urlMeses, urlMes } from "../lib/energia";
 import { sumarDias } from "../lib/bloque";
 
+type Pag = "hoy" | "manana" | "fecha" | "mix" | "negativos" | "meses";
 export function getStaticPaths() {
   const quitar = (r: string) => r.replace(/^\/|\/$/g, "");
+  const pagina = (ruta: string, m: Mercado, pag: Pag, fecha = "", mes: string | null = null) => ({ params: { ruta: quitar(ruta) }, props: { m, pag, fecha, mes } });
   return MERCADOS.flatMap((m) => {
     const hoy = hoyDe(m);
+    const energia = tieneEnergia(m);
     return [
-      { params: { ruta: quitar(m.ruta) }, props: { m, pag: "hoy" as const, fecha: hoy } },
-      { params: { ruta: quitar(urlManana(m)) }, props: { m, pag: "manana" as const, fecha: sumarDias(hoy, 1) } },
-      ...diasConPagina(m).map((d) => ({ params: { ruta: quitar(urlFecha(m, d.fecha)) }, props: { m, pag: "fecha" as const, fecha: d.fecha } })),
+      pagina(m.ruta, m, "hoy", hoy),
+      pagina(urlManana(m), m, "manana", sumarDias(hoy, 1)),
+      ...diasConPagina(m).map((d) => pagina(urlFecha(m, d.fecha), m, "fecha", d.fecha)),
+      ...(energia && tieneMix(m) ? [pagina(urlMix(m), m, "mix")] : []),
+      ...(energia ? [pagina(urlNegativos(m), m, "negativos")] : []),
+      ...(energia && meses(m).length ? [pagina(urlMeses(m), m, "meses"), ...meses(m).map((x) => pagina(urlMes(m, x.mes), m, "meses", "", x.mes))] : []),
     ];
   });
 }
-const { m, pag, fecha } = Astro.props;
+const { m, pag, fecha, mes } = Astro.props as { m: Mercado; pag: Pag; fecha: string; mes: string | null };
 ---
 
-<PaginaDia m={m} pag={pag} fecha={fecha} />
+{pag === "mix" && <PaginaMix m={m} />}
+{pag === "negativos" && <PaginaNegativos m={m} />}
+{pag === "meses" && <PaginaMeses m={m} mes={mes} />}
+{(pag === "hoy" || pag === "manana" || pag === "fecha") && <PaginaDia m={m} pag={pag} fecha={fecha} />}

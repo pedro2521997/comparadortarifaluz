@@ -81,8 +81,14 @@ const fmtEntsoe = (iso) => iso.replace(/-/g, "") + "0000";
 async function pedirEntsoe(params, desde, hasta) {
   const url = `https://web-api.tp.entsoe.eu/api?securityToken=${TOKEN}&${params}&periodStart=${fmtEntsoe(sumar(desde, -1))}&periodEnd=${fmtEntsoe(sumar(hasta, 1))}`;
   for (let i = 1; i <= 3; i++) {
-    const r = await fetch(url);
-    const xml = await r.text();
+    let r, xml;
+    try {
+      r = await fetch(url, { signal: AbortSignal.timeout(120000) });
+      xml = await r.text();
+    } catch {
+      await espera(3000 * i); // tiempo agotado o red caída: se reintenta
+      continue;
+    }
     if (r.ok) return xml.includes("Acknowledgement_MarketDocument") ? "" : xml;
     if (r.status === 400 && xml.includes("No matching data")) return "";
     if (r.status === 400 || r.status === 401) throw new Error(`ENTSO-E ${r.status}: ${/<text>([^<]+)/.exec(xml)?.[1] ?? ""}`.slice(0, 200));
@@ -265,7 +271,9 @@ async function main() {
   for (const pais of paisesJson.paises) {
     for (const zona of pais.zonas) {
       try {
-        nMix += await mix(pais, zona, 35);
+        const n = await mix(pais, zona, 35);
+        nMix += n;
+        console.log(`Mix ${zona.id}: ${n} días`);
       } catch (e) {
         console.warn(`Mix ${zona.id}: ${e.message}`);
       }

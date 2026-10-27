@@ -51,7 +51,7 @@ export function graficaLineas(series: Serie[], o: Opciones): string {
     .join("");
   const leyenda =
     series.length > 1
-      ? `<p class="caption g-leyenda">${series.map((s, k) => `<span><span class="g-leyenda__l" style="border-top:${k === 0 ? "3px solid var(--color-canopy)" : "2px dashed var(--color-slate)"}"></span>${s.nombre}</span>`).join(" ")}</p>`
+      ? `<p class="caption g-leyenda">${series.map((s, k) => `<span><span class="g-leyenda__l" style="border-top:${k === 0 ? `3px solid ${s.color ?? "var(--color-canopy)"}` : `2px dashed ${s.color ?? "var(--color-slate)"}`}"></span>${s.nombre}</span>`).join(" ")}</p>`
       : "";
   return `<figure class="g-svg"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${o.resumen.replace(/"/g, "&quot;")}" preserveAspectRatio="none" style="width:100%;height:auto">${ejeY}${lineas}${ejeX}</svg>${leyenda}</figure>`;
 }

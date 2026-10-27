@@ -28,6 +28,7 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -47,6 +48,7 @@ jobs:
       # pero solo se despliega cuando la variable del repositorio GLOBAL_ACTIVO vale "true".
       - name: Precios de la web global
         continue-on-error: true
+        timeout-minutes: 40
         run: npm run precios:global -- 400
         env:
           ENTSOE_TOKEN: ${{ secrets.ENTSOE_TOKEN }}

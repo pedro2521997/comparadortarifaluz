@@ -5,6 +5,8 @@
 // el JSON del día correcto (/data/<zona>/<fecha>.json) y oculta los textos fijos del build.
 import Base from "../layouts/Base.astro";
 import Anuncio from "./Anuncio.astro";
+import BloquePrevision from "./BloquePrevision.astro";
+import { tieneEnergia, tieneMix, textosE, previsionDe, urlMix, urlNegativos, urlMeses, meses } from "../lib/energia";
 import { guiasDe, urlGuia, TITULO_GUIAS } from "../lib/guias";
 import { PAISES_C, textosC, urlPrecios, urlCalefaccion, en, hay, CC } from "../lib/carburantes";
 import { TEXTOS } from "../lib/textos";
@@ -37,6 +39,10 @@ const fechas = new Set(diasConPagina(m).map((d) => d.fecha));
 const alrededor = Array.from({ length: 9 }, (_, k) => sumarDias(fecha, k - 4)).filter((x) => x !== fecha && fechas.has(x));
 const conMedia = i ? i.tramos.filter((t) => t.media !== null) : [];
 const masBarato = conMedia.length ? conMedia.reduce((a, t) => (t.media! < a.media! ? t : a)) : null;
+const energia = tieneEnergia(m);
+const TE = energia ? textosE(m) : null;
+// Previsión de eólica y solar: en «mañana» (y en «hoy», la del propio día).
+const prev = energia && pag !== "fecha" ? previsionDe(m.zona.id, fecha) : null;
 const datosCliente = JSON.stringify({ zona: m.zona.id, tz: m.pais.tz, modo: pag, f });
 ---
 
@@ -70,6 +76,22 @@ const datosCliente = JSON.stringify({ zona: m.zona.id, tz: m.pais.tz, modo: pag,
   </section>
 
   <Anuncio tipo="horizontal" seccion />
+
+  {prev && <div data-dia-fijo><BloquePrevision m={m} p={prev} /></div>}
+
+  {
+    TE && (
+      <section class="section section--tight">
+        <div class="wrap">
+          <div class="grid grid--3">
+            {tieneMix(m) && <a class="card card--link" href={urlMix(m)}><strong>{TE.mix}</strong><span class="muted small">{TE.pMix}</span></a>}
+            <a class="card card--link" href={urlNegativos(m)}><strong>{TE.negativosT}</strong><span class="muted small">{TE.pNegCuantas}</span></a>
+            {meses(m).length > 0 && <a class="card card--link" href={urlMeses(m)}><strong>{TE.mesesT}</strong><span class="muted small">{TE.mediaMes}</span></a>}
+          </div>
+        </div>
+      </section>
+    )
+  }
 
   {
     i && (

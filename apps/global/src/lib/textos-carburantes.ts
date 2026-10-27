@@ -248,6 +248,7 @@ export function enPais(lang: Idioma, cc: string, nombre: string): string {
       return `na ${nombre}`;
     case "sv":
     case "da":
+    case "no":
       return `i ${nombre}`;
     case "nl":
       return `in ${nombre}`;

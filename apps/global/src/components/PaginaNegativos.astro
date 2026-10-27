@@ -1,0 +1,145 @@
+---
+// Precios negativos de una zona en los últimos 12 meses: cuántas horas y días, el más bajo, el último y por mes.
+import Base from "../layouts/Base.astro";
+import Anuncio from "./Anuncio.astro";
+import { TEXTOS } from "../lib/textos";
+import { fechaLocal, hh, valor } from "../lib/bloque";
+import { etiquetaZona, formato, urlFecha, conPagina, MERCADOS, esquemaFaq, type Mercado } from "../lib/datos";
+import { enPais } from "../lib/textos-carburantes";
+import { tieneMix, textosE, negativos, nombreMes, urlNegativos, urlMix, urlMeses } from "../lib/energia";
+
+interface Props {
+  m: Mercado;
+}
+const { m } = Astro.props;
+const L = TEXTOS[m.pais.lang];
+const T = textosE(m);
+const f = formato(m.pais);
+const n = negativos(m);
+const z = etiquetaZona(m);
+const sep = m.pais.lang === "fr" ? " : " : ": ";
+const nf = (x: number) => x.toLocaleString(m.pais.locale);
+const maxMes = Math.max(...n.porMes.map((x) => x.horas), 1);
+const enlace = (fecha: string) => (conPagina(m, fecha) ? urlFecha(m, fecha) : null);
+const hermanas = MERCADOS.filter((x) => x.pais.cc === m.pais.cc && x !== m);
+const texto = T.negTexto(nf(n.horas), nf(n.dias), T.ultimoAno);
+const preguntas = [
+  { p: T.pNegCuantas, r: `${texto}${n.ultima ? ` ${T.ultimaNegativa}${sep}${fechaLocal(n.ultima.fecha, m.pais.locale)}, ${hh(n.ultima.h)} (${valor(f, n.ultima.p)}).` : ""}` },
+  { p: T.pNegPorQue, r: T.rNegPorQue },
+  { p: T.pNegAprovechar, r: T.rNegAprovechar },
+];
+const lugar = m.pais.lang === "fi" ? `${sep.trim()} ${m.pais.nombre}` : ` ${enPais(m.pais.lang, m.pais.cc.toUpperCase(), m.pais.nombre)}`;
+const cab = `${T.negativosT}${lugar}${z ? ` (${z})` : ""}`;
+const titulo = [`${cab} – ${nf(n.horas)} h`, cab].find((x) => x.length <= 70) ?? cab.slice(0, 70);
+---
+
+<Base titulo={titulo} descripcion={`${cab}. ${texto}`.slice(0, 158)} lang={m.pais.lang} locale={m.pais.locale} schema={esquemaFaq(preguntas)}>
+  <section class="hero hero--compacto">
+    <div class="wrap">
+      <span class="eyebrow">{m.pais.nombre}{z && ` · ${m.zona.nombre}`}</span>
+      <h1>{cab}</h1>
+      <p class="lead">{texto}</p>
+      <div class="btn-row">
+        <a class="btn btn--ghost btn--small" href={m.ruta}>{L.precio} {L.hoy}</a>
+        {tieneMix(m) && <a class="btn btn--ghost btn--small" href={urlMix(m)}>{T.mix}</a>}
+        <a class="btn btn--ghost btn--small" href={urlMeses(m)}>{T.mesesT}</a>
+      </div>
+    </div>
+  </section>
+  <section class="section section--tight">
+    <div class="wrap stack" style="--stack:32px">
+      <div class="grid grid--4 stats">
+        <div class="stat"><span class="stat__label">{T.horasNegativas}</span><span class="stat__value">{nf(n.horas)}</span><span class="stat__sub">{T.ultimoAno}</span></div>
+        <div class="stat"><span class="stat__label">{T.diasNegativos}</span><span class="stat__value">{nf(n.dias)}</span><span class="stat__sub">{T.ultimoAno}</span></div>
+        <div class="stat">
+          <span class="stat__label">{T.minimo}</span>
+          <span class="stat__value" style="font-size:24px">{n.min ? valor(f, n.min.p) : "—"}</span>
+          <span class="stat__sub">{n.min && (enlace(n.min.fecha) ? <a href={enlace(n.min.fecha)}>{fechaLocal(n.min.fecha, m.pais.locale)}, {hh(n.min.h)}</a> : `${fechaLocal(n.min.fecha, m.pais.locale)}, ${hh(n.min.h)}`)}</span>
+        </div>
+        <div class="stat">
+          <span class="stat__label">{T.ultimaNegativa}</span>
+          <span class="stat__value" style="font-size:24px">{n.ultima ? hh(n.ultima.h) : T.ninguna}</span>
+          <span class="stat__sub">{n.ultima && (enlace(n.ultima.fecha) ? <a href={enlace(n.ultima.fecha)}>{fechaLocal(n.ultima.fecha, m.pais.locale)}</a> : fechaLocal(n.ultima.fecha, m.pais.locale))}</span>
+        </div>
+      </div>
+      <div>
+        <h2 style="font-size:22px;margin-bottom:12px">{T.horasNegativas} · {T.mes}</h2>
+        <ul class="neg-meses">
+          {n.porMes.map((x) => (
+            <li>
+              <span class="neg-mes">{nombreMes(x.mes, m.pais.locale)}</span>
+              <span class="neg-barra" aria-hidden="true"><span style={`width:${Math.max(x.horas ? 2 : 0, (x.horas / maxMes) * 100)}%`} /></span>
+              <span class="num">{nf(x.horas)} h</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+  <Anuncio tipo="horizontal" seccion />
+  <section class="section section--white">
+    <div class="wrap wrap--narrow">
+      {preguntas.map((q) => (
+        <details class="g-faq" open>
+          <summary>{q.p}</summary>
+          <p>{q.r}</p>
+        </details>
+      ))}
+      {
+        hermanas.length > 0 && (
+          <p class="small" style="margin-top:20px">
+            {hermanas.map((x, i) => (
+              <>
+                {i > 0 && " · "}
+                <a href={urlNegativos(x)}>{x.zona.nombre}</a>
+              </>
+            ))}
+          </p>
+        )
+      }
+      <p class="caption" style="margin-top:16px">{L.nota} {L.fuente}: ENTSO-E.</p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .neg-meses {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 6px;
+  }
+  .neg-meses li {
+    display: grid;
+    grid-template-columns: minmax(110px, 160px) 1fr 70px;
+    gap: 12px;
+    align-items: center;
+    font-size: 15px;
+  }
+  .neg-barra {
+    background: var(--color-pale-sage);
+    border-radius: 4px;
+    height: 14px;
+    overflow: hidden;
+  }
+  .neg-barra span {
+    display: block;
+    height: 100%;
+    background: var(--color-mint-pulse);
+  }
+  .neg-meses .num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .g-faq {
+    border-bottom: 1px solid var(--color-pale-sage);
+    padding: 6px 0;
+  }
+  .g-faq summary {
+    color: var(--color-bark);
+    cursor: pointer;
+  }
+  .g-faq p {
+    padding: 4px 0 12px 20px;
+  }
+</style>
