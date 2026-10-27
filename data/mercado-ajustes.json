@@ -68,5 +68,5 @@
  },
  "_nota": "Componentes mensuales del precio final de la demanda nacional (REData, componentes-precio-energia-cierre-desglose). ajuste_eur_kwh = precio total − mercado diario: servicios de ajuste, pagos por capacidad, intradiario y otros. Es una media nacional: se usa como aproximación del coste de ajustes de las tarifas indexadas.",
  "fuente": "https://www.ree.es/es/apidatos",
- "actualizado": "2026-10-27"
+ "actualizado": "2026-10-28"
 }
