@@ -67,3 +67,13 @@ describe("Mix de generación (A75)", () => {
     expect(dia.solar.slice(0, 2)).toEqual([0, 0]);
   });
 });
+
+// @ts-expect-error módulo .mjs sin tipos
+import { tramos } from "../precios-global.mjs";
+
+describe("tramos de días que faltan", () => {
+  it("agrupa los días seguidos y separa los sueltos", () => {
+    expect(tramos(["2026-01-05", "2026-01-01", "2026-01-02"])).toEqual([["2026-01-01", "2026-01-02"], ["2026-01-05", "2026-01-05"]]);
+    expect(tramos(["2026-02-28", "2026-03-01"])).toEqual([["2026-02-28", "2026-03-01"]]);
+  });
+});

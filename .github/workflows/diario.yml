@@ -44,6 +44,13 @@ jobs:
         run: npm run carburantes
       - run: npm test
       - run: npm run build
+      # La web española se despliega antes que la global: si la descarga europea tarda, el precio de hoy no espera.
+      - name: Desplegar en Cloudflare
+        run: npx wrangler deploy
+        working-directory: apps/worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       # Web global (apps/global): mismos datos y código, otro dominio. Se construye siempre (así se prueba),
       # pero solo se despliega cuando la variable del repositorio GLOBAL_ACTIVO vale "true".
       - name: Precios de la web global
@@ -55,12 +62,6 @@ jobs:
       - name: Construir la web global
         continue-on-error: true
         run: npm run build:global
-      - name: Desplegar en Cloudflare
-        run: npx wrangler deploy
-        working-directory: apps/worker
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       - name: Desplegar la web global
         if: vars.GLOBAL_ACTIVO == 'true'
         continue-on-error: true

@@ -45,6 +45,17 @@ export function porHoras(puntos, tz) {
   return out;
 }
 
+/** ["2026-01-01","2026-01-02","2026-01-05"] → [["2026-01-01","2026-01-02"],["2026-01-05","2026-01-05"]] */
+export function tramos(fechas) {
+  const out = [];
+  for (const f of [...fechas].sort()) {
+    const ultimo = out.at(-1);
+    if (ultimo && sumar(ultimo[1], 1) === f) ultimo[1] = f;
+    else out.push([f, f]);
+  }
+  return out;
+}
+
 /** Día completo: al menos 23 horas con precio (el día del cambio de hora de marzo tiene 23). */
 export const completo = (precios) => precios.filter((p) => p !== null).length >= 23;
 
@@ -231,60 +242,79 @@ async function main() {
   }
   if (!TOKEN) console.warn("Sin ENTSOE_TOKEN: solo se descargan las zonas con licencia CC BY de Energy-Charts.");
 
-  let escritos = 0;
-  for (const pais of paisesJson.paises) {
-    for (const zona of pais.zonas) {
-      if (!TOKEN && !zona.ec) continue;
-      const hoy = fechaEn(new Date(), pais.tz);
-      const desde = sumar(hoy, -DIAS);
-      const hasta = sumar(hoy, 1);
-      const dirZona = new URL(`${zona.id}/`, DIR);
-      mkdirSync(dirZona, { recursive: true });
-      // Solo se pide lo que falta (y siempre ayer, hoy y mañana).
-      const faltan = [];
-      for (let f = desde; f <= hasta; f = sumar(f, 1)) if (f >= sumar(hoy, -1) || !existsSync(new URL(`${f}.json`, dirZona))) faltan.push(f);
-      if (!faltan.length) continue;
-      try {
-        const puntos = TOKEN ? await entsoe(zona, faltan[0], faltan.at(-1)) : await energyCharts(zona, faltan[0], faltan.at(-1));
-        const fuente = TOKEN ? "ENTSO-E" : "Energy-Charts (Bundesnetzagentur | SMARD.de, CC BY 4.0)";
-        for (const [fecha, precios] of porHoras(puntos, pais.tz)) {
-          if (!faltan.includes(fecha) || !completo(precios)) continue;
-          const fichero = new URL(`${fecha}.json`, dirZona);
-          const nuevo = JSON.stringify({ fecha, zona: zona.id, fuente, unidad: "EUR/MWh", precios }) + "\n";
-          if (existsSync(fichero) && readFileSync(fichero, "utf8") === nuevo) continue;
-          writeFileSync(fichero, nuevo);
-          escritos++;
-        }
-        console.log(`${zona.id}: ${puntos.length} puntos`);
-      } catch (e) {
-        console.warn(`${zona.id}: ${e.message}`);
-      }
-      if (!TOKEN) await espera(4000);
-    }
-  }
-  console.log(`${escritos} días nuevos o actualizados`);
+  const zonas = paisesJson.paises.flatMap((pais) => pais.zonas.filter((zona) => TOKEN || zona.ec).map((zona) => ({ pais, zona })));
+  // ENTSO-E tarda varios segundos por respuesta: 4 zonas a la vez (muy por debajo de su límite de 400 peticiones/minuto).
+  // Energy-Charts limita las peticiones seguidas: de una en una.
+  const resultados = await enParalelo(zonas, TOKEN ? 4 : 1, ({ pais, zona }) => preciosZona(pais, zona));
+  console.log(`${resultados.reduce((a, b) => a + b, 0)} días nuevos o actualizados`);
 
   // Mix de generación real (35 días) y previsión de eólica, solar y demanda para hoy y mañana. Solo con token.
   if (!TOKEN) return;
-  let nMix = 0;
-  let nPrev = 0;
-  for (const pais of paisesJson.paises) {
-    for (const zona of pais.zonas) {
-      try {
-        const n = await mix(pais, zona, 35);
-        nMix += n;
-        console.log(`Mix ${zona.id}: ${n} días`);
-      } catch (e) {
-        console.warn(`Mix ${zona.id}: ${e.message}`);
-      }
-      try {
-        nPrev += await prevision(pais, zona);
-      } catch (e) {
-        console.warn(`Previsión ${zona.id}: ${e.message}`);
-      }
+  const energia = await enParalelo(zonas, 4, async ({ pais, zona }) => {
+    let nMix = 0;
+    let nPrev = 0;
+    try {
+      nMix = await mix(pais, zona, 35);
+      console.log(`Mix ${zona.id}: ${nMix} días`);
+    } catch (e) {
+      console.warn(`Mix ${zona.id}: ${e.message}`);
     }
+    try {
+      nPrev = await prevision(pais, zona);
+    } catch (e) {
+      console.warn(`Previsión ${zona.id}: ${e.message}`);
+    }
+    return [nMix, nPrev];
+  });
+  console.log(`Mix: ${energia.reduce((a, x) => a + x[0], 0)} días · Previsión: ${energia.reduce((a, x) => a + x[1], 0)} días`);
+}
+
+/** Ejecuta `f` sobre cada elemento con como mucho `n` a la vez; devuelve los resultados en orden. */
+async function enParalelo(lista, n, f) {
+  const out = new Array(lista.length);
+  let i = 0;
+  await Promise.all(
+    Array.from({ length: Math.min(n, lista.length) }, async () => {
+      while (i < lista.length) {
+        const k = i++;
+        out[k] = await f(lista[k]);
+      }
+    }),
+  );
+  return out;
+}
+
+/** Precios de una zona: solo los días que faltan, y siempre ayer, hoy y mañana. Devuelve los días escritos. */
+async function preciosZona(pais, zona) {
+  let escritos = 0;
+  const hoy = fechaEn(new Date(), pais.tz);
+  const desde = sumar(hoy, -DIAS);
+  const hasta = sumar(hoy, 1);
+  const dirZona = new URL(`${zona.id}/`, DIR);
+  mkdirSync(dirZona, { recursive: true });
+  // Solo se pide lo que falta (y siempre ayer, hoy y mañana).
+  const faltan = [];
+  for (let f = desde; f <= hasta; f = sumar(f, 1)) if (f >= sumar(hoy, -1) || !existsSync(new URL(`${f}.json`, dirZona))) faltan.push(f);
+  if (!faltan.length) return 0;
+  try {
+    // Se piden solo los tramos seguidos que faltan: un día suelto sin datos no obliga a volver a bajar el año entero.
+    const puntos = [];
+    for (const [a, b] of tramos(faltan)) puntos.push(...(TOKEN ? await entsoe(zona, a, b) : await energyCharts(zona, a, b)));
+    const fuente = TOKEN ? "ENTSO-E" : "Energy-Charts (Bundesnetzagentur | SMARD.de, CC BY 4.0)";
+    for (const [fecha, precios] of porHoras(puntos, pais.tz)) {
+      if (!faltan.includes(fecha) || !completo(precios)) continue;
+      const fichero = new URL(`${fecha}.json`, dirZona);
+      const nuevo = JSON.stringify({ fecha, zona: zona.id, fuente, unidad: "EUR/MWh", precios }) + "\n";
+      if (existsSync(fichero) && readFileSync(fichero, "utf8") === nuevo) continue;
+      writeFileSync(fichero, nuevo);
+      escritos++;
+    }
+    console.log(`${zona.id}: ${puntos.length} puntos`);
+  } catch (e) {
+    console.warn(`${zona.id}: ${e.message}`);
   }
-  console.log(`Mix: ${nMix} días · Previsión: ${nPrev} días`);
+  if (!TOKEN) await espera(4000);
+  return escritos;
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1])) main();
