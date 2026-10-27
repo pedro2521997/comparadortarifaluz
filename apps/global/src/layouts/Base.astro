@@ -109,9 +109,25 @@ const ruta = Astro.url.pathname;
         </div>
         <p class="pie__legal">
           {L.aviso} {L.fuente}: ENTSO-E Transparency Platform · Bundesnetzagentur | SMARD.de (CC BY 4.0) · ECB. © {new Date().getFullYear()} {SITIO.nombre}
+          {codigoAdsense() && <> · <a href="/legal/" data-preferencias-privacidad>Privacy settings</a></>}
         </p>
       </div>
     </footer>
+
+    {
+      codigoAdsense() && (
+        <script is:inline>
+          document.addEventListener("click", function (e) {
+            var a = e.target.closest && e.target.closest("[data-preferencias-privacidad]");
+            if (!a) return;
+            e.preventDefault();
+            window.googlefc = window.googlefc || {};
+            window.googlefc.callbackQueue = window.googlefc.callbackQueue || [];
+            window.googlefc.callbackQueue.push(function () { window.googlefc.showRevocationMessage(); });
+          });
+        </script>
+      )
+    }
     {
       codigoAdsense() && (
         <script is:inline>

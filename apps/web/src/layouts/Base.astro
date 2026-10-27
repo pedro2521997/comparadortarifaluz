@@ -209,9 +209,25 @@ const aviso = ultimo
         <p class="pie__legal">
           Los cálculos son estimaciones, no ofertas vinculantes. Precios de la luz: Red Eléctrica (REData).
           © {new Date().getFullYear()} {SITIO.nombre}
+          {codigoAdsense() && <> · <a href="/cookies/" data-preferencias-privacidad>Preferencias de privacidad</a></>}
         </p>
       </div>
     </footer>
+
+    {
+      codigoAdsense() && (
+        <script is:inline>
+          document.addEventListener("click", function (e) {
+            var a = e.target.closest && e.target.closest("[data-preferencias-privacidad]");
+            if (!a) return;
+            e.preventDefault();
+            window.googlefc = window.googlefc || {};
+            window.googlefc.callbackQueue = window.googlefc.callbackQueue || [];
+            window.googlefc.callbackQueue.push(function () { window.googlefc.showRevocationMessage(); });
+          });
+        </script>
+      )
+    }
 
     {
       adsense && (
