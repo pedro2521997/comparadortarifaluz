@@ -4,6 +4,7 @@ import { MERCADOS, diasDe, diasConPagina, hoyDe, urlManana, urlFecha, absoluta }
 import { PAISES_C, CC, urlPrecios, urlCalefaccion, urlEuropa, urlDestino, destinos, hay } from "../lib/carburantes";
 import { ACTUALIZADO } from "../../../web/src/lib/compartido/carburantes-ue";
 import { GUIAS, urlGuia, urlGuias } from "../lib/guias";
+import { tieneEnergia, tieneMix, mixDe, meses, urlMix, urlNegativos, urlMeses, urlMes } from "../lib/energia";
 
 export const GET: APIRoute = () => {
   const rutas: [string, string?][] = [["/"], ["/legal/"]];
@@ -11,6 +12,11 @@ export const GET: APIRoute = () => {
     const ultimo = diasDe(m.zona.id).filter((d) => d.fecha <= hoyDe(m)).at(-1)?.fecha;
     rutas.push([m.ruta, ultimo], [urlManana(m), diasDe(m.zona.id).at(-1)?.fecha]);
     for (const d of diasConPagina(m)) rutas.push([urlFecha(m, d.fecha), d.fecha]);
+    if (!tieneEnergia(m)) continue;
+    if (tieneMix(m)) rutas.push([urlMix(m), mixDe(m.zona.id).at(-1)?.fecha]);
+    rutas.push([urlNegativos(m), ultimo]);
+    const ms = meses(m);
+    if (ms.length) rutas.push([urlMeses(m), ultimo], ...ms.map((x): [string, string?] => [urlMes(m, x.mes), x.completo ? undefined : ultimo]));
   }
   for (const p of PAISES_C) {
     rutas.push([urlPrecios(p), ACTUALIZADO], [urlEuropa(p), ACTUALIZADO]);
