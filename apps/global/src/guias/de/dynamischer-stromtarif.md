@@ -28,4 +28,4 @@ Mit einem **dynamischen Stromtarif** zahlst du f체r jede Stunde den aktuellen B�
 
 ## Faustregel
 
-Lohnt sich vor allem, wenn du **mindestens ein Drittel deines Verbrauchs** in g체nstige Stunden legen kannst. Wann die sind, siehst du t채glich unter [Strompreis heute](/de/).
+Das lohnt sich vor allem, wenn du **mindestens ein Drittel deines Verbrauchs** in g체nstige Stunden legen kannst. Wann die sind, siehst du t채glich unter [Strompreis heute](/de/).

@@ -7,9 +7,10 @@ import { guiasDe, urlGuia, TITULO_GUIAS } from "../../lib/guias";
 import { graficaLineas } from "../../../../web/src/lib/compartido/grafica-svg";
 import { ultimo, ultimas, ranking, partImpuestos, nombrePais, FUENTE_UE, type ProductoUE } from "../../../../web/src/lib/compartido/carburantes-ue";
 import { PAISES_C, textosC, CC, urlPrecios, urlCalefaccion, urlEuropa, urlDestino, en, litro, dinero, pct, fechaC, mesC, VECINOS, PRODUCTOS, hay } from "../../lib/carburantes";
+import { lista, semanaIso } from "../../lib/textos-carburantes";
 import { TEXTOS } from "../../lib/textos";
 import type { Pais } from "../../lib/datos";
-import { esquemaFaq, MERCADOS } from "../../lib/datos";
+import { esquemaFaq, MERCADOS, recortarFrases } from "../../lib/datos";
 
 type Seccion = "precios" | "calefaccion" | "europa";
 export function getStaticPaths() {
@@ -29,7 +30,7 @@ const cc = CC(p);
 const nombre = nombrePais(cc, p.locale);
 const enP = en(p, cc);
 const g = ultimo(cc, "euro95")!;
-const semana = fechaC(p, g.semana);
+const semana = T.semanaDel(fechaC(p, g.semana), semanaIso(g.semana));
 const rk = ranking("euro95");
 const puesto = rk.findIndex((x) => x.cc === cc) + 1;
 const imp = partImpuestos(cc, "euro95");
@@ -46,27 +47,31 @@ const mesBarato = [...porMes.entries()].map(([m, v]) => ({ m, media: v.reduce((a
 const nombreMes = (m: number) => new Intl.DateTimeFormat(p.locale, { month: "long", timeZone: "UTC" }).format(new Date(Date.UTC(2026, m - 1, 15)));
 const cal = ultimo(cc, "calefaccion");
 
-const top3 = rk.slice(0, 3).map((x) => en(p, x.cc)).join(", ");
+const top3 = lista(p.lang, rk.slice(0, 3).map((x) => en(p, x.cc)), T.y);
+const lead =
+  s === "precios"
+    ? T.leadPais({ enP, precio: litro(p, g.valor), puesto, total: rk.length, imp: imp ? pct(p, imp) : null })
+    : s === "calefaccion" && cal
+      ? T.leadCal({ enP, precio: litro(p, cal.valor), mil: dinero(p, cal.valor * 1000) })
+      : "";
 const preguntas =
   s === "calefaccion" && cal
     ? [
-        { p: T.pCal(enP), r: `${T.productos.calefaccion}${sep}${litro(p, cal.valor)} (${T.semanaDel(fechaC(p, cal.semana))}). ${T.litros1000}${sep}${dinero(p, cal.valor * 1000)}.` },
-        ...(mesBarato ? [{ p: T.pCuandoCal, r: `${T.mesBarato(nombreMes(mesBarato.m))} ${T.consejosCalefaccion[0]}` }] : []),
+        { p: T.pCal(enP), r: T.rCal({ enP, precio: litro(p, cal.valor), semana, mil: dinero(p, cal.valor * 1000) }) },
+        ...(mesBarato ? [{ p: T.pCuandoCal, r: T.rCuandoCal(nombreMes(mesBarato.m)) }] : []),
       ]
     : [
-        { p: T.pPrecio(enP), r: `${T.productos.euro95}${sep}${litro(p, g.valor)} (${T.semanaDel(semana)}). ${T.puesto(puesto, rk.length)}.` },
-        ...(hay(cc, "diesel") ? [{ p: T.pDiesel(enP), r: `${T.productos.diesel}${sep}${litro(p, ultimo(cc, "diesel")!.valor)} (${T.semanaDel(semana)}).` }] : []),
-        ...(imp ? [{ p: T.pImpuestos(enP), r: `${T.impuestos(pct(p, imp)).charAt(0).toUpperCase()}${T.impuestos(pct(p, imp)).slice(1)} (${T.productos.euro95}).` }] : []),
+        { p: T.pPrecio(enP), r: T.rPrecio({ enP, precio: litro(p, g.valor), semana, puesto, total: rk.length }) },
+        ...(hay(cc, "diesel") ? [{ p: T.pDiesel(enP), r: T.rDiesel({ enP, precio: litro(p, ultimo(cc, "diesel")!.valor), semana }) }] : []),
+        ...(imp ? [{ p: T.pImpuestos(enP), r: T.rImpuestos(enP, pct(p, imp)) }] : []),
         { p: T.pBarato, r: T.rBarato(top3, en(p, rk.at(-1)!.cc)) },
       ];
 const titulo =
   s === "precios" ? `${T.tituloPais(enP)}${sep}${T.productos.euro95} ${litro(p, g.valor)}` : s === "calefaccion" ? `${T.tituloCalefaccion(enP)}${sep}${litro(p, cal!.valor)}` : `${T.tituloEuropa} (${semana})`;
 const desc =
-  s === "precios"
-    ? `${T.tituloPais(enP)}, ${T.semanaDel(semana)}${sep}${prods.map((k) => `${T.productos[k]} ${litro(p, ultimo(cc, k)!.valor)}`).join(" · ")}.`
-    : s === "calefaccion"
-      ? `${T.tituloCalefaccion(enP)}, ${T.semanaDel(semana)}${sep}${litro(p, cal!.valor)}. ${T.litros1000}${sep}${dinero(p, cal!.valor * 1000)}.`
-      : `${T.tituloEuropa}, ${T.semanaDel(semana)}${sep}${rk.length} ${T.pais.toLowerCase()}.`;
+  s === "europa"
+    ? recortarFrases(`${T.rBarato(top3, en(p, rk.at(-1)!.cc))} (${semana})`.length <= 158 ? `${T.rBarato(top3, en(p, rk.at(-1)!.cc))} (${semana})` : T.rBarato(top3, en(p, rk.at(-1)!.cc)), 158)
+    : recortarFrases(`${lead} (${semana})`.length <= 158 ? `${lead} (${semana})` : lead, 158);
 const recorta = (t: string, n: number) => (t.length <= n ? t : t.slice(0, t.lastIndexOf(" ", n - 1)) + "…");
 const serie = (k: ProductoUE, c = cc) => ultimas(c, k, 156);
 ---
@@ -74,10 +79,9 @@ const serie = (k: ProductoUE, c = cc) => ultimas(c, k, 156);
 <Base titulo={recorta(titulo, 70)} descripcion={recorta(desc, 158)} lang={p.lang} locale={p.locale} schema={esquemaFaq(preguntas)}>
   <section class="hero hero--compacto">
     <div class="wrap">
-      <span class="eyebrow">{p.nombre} · {T.semanaDel(semana)}</span>
+      <span class="eyebrow">{p.nombre} · {semana}</span>
       <h1>{s === "precios" ? T.tituloPais(enP) : s === "calefaccion" ? T.tituloCalefaccion(enP) : T.tituloEuropa}</h1>
-      {s === "precios" && <p class="lead">{T.productos.euro95}{sep}<strong>{litro(p, g.valor)}</strong>. {T.puesto(puesto, rk.length)}.{imp && ` ${T.impuestos(pct(p, imp))}.`}</p>}
-      {s === "calefaccion" && cal && <p class="lead">{T.productos.calefaccion}{sep}<strong>{litro(p, cal.valor)}</strong> · {T.litros1000}{sep}<strong>{dinero(p, cal.valor * 1000)}</strong>.</p>}
+      {lead && <p class="lead">{lead}</p>}
       <div class="btn-row">
         <a class="btn btn--ghost btn--small" href={urlPrecios(p)} aria-current={s === "precios" ? "page" : undefined}>{T.productos.euro95} / {T.productos.diesel}</a>
         {hay(cc, "calefaccion") && <a class="btn btn--ghost btn--small" href={urlCalefaccion(p)} aria-current={s === "calefaccion" ? "page" : undefined}>{T.productos.calefaccion}</a>}
@@ -105,7 +109,7 @@ const serie = (k: ProductoUE, c = cc) => ultimas(c, k, 156);
           </div>
           <div>
             <h2 style="font-size:22px;margin-bottom:12px">{T.tresAnos}</h2>
-            <Fragment set:html={graficaLineas([{ nombre: T.productos.euro95, valores: serie("euro95").valores.map((v) => v) }, { nombre: T.productos.diesel, valores: serie("diesel").valores }], { etiquetas: serie("euro95").fechas.map((f) => mesC(p, f)), formato: (n) => litro(p, n, 2).replace(/ .*$/, ""), resumen: `${T.tituloPais(enP)}, ${T.tresAnos}` })} />
+            <Fragment set:html={graficaLineas([{ nombre: T.productos.euro95, valores: serie("euro95").valores.map((v) => v) }, { nombre: T.productos.diesel, valores: serie("diesel").valores }], { etiquetas: serie("euro95").fechas.map((f) => mesC(p, f)), formato: (n) => litro(p, n, 2).replace(/[\s\u00a0].*$/, ""), resumen: `${T.tituloPais(enP)}, ${T.tresAnos}` })} />
             <p class="caption">{T.fuente}</p>
           </div>
         </div>
@@ -125,7 +129,7 @@ const serie = (k: ProductoUE, c = cc) => ultimas(c, k, 156);
           </div>
           <div>
             <h2 style="font-size:22px;margin-bottom:12px">{T.tresAnos}</h2>
-            <Fragment set:html={graficaLineas([{ nombre: nombre, valores: sCal.valores }, { nombre: nombrePais("EU", p.locale), valores: serie("calefaccion", "EU").valores }], { etiquetas: sCal.fechas.map((f) => mesC(p, f)), formato: (n) => litro(p, n, 2).replace(/ .*$/, ""), resumen: `${T.tituloCalefaccion(enP)}, ${T.tresAnos}` })} />
+            <Fragment set:html={graficaLineas([{ nombre: nombre, valores: sCal.valores }, { nombre: nombrePais("EU", p.locale), valores: serie("calefaccion", "EU").valores }], { etiquetas: sCal.fechas.map((f) => mesC(p, f)), formato: (n) => litro(p, n, 2).replace(/[\s\u00a0].*$/, ""), resumen: `${T.tituloCalefaccion(enP)}, ${T.tresAnos}` })} />
             <p class="caption">{T.fuente}</p>
           </div>
         </div>
@@ -198,9 +202,9 @@ const serie = (k: ProductoUE, c = cc) => ultimas(c, k, 156);
 
   <section class="section section--white">
     <div class="wrap wrap--narrow">
-      <h2 style="font-size:22px;margin-bottom:12px">{s === "calefaccion" ? T.tituloCalefaccion(enP) : T.consejosT}</h2>
+      <h2 style="font-size:22px;margin-bottom:12px">{s === "calefaccion" ? T.consejosCalT : T.consejosT}</h2>
       <ul class="g-consejos">
-        {(s === "calefaccion" ? [...(mesBarato ? [T.mesBarato(nombreMes(mesBarato.m))] : []), ...T.consejosCalefaccion] : T.consejosCarburante).map((c) => <li>{c}</li>)}
+        {(s === "calefaccion" ? T.consejosCalefaccion : T.consejosCarburante).map((c) => <li>{c}</li>)}
       </ul>
       <h2 style="font-size:22px;margin:32px 0 12px">{T.preguntasT}</h2>
       {preguntas.map((q) => (
@@ -209,7 +213,7 @@ const serie = (k: ProductoUE, c = cc) => ultimas(c, k, 156);
           <p>{q.r}</p>
         </details>
       ))}
-      <p class="caption" style="margin-top:16px">{T.aviso} <a href={FUENTE_UE.url} rel="noopener">{FUENTE_UE.nombre}</a></p>
+      <p class="caption" style="margin-top:16px">{s === "calefaccion" ? T.avisoCal : T.aviso} <a href={FUENTE_UE.url} rel="noopener">{T.fuenteNombre}</a></p>
     </div>
   </section>
 

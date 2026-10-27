@@ -3,8 +3,8 @@
 import Base from "../layouts/Base.astro";
 import Anuncio from "./Anuncio.astro";
 import { TEXTOS } from "../lib/textos";
-import { fechaLocal, hh, valor } from "../lib/bloque";
-import { etiquetaZona, formato, urlFecha, conPagina, MERCADOS, esquemaFaq, type Mercado } from "../lib/datos";
+import { fechaLocal, valor } from "../lib/bloque";
+import { recortarFrases, etiquetaZona, formato, urlFecha, conPagina, MERCADOS, esquemaFaq, type Mercado } from "../lib/datos";
 import { enPais } from "../lib/textos-carburantes";
 import { tieneMix, textosE, meses, nombreMes, urlMes, urlMeses, urlMix, urlNegativos, type Mes } from "../lib/energia";
 import { graficaLineas } from "../../../web/src/lib/compartido/grafica-svg";
@@ -26,26 +26,29 @@ const anterior = x ? todos[i + 1] ?? null : null;
 const anoAntes = x ? todos.find((y) => y.mes === `${Number(x.mes.slice(0, 4)) - 1}${x.mes.slice(4)}`) ?? null : null;
 const nm = (y: Mes) => nombreMes(y.mes, m.pais.locale);
 const pais = `${m.pais.nombre}${z ? ` (${z})` : ""}`;
-const enP = m.pais.lang === "fi" ? `– ${m.pais.nombre}` : enPais(m.pais.lang, m.pais.cc.toUpperCase(), m.pais.nombre);
+const enP = enPais(m.pais.lang, m.pais.cc.toUpperCase(), m.pais.nombre);
 const lugar = `${enP}${z ? ` (${z})` : ""}`;
 const enlaceDia = (fecha: string) => (conPagina(m, fecha) ? urlFecha(m, fecha) : null);
 const cambio = (a: number, b: number) => `${a >= b ? "+" : "−"}${new Intl.NumberFormat(m.pais.locale, { style: "percent", maximumFractionDigits: 0 }).format(Math.abs((a - b) / (Math.abs(b) || 1)))}`;
 const hermanas = MERCADOS.filter((y) => y.pais.cc === m.pais.cc && y !== m);
 
-const preguntas = x ? [{ p: T.pMes(nm(x)), r: `${T.rMes(nm(x), valor(f, x.media))} ${T.diaMasBarato}${sep}${fechaLocal(x.barato.fecha, m.pais.locale)} (${valor(f, x.barato.media)}). ${T.diaMasCaro}${sep}${fechaLocal(x.caro.fecha, m.pais.locale)} (${valor(f, x.caro.media)}).` }] : todos.slice(0, 2).map((y) => ({ p: T.pMes(nm(y)), r: T.rMes(nm(y), valor(f, y.media)) }));
-const titulo = x ? [`${T.mesT(nm(x))} ${lugar}${sep}${valor(f, x.media)}`, `${T.mesT(nm(x))} ${lugar}`].find((t) => t.length <= 70) ?? `${T.mesT(nm(x))}`.slice(0, 70) : `${T.mesesT} ${lugar}`;
-const desc = x
-  ? `${T.mesT(nm(x))} · ${pais}${sep}${T.mediaMes} ${valor(f, x.media)}. ${T.diaMasBarato}${sep}${fechaLocal(x.barato.fecha, m.pais.locale)}.`.slice(0, 158)
-  : `${T.mesesT} · ${pais}${sep}${todos.slice(0, 4).map((y) => `${nm(y)} ${valor(f, y.media)}`).join(" · ")}`.slice(0, 158);
+const fd = (iso: string) => fechaLocal(iso, m.pais.locale);
+const textoMes = (y: Mes) =>
+  `${T.rMes(nm(y), valor(f, y.media), y.completo ? null : y.dias)} ${T.rMesDias(fd(y.barato.fecha), valor(f, y.barato.media), fd(y.caro.fecha), valor(f, y.caro.media))}`;
+const preguntas = x ? [{ p: T.pMes(nm(x)), r: textoMes(x) }] : todos.slice(0, 2).map((y) => ({ p: T.pMes(nm(y)), r: textoMes(y) }));
+const h1 = x ? T.mesT(nm(x), lugar) : `${T.mesesT} ${lugar}`;
+const titulo = x ? [`${h1}${sep}${valor(f, x.media)}`, h1].find((t) => t.length <= 70) ?? h1.slice(0, 70) : h1;
+const lead = x ? textoMes(x) : textoMes(todos[0]);
+const desc = recortarFrases(lead, 158);
 const serie = [...todos].reverse();
 ---
 
 <Base titulo={titulo} descripcion={desc} lang={m.pais.lang} locale={m.pais.locale} schema={esquemaFaq(preguntas)}>
   <section class="hero hero--compacto">
     <div class="wrap">
-      <p class="breadcrumbs">{x ? <a href={urlMeses(m)}>{T.mesesT}</a> : T.mesesT} · {pais}</p>
-      <h1>{x ? `${T.mesT(nm(x))}` : T.mesesT}{x && <span class="tf-de"> · {pais}</span>}</h1>
-      {x && <p class="lead">{T.rMes(nm(x), valor(f, x.media))}{!x.completo && ` (${x.dias} ${T.dias})`}</p>}
+      <p class="breadcrumbs">{x ? <a href={urlMeses(m)}>{T.mesesT}</a> : T.mesesT}</p>
+      <h1>{h1}</h1>
+      {x && <p class="lead">{lead}</p>}
       <div class="btn-row">
         <a class="btn btn--ghost btn--small" href={m.ruta}>{L.precio} {L.hoy}</a>
         {tieneMix(m) && <a class="btn btn--ghost btn--small" href={urlMix(m)}>{T.mix}</a>}
@@ -62,11 +65,11 @@ const serie = [...todos].reverse();
             <div class="stat"><span class="stat__label">{T.mediaMes}</span><span class="stat__value" style="font-size:26px">{valor(f, x.media)}</span><span class="stat__sub">{x.dias} {T.dias}</span></div>
             <div class="stat"><span class="stat__label">{T.diaMasBarato}</span><span class="stat__value" style="font-size:26px">{valor(f, x.barato.media)}</span><span class="stat__sub">{enlaceDia(x.barato.fecha) ? <a href={enlaceDia(x.barato.fecha)}>{fechaLocal(x.barato.fecha, m.pais.locale)}</a> : fechaLocal(x.barato.fecha, m.pais.locale)}</span></div>
             <div class="stat"><span class="stat__label">{T.diaMasCaro}</span><span class="stat__value" style="font-size:26px">{valor(f, x.caro.media)}</span><span class="stat__sub">{enlaceDia(x.caro.fecha) ? <a href={enlaceDia(x.caro.fecha)}>{fechaLocal(x.caro.fecha, m.pais.locale)}</a> : fechaLocal(x.caro.fecha, m.pais.locale)}</span></div>
-            <div class="stat"><span class="stat__label">{anterior ? T.vsMesAnterior : T.vsAnoAnterior}</span><span class="stat__value" style="font-size:26px">{anterior ? cambio(x.media, anterior.media) : anoAntes ? cambio(x.media, anoAntes.media) : "—"}</span><span class="stat__sub">{anterior ? `${nm(anterior)}: ${valor(f, anterior.media)}` : ""}{anoAntes ? ` · ${T.vsAnoAnterior}${sep}${valor(f, anoAntes.media)}` : ""}</span></div>
+            <div class="stat"><span class="stat__label">{anterior ? T.vsMesAnterior : T.vsAnoAnterior}</span><span class="stat__value" style="font-size:26px">{anterior ? cambio(x.media, anterior.media) : anoAntes ? cambio(x.media, anoAntes.media) : "—"}</span><span class="stat__sub">{anterior ? `${nm(anterior)}${sep}${valor(f, anterior.media)}` : ""}{anoAntes ? ` · ${T.vsAnoAnterior}${sep}${valor(f, anoAntes.media)}` : ""}</span></div>
           </div>
           <div>
             <h2 style="font-size:22px;margin-bottom:12px">{T.perfilT}</h2>
-            <Fragment set:html={graficaLineas([{ nombre: nm(x), valores: x.perfil }], { etiquetas: Array.from({ length: 24 }, (_, h) => hh(h)), formato: (v) => valor(f, v).replace(/ .*$/, ""), resumen: `${T.perfilT}, ${nm(x)}` })} />
+            <Fragment set:html={graficaLineas([{ nombre: nm(x), valores: x.perfil }], { etiquetas: Array.from({ length: 24 }, (_, h) => L.reloj(h)), formato: (v) => valor(f, v).replace(/[\s\u00a0].*$/, ""), resumen: `${T.perfilT}, ${nm(x)}` })} />
             <p class="caption">{f.unidad}</p>
           </div>
         </div>
@@ -74,7 +77,7 @@ const serie = [...todos].reverse();
     ) : (
       <section class="section section--tight">
         <div class="wrap stack" style="--stack:24px">
-          <Fragment set:html={graficaLineas([{ nombre: T.mediaMes, valores: serie.map((y) => y.media) }], { etiquetas: serie.map((y) => new Intl.DateTimeFormat(m.pais.locale, { month: "short", year: "2-digit", timeZone: "UTC" }).format(new Date(`${y.mes}-15T12:00:00Z`))), formato: (v) => valor(f, v).replace(/ .*$/, ""), resumen: T.mesesT })} />
+          <Fragment set:html={graficaLineas([{ nombre: T.mediaMes, valores: serie.map((y) => y.media) }], { etiquetas: serie.map((y) => new Intl.DateTimeFormat(m.pais.locale, { month: "short", year: "2-digit", timeZone: "UTC" }).format(new Date(`${y.mes}-15T12:00:00Z`))), formato: (v) => valor(f, v).replace(/[\s\u00a0].*$/, ""), resumen: T.mesesT })} />
           <div class="table-wrap" tabindex="0" role="region" aria-label={T.mesesT}>
             <table class="tabla-precios">
               <thead><tr><th scope="col">{T.mes}</th><th scope="col" class="num">{T.mediaMes}</th><th scope="col" class="num">{T.diaMasBarato}</th><th scope="col" class="num">{T.diaMasCaro}</th></tr></thead>
@@ -125,7 +128,7 @@ const serie = [...todos].reverse();
           ))}
         </p>
       )}
-      <p class="caption" style="margin-top:16px">{L.nota} {L.fuente}: ENTSO-E.</p>
+      <p class="caption" style="margin-top:16px">{`${L.nota} ${L.fuente}${sep}ENTSO-E.`}</p>
     </div>
   </section>
 </Base>

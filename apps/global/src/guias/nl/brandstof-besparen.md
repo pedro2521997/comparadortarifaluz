@@ -9,10 +9,10 @@ orden: 4
 
 ## Minder verbruiken
 
-1. **Rustiger rijden**: 100 in plaats van 130 km/u bespaart al snel 20 % brandstof.
+1. **Rustiger rijden**: 100 in plaats van 130 km/u bespaart al snel 20% brandstof.
 2. **Vooruitkijken**: vroeg gas loslaten en uitrollen in plaats van hard remmen.
 3. **Vroeg opschakelen**, rond 2.000 toeren.
-4. **Bandenspanning** elke maand controleren: te zachte banden kosten 2–4 % extra.
+4. **Bandenspanning** elke maand controleren: te zachte banden kosten 2–4% extra.
 5. **Dakkoffer en fietsendrager eraf** als je ze niet gebruikt.
 6. **Onnodig gewicht** uit de kofferbak halen.
 7. **Airco met mate** en de motor uit bij langer stilstaan.

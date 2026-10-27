@@ -11,7 +11,7 @@ Num **tarifário indexado**, o preço da energia acompanha o mercado grossista i
 
 ## O que é preciso
 
-- Um **contador inteligente** que registe o consumo por períodos de 15 minutos (a maioria já foi substituída pela E-Redes).
+- Um **contador inteligente** que registe o consumo por períodos de 15 minutos (a E-Redes já substituiu a grande maioria dos contadores antigos).
 - De preferência, aparelhos programáveis.
 
 ## Para quem compensa

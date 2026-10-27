@@ -6,9 +6,10 @@ import Anuncio from "./Anuncio.astro";
 import BloquePrevision from "./BloquePrevision.astro";
 import { TEXTOS } from "../lib/textos";
 import { fechaLocal, sumarDias } from "../lib/bloque";
-import { etiquetaZona, hoyDe, MERCADOS, urlManana, esquemaFaq, type Mercado } from "../lib/datos";
+import { recortarFrases, etiquetaZona, hoyDe, MERCADOS, urlManana, esquemaFaq, type Mercado } from "../lib/datos";
 import { textosE, mixUltimo, mixCompletoUltimo, totales, renovable30, urlNegativos, urlMeses, urlMix, previsionDe } from "../lib/energia";
 import { barrasApiladas, barraReparto } from "../lib/grafica-mix";
+import { lista } from "../lib/textos-carburantes";
 import { graficaLineas } from "../../../web/src/lib/compartido/grafica-svg";
 import type { Grupo } from "../lib/textos-energia";
 
@@ -29,7 +30,7 @@ const esHoy = d.fecha === hoyDe(m);
 const cuando = esHoy ? T.hoy : fechaLocal(d.fecha, m.pais.locale);
 const fechaL = fechaLocal(d.fecha, m.pais.locale);
 const sep = m.pais.lang === "fr" ? " : " : ": ";
-const top = t.grupos.slice(0, 3).map(([g, v]) => `${T.grupos[g]} (${pct(v / t.total)})`).join(", ");
+const top = lista(m.pais.lang, t.grupos.slice(0, 3).map(([g, v]) => `${T.grupos[g]} (${pct(v / t.total)})`), T.y);
 const orden = t.grupos.map(([g]) => g) as Grupo[];
 const r30 = renovable30(m);
 const manana = sumarDias(hoyDe(m), 1);
@@ -40,16 +41,17 @@ const preguntas = [
   { p: T.pCo2, r: T.rCo2(Math.round(t.co2).toLocaleString(m.pais.locale)) },
 ];
 const cab = [T.mix, z, cuando].filter(Boolean).join(" ");
-const titulo = [`${cab} ${esHoy ? fechaL : ""}`.trim() + `${sep}${pct(t.renovable)} ${T.renovable.toLowerCase()}`, `${cab}${sep}${pct(t.renovable)} ${T.renovable.toLowerCase()}`, cab].find((x) => x.length <= 70) ?? cab;
-const desc = `${cab}, ${fechaL}${sep}${T.renovable} ${pct(t.renovable)} · ${top}. ${T.co2}${sep}~${Math.round(t.co2)} g/kWh.`.slice(0, 158);
+const titulo = [`${cab} ${esHoy ? fechaL : ""}`.trim() + `${sep}${T.pctRenovTitulo(pct(t.renovable))}`, `${cab}${sep}${T.pctRenovTitulo(pct(t.renovable))}`, cab].find((x) => x.length <= 70) ?? cab;
+const lead = T.rMix(pct(t.renovable), top);
+const desc = recortarFrases(lead, 158);
 ---
 
 <Base titulo={titulo} descripcion={desc} lang={m.pais.lang} locale={m.pais.locale} schema={esquemaFaq(preguntas)}>
   <section class="hero hero--compacto">
     <div class="wrap">
-      <span class="eyebrow">{m.pais.nombre}{z && ` · ${m.zona.nombre}`} · {fechaL}{esHoy && t.horas < 24 && ` · ${T.hasta(`${String(t.horas).padStart(2, "0")}:00`)}`}</span>
+      <span class="eyebrow">{m.pais.nombre}{z && ` · ${m.zona.nombre}`} · {fechaL}{esHoy && t.horas < 24 && ` · ${T.hasta(L.reloj(t.horas))}`}</span>
       <h1>{cab}</h1>
-      <p class="lead">{T.rMix(pct(t.renovable), top)}</p>
+      <p class="lead">{lead}</p>
       <div class="btn-row">
         <a class="btn btn--ghost btn--small" href={m.ruta}>{L.precio} {L.hoy}</a>
         <a class="btn btn--ghost btn--small" href={urlManana(m)}>{L.precio} {L.manana}</a>
@@ -65,13 +67,13 @@ const desc = `${cab}, ${fechaL}${sep}${T.renovable} ${pct(t.renovable)} · ${top
         <div class="stat"><span class="stat__label">{T.renovable}</span><span class="stat__value">{pct(t.renovable)}</span><span class="stat__sub">{tAyer && `${T.ayer}${sep}${pct(tAyer.renovable)}`}</span></div>
         <div class="stat"><span class="stat__label">{T.bajasEmisiones}</span><span class="stat__value">{pct(t.bajasEmisiones)}</span><span class="stat__sub">{tAyer && `${T.ayer}${sep}${pct(tAyer.bajasEmisiones)}`}</span></div>
         <div class="stat"><span class="stat__label">{T.co2}</span><span class="stat__value">{Math.round(t.co2)}<small> g/kWh</small></span><span class="stat__sub">{T.estimado}</span></div>
-        <div class="stat"><span class="stat__label">{T.produccion}</span><span class="stat__value" style="font-size:28px">{gwh(t.total)}</span><span class="stat__sub">{esHoy && t.horas < 24 ? T.hasta(`${String(t.horas).padStart(2, "0")}:00`) : ""}</span></div>
+        <div class="stat"><span class="stat__label">{T.produccion}</span><span class="stat__value" style="font-size:28px">{gwh(t.total)}</span><span class="stat__sub">{esHoy && t.horas < 24 ? T.hasta(L.reloj(t.horas)) : ""}</span></div>
       </div>
       <div>
-        <Fragment set:html={barraReparto(t.grupos, T.grupos, pct)} />
+        <Fragment set:html={barraReparto(t.grupos, T.grupos, pct, sep)} />
       </div>
       <div>
-        <h2 style="font-size:22px;margin-bottom:12px">{T.produccion} · {cuando}</h2>
+        <h2 style="font-size:22px;margin-bottom:12px">{T.produccionHoras}</h2>
         <Fragment set:html={barrasApiladas(d.horas, orden, T.grupos, `${cab}: ${top}`, m.pais.locale)} />
       </div>
     </div>
@@ -86,7 +88,7 @@ const desc = `${cab}, ${fechaL}${sep}${T.renovable} ${pct(t.renovable)} · ${top
       <section class="section section--tight">
         <div class="wrap wrap--narrow">
           <h2 style="font-size:22px;margin-bottom:12px">{T.ultimos30}</h2>
-          <Fragment set:html={graficaLineas([{ nombre: T.renovable, valores: r30.map((x) => x.valor * 100) }], { etiquetas: r30.map((x) => fechaLocal(x.fecha, m.pais.locale).replace(/\s?\d{4}$/, "")), formato: (n) => `${Math.round(n)} %`, resumen: T.ultimos30 })} />
+          <Fragment set:html={graficaLineas([{ nombre: T.renovable, valores: r30.map((x) => x.valor * 100) }], { etiquetas: r30.map((x) => fechaLocal(x.fecha, m.pais.locale).replace(/\s?\d{4}$/, "")), formato: (n) => pct(n / 100), resumen: T.ultimos30 })} />
         </div>
       </section>
     )
@@ -114,7 +116,7 @@ const desc = `${cab}, ${fechaL}${sep}${T.renovable} ${pct(t.renovable)} · ${top
           </p>
         )
       }
-      <p class="caption" style="margin-top:16px">ENTSO-E Transparency Platform: Actual Generation per Production Type. {T.co2}: {T.estimado}.</p>
+      <p class="caption" style="margin-top:16px">{T.fuenteMix} {T.co2}{sep}{T.estimado}.</p>
     </div>
   </section>
 </Base>

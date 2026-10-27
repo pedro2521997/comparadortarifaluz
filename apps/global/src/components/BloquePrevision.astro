@@ -12,11 +12,12 @@ interface Props {
 const { m, p } = Astro.props;
 const T = textosE(m);
 const r = resumenPrevision(p);
-const n = (x: number) => `${new Intl.NumberFormat(m.pais.locale, { maximumFractionDigits: 1 }).format(x)} GWh`;
+const n = (x: number) => `${new Intl.NumberFormat(m.pais.locale, { maximumFractionDigits: 1 }).format(x)}\u00a0GWh`;
+const may = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 const pct = (x: number) => new Intl.NumberFormat(m.pais.locale, { style: "percent", maximumFractionDigits: 0 }).format(x);
 const series = [
-  ...(p.eolica ? [{ nombre: T.grupos.eolica, valores: p.eolica, color: "#0aa65a" }] : []),
-  ...(p.solar ? [{ nombre: T.grupos.solar, valores: p.solar, color: "#e0a800" }] : []),
+  ...(p.eolica ? [{ nombre: may(T.grupos.eolica), valores: p.eolica, color: "#0aa65a" }] : []),
+  ...(p.solar ? [{ nombre: may(T.grupos.solar), valores: p.solar, color: "#e0a800" }] : []),
   ...(p.demanda ? [{ nombre: T.demanda, valores: p.demanda, color: "var(--color-slate)" }] : []),
 ];
 const hay = r.eolica + r.solar > 0;
@@ -29,7 +30,7 @@ const hay = r.eolica + r.solar > 0;
         <h2 style="font-size:22px;margin-bottom:8px">{T.previsionT}</h2>
         <p class="muted" style="margin-bottom:12px">{T.prevTexto(n(r.eolica), n(r.solar), r.pct !== null ? pct(r.pct) : null)}</p>
         <Fragment set:html={graficaLineas(series, { etiquetas: Array.from({ length: 24 }, (_, h) => `${String(h).padStart(2, "0")}:00`), formato: (x) => `${Math.round(x).toLocaleString(m.pais.locale)} MW`, resumen: T.previsionT })} />
-        <p class="caption">ENTSO-E: Day-ahead Generation Forecasts for Wind and Solar · Day-ahead Total Load Forecast.</p>
+        <p class="caption">{T.fuentePrev}</p>
       </div>
     </section>
   )

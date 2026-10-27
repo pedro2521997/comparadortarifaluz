@@ -6,7 +6,8 @@ import Anuncio from "../../../components/Anuncio.astro";
 import { graficaLineas } from "../../../../../web/src/lib/compartido/grafica-svg";
 import { ultimo, ultimas, ranking, nombrePais, FUENTE_UE } from "../../../../../web/src/lib/compartido/carburantes-ue";
 import { PAISES_C, textosC, CC, urlPrecios, urlEuropa, urlDestino, destinos, en, litro, dinero, fechaC, mesC, PRODUCTOS, hay, slugTexto, VECINOS } from "../../../lib/carburantes";
-import { esquemaFaq, type Pais } from "../../../lib/datos";
+import { esquemaFaq, recortarFrases, type Pais } from "../../../lib/datos";
+import { lista, semanaIso } from "../../../lib/textos-carburantes";
 
 export function getStaticPaths() {
   return PAISES_C.flatMap((p) =>
@@ -22,22 +23,24 @@ const nombreC = nombrePais(cc, p.locale);
 const enD = en(p, d);
 const g = ultimo(d, "euro95")!;
 const gC = ultimo(cc, "euro95")!;
-const semana = fechaC(p, g.semana);
+const semana = T.semanaDel(fechaC(p, g.semana), semanaIso(g.semana));
 const rk = ranking("euro95");
 const puesto = rk.findIndex((x) => x.cc === d) + 1;
 const dif = g.valor - gC.valor;
-const consejo = dif > 0.03 ? T.llenarAntes(enD) : dif < -0.03 ? T.repostarAlli(enD) : T.daIgual;
+const consejo = dif > 0.03 ? T.llenarAntes : dif < -0.03 ? T.repostarAlli : T.daIgual;
+const enC = en(p, cc);
 const prods = PRODUCTOS.filter((k) => hay(d, k));
 const sD = ultimas(d, "euro95", 156);
 const sC = ultimas(cc, "euro95", 156);
 const otros = [...new Set([...(VECINOS[d] ?? []), ...(VECINOS[cc] ?? [])])].filter((x) => x !== cc && x !== d && destinos(p).includes(x)).slice(0, 8);
+const lead = T.leadDestino({ enD, precio: litro(p, g.valor), casaEn: enC, precioCasa: litro(p, gC.valor), consejo });
 const preguntas = [
-  { p: T.pPrecio(enD), r: `${T.productos.euro95}${sep}${litro(p, g.valor)} (${T.semanaDel(semana)}). ${T.deposito(50, dinero(p, Math.abs(dif) * 50), dif > 0)} (${nombreC})` },
-  ...(hay(d, "diesel") ? [{ p: T.pDiesel(enD), r: `${T.productos.diesel}${sep}${litro(p, ultimo(d, "diesel")!.valor)} (${T.semanaDel(semana)}).` }] : []),
-  { p: T.pBarato, r: T.rBarato(rk.slice(0, 3).map((x) => en(p, x.cc)).join(", "), en(p, rk.at(-1)!.cc)) },
+  { p: T.pPrecio(enD), r: `${T.rPrecio({ enP: enD, precio: litro(p, g.valor), semana, puesto, total: rk.length })} ${T.rDestino({ dif: dinero(p, Math.abs(dif) * 50), mas: dif > 0, casaEn: enC })}` },
+  ...(hay(d, "diesel") ? [{ p: T.pDiesel(enD), r: T.rDiesel({ enP: enD, precio: litro(p, ultimo(d, "diesel")!.valor), semana }) }] : []),
+  { p: T.pBarato, r: T.rBarato(lista(p.lang, rk.slice(0, 3).map((x) => en(p, x.cc)), T.y), en(p, rk.at(-1)!.cc)) },
 ];
 const titulo = `${T.tituloDestino(enD)}${sep}${litro(p, g.valor)}`;
-const desc = `${T.tituloDestino(enD)} (${T.semanaDel(semana)})${sep}${prods.map((k) => `${T.productos[k]} ${litro(p, ultimo(d, k)!.valor)}`).join(" · ")}.`;
+const desc = recortarFrases(`${lead} (${semana})`.length <= 158 ? `${lead} (${semana})` : lead, 158);
 const recorta = (t: string, n: number) => (t.length <= n ? t : t.slice(0, t.lastIndexOf(" ", n - 1)) + "…");
 ---
 
@@ -46,7 +49,7 @@ const recorta = (t: string, n: number) => (t.length <= n ? t : t.slice(0, t.last
     <div class="wrap">
       <p class="breadcrumbs"><a href={urlEuropa(p)}>{T.tituloEuropa}</a> / {nombreD}</p>
       <h1>{T.tituloDestino(enD)}</h1>
-      <p class="lead">{T.productos.euro95}{sep}<strong>{litro(p, g.valor)}</strong> · {nombreC}{sep}{litro(p, gC.valor)}. {consejo}</p>
+      <p class="lead">{lead}</p>
     </div>
   </section>
   <section class="section section--tight">
@@ -71,10 +74,10 @@ const recorta = (t: string, n: number) => (t.length <= n ? t : t.slice(0, t.last
           </tbody>
         </table>
       </div>
-      <p class="muted">{T.puesto(puesto, rk.length)}.</p>
+      <p class="muted">{T.rankDestino(nombreD, puesto, rk.length)}</p>
       <div>
         <h2 style="font-size:22px;margin-bottom:12px">{T.tresAnos}</h2>
-        <Fragment set:html={graficaLineas([{ nombre: nombreD, valores: sD.valores }, { nombre: nombreC, valores: sC.valores }], { etiquetas: sD.fechas.map((f) => mesC(p, f)), formato: (n) => litro(p, n, 2).replace(/ .*$/, ""), resumen: `${T.tituloDestino(enD)}, ${T.tresAnos}` })} />
+        <Fragment set:html={graficaLineas([{ nombre: nombreD, valores: sD.valores }, { nombre: nombreC, valores: sC.valores }], { etiquetas: sD.fechas.map((f) => mesC(p, f)), formato: (n) => litro(p, n, 2).replace(/[\s\u00a0].*$/, ""), resumen: `${T.tituloDestino(enD)}, ${T.tresAnos}` })} />
         <p class="caption">{T.fuente}</p>
       </div>
     </div>
@@ -102,7 +105,7 @@ const recorta = (t: string, n: number) => (t.length <= n ? t : t.slice(0, t.last
           </p>
         )
       }
-      <p class="caption" style="margin-top:16px">{T.aviso} <a href={FUENTE_UE.url} rel="noopener">{FUENTE_UE.nombre}</a></p>
+      <p class="caption" style="margin-top:16px">{T.aviso} <a href={FUENTE_UE.url} rel="noopener">{T.fuenteNombre}</a></p>
     </div>
   </section>
 </Base>

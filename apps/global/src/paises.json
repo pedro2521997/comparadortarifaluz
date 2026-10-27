@@ -32,7 +32,7 @@
     },
     {
       "cc": "fi", "lang": "fi", "locale": "fi-FI", "nombre": "Suomi", "nombreEn": "Finland", "tz": "Europe/Helsinki",
-      "moneda": "EUR", "unidad": "c/kWh", "factor": 0.1, "decimales": 2,
+      "moneda": "EUR", "unidad": "snt/kWh", "factor": 0.1, "decimales": 2,
       "zonas": [{ "id": "FI", "slug": "", "nombre": "Suomi", "eic": "10YFI-1--------U", "ec": null }]
     },
     {

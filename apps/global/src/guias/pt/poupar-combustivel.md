@@ -9,10 +9,10 @@ orden: 4
 
 ## Gastar menos
 
-1. **Conduzir mais devagar**: 100 em vez de 120 km/h na autoestrada poupa 15–20 % de combustível.
+1. **Conduzir mais devagar**: 100 em vez de 120 km/h na autoestrada poupa 15–20% de combustível.
 2. **Antecipar**: tirar o pé cedo e aproveitar o embalo em vez de travar tarde.
 3. **Passar as mudanças cedo**, por volta das 2.000 rpm.
-4. **Verificar a pressão dos pneus** todos os meses: vazios gastam 2–4 % mais.
+4. **Verificar a pressão dos pneus** todos os meses: vazios gastam 2–4% mais.
 5. **Tirar a mala de tejadilho** e o suporte de bicicletas quando não são precisos.
 6. **Aliviar a bagageira.**
 7. **Ar condicionado com moderação** e motor desligado em paragens longas.

@@ -9,12 +9,12 @@ orden: 4
 
 ## Consumare meno
 
-1. **Andare più piano**: 110 invece di 130 km/h in autostrada fa risparmiare il 15–20 %.
+1. **Andare più piano**: 110 invece di 130 km/h in autostrada fa risparmiare il 15–20%.
 2. **Guidare in modo fluido**: anticipare le frenate e sfruttare il rilascio.
 3. **Cambiare marcia presto**, intorno ai 2.000 giri.
-4. **Controllare la pressione delle gomme** ogni mese: se sono sgonfie si consuma il 2–4 % in più.
+4. **Controllare la pressione delle gomme** ogni mese: se sono sgonfie si consuma il 2–4% in più.
 5. **Togliere il box da tetto** e il portabici quando non servono.
-6. **Alleggerire il bagagliaio**: 100 kg in più costano circa il 5 % in città.
+6. **Alleggerire il bagagliaio**: 100 kg in più costano circa il 5% in città.
 7. **Climatizzatore con moderazione** e motore spento nelle soste lunghe.
 
 ## Pagare meno

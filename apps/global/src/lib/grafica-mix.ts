@@ -17,16 +17,17 @@ export function barrasApiladas(horas: Partial<Record<Grupo, (number | null)[]>>,
       if (v <= 0) continue;
       const alto = (v / max) * (H - m.arr - m.aba);
       y -= alto;
-      barras += `<rect x="${(m.izq + h * ancho + 1).toFixed(1)}" y="${y.toFixed(1)}" width="${(ancho - 2).toFixed(1)}" height="${alto.toFixed(1)}" fill="${COLOR_GRUPO[g]}"><title>${String(h).padStart(2, "0")}:00 · ${nombres[g]}: ${Math.round(v).toLocaleString(locale)} MW</title></rect>`;
+      barras += `<rect x="${(m.izq + h * ancho + 1).toFixed(1)}" y="${y.toFixed(1)}" width="${(ancho - 2).toFixed(1)}" height="${alto.toFixed(1)}" fill="${COLOR_GRUPO[g]}"><title>${String(h).padStart(2, "0")}:00 · ${nombres[g].charAt(0).toUpperCase()}${nombres[g].slice(1)}: ${Math.round(v).toLocaleString(locale)} MW</title></rect>`;
     }
   }
   const ejeX = [0, 6, 12, 18, 23].map((h) => `<text x="${(m.izq + h * ancho + ancho / 2).toFixed(1)}" y="${H - 6}" text-anchor="middle" font-size="12" fill="var(--color-slate)">${String(h).padStart(2, "0")}:00</text>`).join("");
   return `<figure class="g-svg"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${resumen.replace(/"/g, "&quot;")}" style="width:100%;height:auto">${barras}${ejeX}</svg></figure>`;
 }
 
-export function barraReparto(grupos: [Grupo, number][], nombres: Record<Grupo, string>, fmt: (x: number) => string): string {
+export function barraReparto(grupos: [Grupo, number][], nombres: Record<Grupo, string>, fmt: (x: number) => string, sep = ": "): string {
+  const may = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
   const total = grupos.reduce((a, [, v]) => a + v, 0) || 1;
-  const partes = grupos.map(([g, v]) => `<span style="width:${((v / total) * 100).toFixed(2)}%;background:${COLOR_GRUPO[g]}" title="${nombres[g]}: ${fmt(v / total)}"></span>`).join("");
-  const lista = grupos.map(([g, v]) => `<li><span class="ed-punto" style="background:${COLOR_GRUPO[g]}" aria-hidden="true"></span>${nombres[g]}: <strong>${fmt(v / total)}</strong></li>`).join("");
-  return `<div class="ed-barra" role="img" aria-label="${grupos.map(([g, v]) => `${nombres[g]} ${fmt(v / total)}`).join(", ")}">${partes}</div><ul class="ed-lista small" style="margin-top:10px">${lista}</ul>`;
+  const partes = grupos.map(([g, v]) => `<span style="width:${((v / total) * 100).toFixed(2)}%;background:${COLOR_GRUPO[g]}" title="${may(nombres[g])}${sep}${fmt(v / total)}"></span>`).join("");
+  const lista = grupos.map(([g, v]) => `<li><span class="ed-punto" style="background:${COLOR_GRUPO[g]}" aria-hidden="true"></span>${may(nombres[g])}${sep}<strong>${fmt(v / total)}</strong></li>`).join("");
+  return `<div class="ed-barra" role="img" aria-label="${grupos.map(([g, v]) => `${may(nombres[g])} ${fmt(v / total)}`).join(", ")}">${partes}</div><ul class="ed-lista small" style="margin-top:10px">${lista}</ul>`;
 }

@@ -3,8 +3,8 @@
 
 import paisesJson from "../paises.json";
 import fxJson from "../../../../data/global/fx.json";
-import { TEXTOS, type Idioma } from "./textos";
-import { franja, fechaLocal, hh, hoyEn, mejorFranja, resumen, sumarDias, valor, type Formato, type Precios } from "./bloque";
+import { TEXTOS, type Idioma, type Cuando } from "./textos";
+import { fechaLocal, hoyEn, mejorFranja, porcentaje, resumen, sumarDias, valor, type Formato, type Precios } from "./bloque";
 import { SITIO } from "../config";
 
 export interface Zona { id: string; slug: string; nombre: string; eic: string; ec: string | null }
@@ -66,7 +66,7 @@ const primeroQueQuepa = (op: string[], max: number) => op.find((o) => o.length <
 export type Pagina = "hoy" | "manana" | "fecha";
 
 export interface Info {
-  m: Mercado; fecha: string; fechaL: string; f: Formato; precios: Precios;
+  m: Mercado; fecha: string; fechaL: string; f: Formato; precios: Precios; cuando: Cuando;
   r: ReturnType<typeof resumen>; b2: ReturnType<typeof mejorFranja>; vsAyer: string | null;
   tramos: { nombre: string; media: number | null; desde: number; hasta: number }[];
 }
@@ -77,19 +77,25 @@ export function info(m: Mercado, fecha: string): Info | null {
   const L = TEXTOS[m.pais.lang];
   const f = formato(m.pais);
   const r = resumen(d.precios);
+  const hoy = hoyDe(m);
+  const cuando: Cuando = fecha === hoy ? "hoy" : fecha === sumarDias(hoy, 1) ? "manana" : "fecha";
+  const ref = cuando === "manana" ? "hoy" : "ayer";
   const ayer = diaDe(m.zona.id, sumarDias(fecha, -1));
   let vsAyer: string | null = null;
   if (ayer) {
     const ra = resumen(ayer.precios).media;
-    const dif = Math.abs(ra) > 1 ? (r.media - ra) / Math.abs(ra) : 0;
-    vsAyer = Math.abs(dif) < 0.03 ? L.igualAyer : L.vsAyer(new Intl.NumberFormat(m.pais.locale, { maximumFractionDigits: 0 }).format(Math.abs(dif) * 100), dif > 0);
+    // Con medias cercanas a cero (o negativas) el porcentaje no dice nada: no se compara.
+    if (Math.abs(ra) > 5 && Math.sign(ra) === Math.sign(r.media)) {
+      const dif = (r.media - ra) / Math.abs(ra);
+      vsAyer = Math.abs(dif) < 0.03 ? L.igualAyer(ref) : Math.abs(dif) > 3 ? null : L.vsAyer(porcentaje(m.pais.locale, Math.abs(dif)), dif > 0, ref);
+    }
   }
-  const tramos = [0, 8, 14, 20].map((desde, i) => {
-    const hasta = [8, 14, 20, 24][i];
+  const tramos = [0, 8, 14, 20].map((desde, k) => {
+    const hasta = [8, 14, 20, 24][k];
     const v = d.precios.slice(desde, hasta).filter((x): x is number => x !== null);
-    return { nombre: L.tramos[i], desde, hasta, media: v.length ? v.reduce((a, b) => a + b, 0) / v.length : null };
+    return { nombre: L.tramos[k], desde, hasta, media: v.length ? v.reduce((a, b) => a + b, 0) / v.length : null };
   });
-  return { m, fecha, fechaL: fechaLocal(fecha, m.pais.locale), f, precios: d.precios, r, b2: mejorFranja(d.precios, 2), vsAyer, tramos };
+  return { m, fecha, fechaL: fechaLocal(fecha, m.pais.locale), f, precios: d.precios, cuando, r, b2: mejorFranja(d.precios, 2), vsAyer, tramos };
 }
 
 function cabecera(i: Info, pag: Pagina) {
@@ -102,32 +108,48 @@ function cabecera(i: Info, pag: Pagina) {
 export function titulo(i: Info, pag: Pagina): string {
   const L = TEXTOS[i.m.pais.lang];
   const base = `${cabecera(i, pag)} ${i.fechaL}`;
-  return primeroQueQuepa([`${base}${dp(i.m)}${L.baratoA(hh(i.r.min.h))}`, base, `${cabecera(i, pag)}`], 70);
+  return primeroQueQuepa([`${base}${dp(i.m)}${L.baratoA(i.r.min.h)}`, base, `${cabecera(i, pag)}`], 70);
 }
 
-export function descripcion(i: Info, pag: Pagina): string {
-  const L = TEXTOS[i.m.pais.lang];
-  const v = (x: number) => valor(i.f, x);
-  const s = dp(i.m);
-  const base = `${cabecera(i, pag)} ${i.fechaL}. ${L.media}${s}${v(i.r.media)} · ${L.horaBarata}${s}${franja(i.r.min.h, 1)} (${v(i.r.min.p)}) · ${L.horaCara}${s}${franja(i.r.max.h, 1)} (${v(i.r.max.p)}).`;
-  return base.length <= 160 ? base : base.slice(0, base.lastIndexOf(" ·", 157)) + ".";
-}
-
+/** Entradilla en frases completas, en el idioma del país. */
 export function entradilla(i: Info): string {
   const L = TEXTOS[i.m.pais.lang];
   const v = (x: number) => valor(i.f, x);
-  const s = dp(i.m);
-  return `${L.media}${s}${v(i.r.media)}${i.vsAyer ? ` (${i.vsAyer})` : ""}. ${L.horaBarata}${s}${franja(i.r.min.h, 1)} (${v(i.r.min.p)}). ${L.horaCara}${s}${franja(i.r.max.h, 1)} (${v(i.r.max.p)}).`;
+  return L.frase({
+    cuando: i.cuando, fecha: i.fechaL, media: v(i.r.media), vs: i.vsAyer,
+    rangoMin: L.rango(i.r.min.h, i.r.min.h + 1), pMin: v(i.r.min.p), rangoMax: L.rango(i.r.max.h, i.r.max.h + 1), pMax: v(i.r.max.p),
+  });
+}
+
+/** Meta descripción: la entradilla, cortada por frases si pasa de 160 caracteres. */
+export function descripcion(i: Info, _pag: Pagina): string {
+  return recortarFrases(entradilla(i), 158);
+}
+
+/**
+ * Corta un texto por el final de una frase para que quepa en `max` caracteres. Un punto detrás de una cifra
+ * no cuenta como final («Am 20. Oktober», «den 27. oktober»).
+ */
+export function recortarFrases(t: string, max: number): string {
+  if (t.length <= max) return t;
+  let corte = -1;
+  for (const m of t.matchAll(/\. /g)) {
+    if (/\d/.test(t[m.index! - 1])) continue;
+    if (m.index! + 1 > max) break;
+    corte = m.index! + 1;
+  }
+  return corte >= 40 ? t.slice(0, corte) : t.slice(0, t.lastIndexOf(" ", max - 2)) + "…";
 }
 
 export function preguntas(i: Info) {
   const L = TEXTOS[i.m.pais.lang];
   const v = (x: number) => valor(i.f, x);
   const c = L.elDia(i.fechaL) + (etiquetaZona(i.m) ? ` (${etiquetaZona(i.m)})` : "");
+  const r = (h: number, n = 1) => L.rango(h, h + n);
   return [
-    { p: L.pBarata(c), r: L.rBarata(franja(i.r.min.h, 1), v(i.r.min.p), i.b2 ? `${franja(i.b2.inicio, 2)} (${v(i.b2.media)})` : null) },
-    { p: L.pMedia(c), r: L.rMedia(v(i.r.media)) },
-    { p: L.pCara(c), r: L.rCara(franja(i.r.max.h, 1), v(i.r.max.p)) },
+    { p: L.pBarata(c), r: L.rBarata(c, r(i.r.min.h), v(i.r.min.p), i.b2 ? `${r(i.b2.inicio, 2)} (${v(i.b2.media)})` : null) },
+    { p: L.pMedia(c), r: L.rMedia(c, v(i.r.media)) },
+    { p: L.pCara(c), r: L.rCara(r(i.r.max.h), v(i.r.max.p)) },
   ];
 }
 

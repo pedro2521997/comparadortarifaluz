@@ -5,7 +5,7 @@ import Anuncio from "../components/Anuncio.astro";
 import { SITIO } from "../config";
 import { MERCADOS, info, hoyDe, alternativas } from "../lib/datos";
 import { TEXTOS } from "../lib/textos";
-import { hh, valor } from "../lib/bloque";
+import { valor } from "../lib/bloque";
 import { PAISES_C, textosC, urlPrecios, litro, CC } from "../lib/carburantes";
 import { ultimo } from "../../../web/src/lib/compartido/carburantes-ue";
 
@@ -32,7 +32,7 @@ const filas = MERCADOS.filter((m) => m.principal).map((m) => ({ m, i: info(m, ho
           <a class="card card--link" href={m.ruta} hreflang={m.pais.locale}>
             <strong>{m.pais.nombre} <span class="muted small">· {m.pais.nombreEn}</span></strong>
             <span>{TEXTOS[m.pais.lang].precio} {TEXTOS[m.pais.lang].hoy}</span>
-            {i && <span class="caption">{TEXTOS[m.pais.lang].media}: {valor(i.f, i.r.media)} · {TEXTOS[m.pais.lang].horaBarata}: {hh(i.r.min.h)}</span>}
+            {i && <span class="caption">{`${TEXTOS[m.pais.lang].media}${m.pais.lang === "fr" ? " : " : ": "}${valor(i.f, i.r.media)} · ${TEXTOS[m.pais.lang].horaBarata}${m.pais.lang === "fr" ? " : " : ": "}${TEXTOS[m.pais.lang].reloj(i.r.min.h)}`}</span>}
           </a>
         ))
       }
@@ -51,8 +51,8 @@ const filas = MERCADOS.filter((m) => m.principal).map((m) => ({ m, i: info(m, ho
           PAISES_C.map((p) => (
             <a class="card card--link" href={urlPrecios(p)} hreflang={p.locale}>
               <strong>{p.nombre} <span class="muted small">· {p.nombreEn}</span></strong>
-              <span>{textosC(p).productos.euro95}: {litro(p, ultimo(CC(p), "euro95")!.valor)}</span>
-              <span class="caption">{textosC(p).productos.diesel}: {litro(p, ultimo(CC(p), "diesel")!.valor)}</span>
+              <span>{`${textosC(p).productos.euro95}${p.lang === "fr" ? " : " : ": "}${litro(p, ultimo(CC(p), "euro95")!.valor)}`}</span>
+              <span class="caption">{`${textosC(p).productos.diesel}${p.lang === "fr" ? " : " : ": "}${litro(p, ultimo(CC(p), "diesel")!.valor)}`}</span>
             </a>
           ))
         }

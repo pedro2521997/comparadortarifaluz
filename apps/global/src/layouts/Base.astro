@@ -91,7 +91,7 @@ const ruta = Astro.url.pathname;
             </ul>
           </div>
           <div>
-            <p class="pie__titulo">⛽</p>
+            <p class="pie__titulo">{L.carburantes}</p>
             <ul>
               {PAISES_C.map((p) => <li><a href={urlPrecios(p)} hreflang={p.locale}>{textosC(p).tituloPais(en(p, CC(p)))}</a></li>)}
             </ul>
@@ -108,7 +108,7 @@ const ruta = Astro.url.pathname;
           </div>
         </div>
         <p class="pie__legal">
-          {L.aviso} {L.fuente}: ENTSO-E Transparency Platform · Bundesnetzagentur | SMARD.de (CC BY 4.0) · ECB. © {new Date().getFullYear()} {SITIO.nombre}
+          {`${L.aviso} ${L.fuente}${lang === "fr" ? " : " : ": "}ENTSO-E · Bundesnetzagentur | SMARD.de (CC BY 4.0) · ${lang === "en" ? "European Commission" : "EU"} · ${lang === "de" ? "EZB" : lang === "fr" ? "BCE" : lang === "it" ? "BCE" : lang === "pt" ? "BCE" : "ECB"}. © ${new Date().getFullYear()} ${SITIO.nombre}`}
           {codigoAdsense() && <> · <a href="/legal/" data-preferencias-privacidad>Privacy settings</a></>}
         </p>
       </div>

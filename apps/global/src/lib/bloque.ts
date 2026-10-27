@@ -19,9 +19,15 @@ export const hh = (h: number) => `${String(h % 24).padStart(2, "0")}:00`;
 export const franja = (ini: number, horas: number) => `${hh(ini)}–${hh(ini + horas)}`;
 
 export function valor(f: Formato, eurMwh: number): string {
-  const n = new Intl.NumberFormat(f.locale, { minimumFractionDigits: f.decimales, maximumFractionDigits: f.decimales }).format(eurMwh * f.mult);
-  return `${n} ${f.unidad}`;
+  const x = eurMwh * f.mult;
+  // Un precio negativo muy pequeño no debe salir como «-0,0000»: se dan los decimales que hagan falta.
+  let dec = x === 0 ? 0 : f.decimales;
+  while (x !== 0 && Math.abs(x) < 0.5 * 10 ** -dec && dec < 6) dec++;
+  const n = new Intl.NumberFormat(f.locale, { minimumFractionDigits: dec, maximumFractionDigits: dec }).format(x).replace(/^-/, "−");
+  return `${n}\u00a0${f.unidad}`;
 }
+/** Porcentaje con la costumbre de cada idioma («79%» en italiano, «79 %» en alemán). */
+export const porcentaje = (locale: string, x: number) => new Intl.NumberFormat(locale, { style: "percent", maximumFractionDigits: 0 }).format(x);
 
 export function resumen(p: Precios) {
   const v = p.map((x, h) => ({ p: x, h })).filter((x): x is { p: number; h: number } => x.p !== null);
@@ -54,6 +60,8 @@ const HORAS_USO = [2, 2, 1, 3];
 
 export function bloque(f: Formato, fecha: string, p: Precios, ahora: number | null = null): string {
   const L: Textos = TEXTOS[f.lang];
+  const hh = L.reloj;
+  const franja = (ini: number, horas: number) => `${hh(ini)}–${hh(ini + horas)}`;
   const r = resumen(p);
   const pAhora = ahora !== null ? p[ahora] : null;
   const stat = (lab: string, val: string, sub: string) => `<div class="stat"><span class="stat__label">${lab}</span><span class="stat__value">${val}</span><span class="stat__sub num">${sub}</span></div>`;

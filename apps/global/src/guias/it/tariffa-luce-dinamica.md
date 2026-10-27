@@ -11,7 +11,7 @@ Con un'**offerta indicizzata** paghi l'energia al prezzo del mercato all'ingross
 
 ## Cosa serve
 
-- Un **contatore elettronico** di nuova generazione, che misura i consumi ora per ora (quasi tutti i contatori sono già stati sostituiti).
+- Un **contatore elettronico** di nuova generazione, che misura i consumi ora per ora (in gran parte delle case è già stato installato).
 - Elettrodomestici programmabili o un'app che avvisa delle ore convenienti.
 
 ## Per chi conviene
