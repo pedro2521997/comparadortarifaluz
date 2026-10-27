@@ -18,7 +18,19 @@ const suma = (xs: (number | null)[] | null | undefined) => (xs ?? []).reduce<num
 
 // ---------------- Mix de generación ----------------
 
-export const mixDe = (zona: string) => mixes.filter((d) => d.zona === zona).sort((a, b) => a.fecha.localeCompare(b.fecha));
+const porZonaMix = new Map<string, DiaMix[]>();
+for (const d of mixes) porZonaMix.set(d.zona, [...(porZonaMix.get(d.zona) ?? []), d]);
+for (const l of porZonaMix.values()) l.sort((a, b) => a.fecha.localeCompare(b.fecha));
+export const mixDe = (zona: string) => porZonaMix.get(zona) ?? [];
+
+/** Las estadísticas se calculan una vez por zona y build (se usan en cientos de páginas). */
+function memo<T>(f: (m: Mercado) => T): (m: Mercado) => T {
+  const cache = new Map<string, T>();
+  return (m) => {
+    if (!cache.has(m.zona.id)) cache.set(m.zona.id, f(m));
+    return cache.get(m.zona.id)!;
+  };
+}
 export const tieneMix = (m: Mercado) => mixDe(m.zona.id).length > 0;
 
 export interface Totales { grupos: [Grupo, number][]; total: number; renovable: number; bajasEmisiones: number; co2: number; horas: number }
@@ -62,7 +74,7 @@ export function resumenPrevision(p: DiaPrevision) {
 
 export interface Negativos { horas: number; dias: number; min: { fecha: string; h: number; p: number } | null; ultima: { fecha: string; h: number; p: number } | null; porMes: { mes: string; horas: number }[]; desde: string }
 
-export function negativos(m: Mercado): Negativos {
+export const negativos = memo(function negativos(m: Mercado): Negativos {
   const desde = sumarDias(hoyDe(m), -365);
   const lista = diasDe(m.zona.id).filter((d) => d.fecha >= desde && d.fecha <= hoyDe(m));
   let horas = 0;
@@ -86,7 +98,7 @@ export function negativos(m: Mercado): Negativos {
   }
   const meses = [...new Set(lista.map((d) => d.fecha.slice(0, 7)))].sort();
   return { horas, dias, min, ultima, porMes: meses.map((mes) => ({ mes, horas: porMes.get(mes) ?? 0 })), desde: lista[0]?.fecha ?? desde };
-}
+});
 
 // ---------------- Medias mensuales ----------------
 
@@ -98,7 +110,7 @@ const mediaDia = (p: (number | null)[]) => {
 };
 
 /** Meses con datos (del más reciente al más antiguo); el mes en curso, con los días que van. */
-export function meses(m: Mercado): Mes[] {
+export const meses = memo(function meses(m: Mercado): Mes[] {
   const hoy = hoyDe(m);
   const grupos = new Map<string, { fecha: string; precios: (number | null)[] }[]>();
   for (const d of diasDe(m.zona.id).filter((x) => x.fecha <= hoy)) grupos.set(d.fecha.slice(0, 7), [...(grupos.get(d.fecha.slice(0, 7)) ?? []), d]);
@@ -123,7 +135,7 @@ export function meses(m: Mercado): Mes[] {
     });
   }
   return out.sort((a, b) => b.mes.localeCompare(a.mes));
-}
+});
 
 export const nombreMes = (mes: string, locale: string) =>
   new Intl.DateTimeFormat(locale, { month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(`${mes}-15T12:00:00Z`));

@@ -2,7 +2,7 @@
 
 import { COLOR_GRUPO, type Grupo } from "./textos-energia";
 
-export function barrasApiladas(horas: Partial<Record<Grupo, (number | null)[]>>, orden: Grupo[], nombres: Record<Grupo, string>, resumen: string): string {
+export function barrasApiladas(horas: Partial<Record<Grupo, (number | null)[]>>, orden: Grupo[], nombres: Record<Grupo, string>, resumen: string, locale: string): string {
   const W = 720;
   const H = 240;
   const m = { izq: 8, der: 8, arr: 8, aba: 24 };
@@ -17,7 +17,7 @@ export function barrasApiladas(horas: Partial<Record<Grupo, (number | null)[]>>,
       if (v <= 0) continue;
       const alto = (v / max) * (H - m.arr - m.aba);
       y -= alto;
-      barras += `<rect x="${(m.izq + h * ancho + 1).toFixed(1)}" y="${y.toFixed(1)}" width="${(ancho - 2).toFixed(1)}" height="${alto.toFixed(1)}" fill="${COLOR_GRUPO[g]}"><title>${String(h).padStart(2, "0")}:00 · ${nombres[g]}: ${Math.round(v).toLocaleString()} MW</title></rect>`;
+      barras += `<rect x="${(m.izq + h * ancho + 1).toFixed(1)}" y="${y.toFixed(1)}" width="${(ancho - 2).toFixed(1)}" height="${alto.toFixed(1)}" fill="${COLOR_GRUPO[g]}"><title>${String(h).padStart(2, "0")}:00 · ${nombres[g]}: ${Math.round(v).toLocaleString(locale)} MW</title></rect>`;
     }
   }
   const ejeX = [0, 6, 12, 18, 23].map((h) => `<text x="${(m.izq + h * ancho + ancho / 2).toFixed(1)}" y="${H - 6}" text-anchor="middle" font-size="12" fill="var(--color-slate)">${String(h).padStart(2, "0")}:00</text>`).join("");

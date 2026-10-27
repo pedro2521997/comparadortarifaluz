@@ -72,7 +72,7 @@ const desc = `${cab}, ${fechaL}${sep}${T.renovable} ${pct(t.renovable)} · ${top
       </div>
       <div>
         <h2 style="font-size:22px;margin-bottom:12px">{T.produccion} · {cuando}</h2>
-        <Fragment set:html={barrasApiladas(d.horas, orden, T.grupos, `${cab}: ${top}`)} />
+        <Fragment set:html={barrasApiladas(d.horas, orden, T.grupos, `${cab}: ${top}`, m.pais.locale)} />
       </div>
     </div>
   </section>
