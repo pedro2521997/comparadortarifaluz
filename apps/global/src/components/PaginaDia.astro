@@ -5,6 +5,7 @@
 // el JSON del día correcto (/data/<zona>/<fecha>.json) y oculta los textos fijos del build.
 import Base from "../layouts/Base.astro";
 import Anuncio from "./Anuncio.astro";
+import { PAISES_C, textosC, urlPrecios, urlCalefaccion, en, hay, CC } from "../lib/carburantes";
 import { TEXTOS } from "../lib/textos";
 import { bloque, noPublicado, hh, valor, fechaLocal, sumarDias } from "../lib/bloque";
 import {
@@ -49,6 +50,8 @@ const datosCliente = JSON.stringify({ zona: m.zona.id, tz: m.pais.tz, modo: pag,
         <a class="btn btn--ghost btn--small" href={urlManana(m)} aria-current={pag === "manana" ? "page" : undefined}>{L.manana[0].toUpperCase() + L.manana.slice(1)}</a>
         {pag === "fecha" && fechas.has(sumarDias(fecha, -1)) && <a class="btn btn--ghost btn--small" href={urlFecha(m, sumarDias(fecha, -1))}>← {sumarDias(fecha, -1)}</a>}
         {pag === "fecha" && fechas.has(sumarDias(fecha, 1)) && <a class="btn btn--ghost btn--small" href={urlFecha(m, sumarDias(fecha, 1))}>{sumarDias(fecha, 1)} →</a>}
+        {PAISES_C.includes(m.pais) && <a class="btn btn--ghost btn--small" href={urlPrecios(m.pais)}>⛽ {textosC(m.pais).productos.euro95} · {textosC(m.pais).productos.diesel}</a>}
+        {PAISES_C.includes(m.pais) && hay(CC(m.pais), "calefaccion") && <a class="btn btn--ghost btn--small" href={urlCalefaccion(m.pais)}>{textosC(m.pais).productos.calefaccion}</a>}
       </div>
     </div>
   </section>

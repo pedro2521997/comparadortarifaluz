@@ -6,13 +6,15 @@ import { SITIO } from "../config";
 import { MERCADOS, info, hoyDe, alternativas } from "../lib/datos";
 import { TEXTOS } from "../lib/textos";
 import { hh, valor } from "../lib/bloque";
+import { PAISES_C, textosC, urlPrecios, litro, CC } from "../lib/carburantes";
+import { ultimo } from "../../../web/src/lib/compartido/carburantes-ue";
 
 const filas = MERCADOS.filter((m) => m.principal).map((m) => ({ m, i: info(m, hoyDe(m)) }));
 ---
 
 <Base
-  titulo="Electricity prices today in Europe, hour by hour"
-  descripcion="Today's and tomorrow's hourly electricity spot prices in Norway, Sweden, Denmark, Finland, Germany, Austria, France, Italy, Netherlands, Belgium, Portugal."
+  titulo="Electricity and fuel prices today in Europe"
+  descripcion="Hourly electricity prices for today and tomorrow, plus petrol, diesel and heating oil prices, in each European country's language and currency."
   lang="en"
   alternativas={alternativas("hoy")}
 >
@@ -39,6 +41,22 @@ const filas = MERCADOS.filter((m) => m.principal).map((m) => ({ m, i: info(m, ho
         <span>Precio de la luz hoy (PVPC)</span>
         <span class="caption">comparadortarifaluz.es</span>
       </a>
+    </div>
+  </section>
+  <section class="section section--white section--tight">
+    <div class="wrap">
+      <h2 style="font-size:28px;margin-bottom:16px">Fuel prices: petrol, diesel and heating oil</h2>
+      <div class="grid grid--3">
+        {
+          PAISES_C.map((p) => (
+            <a class="card card--link" href={urlPrecios(p)} hreflang={p.locale}>
+              <strong>{p.nombre} <span class="muted small">· {p.nombreEn}</span></strong>
+              <span>{textosC(p).productos.euro95}: {litro(p, ultimo(CC(p), "euro95")!.valor)}</span>
+              <span class="caption">{textosC(p).productos.diesel}: {litro(p, ultimo(CC(p), "diesel")!.valor)}</span>
+            </a>
+          ))
+        }
+      </div>
     </div>
   </section>
   <Anuncio tipo="horizontal" seccion />

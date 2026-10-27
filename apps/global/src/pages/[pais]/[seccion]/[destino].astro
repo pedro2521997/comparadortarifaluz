@@ -1,0 +1,122 @@
+---
+// Precio de los carburantes en otro país de la UE visto desde el país de origen y en su idioma
+// (/de/spritpreise-europa/italien/ = «Spritpreise in Italien»): para viajar en coche.
+import Base from "../../../layouts/Base.astro";
+import Anuncio from "../../../components/Anuncio.astro";
+import { graficaLineas } from "../../../../../web/src/lib/compartido/grafica-svg";
+import { ultimo, ultimas, ranking, nombrePais, FUENTE_UE } from "../../../../../web/src/lib/compartido/carburantes-ue";
+import { PAISES_C, textosC, CC, urlPrecios, urlEuropa, urlDestino, destinos, en, litro, dinero, fechaC, mesC, PRODUCTOS, hay, slugTexto, VECINOS } from "../../../lib/carburantes";
+import { esquemaFaq, type Pais } from "../../../lib/datos";
+
+export function getStaticPaths() {
+  return PAISES_C.flatMap((p) =>
+    destinos(p).map((d) => ({ params: { pais: p.cc, seccion: textosC(p).slugEuropa, destino: slugTexto(nombrePais(d, p.locale)) }, props: { p, d } })),
+  );
+}
+const { p, d } = Astro.props as { p: Pais; d: string };
+const T = textosC(p);
+const cc = CC(p);
+const sep = p.lang === "fr" ? " : " : ": ";
+const nombreD = nombrePais(d, p.locale);
+const nombreC = nombrePais(cc, p.locale);
+const enD = en(p, d);
+const g = ultimo(d, "euro95")!;
+const gC = ultimo(cc, "euro95")!;
+const semana = fechaC(p, g.semana);
+const rk = ranking("euro95");
+const puesto = rk.findIndex((x) => x.cc === d) + 1;
+const dif = g.valor - gC.valor;
+const consejo = dif > 0.03 ? T.llenarAntes(enD) : dif < -0.03 ? T.repostarAlli(enD) : T.daIgual;
+const prods = PRODUCTOS.filter((k) => hay(d, k));
+const sD = ultimas(d, "euro95", 156);
+const sC = ultimas(cc, "euro95", 156);
+const otros = [...new Set([...(VECINOS[d] ?? []), ...(VECINOS[cc] ?? [])])].filter((x) => x !== cc && x !== d && destinos(p).includes(x)).slice(0, 8);
+const preguntas = [
+  { p: T.pPrecio(enD), r: `${T.productos.euro95}${sep}${litro(p, g.valor)} (${T.semanaDel(semana)}). ${T.deposito(50, dinero(p, Math.abs(dif) * 50), dif > 0)} (${nombreC})` },
+  ...(hay(d, "diesel") ? [{ p: T.pDiesel(enD), r: `${T.productos.diesel}${sep}${litro(p, ultimo(d, "diesel")!.valor)} (${T.semanaDel(semana)}).` }] : []),
+  { p: T.pBarato, r: T.rBarato(rk.slice(0, 3).map((x) => en(p, x.cc)).join(", "), en(p, rk.at(-1)!.cc)) },
+];
+const titulo = `${T.tituloDestino(enD)}${sep}${litro(p, g.valor)}`;
+const desc = `${T.tituloDestino(enD)} (${T.semanaDel(semana)})${sep}${prods.map((k) => `${T.productos[k]} ${litro(p, ultimo(d, k)!.valor)}`).join(" · ")}.`;
+const recorta = (t: string, n: number) => (t.length <= n ? t : t.slice(0, t.lastIndexOf(" ", n - 1)) + "…");
+---
+
+<Base titulo={recorta(titulo, 70)} descripcion={recorta(desc, 158)} lang={p.lang} locale={p.locale} schema={esquemaFaq(preguntas)}>
+  <section class="hero hero--compacto">
+    <div class="wrap">
+      <p class="breadcrumbs"><a href={urlEuropa(p)}>{T.tituloEuropa}</a> / {nombreD}</p>
+      <h1>{T.tituloDestino(enD)}</h1>
+      <p class="lead">{T.productos.euro95}{sep}<strong>{litro(p, g.valor)}</strong> · {nombreC}{sep}{litro(p, gC.valor)}. {consejo}</p>
+    </div>
+  </section>
+  <section class="section section--tight">
+    <div class="wrap stack" style="--stack:32px">
+      <div class="table-wrap" tabindex="0" role="region" aria-label={nombreD}>
+        <table class="tabla-precios">
+          <thead><tr><th scope="col"></th><th scope="col" class="num">{nombreD}</th><th scope="col" class="num">{nombreC}</th><th scope="col" class="num">50 l</th></tr></thead>
+          <tbody>
+            {prods.map((k) => {
+              const a = ultimo(d, k)!;
+              const b = ultimo(cc, k);
+              const x = b ? (a.valor - b.valor) * 50 : null;
+              return (
+                <tr>
+                  <th scope="row">{T.productos[k]}</th>
+                  <td class="num">{litro(p, a.valor)}</td>
+                  <td class="num">{b ? litro(p, b.valor) : "—"}</td>
+                  <td class={`num ${x && x > 0 ? "sube" : x && x < 0 ? "baja" : ""}`}>{x === null ? "—" : `${x > 0 ? "+" : "−"}${dinero(p, Math.abs(x))}`}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      <p class="muted">{T.puesto(puesto, rk.length)}.</p>
+      <div>
+        <h2 style="font-size:22px;margin-bottom:12px">{T.tresAnos}</h2>
+        <Fragment set:html={graficaLineas([{ nombre: nombreD, valores: sD.valores }, { nombre: nombreC, valores: sC.valores }], { etiquetas: sD.fechas.map((f) => mesC(p, f)), formato: (n) => litro(p, n, 2).replace(/ .*$/, ""), resumen: `${T.tituloDestino(enD)}, ${T.tresAnos}` })} />
+        <p class="caption">{T.fuente}</p>
+      </div>
+    </div>
+  </section>
+  <Anuncio tipo="horizontal" seccion />
+  <section class="section section--white">
+    <div class="wrap wrap--narrow">
+      <h2 style="font-size:22px;margin-bottom:12px">{T.preguntasT}</h2>
+      {preguntas.map((q) => (
+        <details class="g-faq">
+          <summary>{q.p}</summary>
+          <p>{q.r}</p>
+        </details>
+      ))}
+      {
+        otros.length > 0 && (
+          <p class="small" style="margin-top:20px">
+            {otros.map((x, i) => (
+              <>
+                {i > 0 && " · "}
+                <a href={urlDestino(p, x)}>{nombrePais(x, p.locale)}</a>
+              </>
+            ))}
+            {" · "}<a href={urlPrecios(p)}>{nombreC}</a> · <a href={urlEuropa(p)}>{T.verTodos}</a>
+          </p>
+        )
+      }
+      <p class="caption" style="margin-top:16px">{T.aviso} <a href={FUENTE_UE.url} rel="noopener">{FUENTE_UE.nombre}</a></p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .g-faq {
+    border-bottom: 1px solid var(--color-pale-sage);
+    padding: 6px 0;
+  }
+  .g-faq summary {
+    color: var(--color-bark);
+    cursor: pointer;
+  }
+  .g-faq p {
+    padding: 4px 0 12px 20px;
+  }
+</style>

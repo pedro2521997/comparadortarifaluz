@@ -6,6 +6,7 @@ import "../../../web/src/styles/componentes.css";
 import Anuncio from "../components/Anuncio.astro";
 import { SITIO } from "../config";
 import { PAISES_CON_DATOS } from "../lib/datos";
+import { PAISES_C, textosC, urlPrecios, en, CC } from "../lib/carburantes";
 import { TEXTOS, type Idioma } from "../lib/textos";
 import { codigoAdsense, clienteAdsense, cuentaAdsense } from "../lib/anuncios-html.mjs";
 
@@ -85,6 +86,12 @@ const ruta = Astro.url.pathname;
             <ul>
               {PAISES_CON_DATOS.map((p) => <li><a href={`/${p.cc}/`}>{TEXTOS[p.lang].precio} {TEXTOS[p.lang].hoy} · {p.nombre}</a></li>)}
               <li><a href={SITIO.espana} hreflang="es">Precio de la luz hoy · España</a></li>
+            </ul>
+          </div>
+          <div>
+            <p class="pie__titulo">⛽</p>
+            <ul>
+              {PAISES_C.map((p) => <li><a href={urlPrecios(p)} hreflang={p.locale}>{textosC(p).tituloPais(en(p, CC(p)))}</a></li>)}
             </ul>
           </div>
           <div>
