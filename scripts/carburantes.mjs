@@ -40,10 +40,10 @@ async function descargar(url, opciones = {}) {
   throw new Error(`No responde: ${url}`);
 }
 
-/** "27/10/2026 11:57:43" → { fecha: "2026-10-27", hora: "11:57" } */
+/** "27/10/2026 11:57:43" → { fecha: "2026-10-27", hora: "11:57" }. Antes de las 10 la hora viene con una cifra («9:51:13»). */
 export function fechaMinisterio(s) {
-  const m = /^(\d{2})\/(\d{2})\/(\d{4}) (\d{2}):(\d{2})/.exec(s);
-  return m ? { fecha: `${m[3]}-${m[2]}-${m[1]}`, hora: `${m[4]}:${m[5]}` } : null;
+  const m = /^(\d{2})\/(\d{2})\/(\d{4}) (\d{1,2}):(\d{2})/.exec(s);
+  return m ? { fecha: `${m[3]}-${m[2]}-${m[1]}`, hora: `${m[4].padStart(2, "0")}:${m[5]}` } : null;
 }
 
 /** Medias, mínimo y número de gasolineras por carburante. */
@@ -78,11 +78,25 @@ export function compactar(e) {
   };
 }
 
+/** El Ministerio a veces responde con un error o con la lista vacía: se reintenta antes de rendirse. */
+async function listaMinisterio() {
+  for (let i = 1; ; i++) {
+    try {
+      const r = await descargar("https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/", { headers: { Accept: "application/json" } });
+      const j = await r.json();
+      if (j.ResultadoConsulta === "OK" && fechaMinisterio(j.Fecha) && j.ListaEESSPrecio?.length) return j;
+      throw new Error(`Ministerio: respuesta inesperada (${String(j.ResultadoConsulta ?? "").slice(0, 80)})`);
+    } catch (e) {
+      if (i >= 4) throw e;
+      console.error(`${e.message}; reintento ${i} de 3`);
+      await espera(20000 * i);
+    }
+  }
+}
+
 async function espana() {
-  const r = await descargar("https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/", { headers: { Accept: "application/json" } });
-  const j = await r.json();
+  const j = await listaMinisterio();
   const cuando = fechaMinisterio(j.Fecha);
-  if (j.ResultadoConsulta !== "OK" || !cuando || !j.ListaEESSPrecio?.length) throw new Error("Ministerio: respuesta inesperada");
   // Solo gasolineras de venta al público (las «R» son de uso restringido, p. ej. cooperativas o flotas).
   const estaciones = j.ListaEESSPrecio.filter((e) => e["Tipo Venta"] === "P").map(compactar).filter((e) => Object.keys(e.p).length);
   mkdirSync(new URL("resumen/", DIR), { recursive: true });

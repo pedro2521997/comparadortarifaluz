@@ -5,6 +5,7 @@ import { fechaMinisterio, compactar, estadisticas, leerHoja } from "../carburant
 describe("Ministerio (gasolineras)", () => {
   it("lee la fecha y la hora del Ministerio", () => {
     expect(fechaMinisterio("27/10/2026 11:57:43")).toEqual({ fecha: "2026-10-27", hora: "11:57" });
+    expect(fechaMinisterio("28/10/2026 9:51:13")).toEqual({ fecha: "2026-10-28", hora: "09:51" });
     expect(fechaMinisterio("basura")).toBeNull();
   });
 
