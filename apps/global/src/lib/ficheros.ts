@@ -30,3 +30,12 @@ export function leerJson<T>(ruta: string): T | null {
   const f = join(carpetaData(), ruta);
   return existsSync(f) ? (JSON.parse(readFileSync(f, "utf8")) as T) : null;
 }
+
+/** Todos los JSON de una carpeta de data/ (sin subcarpetas), p. ej. data/carburantes/resumen/*.json. */
+export function leerJsonsDe<T>(carpeta: string): T[] {
+  const dir = join(carpetaData(), carpeta);
+  if (!existsSync(dir)) return [];
+  return readdirSync(dir)
+    .filter((f) => f.endsWith(".json"))
+    .map((f) => JSON.parse(readFileSync(join(dir, f), "utf8")) as T);
+}

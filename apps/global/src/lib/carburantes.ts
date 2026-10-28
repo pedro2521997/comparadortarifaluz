@@ -23,6 +23,8 @@ export const textosC = (p: Pais) => TEXTOS_C[p.lang] as TextosCarburantes;
 export const CC = (p: Pais) => p.cc.toUpperCase();
 
 export const urlPrecios = (p: Pais) => `/${p.cc}/${textosC(p).slugPrecios}/`;
+/** España tiene su propia página de precios, con cada gasolinera (pages/es/), en lugar de la genérica semanal. */
+export const preciosPropios = (p: Pais) => p.cc === "es";
 export const urlCalefaccion = (p: Pais) => `/${p.cc}/${textosC(p).slugCalefaccion}/`;
 export const urlEuropa = (p: Pais) => `/${p.cc}/${textosC(p).slugEuropa}/`;
 export const urlDestino = (p: Pais, cc: string) => `/${p.cc}/${textosC(p).slugEuropa}/${slugTexto(nombrePais(cc, p.locale))}/`;

@@ -6,7 +6,7 @@ import Anuncio from "../../components/Anuncio.astro";
 import { guiasDe, urlGuia, TITULO_GUIAS } from "../../lib/guias";
 import { graficaLineas } from "../../../../web/src/lib/compartido/grafica-svg";
 import { ultimo, ultimas, ranking, partImpuestos, nombrePais, FUENTE_UE, type ProductoUE } from "../../../../web/src/lib/compartido/carburantes-ue";
-import { PAISES_C, textosC, CC, urlPrecios, urlCalefaccion, urlEuropa, urlDestino, en, litro, dinero, pct, fechaC, mesC, VECINOS, PRODUCTOS, hay } from "../../lib/carburantes";
+import { PAISES_C, textosC, CC, urlPrecios, urlCalefaccion, urlEuropa, urlDestino, en, litro, dinero, pct, fechaC, mesC, VECINOS, PRODUCTOS, hay, preciosPropios } from "../../lib/carburantes";
 import { lista, semanaIso } from "../../lib/textos-carburantes";
 import { tieneMapas, urlMapa } from "../../lib/mapa";
 import { TEXTOS_M } from "../../lib/textos-mapa";
@@ -19,7 +19,7 @@ export function getStaticPaths() {
   return PAISES_C.flatMap((p) => {
     const T = textosC(p);
     return [
-      { params: { pais: p.cc, seccion: T.slugPrecios }, props: { p, s: "precios" as Seccion } },
+      ...(preciosPropios(p) ? [] : [{ params: { pais: p.cc, seccion: T.slugPrecios }, props: { p, s: "precios" as Seccion } }]),
       ...(hay(CC(p), "calefaccion") ? [{ params: { pais: p.cc, seccion: T.slugCalefaccion }, props: { p, s: "calefaccion" as Seccion } }] : []),
       { params: { pais: p.cc, seccion: T.slugEuropa }, props: { p, s: "europa" as Seccion } },
     ];

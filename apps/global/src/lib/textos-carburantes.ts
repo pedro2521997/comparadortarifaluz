@@ -68,6 +68,39 @@ const artIt = (pct: string) => (/^(1|8|11|18|8\d)(\D|$)/.test(pct) ? `l'${pct}` 
 const queFr = (x: string) => (/^[aàeéiou]/i.test(x) ? `qu'${x}` : `que ${x}`);
 
 export const TEXTOS_C: Partial<Record<Idioma, TextosCarburantes>> = {
+  // España: las URL son las que tenía la web española (comparadortarifaluz.es), que redirige aquí.
+  es: {
+    slugPrecios: "precio-gasolina-hoy", slugCalefaccion: "precio-gasoleo-calefaccion", slugEuropa: "carburantes-europa",
+    productos: { euro95: "Gasolina 95", diesel: "Gasóleo", calefaccion: "Gasóleo de calefacción", glp: "GLP (autogás)" },
+    tituloPais: (p) => `Precio de la gasolina ${p}`, tituloCalefaccion: (p) => `Precio del gasóleo de calefacción ${p}`, tituloEuropa: "Precio de la gasolina en Europa", tituloDestino: (d) => `Precio de la gasolina ${d}`,
+    semanaDel: (f) => `semana del ${f}`, porLitro: "Precio por litro", semanaAnterior: "Semana anterior", haceUnAno: "Hace un año", tresAnos: "Los últimos tres años",
+    vecinos: "Precio en los países vecinos", pais: "País", litros1000: "1.000 litros", y: "y",
+    leadPais: (o) => `La gasolina 95 cuesta ${o.enP} ${o.precio} de media, el puesto ${o.puesto} de ${o.total} en la UE${o.imp ? `. Los impuestos se llevan el ${o.imp} del precio` : ""}.`,
+    leadCal: (o) => `El gasóleo de calefacción cuesta ${o.enP} ${o.precio} de media: unos ${o.mil} por 1.000 litros.`,
+    leadDestino: (o) => `La gasolina 95 cuesta ${o.enD} ${o.precio} de media, frente a ${o.precioCasa} ${o.casaEn}. ${o.consejo}`,
+    llenarAntes: "Lo mejor es cruzar la frontera con el depósito lleno y repostar allí solo lo justo.",
+    repostarAlli: "Merece la pena llenar allí.",
+    daIgual: "La diferencia es pequeña. Importa más la gasolinera que elijas: en la autopista casi siempre es más cara.",
+    rankDestino: (_n, k, t) => `Es el puesto ${k} de ${t} en la UE (el 1 es el más barato).`,
+    pPrecio: (p) => `¿Cuánto cuesta la gasolina ${p}?`,
+    rPrecio: (o) => `La gasolina 95 cuesta ahora ${o.enP} ${o.precio} de media (${o.semana}). Es el puesto ${o.puesto} de ${o.total} en la UE, donde el 1 es el más barato.`,
+    pDiesel: (p) => `¿Cuánto cuesta el gasóleo ${p}?`,
+    rDiesel: (o) => `El gasóleo cuesta ${o.enP} ${o.precio} de media (${o.semana}).`,
+    pImpuestos: (p) => `¿Cuántos impuestos lleva la gasolina ${p}?`,
+    rImpuestos: (p, x) => `${may(p)}, el impuesto de hidrocarburos y el IVA se llevan alrededor del ${x} de lo que se paga por la gasolina 95.`,
+    rDestino: (o) => `Llenar un depósito de 50 litros de gasolina 95 cuesta allí unos ${o.dif} ${o.mas ? "más" : "menos"} que ${o.casaEn}.`,
+    pBarato: "¿Dónde es más barato repostar en Europa?",
+    rBarato: (l, c) => `Ahora mismo la gasolina 95 es más barata ${l}, y más cara ${c}.`,
+    pCal: (p) => `¿Cuánto cuesta el gasóleo de calefacción ${p}?`,
+    rCal: (o) => `El gasóleo de calefacción cuesta ahora ${o.enP} ${o.precio} de media (${o.semana}). 1.000 litros salen por unos ${o.mil}.`,
+    pCuandoCal: "¿Cuándo está más barato el gasóleo de calefacción?",
+    rCuandoCal: (m) => `En los últimos tres años, el mes más barato de media ha sido ${m}. En general compensa llenar el depósito fuera de la temporada de calefacción.`,
+    consejosCalefaccion: ["Comprar fuera de temporada: en primavera y verano suele estar más barato.", "Pedirlo junto con los vecinos: los pedidos grandes bajan el precio por litro.", "Pedir varios presupuestos el mismo día.", "Revisar la caldera cada año: una caldera mal ajustada gasta un 5–10 % más."],
+    consejosCarburante: ["Ir más despacio: a 100 km/h en vez de 120 se gasta un 15–20 % menos.", "Revisar la presión de las ruedas una vez al mes.", "Quitar el cofre del techo y el portabicis cuando no se usan.", "Comparar gasolineras: en la misma ciudad suele haber 10–20 céntimos por litro de diferencia."],
+    consejosT: "Cómo gastar menos en carburante", consejosCalT: "Cómo pagar menos por el gasóleo de calefacción", preguntasT: "Preguntas frecuentes",
+    fuente: "Fuente: Comisión Europea, Boletín Petrolero semanal (precios medios con impuestos).", fuenteNombre: "Comisión Europea (Boletín Petrolero)",
+    verTodos: "Comparar todos los países", aviso: "Precios medios nacionales: en cada gasolinera el precio puede variar.", avisoCal: "Precios medios nacionales: el precio final depende del distribuidor y de la cantidad.",
+  },
   de: {
     slugPrecios: "spritpreise", slugCalefaccion: "heizoelpreise", slugEuropa: "spritpreise-europa",
     productos: { euro95: "Super E5", diesel: "Diesel", calefaccion: "Heizöl", glp: "Autogas (LPG)" },
@@ -354,6 +387,8 @@ export function enPais(lang: Idioma, cc: string, nombre: string): string {
       return `i ${nombre}`;
     case "nl":
       return `in ${nombre}`;
+    case "es":
+      return cc === "NL" ? "en los Países Bajos" : `en ${nombre}`;
     case "fi":
       return INESIVO_FI[cc] ?? nombre;
     default:
@@ -365,9 +400,11 @@ export function enPais(lang: Idioma, cc: string, nombre: string): string {
 export function lista(lang: Idioma, partes: string[], y: string): string {
   if (partes.length <= 1) return partes.join("");
   // En alemán, neerlandés y nórdicos, si todas llevan la misma preposición, solo se pone en la primera.
-  const pre = /^(in|i) /.exec(partes[0])?.[0];
-  const p = pre && ["de", "nl", "sv", "da", "no"].includes(lang) && partes.every((x) => x.startsWith(pre)) ? [partes[0], ...partes.slice(1).map((x) => x.slice(pre.length))] : partes;
-  return `${p.slice(0, -1).join(", ")} ${y} ${p.at(-1)}`;
+  const pre = /^(in|i|en) /.exec(partes[0])?.[0];
+  const p = pre && ["de", "nl", "sv", "da", "no", "es"].includes(lang) && partes.every((x) => x.startsWith(pre)) ? [partes[0], ...partes.slice(1).map((x) => x.slice(pre.length))] : partes;
+  // Español: «Francia e Italia», no «y Italia».
+  const conj = lang === "es" && /^(i|hi)(?!e)/i.test(p.at(-1)!) ? "e" : y;
+  return `${p.slice(0, -1).join(", ")} ${conj} ${p.at(-1)}`;
 }
 
 /** Número de semana ISO («vecka 43»). */

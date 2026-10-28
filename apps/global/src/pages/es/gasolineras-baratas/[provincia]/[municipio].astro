@@ -1,11 +1,11 @@
 ---
 // Todas las gasolineras de un municipio con sus precios de hoy, ordenadas de la más barata a la más cara.
-import Base from "../../../layouts/Base.astro";
-import Anuncio from "../../../components/Anuncio.astro";
-import TablaEstaciones from "../../../components/TablaEstaciones.astro";
-import { esquemaFaq } from "../../../lib/faq";
-import { fechaMedia } from "../../../lib/formato";
-import { FECHA, HORA, MUNICIPIOS, PRODUCTOS, stats, masBaratas, bonito, eurL, eurL2, ahorroDeposito, urlProvincia, urlMunicipio, type Municipio, type Producto } from "../../../lib/gasolineras";
+import Base from "../../../../layouts/Base.astro";
+import Anuncio from "../../../../components/Anuncio.astro";
+import TablaEstaciones from "../../../../components/TablaEstaciones.astro";
+import { esquemaFaq } from "../../../../lib/datos";
+import { fechaMedia } from "../../../../../../web/src/lib/formato";
+import { FECHA, HORA, MUNICIPIOS, PRODUCTOS, stats, masBaratas, bonito, eurL, eurL2, ahorroDeposito, urlProvincia, urlMunicipio, urlEnMapa, type Municipio, type Producto } from "../../../../lib/gasolineras";
 
 export function getStaticPaths() {
   return MUNICIPIOS.map((m) => ({ params: { provincia: m.prov.slug, municipio: m.slug }, props: { m } }));
@@ -40,21 +40,22 @@ const preguntas = [
 const titulo = g ? `Gasolineras en ${m.nombre}: precio hoy desde ${eurL(g.min)}` : `Gasolineras en ${m.nombre} (${m.prov.nombre}): precios hoy`;
 ---
 
-<Base
+<Base lang="es" locale="es-ES"
   titulo={titulo.length <= 70 ? titulo : `Gasolineras en ${m.nombre}: precios hoy`.slice(0, 70)}
   descripcion={`Precio de la gasolina y el diésel hoy en las ${m.estaciones.length} gasolineras de ${m.nombre} (${m.prov.nombre})${g ? `: gasolina 95 desde ${eurL(g.min)}` : ""}${d ? `, diésel desde ${eurL(d.min)}` : ""}.`.slice(0, 160)}
   schema={esquemaFaq(preguntas)}
-  migas={[["Gasolineras baratas", "/gasolineras-baratas/"], [m.prov.nombre, urlProvincia(m.prov)], [m.nombre]]}
+  migas={[["Gasolineras baratas", "/es/gasolineras-baratas/"], [m.prov.nombre, urlProvincia(m.prov)], [m.nombre]]}
 >
   <section class="hero hero--compacto">
     <div class="wrap">
-      <p class="breadcrumbs"><a href="/gasolineras-baratas/">Gasolineras baratas</a> / <a href={urlProvincia(m.prov)}>{m.prov.nombre}</a> / {m.nombre}</p>
+      <p class="breadcrumbs"><a href="/es/gasolineras-baratas/">Gasolineras baratas</a> / <a href={urlProvincia(m.prov)}>{m.prov.nombre}</a> / {m.nombre}</p>
       <h1>Gasolineras en {m.nombre}</h1>
       <p class="lead">
         Las {m.estaciones.length} gasolineras de {m.nombre} con sus precios de hoy, {fecha} ({HORA}).
         {g && <> Gasolina 95: <strong>{eurL(g.media)}</strong> de media{gp && `, ${g.media > gp.media ? "por encima" : "por debajo"} de la media de la provincia (${eurL(gp.media)})`}.</>}
         {d && <> Diésel: <strong>{eurL(d.media)}</strong>.</>}
       </p>
+      <div class="btn-row"><a class="btn btn--ghost" href={urlEnMapa(m.estaciones)}>Ver en el mapa</a></div>
     </div>
   </section>
 

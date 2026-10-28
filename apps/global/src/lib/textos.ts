@@ -2,7 +2,7 @@
 // por idioma, no etiquetas pegadas: así se leen como escritas a mano. Las horas, los rangos horarios y los
 // porcentajes siguen la costumbre de cada país («12 Uhr», «12 h», «klo 12», «06.00», «79%» / «79 %»).
 
-export type Idioma = "no" | "sv" | "da" | "fi" | "de" | "pt" | "fr" | "it" | "nl" | "en";
+export type Idioma = "no" | "sv" | "da" | "fi" | "de" | "pt" | "fr" | "it" | "nl" | "es" | "en";
 
 /** Cuándo es el dato de la frase: hoy, mañana o una fecha del archivo (en pasado). */
 export type Cuando = "hoy" | "manana" | "fecha";
@@ -334,6 +334,33 @@ export const TEXTOS: Record<Idioma, Textos> = {
     rCara: (r, p) => `Het duurst is stroom ${r}, voor ${p}. Zet grote verbruikers dan liever niet aan.`,
     otrosPaises: "Stroomprijzen in andere landen", enlaceFijo: "Link naar deze dag", aviso: "Alle cijfers zijn indicatief.", legal: "Colofon en privacy",
     carburantes: "Brandstofprijzen",
+  },
+  es: {
+    precio: "Precio de la luz", hoy: "hoy", manana: "mañana", slugManana: "manana",
+    reloj: relojDosPuntos, rango: (a, b) => `de ${pad(a)}:00 a ${pad(b)}:00`, baratoA: (h) => `más barata a las ${pad(h)}:00`,
+    elDia: (f) => `el ${f}`,
+    vsAyer: (p, s, r) => `un ${p} ${s ? "más" : "menos"} que ${r === "hoy" ? "hoy" : "el día anterior"}`,
+    igualAyer: (r) => `casi lo mismo que ${r === "hoy" ? "hoy" : "el día anterior"}`,
+    frase: (d) =>
+      d.cuando === "fecha"
+        ? `El ${d.fecha}, la luz costó de media ${d.media} en el mercado mayorista${d.vs ? `, ${d.vs}` : ""}. La hora más barata fue ${d.rangoMin} (${d.pMin}) y la más cara ${d.rangoMax} (${d.pMax}).`
+        : `${d.cuando === "hoy" ? "Hoy" : "Mañana"}, la luz cuesta de media ${d.media} en el mercado mayorista${d.vs ? `, ${d.vs}` : ""}. La hora más barata es ${d.rangoMin} (${d.pMin}) y la más cara ${d.rangoMax} (${d.pMax}).`,
+    ahora: "Ahora", horaBarata: "Hora más barata", horaCara: "Hora más cara", media: "Media del día",
+    mejoresHoras: "Las mejores horas para…", usos: ["Poner la lavadora", "Poner el lavavajillas", "Usar el horno", "Cargar el coche"], evitar: "Mejor evitar",
+    porHora: "Precio hora a hora", niveles: { barata: "barata", normal: "normal", cara: "cara" },
+    leyenda: (b, c) => `${b}: el tercio más barato del día · ${c}: el más caro`,
+    tramosT: "Cómo cambia el precio a lo largo del día", tramos: ["Noche", "Mañana", "Tarde", "Noche (tarde)"], tramoBarato: "el más barato",
+    noPublicado: "Los precios de este día aún no se han publicado. Los de mañana suelen salir poco después de las 13:00.",
+    nota: "Precio del mercado mayorista (día siguiente), sin IVA, peajes, cargos ni margen de la comercializadora.",
+    fuente: "Fuente", otrosDias: "Otros días", zonas: "Zonas de precio", preguntasT: "Preguntas frecuentes",
+    pBarata: (c) => `¿Cuándo es más barata la luz ${c}?`,
+    rBarata: (c, r, p, d) => `${may(c)}, la luz es más barata ${r}, a ${p}.${d ? ` Si necesitas dos horas seguidas, lo mejor es ${d}.` : ""}`,
+    pMedia: (c) => `¿Cuánto cuesta la luz de media ${c}?`,
+    rMedia: (c, m) => `${may(c)}, el precio medio del mercado mayorista es ${m}, antes de IVA, peajes y cargos.`,
+    pCara: (c) => `¿Cuándo es más cara la luz ${c}?`,
+    rCara: (r, p) => `La hora más cara es ${r}, a ${p}: mejor no encender entonces los aparatos que más gastan.`,
+    otrosPaises: "Precio de la luz en otros países", enlaceFijo: "Enlace a este día", aviso: "Datos orientativos.", legal: "Aviso legal y privacidad",
+    carburantes: "Carburantes",
   },
   en: {
     precio: "Electricity price", hoy: "today", manana: "tomorrow", slugManana: "tomorrow",

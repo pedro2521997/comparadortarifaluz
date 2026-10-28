@@ -76,6 +76,11 @@
       "cc": "be", "lang": "nl", "locale": "nl-BE", "nombre": "België", "nombreEn": "Belgium", "tz": "Europe/Brussels",
       "moneda": "EUR", "unidad": "€/kWh", "factor": 0.001, "decimales": 4,
       "zonas": [{ "id": "BE", "slug": "", "nombre": "België", "eic": "10YBE----------2", "ec": "BE" }]
+    },
+    {
+      "cc": "es", "lang": "es", "locale": "es-ES", "nombre": "España", "nombreEn": "Spain", "tz": "Europe/Madrid",
+      "moneda": "EUR", "unidad": "€/kWh", "factor": 0.001, "decimales": 4,
+      "zonas": []
     }
   ]
 }

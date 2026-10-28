@@ -15,7 +15,6 @@ export const CATEGORIAS = [
   "Hogar y aparatos",
   "Contratos y trámites",
   "Gas y otros",
-  "Gasolina y diésel",
 ] as const;
 export type Categoria = (typeof CATEGORIAS)[number];
 

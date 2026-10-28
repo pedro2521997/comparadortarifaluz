@@ -1,15 +1,16 @@
 ---
 // Gasolineras baratas de una provincia: medias frente a España, las más baratas de gasolina y de diésel
 // y todos los municipios con su media (enlazan a la página de cada municipio).
-import Base from "../../../layouts/Base.astro";
-import Anuncio from "../../../components/Anuncio.astro";
-import TablaEstaciones from "../../../components/TablaEstaciones.astro";
-import { esquemaFaq } from "../../../lib/faq";
-import { fechaMedia } from "../../../lib/formato";
-import { graficaLineas } from "../../../lib/compartido/grafica-svg";
+import Base from "../../../../layouts/Base.astro";
+import Anuncio from "../../../../components/Anuncio.astro";
+import TablaEstaciones from "../../../../components/TablaEstaciones.astro";
+import { esquemaFaq } from "../../../../lib/datos";
+import { fechaMedia } from "../../../../../../web/src/lib/formato";
+import { graficaLineas } from "../../../../../../web/src/lib/compartido/grafica-svg";
 import {
   ESTACIONES, FECHA, HORA, PROVINCIAS, MUNICIPIOS, PRODUCTOS, stats, masBaratas, eurL, eurL2, urlMunicipio, serieDiaria, ahorroDeposito, type Provincia, type Producto,
-} from "../../../lib/gasolineras";
+  urlEnMapa,
+} from "../../../../lib/gasolineras";
 
 export function getStaticPaths() {
   return PROVINCIAS.map((p) => ({ params: { provincia: p.slug }, props: { p } }));
@@ -36,19 +37,20 @@ const diariaD = serieDiaria("diesel", p.id);
 const titulo = g ? `Gasolineras baratas en ${p.nombre} hoy: gasolina desde ${eurL(g.min)}` : `Gasolineras baratas en ${p.nombre} hoy`;
 ---
 
-<Base
+<Base lang="es" locale="es-ES"
   titulo={titulo.length <= 70 ? titulo : `Gasolineras baratas en ${p.nombre} hoy`}
   descripcion={`Precio de la gasolina y el diésel hoy en ${p.nombre}: ${g ? `gasolina 95 a ${eurL(g.media)}` : ""}${d ? `, diésel a ${eurL(d.media)}` : ""} de media. Las ${p.estaciones.length} gasolineras, municipio a municipio.`.slice(0, 160)}
   schema={esquemaFaq(preguntas)}
-  migas={[["Gasolineras baratas", "/gasolineras-baratas/"], [p.nombre]]}
+  migas={[["Gasolineras baratas", "/es/gasolineras-baratas/"], [p.nombre]]}
 >
   <section class="hero hero--compacto">
     <div class="wrap">
-      <p class="breadcrumbs"><a href="/gasolineras-baratas/">Gasolineras baratas</a> / {p.nombre}</p>
+      <p class="breadcrumbs"><a href="/es/gasolineras-baratas/">Gasolineras baratas</a> / {p.nombre}</p>
       <h1>Gasolineras baratas en {p.nombre}</h1>
       <p class="lead">
         Precios de hoy, {fecha} ({HORA}), en las {p.estaciones.length} gasolineras de la provincia.{g && <> Gasolina 95: <strong>{eurL(g.media)}</strong> de media, {comp(g.media, se("g95")!.media)}.</>}
       </p>
+      <div class="btn-row"><a class="btn btn--ghost" href={urlEnMapa(p.estaciones)}>Ver en el mapa</a></div>
     </div>
   </section>
 

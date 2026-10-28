@@ -4,13 +4,13 @@
 import Base from "../layouts/Base.astro";
 import Anuncio from "./Anuncio.astro";
 import TablaEstaciones from "./TablaEstaciones.astro";
-import { esquemaFaq } from "../lib/faq";
-import { fechaMedia } from "../lib/formato";
+import { esquemaFaq } from "../lib/datos";
+import { fechaMedia } from "../../../web/src/lib/formato";
 import {
   ESTACIONES, FECHA, HORA, PROVINCIAS, PRODUCTOS, HISTORICO, stats, masBaratas, eurL, eurL2, urlProvincia, serieDiaria, ahorroDeposito, type Producto,
 } from "../lib/gasolineras";
-import { graficaLineas } from "../lib/compartido/grafica-svg";
-import { ultimas, ultimo, nombrePais, type ProductoUE } from "../lib/compartido/carburantes-ue";
+import { graficaLineas } from "../../../web/src/lib/compartido/grafica-svg";
+import { ultimas, ultimo, nombrePais, type ProductoUE } from "../../../web/src/lib/compartido/carburantes-ue";
 
 interface Props {
   k: Producto;
@@ -53,7 +53,7 @@ const schema = [
 ];
 ---
 
-<Base titulo={titulo.length <= 70 ? titulo : titulo.replace(" de media", "")} descripcion={desc} schema={schema} migas={[["Gasolineras baratas", "/gasolineras-baratas/"], [nombreSeo]]}>
+<Base lang="es" locale="es-ES" titulo={titulo.length <= 70 ? titulo : titulo.replace(" de media", "")} descripcion={desc} schema={schema} migas={[["Gasolineras baratas", "/es/gasolineras-baratas/"], [nombreSeo]]}>
   <section class="hero hero--compacto">
     <div class="wrap">
       <span class="eyebrow">Carburantes · actualizado {fecha} a las {HORA}</span>
@@ -62,8 +62,9 @@ const schema = [
         {PRODUCTOS[k].nombre}: <strong>{eurL(s.media)}</strong> de media en España{ayer && ` (${s.media > ayer ? "sube" : s.media < ayer ? "baja" : "igual que"} ${s.media !== ayer ? `${Math.abs((s.media - ayer) * 100).toLocaleString("es-ES", { maximumFractionDigits: 1 })} céntimos desde ayer` : "ayer"})`}. La gasolinera más barata la tiene a {eurL(s.min)}.
       </p>
       <div class="btn-row">
-        <a class="btn btn--mint" href="/gasolineras-baratas/">Gasolineras baratas en tu provincia</a>
-        <a class="btn btn--ghost" href="/carburantes-europa/">Precios en Europa</a>
+        <a class="btn btn--mint" href="/es/mapa-gasolineras/">Ver el mapa de gasolineras</a>
+        <a class="btn btn--ghost" href="/es/gasolineras-baratas/">Gasolineras baratas en tu provincia</a>
+        <a class="btn btn--ghost" href="/es/carburantes-europa/">Precios en Europa</a>
       </div>
     </div>
   </section>
@@ -139,7 +140,7 @@ const schema = [
         </details>
       ))}
       <p class="small" style="margin-top:20px">
-        Más: <a href="/guias/ahorrar-gasolina/">cómo gastar menos gasolina</a> · <a href="/guias/gasolina-95-o-98/">¿gasolina 95 o 98?</a> · <a href="/guias/cuando-repostar-mas-barato/">cuándo es más barato repostar</a> · <a href={ruta === "/precio-gasolina-hoy/" ? "/precio-gasoil-hoy/" : "/precio-gasolina-hoy/"}>{ruta === "/precio-gasolina-hoy/" ? "precio del gasoil hoy" : "precio de la gasolina hoy"}</a>
+        Más: <a href="/es/guide/ahorrar-gasolina/">cómo gastar menos gasolina</a> · <a href="/es/guide/gasolina-95-o-98/">¿gasolina 95 o 98?</a> · <a href="/es/guide/cuando-repostar-mas-barato/">cuándo es más barato repostar</a> · <a href={ruta === "/es/precio-gasolina-hoy/" ? "/es/precio-gasoil-hoy/" : "/es/precio-gasolina-hoy/"}>{ruta === "/es/precio-gasolina-hoy/" ? "precio del gasoil hoy" : "precio de la gasolina hoy"}</a>
       </p>
     </div>
   </section>

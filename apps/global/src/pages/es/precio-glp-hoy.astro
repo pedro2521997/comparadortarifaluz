@@ -1,0 +1,7 @@
+---
+import PaginaCarburante from "../../components/PaginaCarburante.astro";
+import SinDatosCarburantes from "../../components/SinDatosCarburantes.astro";
+import { HAY_GASOLINERAS } from "../../lib/gasolineras";
+---
+
+{HAY_GASOLINERAS ? <PaginaCarburante k="glp" extra={[]} ue="glp" articulo="el GLP" nombreSeo="Precio del GLP (autogás)" ruta="/es/es/precio-glp-hoy/" /> : <SinDatosCarburantes />}

@@ -3,8 +3,10 @@
 import Base from "../../../layouts/Base.astro";
 import Anuncio from "../../../components/Anuncio.astro";
 import { GUIAS, guiasDe, urlGuia, urlGuias, traducciones, TITULO_GUIAS, type Guia } from "../../../lib/guias";
-import { PAISES } from "../../../lib/datos";
+import { PAISES, esquemaFaq } from "../../../lib/datos";
 import { SITIO } from "../../../config";
+import { textosC } from "../../../lib/carburantes";
+import { TEXTOS } from "../../../lib/textos";
 
 export function getStaticPaths() {
   return GUIAS.map((g) => ({ params: { pais: g.cc, slug: g.slug }, props: { g } }));
@@ -23,9 +25,10 @@ const schema = {
   publisher: { "@type": "Organization", name: SITIO.nombre, url: SITIO.url },
   mainEntityOfPage: new URL(urlGuia(g), SITIO.url).href,
 };
+const esquemas = g.faq?.length ? [schema, esquemaFaq(g.faq)] : schema;
 ---
 
-<Base titulo={g.titulo.length <= 70 ? g.titulo : g.titulo.split(/[?:]/)[0] + (g.titulo.includes("?") ? "?" : "")} descripcion={g.resumen.slice(0, 158)} lang={g.lang} locale={p.locale} schema={schema} alternativas={traducciones(g)}>
+<Base titulo={g.titulo.length <= 70 ? g.titulo : g.titulo.split(/[?:]/)[0] + (g.titulo.includes("?") ? "?" : "")} descripcion={g.resumen.slice(0, 158)} lang={g.lang} locale={p.locale} schema={esquemas} alternativas={traducciones(g)}>
   <section class="hero hero--compacto">
     <div class="wrap wrap--narrow">
       <p class="breadcrumbs"><a href={urlGuias(g.cc)}>{TITULO_GUIAS[g.lang]}</a></p>
@@ -35,7 +38,23 @@ const schema = {
   </section>
   <section class="section section--white section--tight">
     <div class="wrap wrap--narrow">
+      {g.respuesta && <p class="g-respuesta">{g.respuesta}</p>}
       <article class="prose" set:html={html} />
+      {g.herramienta && <p style="margin-top:24px"><a class="btn btn--mint" href={g.herramienta.href}>{g.herramienta.texto}</a></p>}
+      {
+        g.faq?.length && (
+          <div style="margin-top:32px">
+            <h2 style="font-size:22px;margin-bottom:12px">{textosC(p)?.preguntasT ?? "FAQ"}</h2>
+            {g.faq.map((q) => (
+              <details class="g-faq">
+                <summary>{q.p}</summary>
+                <p>{q.r}</p>
+              </details>
+            ))}
+          </div>
+        )
+      }
+      {g.fuentes?.length && <p class="caption" style="margin-top:24px">{TEXTOS[g.lang].fuente}: {g.fuentes.map((f, i) => <>{i > 0 && " · "}<a href={f.url} rel="noopener">{f.nombre}</a></>)}</p>}
     </div>
   </section>
   <Anuncio tipo="horizontal" seccion />
@@ -48,3 +67,24 @@ const schema = {
     </div>
   </section>
 </Base>
+
+<style>
+  .g-respuesta {
+    background: var(--color-sage-mist);
+    border-left: 4px solid var(--color-canopy);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 24px;
+  }
+  .g-faq {
+    border-bottom: 1px solid var(--color-pale-sage);
+    padding: 6px 0;
+  }
+  .g-faq summary {
+    color: var(--color-bark);
+    cursor: pointer;
+  }
+  .g-faq p {
+    padding: 4px 0 12px 20px;
+  }
+</style>

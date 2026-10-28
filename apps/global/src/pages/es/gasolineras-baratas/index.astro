@@ -1,10 +1,10 @@
 ---
 // Índice de gasolineras baratas: todas las provincias con su media de gasolina y gasóleo de hoy.
-import Base from "../../layouts/Base.astro";
-import Anuncio from "../../components/Anuncio.astro";
-import SinDatosCarburantes from "../../components/SinDatosCarburantes.astro";
-import { HAY_GASOLINERAS, ESTACIONES, FECHA, HORA, PROVINCIAS, stats, eurL, urlProvincia } from "../../lib/gasolineras";
-import { fechaMedia } from "../../lib/formato";
+import Base from "../../../layouts/Base.astro";
+import Anuncio from "../../../components/Anuncio.astro";
+import SinDatosCarburantes from "../../../components/SinDatosCarburantes.astro";
+import { HAY_GASOLINERAS, ESTACIONES, FECHA, HORA, PROVINCIAS, stats, eurL, urlProvincia } from "../../../lib/gasolineras";
+import { fechaMedia } from "../../../../../web/src/lib/formato";
 
 const filas = PROVINCIAS.map((p) => ({ p, g: stats(p.estaciones, "g95"), d: stats(p.estaciones, "diesel") }));
 const g = HAY_GASOLINERAS ? stats(ESTACIONES, "g95") : null;
@@ -15,7 +15,7 @@ const d = HAY_GASOLINERAS ? stats(ESTACIONES, "diesel") : null;
   !HAY_GASOLINERAS ? (
     <SinDatosCarburantes />
   ) : (
-    <Base
+    <Base lang="es" locale="es-ES"
       titulo={`Gasolineras baratas hoy en España, por provincias (${fechaMedia(FECHA).replace(/ de \d{4}$/, "")})`}
       descripcion={`Las gasolineras más baratas de cada provincia y municipio, con los precios de hoy: gasolina 95 a ${eurL(g!.media)} y diésel a ${eurL(d!.media)} de media.`}
       migas={[["Gasolineras baratas"]]}
@@ -28,9 +28,9 @@ const d = HAY_GASOLINERAS ? stats(ESTACIONES, "diesel") : null;
             Elige tu provincia para ver las gasolineras más baratas y el precio de cada una, municipio a municipio. Hoy la gasolina 95 está a <strong>{eurL(g!.media)}</strong> y el diésel a <strong>{eurL(d!.media)}</strong> de media.
           </p>
           <div class="btn-row">
-            <a class="btn btn--ghost" href="/precio-gasolina-hoy/">Precio de la gasolina hoy</a>
-            <a class="btn btn--ghost" href="/precio-gasoil-hoy/">Precio del gasoil hoy</a>
-            <a class="btn btn--ghost" href="/precio-glp-hoy/">GLP</a>
+            <a class="btn btn--ghost" href="/es/precio-gasolina-hoy/">Precio de la gasolina hoy</a>
+            <a class="btn btn--ghost" href="/es/precio-gasoil-hoy/">Precio del gasoil hoy</a>
+            <a class="btn btn--ghost" href="/es/precio-glp-hoy/">GLP</a>
           </div>
         </div>
       </section>
@@ -64,7 +64,7 @@ const d = HAY_GASOLINERAS ? stats(ESTACIONES, "diesel") : null;
             <li><strong>Compara el precio con impuestos por litro</strong>, no los descuentos con tarjeta: muchas veces la gasolinera barata sale mejor que el descuento de la cara.</li>
             <li><strong>Un depósito de 50 litros</strong> con 10 céntimos de diferencia son 5 € cada vez que llenas.</li>
           </ul>
-          <p>Más trucos en <a href="/guias/ahorrar-gasolina/">cómo gastar menos gasolina</a> y en <a href="/guias/cuando-repostar-mas-barato/">cuándo es más barato repostar</a>.</p>
+          <p>Más trucos en <a href="/es/guide/ahorrar-gasolina/">cómo gastar menos gasolina</a> y en <a href="/es/guide/cuando-repostar-mas-barato/">cuándo es más barato repostar</a>.</p>
         </div>
       </section>
     </Base>

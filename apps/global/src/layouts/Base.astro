@@ -6,9 +6,11 @@ import "../../../web/src/styles/componentes.css";
 import Anuncio from "../components/Anuncio.astro";
 import { SITIO } from "../config";
 import { PAISES_CON_DATOS } from "../lib/datos";
-import { PAISES_C, textosC, urlPrecios, en, CC } from "../lib/carburantes";
+import { PAISES_C, textosC, urlPrecios, urlEuropa, en, CC } from "../lib/carburantes";
 import { GUIAS, urlGuias, TITULO_GUIAS } from "../lib/guias";
-import { PAISES } from "../lib/datos";
+import { PAISES, MERCADOS, absoluta } from "../lib/datos";
+import { tieneMapas, urlMapa } from "../lib/mapa";
+import { TEXTOS_M } from "../lib/textos-mapa";
 import { TEXTOS, type Idioma } from "../lib/textos";
 import { codigoAdsense, clienteAdsense, cuentaAdsense } from "../lib/anuncios-html.mjs";
 
@@ -22,13 +24,39 @@ interface Props {
   alternativas?: { lang: string; href: string }[];
   anuncioFinal?: boolean;
   noindex?: boolean;
+  /** Migas de pan para Google: [nombre, ruta] y la última sin ruta. */
+  migas?: [string, string?][];
 }
-const { titulo, descripcion, lang, locale = "en", schema, alternativas = [], anuncioFinal = true, noindex = false } = Astro.props;
+const { titulo, descripcion, lang, locale = "en", schema, alternativas = [], anuncioFinal = true, noindex = false, migas = [] } = Astro.props;
 const canonical = new URL(Astro.url.pathname, SITIO.url).href;
 const tituloCompleto = titulo.length > 50 ? titulo : `${titulo} | ${SITIO.nombre}`;
 const esquemas = schema ? (Array.isArray(schema) ? schema : [schema]) : [];
+if (migas.length)
+  esquemas.push({
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: migas.map(([nombre, r], i) => ({ "@type": "ListItem", position: i + 1, name: nombre, ...(r ? { item: absoluta(r) } : {}) })),
+  });
 const L = TEXTOS[lang];
 const ruta = Astro.url.pathname;
+
+// Menú de la sección del país en que se está (/de/…, /es/…): luz, carburantes, mapa, Europa y guías, en su idioma.
+const sec = PAISES.find((p) => ruta.startsWith(`/${p.cc}/`));
+const Ls = sec ? TEXTOS[sec.lang] : L;
+const guiaCc = sec ? GUIAS.find((g) => g.lang === sec.lang)?.cc : undefined;
+const tieneLuz = sec && MERCADOS.some((m) => m.pais.cc === sec.cc && m.principal);
+const menu: { href: string; t: string; activo: boolean }[] = !sec
+  ? []
+  : [
+      ...(tieneLuz ? [{ href: `/${sec.cc}/`, t: Ls.precio, activo: false }] : sec.cc === "es" ? [{ href: SITIO.espana, t: Ls.precio, activo: false }] : []),
+      ...(PAISES_C.includes(sec) ? [{ href: urlPrecios(sec), t: Ls.carburantes, activo: ruta.startsWith(urlPrecios(sec)) || ruta.includes("/gasolineras-baratas/") || /\/precio-(gasoil|glp)-hoy\//.test(ruta) || ruta.startsWith(`/${sec.cc}/${textosC(sec).slugCalefaccion}/`) }] : []),
+      ...(tieneMapas(sec) ? [{ href: urlMapa(sec), t: TEXTOS_M[sec.lang]!.boton, activo: ruta.startsWith(urlMapa(sec)) }] : []),
+      ...(PAISES_C.includes(sec) ? [{ href: urlEuropa(sec), t: textosC(sec).tituloEuropa, activo: ruta.startsWith(urlEuropa(sec)) }] : []),
+      ...(guiaCc ? [{ href: urlGuias(guiaCc), t: TITULO_GUIAS[sec.lang], activo: ruta.includes("/guide/") }] : []),
+    ];
+if (menu.length && tieneLuz && !menu.some((x) => x.activo)) menu[0].activo = true;
+// Selector de país: los que tienen precio de la luz y España (carburantes; la luz está en la web española).
+const paisesMenu = PAISES.filter((p) => PAISES_CON_DATOS.includes(p) || p.cc === "es");
 ---
 
 <!doctype html>
@@ -41,8 +69,11 @@ const ruta = Astro.url.pathname;
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex" />}
     {alternativas.map((a) => <link rel="alternate" hreflang={a.lang} href={a.href} />)}
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <meta name="theme-color" content="#104336" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#EA580C" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content={locale.replace("-", "_")} />
     <meta property="og:site_name" content={SITIO.nombre} />
@@ -57,18 +88,31 @@ const ruta = Astro.url.pathname;
     <a class="sr-only" href="#contenido">Skip to content</a>
     <header class="nav">
       <div class="wrap nav__in g-nav">
-        <a href="/" class="g-logo">⚡ {SITIO.nombre}</a>
-        <nav aria-label="Countries" class="g-paises">
-          {
-            PAISES_CON_DATOS.map((p) => (
-              <a href={`/${p.cc}/`} aria-current={ruta.startsWith(`/${p.cc}/`) ? "page" : undefined} title={p.nombre}>
-                {p.cc.toUpperCase()}
-              </a>
-            ))
-          }
-          <a href={SITIO.espana} title="España" hreflang="es">ES</a>
-        </nav>
+        <a href={sec ? `/${sec.cc}/` : "/"} class="g-logo">⚡ {SITIO.nombre}</a>
+        <details class="g-selector">
+          <summary aria-label="Country / language"><span aria-hidden="true">🌐</span> {sec ? sec.cc.toUpperCase() : "EN"} <span aria-hidden="true" class="g-flecha">▾</span></summary>
+          <ul>
+            {paisesMenu.map((p) => (
+              <li>
+                <a href={`/${p.cc}/`} hreflang={p.locale} lang={p.lang === "no" ? "nb" : p.lang} aria-current={sec === p ? "page" : undefined}>
+                  <span class="g-cc">{p.cc.toUpperCase()}</span> {p.nombre}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </details>
       </div>
+      {
+        menu.length > 0 && (
+          <nav class="g-menu" aria-label={sec?.nombre}>
+            <div class="wrap g-menu__in">
+              {menu.map((x) => (
+                <a href={x.href} aria-current={x.activo ? "page" : undefined}>{x.t}</a>
+              ))}
+            </div>
+          </nav>
+        )
+      }
     </header>
 
     <main id="contenido">
@@ -114,6 +158,14 @@ const ruta = Astro.url.pathname;
       </div>
     </footer>
 
+    <script is:inline>
+      // Cierra el selector de país al pulsar fuera.
+      document.addEventListener("click", function (e) {
+        document.querySelectorAll("details.g-selector[open]").forEach(function (d) {
+          if (!d.contains(e.target)) d.removeAttribute("open");
+        });
+      });
+    </script>
     {
       codigoAdsense() && (
         <script is:inline>
@@ -154,23 +206,105 @@ const ruta = Astro.url.pathname;
     color: var(--color-ink);
     text-decoration: none;
   }
-  .g-paises {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
+  .g-logo:hover {
+    color: #ea580c;
   }
-  .g-paises a {
-    font-size: 13px;
+  /* Selector de país: desplegable sin JavaScript */
+  .g-selector {
+    position: relative;
+  }
+  .g-selector summary {
+    list-style: none;
+    cursor: pointer;
+    font-size: 14px;
     font-weight: 600;
-    padding: 4px 8px;
+    padding: 6px 12px;
     border-radius: var(--radius-buttons);
+    border: 1px solid var(--color-pale-sage);
+    color: var(--color-bark);
+    user-select: none;
+  }
+  .g-selector summary::-webkit-details-marker {
+    display: none;
+  }
+  .g-selector > summary::before {
+    content: none;
+  }
+  .g-selector > summary {
+    gap: 6px;
+  }
+  .g-selector[open] summary {
+    border-color: #ea580c;
+  }
+  .g-flecha {
+    font-size: 11px;
+  }
+  .g-selector ul {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 6px);
+    z-index: 60;
+    margin: 0;
+    padding: 6px;
+    list-style: none;
+    min-width: 220px;
+    background: var(--color-sheet-white);
+    border: 1px solid var(--color-pale-sage);
+    border-radius: var(--radius-cards);
+    box-shadow: 0 10px 30px rgba(16, 67, 54, 0.15);
+    display: grid;
+    gap: 2px;
+  }
+  .g-selector a {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 8px 10px;
+    border-radius: 8px;
     text-decoration: none;
     color: var(--color-bark);
-    border: 1px solid var(--color-sage-mist);
+    font-size: 15px;
   }
-  .g-paises a[aria-current="page"] {
-    background: var(--color-canopy);
-    border-color: var(--color-canopy);
-    color: #fff;
+  .g-selector a:hover,
+  .g-selector a[aria-current="page"] {
+    background: var(--color-sage-mist);
+  }
+  .g-cc {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--color-slate);
+    width: 22px;
+  }
+  /* Menú de la sección del país */
+  .g-menu {
+    border-top: 1px solid var(--color-pale-sage);
+    background: var(--color-sheet-white);
+  }
+  .g-menu__in {
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .g-menu__in::-webkit-scrollbar {
+    display: none;
+  }
+  .g-menu a {
+    flex: none;
+    white-space: nowrap;
+    padding: 10px 12px;
+    font-size: 15px;
+    color: var(--color-bark);
+    text-decoration: none;
+    border-bottom: 3px solid transparent;
+  }
+  .g-menu a:hover {
+    color: var(--color-ink);
+    border-bottom-color: var(--color-pale-sage);
+  }
+  .g-menu a[aria-current="page"] {
+    color: var(--color-ink);
+    font-weight: 600;
+    border-bottom-color: #ea580c;
   }
 </style>

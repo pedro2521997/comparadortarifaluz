@@ -3,11 +3,7 @@ titulo: "Cómo gastar menos gasolina: 15 trucos que funcionan de verdad"
 titulo_seo: "Cómo gastar menos gasolina o diésel: 15 trucos que funcionan"
 resumen: "Trucos probados para gastar menos gasolina o diésel al conducir y al repostar: velocidad, marchas, neumáticos, aire acondicionado y dónde llenar el depósito."
 respuesta: "Lo que más ahorra es conducir más suave y más despacio: bajar de 120 a 100 km/h en autovía reduce el consumo un 15–20 %. Después, llevar los neumáticos a la presión correcta, quitar peso y portaequipajes, usar marchas largas y repostar en la gasolinera más barata de tu zona, que puede estar 10–20 céntimos por litro por debajo de la de al lado."
-revisado: "2026-10-27"
-publicado: "2026-10-27"
-orden: 69
-categoria: "Gasolina y diésel"
-herramienta: { href: "/gasolineras-baratas/", texto: "Busca la gasolinera más barata de tu provincia y tu municipio, con los precios de hoy." }
+herramienta: { href: "/es/gasolineras-baratas/", texto: "Busca la gasolinera más barata de tu provincia y tu municipio, con los precios de hoy." }
 fuentes:
   - { nombre: "IDAE: conducción eficiente", url: "https://www.idae.es/" }
   - { nombre: "DGT: consejos de conducción eficiente", url: "https://www.dgt.es/" }
@@ -16,6 +12,10 @@ faq:
   - { p: "¿Cuánto se ahorra yendo a 100 en vez de a 120?", r: "Entre un 15 y un 20 % de combustible: la resistencia del aire crece con el cuadrado de la velocidad. En un viaje de 500 km, unos 6–8 litros." }
   - { p: "¿Gasta más el aire acondicionado o llevar las ventanillas bajadas?", r: "En ciudad gasta más el aire acondicionado. En autovía, por encima de unos 80 km/h, las ventanillas abiertas aumentan la resistencia y el consumo se iguala o es peor." }
   - { p: "¿Merece la pena ir lejos para repostar más barato?", r: "Solo si está de camino o muy cerca: un desvío de 10 km gasta casi un litro, lo que se ahorra con 10 céntimos de diferencia en un depósito de 50 litros." }
+clave: ahorrar-combustible
+lang: es
+cc: es
+orden: 1
 ---
 
 El combustible es uno de los gastos más grandes de un coche. Hay dos formas de recortarlo: **gastar menos litros** y **pagar menos por cada litro**. Las dos se suman.
@@ -39,7 +39,7 @@ El combustible es uno de los gastos más grandes de un coche. Hay dos formas de 
 
 ## Pagar menos por cada litro
 
-12. **Compara gasolineras de tu zona.** En un mismo municipio hay diferencias de 10–20 céntimos por litro. Míralo en [gasolineras baratas](/gasolineras-baratas/).
+12. **Compara gasolineras de tu zona.** En un mismo municipio hay diferencias de 10–20 céntimos por litro. Míralo en [gasolineras baratas](/es/gasolineras-baratas/).
 13. **Las automáticas y las de hipermercado** suelen ser las más baratas. Las de autopista, las más caras.
 14. **Llena antes de salir de viaje** si en tu ciudad está más barata que en la ruta.
 15. **No te fíes solo del descuento.** Un 5 % de descuento en una gasolinera cara puede salir peor que el precio normal de una barata.
@@ -53,4 +53,4 @@ El combustible es uno de los gastos más grandes de un coche. Hay dos formas de 
 | Neumáticos bien inflados | 2–4 % | 1–2 € al mes |
 | Gasolinera más barata (−10 cts/l) | 6 € por 60 l | 6 € al mes |
 
-Juntos, es fácil ahorrar **20–30 € al mes** sin cambiar de coche. Mira hoy el [precio de la gasolina](/precio-gasolina-hoy/) o el [precio del gasoil](/precio-gasoil-hoy/).
+Juntos, es fácil ahorrar **20–30 € al mes** sin cambiar de coche. Mira hoy el [precio de la gasolina](/es/precio-gasolina-hoy/) o el [precio del gasoil](/es/precio-gasoil-hoy/).

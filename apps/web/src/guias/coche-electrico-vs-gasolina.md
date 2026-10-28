@@ -5,7 +5,7 @@ respuesta: "Cargando en casa por la noche, un coche eléctrico gasta unos 2–3 
 revisado: "2026-10-27"
 publicado: "2026-10-27"
 orden: 76
-categoria: "Gasolina y diésel"
+categoria: "Coche eléctrico"
 herramienta: { href: "/herramientas/coche-electrico/", texto: "Calcula lo que te costaría con tus kilómetros y tu tarifa de luz." }
 fuentes:
   - { nombre: "Red Eléctrica (REData): PVPC horario", url: "https://www.ree.es/es/apidatos" }
@@ -23,7 +23,7 @@ fuentes:
 | Diésel | 5,2 l | 1,85 €/l | 9,6 € |
 | Híbrido gasolina | 4,8 l | 1,75 €/l | 8,4 € |
 
-Precios orientativos. Los de hoy: [gasolina](/precio-gasolina-hoy/), [gasoil](/precio-gasoil-hoy/) y [luz por horas](/precio-luz-hoy/).
+Precios orientativos. Los de hoy: [gasolina](https://powerpricenow.com/es/precio-gasolina-hoy/), [gasoil](https://powerpricenow.com/es/precio-gasoil-hoy/) y [luz por horas](/precio-luz-hoy/).
 
 ## Al año, con 15.000 km
 

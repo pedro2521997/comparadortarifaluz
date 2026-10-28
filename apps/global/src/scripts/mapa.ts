@@ -85,6 +85,7 @@ function iniciar(raiz: HTMLElement, cfg: Config) {
       prepararCapas();
       pintar();
       indexar();
+      desdeUrl();
     })
     .catch(() => {
       estado.textContent = T.sinDatos;
@@ -218,6 +219,24 @@ function iniciar(raiz: HTMLElement, cfg: Config) {
     popup.on("close", () => mapa.setFilter("elegida", ["==", ["get", "i"], -1]));
   }
 
+  /** ?b=oeste,sur,este,norte encuadra una zona (enlaces desde provincias y municipios); ?q= busca un sitio. */
+  function desdeUrl() {
+    const u = new URLSearchParams(location.search);
+    const b = (u.get("b") ?? "").split(",").map(Number);
+    if (b.length === 4 && b.every(Number.isFinite)) {
+      mapa.fitBounds([b[0], b[1], b[2], b[3]], { padding: 40, maxZoom: 14, duration: 0 });
+      return;
+    }
+    const q = u.get("q");
+    if (q) {
+      buscar.value = q;
+      proponer();
+      const k = opciones.findIndex((o) => o.tipo === "lugar");
+      if (k >= 0) elegir(k, false);
+      else cerrar();
+    }
+  }
+
   // ---------------- Carburante ----------------
 
   raiz.querySelectorAll<HTMLButtonElement>("[data-comb]").forEach((b) =>
@@ -337,7 +356,7 @@ function iniciar(raiz: HTMLElement, cfg: Config) {
     buscar.setAttribute("aria-expanded", "false");
   }
 
-  function elegir(k: number) {
+  function elegir(k: number, desplazar = true) {
     const o = opciones[k];
     if (!o) return;
     cerrar();
@@ -360,7 +379,7 @@ function iniciar(raiz: HTMLElement, cfg: Config) {
       }
       abrir(o.i);
     }
-    raiz.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (desplazar) raiz.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   let espera: number | undefined;

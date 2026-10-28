@@ -1,8 +1,10 @@
-// Gasolineras de España (Ministerio para la Transición Ecológica) para las páginas de precio de la gasolina,
-// del gasóleo y de las gasolineras más baratas de cada provincia y municipio. Datos de scripts/carburantes.mjs.
+// Gasolineras de España (Ministerio para la Transición Ecológica) para las páginas en español de la web global
+// (/es/): precio de la gasolina, del gasóleo y de las gasolineras más baratas de cada provincia y municipio.
+// Datos de scripts/carburantes.mjs. Antes estaban en la web española, que ahora redirige aquí.
 
 import provinciasJson from "../../../../data/provincias.json";
-import { slug } from "./ranking";
+import { slugTexto as slug } from "./carburantes";
+import { leerJson, leerJsonsDe } from "./ficheros";
 
 export type Producto = "g95" | "g98" | "diesel" | "dieselPremium" | "glp" | "gnc" | "adblue";
 
@@ -33,7 +35,7 @@ export interface Stats { media: number; min: number; max: number; n: number }
 export type Resumen = { fecha: string; hora: string; nacional: Partial<Record<Producto, Stats>>; provincias: Record<string, Partial<Record<Producto, Stats>>> };
 
 // La foto de hoy no va al repositorio (se descarga en cada build): si falta, no hay páginas de gasolineras.
-const foto = Object.values(import.meta.glob<{ fecha: string; hora: string; estaciones: Estacion[] }>("../../../../data/carburantes/estaciones.json", { eager: true, import: "default" }))[0];
+const foto = leerJson<{ fecha: string; hora: string; estaciones: Estacion[] }>("carburantes/estaciones.json");
 export const HAY_GASOLINERAS = !!foto;
 export const FECHA = foto?.fecha ?? "";
 export const HORA = foto?.hora ?? "";
@@ -46,9 +48,8 @@ export function nombreMunicipio(s: string): string {
 }
 export const ESTACIONES: Estacion[] = (foto?.estaciones ?? []).map((e) => ({ ...e, mun: nombreMunicipio(e.mun) }));
 
-const resumenes = import.meta.glob<Resumen>("../../../../data/carburantes/resumen/*.json", { eager: true, import: "default" });
 /** Un resumen por día (el último de cada día), del más antiguo al más reciente. */
-export const HISTORICO: Resumen[] = Object.values(resumenes).sort((a, b) => a.fecha.localeCompare(b.fecha));
+export const HISTORICO: Resumen[] = leerJsonsDe<Resumen>("carburantes/resumen").sort((a, b) => a.fecha.localeCompare(b.fecha));
 
 const nombres = (provinciasJson as { provincias: Record<string, { nombre: string }> }).provincias;
 
@@ -71,8 +72,16 @@ export const MUNICIPIOS: Municipio[] = PROVINCIAS.flatMap((prov) => {
   return lista.map((m) => (usados.get(m.slug)! > 1 ? { ...m, slug: `${m.slug}-${m.id}` } : m)).sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
 });
 
-export const urlProvincia = (p: Provincia) => `/gasolineras-baratas/${p.slug}/`;
-export const urlMunicipio = (m: Municipio) => `/gasolineras-baratas/${m.prov.slug}/${m.slug}/`;
+export const urlProvincia = (p: Provincia) => `/es/gasolineras-baratas/${p.slug}/`;
+export const urlMunicipio = (m: Municipio) => `/es/gasolineras-baratas/${m.prov.slug}/${m.slug}/`;
+/** El mapa de gasolineras encuadrado en unas gasolineras (?b=oeste,sur,este,norte). */
+export function urlEnMapa(es: Estacion[]): string {
+  const c = es.filter((e) => e.lat && e.lon);
+  if (!c.length) return "/es/mapa-gasolineras/";
+  const r = (x: number) => Math.round(x * 1000) / 1000;
+  const b = [Math.min(...c.map((e) => e.lon!)), Math.min(...c.map((e) => e.lat!)), Math.max(...c.map((e) => e.lon!)), Math.max(...c.map((e) => e.lat!))].map(r);
+  return `/es/mapa-gasolineras/?b=${b.join(",")}`;
+}
 
 export function stats(es: Estacion[], k: Producto): Stats | null {
   const v = es.map((e) => e.p[k]).filter((x): x is number => !!x);

@@ -1,0 +1,21 @@
+# Los precios de carburantes se han ido a la web hermana PowerPriceNow (en español, con mapa de gasolineras).
+# Redirecciones permanentes para no perder lo que Google ya tenía de estas páginas.
+/precio-gasolina-hoy/ https://powerpricenow.com/es/precio-gasolina-hoy/ 301
+/precio-gasolina-hoy https://powerpricenow.com/es/precio-gasolina-hoy/ 301
+/precio-gasoil-hoy/ https://powerpricenow.com/es/precio-gasoil-hoy/ 301
+/precio-gasoil-hoy https://powerpricenow.com/es/precio-gasoil-hoy/ 301
+/precio-glp-hoy/ https://powerpricenow.com/es/precio-glp-hoy/ 301
+/precio-glp-hoy https://powerpricenow.com/es/precio-glp-hoy/ 301
+/precio-gasoleo-calefaccion/ https://powerpricenow.com/es/precio-gasoleo-calefaccion/ 301
+/precio-gasoleo-calefaccion https://powerpricenow.com/es/precio-gasoleo-calefaccion/ 301
+/guias/adblue/ https://powerpricenow.com/es/guide/adblue/ 301
+/guias/ahorrar-gasolina/ https://powerpricenow.com/es/guide/ahorrar-gasolina/ 301
+/guias/cuando-repostar-mas-barato/ https://powerpricenow.com/es/guide/cuando-repostar-mas-barato/ 301
+/guias/diesel-o-gasolina/ https://powerpricenow.com/es/guide/diesel-o-gasolina/ 301
+/guias/gasolina-95-o-98/ https://powerpricenow.com/es/guide/gasolina-95-o-98/ 301
+/guias/gasolineras-low-cost/ https://powerpricenow.com/es/guide/gasolineras-low-cost/ 301
+/guias/glp-autogas/ https://powerpricenow.com/es/guide/glp-autogas/ 301
+/gasolineras-baratas https://powerpricenow.com/es/gasolineras-baratas/ 301
+/gasolineras-baratas/* https://powerpricenow.com/es/gasolineras-baratas/:splat 301
+/carburantes-europa https://powerpricenow.com/es/carburantes-europa/ 301
+/carburantes-europa/* https://powerpricenow.com/es/carburantes-europa/:splat 301

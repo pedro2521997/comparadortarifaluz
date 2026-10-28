@@ -6,7 +6,19 @@ import type { Idioma } from "./textos";
 import { PAISES } from "./datos";
 import { SITIO } from "../config";
 
-interface Frontmatter { titulo: string; resumen: string; clave: string; lang: Idioma; cc: string; orden: number }
+interface Frontmatter {
+  titulo: string;
+  resumen: string;
+  clave: string;
+  lang: Idioma;
+  cc: string;
+  orden: number;
+  /** Opcionales (las guías en español, que vienen de la web española): respuesta corta, enlace a la herramienta, FAQ y fuentes. */
+  respuesta?: string;
+  herramienta?: { href: string; texto: string };
+  faq?: { p: string; r: string }[];
+  fuentes?: { nombre: string; url: string }[];
+}
 export interface Guia extends Frontmatter { slug: string; md: MarkdownInstance<Frontmatter> }
 
 const ficheros = import.meta.glob<MarkdownInstance<Frontmatter>>("../guias/*/*.md", { eager: true });
@@ -34,5 +46,6 @@ export const TITULO_GUIAS: Record<Idioma, string> = {
   fr: "Guides et conseils",
   it: "Guide e consigli",
   nl: "Gidsen en tips",
+  es: "Guías y consejos",
   en: "Guides",
 };
