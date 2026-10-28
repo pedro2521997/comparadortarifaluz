@@ -25,12 +25,21 @@ const urls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>(?:<lastmod>([^<]+)<\/last
   .map(([, u]) => u)
   .filter((u) => domingo || !u.includes("/es/gasolinera/"));
 
-for (let i = 0; i < urls.length; i += 10000) {
-  const r = await fetch("https://api.indexnow.org/indexnow", {
+const enviar = (lista) =>
+  fetch("https://api.indexnow.org/indexnow", {
     method: "POST",
     headers: { "Content-Type": "application/json; charset=utf-8" },
-    body: JSON.stringify({ host: HOST, key: clave, keyLocation: `https://${HOST}/${clave}.txt`, urlList: urls.slice(i, i + 10000) }),
+    body: JSON.stringify({ host: HOST, key: clave, keyLocation: `https://${HOST}/${clave}.txt`, urlList: lista }),
   });
-  console.log(`IndexNow (${HOST}): ${Math.min(10000, urls.length - i)} páginas → ${r.status}`);
+for (let i = 0; i < urls.length; i += 10000) {
+  const lista = urls.slice(i, i + 10000);
+  let r = await enviar(lista);
+  // Justo después de publicar, IndexNow a veces responde 403 aunque la clave esté bien: se reintenta dos minutos después.
+  if (r.status === 403 || r.status === 429 || r.status >= 500) {
+    console.log(`IndexNow (${HOST}): ${r.status}, se reintenta en 2 minutos`);
+    await new Promise((ok) => setTimeout(ok, 120000));
+    r = await enviar(lista);
+  }
+  console.log(`IndexNow (${HOST}): ${lista.length} páginas → ${r.status}`);
 }
 if (!urls.length) console.log("IndexNow: ninguna página con fecha de hoy");
