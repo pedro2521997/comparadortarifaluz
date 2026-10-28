@@ -5,7 +5,8 @@
 //  - Italia: Ministero delle Imprese e del Made in Italy, CSV diario «prezzo alle 8» (IODL 2.0).
 //  - Portugal: DGEG, Preços dos Combustíveis Online.
 //
-// Formato: { cc, actualizado, combustibles: [claves], e: [[lat, lon, nombre, dirección, municipio, cp, [precios], "AAAA-MM-DD", autopista]] }
+// Formato: { cc, actualizado, combustibles: [claves], e: [[lat, lon, nombre, dirección, municipio, cp, [precios], "AAAA-MM-DD", autopista, ficha]] }
+// «ficha» solo en España: la parte final de la URL de su página (/es/gasolinera/<ficha>/).
 // Los precios van en €/l en el mismo orden que «combustibles» (null si la gasolinera no lo vende).
 //
 // Uso: node scripts/estaciones-global.mjs [FR ES IT PT]
@@ -13,6 +14,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { rotuloVacio, slugFicha } from "../apps/global/src/lib/fichas.mjs";
 
 const DIR = new URL("../data/estaciones/", import.meta.url);
 const ES = new URL("../data/carburantes/estaciones.json", import.meta.url);
@@ -47,9 +49,11 @@ export function capitalizar(s) {
   const palabras = s.split(" ");
   return palabras
     .map((w, i) => {
+      if (w === "SN" && i > 0) return "s/n";
       // Siglas de carretera o de polígono se quedan como están: «RN 94», «EN 109», «ZI», «N-332».
       if (/^[A-Z]{1,3}$/.test(w) && (!/[AEIOU]/.test(w) || SIGLAS.has(w) || /^\d/.test(palabras[i + 1] ?? ""))) return w;
       if (/\d/.test(w) && /^[A-Z0-9\-./]+$/.test(w)) return w;
+      if (/&/.test(w)) return w;
       const l = w.toLowerCase();
       if (i > 0 && menores.has(l)) return l;
       const c = l.replace(/(^|[\-/'(.])(\p{L})/gu, (_, a, b) => a + b.toUpperCase());
@@ -59,11 +63,12 @@ export function capitalizar(s) {
 }
 
 /** Fila de salida; descarta gasolineras sin coordenadas válidas o sin ningún precio. */
-export function fila({ lat, lon, nombre, dir, ciudad, cp, precios, fecha, autopista }, combustibles) {
+export function fila({ lat, lon, nombre, dir, ciudad, cp, precios, fecha, autopista, ficha }, combustibles) {
   if (!(Math.abs(lat) > 1 && Math.abs(lon) > 0.01 && Math.abs(lat) <= 90 && Math.abs(lon) <= 180)) return null;
   const p = combustibles.map((k) => precio(precios[k]));
   if (p.every((x) => x === null)) return null;
-  return [redondear(lat, 5), redondear(lon, 5), limpio(nombre), capitalizar(dir), capitalizar(ciudad), limpio(cp), p, fecha ?? "", autopista ? 1 : 0];
+  const f = [redondear(lat, 5), redondear(lon, 5), limpio(nombre), capitalizar(dir), capitalizar(ciudad), limpio(cp), p, fecha ?? "", autopista ? 1 : 0];
+  return ficha ? [...f, ficha] : f;
 }
 
 const haceDias = (iso, hoy = new Date()) => (hoy.getTime() - new Date(iso).getTime()) / 86400000;
@@ -106,12 +111,12 @@ export function municipioEs(s) {
   const art = m[2].charAt(0).toUpperCase() + m[2].slice(1).toLowerCase();
   return art.endsWith("'") ? `${art}${m[1]}` : `${art} ${m[1]}`;
 }
-/** Algunas gasolineras ponen de rótulo un número («Nº 10.935»): mejor sin nombre. */
-const rotuloEs = (s) => (/^n[º°o.]?\s*[\d.]+$/i.test(limpio(s)) ? "" : s);
+/** Algunas gasolineras ponen de rótulo un número («Nº 10.935»): mejor sin nombre. «CARBURANTES PÉREZ SL» → «Carburantes Pérez SL». */
+const rotuloEs = (s) => (rotuloVacio(s) ? "" : capitalizar(s));
 
 export function espana(j) {
   const e = j.estaciones
-    .map((s) => fila({ lat: s.lat, lon: s.lon, nombre: rotuloEs(s.rotulo), dir: s.dir, ciudad: municipioEs(s.mun), cp: s.cp, precios: s.p, fecha: j.fecha }, ES_C))
+    .map((s) => fila({ lat: s.lat, lon: s.lon, nombre: rotuloEs(s.rotulo), dir: s.dir, ciudad: municipioEs(s.mun), cp: s.cp, precios: s.p, fecha: j.fecha, ficha: slugFicha(s.rotulo, s.mun, s.id) }, ES_C))
     .filter(Boolean);
   return { combustibles: ES_C, e };
 }

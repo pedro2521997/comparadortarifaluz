@@ -5,6 +5,8 @@
 import provinciasJson from "../../../../data/provincias.json";
 import { slugTexto as slug } from "./carburantes";
 import { leerJson, leerJsonsDe } from "./ficheros";
+import { nombreMarca } from "./marcas";
+import { rotuloVacio, slugFicha, urlFicha } from "./fichas.mjs";
 
 export type Producto = "g95" | "g98" | "diesel" | "dieselPremium" | "glp" | "gnc" | "adblue";
 
@@ -104,7 +106,9 @@ export function bonito(s: string): string {
     .split(/(\s+)/)
     .map((w, i) => (i > 0 && MENORES.has(w) ? w : w.charAt(0).toUpperCase() + w.slice(1)))
     .join("")
-    .replace(/\b(Km|Cv|N|Nº|S\/n)\b/gi, (m) => m.toUpperCase().replace("S/N", "s/n"));
+    // Sin \b: con letras acentuadas («Galán») \b corta la palabra y saldría «GaláN».
+    .replace(/(?<![\p{L}\d])(Km|Cv|N|Nº|S\/n)(?![\p{L}\d])/giu, (m) => m.toUpperCase().replace("S/N", "s/n"))
+    .replace(/(?<![\p{L}\d])Sn(?![\p{L}\d])/gu, "s/n");
 }
 
 export const mapa = (e: Estacion) => (e.lat && e.lon ? `https://www.google.com/maps/search/?api=1&query=${e.lat},${e.lon}` : null);
@@ -115,4 +119,58 @@ export const ahorroDeposito = (caro: number, barato: number, litros = 50) => (ca
 /** Serie diaria de la media nacional (o de una provincia) para la gráfica. */
 export function serieDiaria(k: Producto, prov?: string) {
   return HISTORICO.map((r) => ({ fecha: r.fecha, valor: (prov ? r.provincias[prov]?.[k] : r.nacional[k])?.media ?? null }));
+}
+
+// ---------------- Fichas de cada gasolinera ----------------
+
+/** /es/gasolinera/repsol-la-solana-5122/ */
+export const urlEstacion = (e: Estacion) => urlFicha(slugFicha(e.rotulo, e.mun, e.id));
+
+/** «REPSOL» → «Repsol»; «BP ROMICA» → «BP Romica»; «Nº 10.935» → «Gasolinera». */
+export function nombreEstacion(rotulo: string): string {
+  if (rotuloVacio(rotulo)) return "Gasolinera";
+  const m = nombreMarca(rotulo);
+  if (m !== rotulo) return m;
+  return bonito(rotulo.trim()).replace(/\b(Bp|Sl|Slu|Ids|Gm|Dst|Mlc|Ccc|Sat)\b/g, (w) => w.toUpperCase());
+}
+
+/** Municipio de cada gasolinera (también los de una sola gasolinera, que no tienen página propia). */
+const porMunicipio = new Map<string, Estacion[]>();
+for (const e of ESTACIONES) {
+  const k = `${e.prov}-${e.idMun}`;
+  porMunicipio.set(k, [...(porMunicipio.get(k) ?? []), e]);
+}
+const paginaMunicipio = new Map(MUNICIPIOS.map((m) => [`${m.prov.id}-${m.id}`, m]));
+export const vecinasDeMunicipio = (e: Estacion) => porMunicipio.get(`${e.prov}-${e.idMun}`) ?? [e];
+export const municipioDe = (e: Estacion): Municipio | null => paginaMunicipio.get(`${e.prov}-${e.idMun}`) ?? null;
+export const provinciaDe = (e: Estacion): Provincia | null => PROVINCIAS.find((p) => p.id === e.prov) ?? null;
+
+/** Distancia en km entre dos gasolineras. */
+export function km(a: Estacion, b: Estacion): number {
+  const r = Math.PI / 180;
+  const dLat = (b.lat! - a.lat!) * r;
+  const dLon = (b.lon! - a.lon!) * r;
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(a.lat! * r) * Math.cos(b.lat! * r) * Math.sin(dLon / 2) ** 2;
+  return 12742 * Math.asin(Math.sqrt(h));
+}
+
+// Rejilla de 0,1° para buscar vecinas sin recorrer las 11.000 gasolineras en cada ficha.
+const celda = (lat: number, lon: number) => `${Math.floor(lat * 10)},${Math.floor(lon * 10)}`;
+const rejilla = new Map<string, Estacion[]>();
+for (const e of ESTACIONES) if (e.lat && e.lon) rejilla.set(celda(e.lat, e.lon), [...(rejilla.get(celda(e.lat, e.lon)) ?? []), e]);
+
+/** Las `n` gasolineras más cercanas a `e` (sin ella) a menos de `radio` km, de la más cercana a la más lejana. */
+export function cercanas(e: Estacion, n: number, radio = 20): { e: Estacion; km: number }[] {
+  if (!e.lat || !e.lon) return [];
+  const pasos = Math.ceil(radio / 8);
+  const [la, lo] = [Math.floor(e.lat * 10), Math.floor(e.lon * 10)];
+  const r: { e: Estacion; km: number }[] = [];
+  for (let i = -pasos; i <= pasos; i++)
+    for (let j = -pasos; j <= pasos; j++)
+      for (const x of rejilla.get(`${la + i},${lo + j}`) ?? []) {
+        if (x === e) continue;
+        const d = km(e, x);
+        if (d <= radio) r.push({ e: x, km: d });
+      }
+  return r.sort((a, b) => a.km - b.km).slice(0, n);
 }

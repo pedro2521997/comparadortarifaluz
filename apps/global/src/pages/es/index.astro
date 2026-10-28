@@ -17,7 +17,7 @@ const n = estaciones("ES")?.e.length ?? ESTACIONES.length;
 const tarjetas = [
   { href: "/es/precio-gasolina-hoy/", t: "Precio de la gasolina hoy", d: g ? `Gasolina 95 a ${eurL(g.media)} de media. Las más baratas de España y la evolución diaria.` : "La media de España, las más baratas y la evolución diaria." },
   { href: "/es/precio-gasoil-hoy/", t: "Precio del gasoil hoy", d: d ? `Diésel a ${eurL(d.media)} de media, por provincias y gasolineras.` : "Lo que cuesta hoy el diésel, por provincias y gasolineras." },
-  { href: urlMapa(es), t: "Mapa de gasolineras", d: `Las ${n.toLocaleString("es-ES")} gasolineras de España en el mapa, con buscador y las más baratas cerca de ti.` },
+  { href: urlMapa(es), t: "Mapa de gasolineras", d: `Las ${n.toLocaleString("es-ES")} gasolineras de España en el mapa: las más cercanas a ti, las más baratas de tu ruta y el precio de cada una.` },
   { href: "/es/gasolineras-baratas/", t: "Gasolineras baratas por provincia", d: `Las ${PROVINCIAS.length} provincias, municipio a municipio, con el precio de cada gasolinera.` },
   { href: "/es/precio-glp-hoy/", t: "Precio del GLP (autogás)", d: "El GLP más barato y las gasolineras que lo venden." },
   { href: urlEuropa(es), t: "Gasolina en Europa", d: "Lo que cuesta el litro en cada país de la UE frente a España, para tus viajes." },

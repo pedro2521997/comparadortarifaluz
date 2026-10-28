@@ -99,6 +99,10 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Avisar a los buscadores de la web global (IndexNow)
+        if: vars.GLOBAL_ACTIVO == 'true'
+        continue-on-error: true
+        run: node scripts/indexnow-global.mjs
       # Avisa a Bing (y otros buscadores con IndexNow) de que las páginas del día han cambiado.
       # La clave es pública a propósito: está en apps/web/public/<clave>.txt.
       - name: Avisar a los buscadores (IndexNow)

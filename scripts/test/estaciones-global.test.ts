@@ -53,8 +53,19 @@ describe("Gasolineras para los mapas", () => {
     expect(e[0][6][combustibles.indexOf("diesel")]).toBe(1.749);
   });
 
-  it("España: sin rótulos que solo son un número", () => {
-    const { e } = espana({ fecha: "2026-10-27", estaciones: [{ rotulo: "Nº 7374", dir: "CALLE MAYOR, 1", mun: "Solana (La)", cp: "13240", lat: 38.9, lon: -3.2, p: { g95: 1.7 } }] });
+  it("España: sin rótulos que solo son un número, nombres en minúsculas y enlace a la ficha", () => {
+    const { e } = espana({
+      fecha: "2026-10-27",
+      estaciones: [
+        { id: "7374", rotulo: "Nº 7374", dir: "CALLE MAYOR, 1", mun: "Solana (La)", cp: "13240", lat: 38.9, lon: -3.2, p: { g95: 1.7 } },
+        { id: "11", rotulo: "CARBURANTES LOS SEÑORITOS SL", dir: "RONDA, SN", mun: "Solana (La)", cp: "13240", lat: 38.9, lon: -3.2, p: { g95: 1.6 } },
+        { id: "12", rotulo: "A&A", dir: "RONDA, SN", mun: "Albacete", cp: "02005", lat: 39, lon: -1.8, p: { g95: 1.6 } },
+      ],
+    });
     expect(e[0].slice(2, 5)).toEqual(["", "Calle Mayor, 1", "La Solana"]);
+    expect(e[0][9]).toBe("gasolinera-la-solana-7374");
+    expect(e[1][2]).toBe("Carburantes los Señoritos SL");
+    expect(e[1][9]).toBe("carburantes-los-senoritos-sl-la-solana-11");
+    expect(e[2][2]).toBe("A&A");
   });
 });

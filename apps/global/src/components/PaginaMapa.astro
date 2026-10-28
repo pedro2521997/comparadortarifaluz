@@ -10,10 +10,12 @@ import { estaciones, resumen, masBaratas, autopista, soloContinente, urlMapa, ur
 import { TEXTOS_M } from "../lib/textos-mapa";
 import { TEXTOS } from "../lib/textos";
 import { esquemaFaq, recortarFrases, type Pais } from "../lib/datos";
+import { PROVINCIAS, urlProvincia } from "../lib/gasolineras";
 
 interface Props { p: Pais; cc: string }
 const { p, cc } = Astro.props;
 const T = TEXTOS_M[p.lang]!;
+const A = T.app;
 const L = TEXTOS[p.lang];
 const d = estaciones(cc)!;
 const enX = en(p, cc);
@@ -52,13 +54,25 @@ const config = {
   combustibles: Object.fromEntries(combs.map((k) => [k, T.comb[k]])),
   t: {
     vacio: T.vacio, ruta: T.ruta, precioDel: T.precioDel("{f}"), autopista: T.autopista, sinDatos: T.sinDatos, sinUbicacion: T.sinUbicacion,
-    estacion: T.estacion, lugares: T.lugares, estaciones: [T.estaciones(1, "1"), T.estaciones(2, "{n}")], nada: T.nada, gestos: T.gestos,
+    estacion: T.estacion, lugares: T.lugares, estaciones: [T.estaciones(1, "1"), T.estaciones(2, "{n}")], nada: T.nada, gestos: T.gestos, baratasZona: T.baratasZona,
+    // Las frases con datos van como plantilla ({l}, {n}…): el script las rellena.
+    app: {
+      ...A,
+      cercaDe: A.cercaDe("{l}"),
+      laMasBarata: A.laMasBarata("{n}", "{p}", "{d}"),
+      rutaResumen: A.rutaResumen("{km}", "{n}", "{d}"),
+      km: A.km("{k}"),
+      a: A.a("{d}"),
+    },
   },
+  fichas: cc === "ES" && p.lang === "es" ? "/es/gasolinera/" : null,
 };
 const configJson = JSON.stringify(config).replace(/</g, "\\u003c");
 const otros = MAPAS.filter((x) => x !== cc);
 const propio = cc === CC(p);
 const enlaceFuel = propio ? urlPrecios(p) : PAISES_C.includes(p) ? urlDestino(p, cc) : null;
+// En el mapa de España en español, enlaces a las provincias: los buscadores llegan así a cada municipio y gasolinera.
+const provincias = cc === "ES" && p.lang === "es" ? PROVINCIAS : [];
 ---
 
 <Base titulo={T.tituloSeo(enX).length <= 70 ? T.tituloSeo(enX) : T.titulo(enX)} descripcion={recortarFrases(lead, 158)} lang={p.lang} locale={p.locale} schema={esquemaFaq(preguntas)} alternativas={alternativasMapa(cc)}>
@@ -76,9 +90,10 @@ const enlaceFuel = propio ? urlPrecios(p) : PAISES_C.includes(p) ? urlDestino(p,
         <div class="mapa__buscar" role="search">
           <label class="visually-hidden" for="mapa-buscar">{T.buscar}</label>
           <input id="mapa-buscar" type="search" placeholder={T.placeholder} autocomplete="off" role="combobox" aria-expanded="false" aria-controls="mapa-resultados" data-buscar />
-          <ul id="mapa-resultados" class="mapa__resultados" role="listbox" hidden data-resultados></ul>
+          <ul id="mapa-resultados" class="mapa__resultados" role="listbox" hidden></ul>
         </div>
-        <button type="button" class="btn btn--ghost btn--small" data-cerca>⌖ {T.cerca}</button>
+        <button type="button" class="btn btn--small mapa__cerca" data-cerca><span aria-hidden="true">⌖</span> {T.cerca}</button>
+        <button type="button" class="mapa__salir" data-salir aria-label={A.cerrar} title={A.cerrar}>✕</button>
       </div>
       <div class="mapa__combustibles" role="group" aria-label={T.combustible} data-combustibles>
         {combs.map((k) => <button type="button" class="mapa__chip" data-comb={k} aria-pressed={k === G ? "true" : "false"}>{T.comb[k]}</button>)}
@@ -89,13 +104,52 @@ const enlaceFuel = propio ? urlPrecios(p) : PAISES_C.includes(p) ? urlDestino(p,
           <div class="mapa__leyenda" data-leyenda hidden>
             <span data-min></span><span class="mapa__degradado" aria-hidden="true"></span><span data-max></span>
           </div>
+          <button type="button" class="mapa__abrir" data-abrir-app><span aria-hidden="true">⤢</span> {A.pantalla}</button>
         </div>
-        <aside class="mapa__lista">
-          <h2>{T.baratasZona}</h2>
+        <aside class="mapa__panel">
+          <div class="mapa__pestanas" role="tablist">
+            <button type="button" role="tab" data-modo="baratas" aria-selected="true">{A.pestBaratas}</button>
+            <button type="button" role="tab" data-modo="cerca" aria-selected="false">{A.pestCerca}</button>
+            <button type="button" role="tab" data-modo="ruta" aria-selected="false">{A.pestRuta}</button>
+            <button type="button" class="mapa__plegar" data-plegar aria-label={A.ocultar} title={A.ocultar}><span aria-hidden="true">▾</span></button>
+          </div>
+          <form class="mapa__ruta" data-ruta hidden>
+            <label class="mapa__campo">
+              <span>{A.desde}</span>
+              <input id="mapa-origen" type="search" placeholder={A.miUbicacion} autocomplete="off" role="combobox" aria-expanded="false" aria-controls="mapa-origen-op" data-origen />
+              <ul id="mapa-origen-op" class="mapa__resultados" role="listbox" hidden></ul>
+            </label>
+            <label class="mapa__campo">
+              <span>{A.hasta}</span>
+              <input id="mapa-destino" type="search" placeholder={A.destinoPh} autocomplete="off" role="combobox" aria-expanded="false" aria-controls="mapa-destino-op" data-destino required />
+              <ul id="mapa-destino-op" class="mapa__resultados" role="listbox" hidden></ul>
+            </label>
+            <label class="mapa__desvio">
+              <span>{A.desvio}</span>
+              <select data-desvio>
+                <option value="1">1 km</option>
+                <option value="2" selected>2 km</option>
+                <option value="5">5 km</option>
+              </select>
+            </label>
+            <div class="mapa__ruta-botones">
+              <button type="submit" class="btn btn--small">{A.calcular}</button>
+            </div>
+            <div class="mapa__ruta-hecha">
+              <button type="button" class="mapa__editar" data-editar><span aria-hidden="true">✎</span> <span data-trayecto></span></button>
+              <button type="button" class="mapa__quitar" data-quitar aria-label={A.quitar} title={A.quitar}>✕</button>
+            </div>
+          </form>
+          <h2 data-titulo>{T.baratasZona}</h2>
+          <div class="mapa__orden" data-orden hidden>
+            <button type="button" data-orden-ruta="precio" aria-pressed="true">{A.porPrecio}</button>
+            <button type="button" data-orden-ruta="paso" aria-pressed="false">{A.porPaso}</button>
+          </div>
+          <p class="mapa__resumen" data-resumen aria-live="polite"></p>
           <ol data-lista></ol>
         </aside>
       </div>
-      <p class="caption">{L.fuente}{sep}<a href={FUENTE_MAPA[cc].url} rel="noopener">{FUENTE_MAPA[cc].nombre}</a>. {T.aviso}</p>
+      <p class="caption">{L.fuente}{sep}<a href={FUENTE_MAPA[cc].url} rel="noopener">{FUENTE_MAPA[cc].nombre}</a>. {T.aviso} <span class="mapa__osm"><a href="https://routing.openstreetmap.de/" rel="noopener">OSRM (FOSSGIS)</a> · © OpenStreetMap.</span></p>
     </div>
     <script type="application/json" id="mapa-config" set:html={configJson} />
   </section>
@@ -131,6 +185,21 @@ const enlaceFuel = propio ? urlPrecios(p) : PAISES_C.includes(p) ? urlDestino(p,
     </div>
   </section>
 
+  <Anuncio tipo="horizontal" seccion />
+
+  {
+    provincias.length > 0 && (
+      <section class="section section--tight">
+        <div class="wrap">
+          <h2 style="font-size:22px;margin-bottom:12px">Gasolineras baratas por provincia</h2>
+          <ul class="mapa-provincias">
+            {provincias.map((x) => <li><a href={urlProvincia(x)}>{x.nombre}</a></li>)}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
   <section class="section section--white">
     <div class="wrap wrap--narrow">
       <h2 style="font-size:22px;margin-bottom:12px">{textosC(p).preguntasT}</h2>
@@ -163,19 +232,38 @@ const enlaceFuel = propio ? urlPrecios(p) : PAISES_C.includes(p) ? urlDestino(p,
   .mapa {
     display: grid;
     gap: 12px;
+    scroll-margin-top: 104px; /* que la cabecera fija no tape el buscador */
   }
   .mapa__barra {
     display: flex;
     gap: 8px;
     align-items: center;
-    flex-wrap: wrap;
   }
   .mapa__buscar {
     position: relative;
-    flex: 1 1 260px;
+    flex: 1 1 auto;
+    min-width: 0;
   }
-  .mapa__buscar input {
+  .mapa__buscar input,
+  .mapa__campo input {
     width: 100%;
+    font-size: 16px; /* 16 px: así el iPhone no hace zoom al escribir */
+  }
+  .mapa__cerca {
+    flex: none;
+    white-space: nowrap;
+  }
+  .mapa__salir {
+    display: none;
+    flex: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--color-pale-sage);
+    background: var(--color-sheet-white);
+    font-size: 18px;
+    cursor: pointer;
+    color: var(--color-bark);
   }
   .mapa__resultados {
     position: absolute;
@@ -194,12 +282,14 @@ const enlaceFuel = propio ? urlPrecios(p) : PAISES_C.includes(p) ? urlDestino(p,
     overflow-y: auto;
   }
   .mapa__resultados :global(li) {
-    padding: 8px 10px;
+    padding: 10px;
     border-radius: 8px;
     cursor: pointer;
     display: flex;
     justify-content: space-between;
     gap: 12px;
+    font-size: 15px;
+    color: var(--color-bark);
   }
   .mapa__resultados :global(li[aria-selected="true"]),
   .mapa__resultados :global(li:hover) {
@@ -212,6 +302,7 @@ const enlaceFuel = propio ? urlPrecios(p) : PAISES_C.includes(p) ? urlDestino(p,
     letter-spacing: 0.04em;
     cursor: default;
     background: none !important;
+    padding: 6px 10px 2px;
   }
   .mapa__resultados :global(small) {
     color: var(--color-slate);
@@ -220,17 +311,20 @@ const enlaceFuel = propio ? urlPrecios(p) : PAISES_C.includes(p) ? urlDestino(p,
   .mapa__combustibles {
     display: flex;
     gap: 6px;
-    flex-wrap: wrap;
+    overflow-x: auto;
+    scrollbar-width: none;
   }
   .mapa__chip {
+    flex: none;
     font: inherit;
     font-size: 14px;
-    padding: 6px 12px;
+    padding: 7px 14px;
     border-radius: var(--radius-pills);
     border: 1px solid var(--color-pale-sage);
     background: var(--color-sheet-white);
     color: var(--color-bark);
     cursor: pointer;
+    white-space: nowrap;
   }
   .mapa__chip[aria-pressed="true"] {
     background: var(--color-canopy);
@@ -239,12 +333,12 @@ const enlaceFuel = propio ? urlPrecios(p) : PAISES_C.includes(p) ? urlDestino(p,
   }
   .mapa__cuerpo {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 300px;
+    grid-template-columns: minmax(0, 1fr) 340px;
     gap: 16px;
   }
   .mapa__lienzo {
     position: relative;
-    height: min(70vh, 620px);
+    height: min(72vh, 640px);
     min-height: 380px;
     border-radius: var(--radius-cards);
     overflow: hidden;
@@ -252,15 +346,22 @@ const enlaceFuel = propio ? urlPrecios(p) : PAISES_C.includes(p) ? urlDestino(p,
   }
   .mapa__estado {
     position: absolute;
-    inset: 0;
-    display: grid;
-    place-items: center;
-    margin: 0;
-    padding: 24px;
+    left: 12px;
+    right: 12px;
+    bottom: 44px;
+    margin: 0 auto;
+    max-width: 360px;
+    padding: 10px 14px;
     text-align: center;
-    color: var(--color-slate);
-    z-index: 1;
+    color: var(--color-bark);
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(16, 67, 54, 0.15);
+    z-index: 3;
     pointer-events: none;
+  }
+  .mapa__estado[hidden] {
+    display: none;
   }
   .mapa__leyenda {
     position: absolute;
@@ -272,65 +373,294 @@ const enlaceFuel = propio ? urlPrecios(p) : PAISES_C.includes(p) ? urlDestino(p,
     gap: 6px;
     padding: 4px 8px;
     font-size: 12px;
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.92);
     border-radius: 6px;
   }
+  .mapa__leyenda[hidden] {
+    display: none;
+  }
   .mapa__degradado {
-    width: 80px;
+    width: 72px;
     height: 8px;
     border-radius: 4px;
     background: linear-gradient(90deg, #1a9850, #f2c94c, #d73027);
   }
-  .mapa__lista h2 {
-    font-size: 16px;
-    margin-bottom: 8px;
+  .mapa__abrir {
+    display: none;
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    z-index: 2;
+    font: inherit;
+    font-size: 14px;
+    font-weight: var(--font-weight-bold);
+    padding: 9px 14px;
+    border: 0;
+    border-radius: var(--radius-pills);
+    background: var(--color-canopy);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(16, 67, 54, 0.3);
+    cursor: pointer;
   }
-  .mapa__lista ol {
+
+  /* Panel: pestañas, ruta y lista */
+  .mapa__panel {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    max-height: min(72vh, 640px);
+  }
+  .mapa__pestanas {
+    display: flex;
+    gap: 2px;
+    padding: 3px;
+    border-radius: 12px;
+    background: var(--color-sage-mist);
+    margin-bottom: 10px;
+  }
+  .mapa__pestanas [role="tab"] {
+    flex: 1 1 0;
+    font: inherit;
+    font-size: 13px;
+    line-height: 1.2;
+    padding: 8px 4px;
+    border: 0;
+    border-radius: 9px;
+    background: none;
+    color: var(--color-bark);
+    cursor: pointer;
+  }
+  .mapa__pestanas [aria-selected="true"] {
+    background: var(--color-sheet-white);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-canopy);
+    box-shadow: 0 1px 4px rgba(16, 67, 54, 0.15);
+  }
+  .mapa__plegar {
+    display: none;
+    flex: none;
+    width: 34px;
+    border: 0;
+    background: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: var(--color-slate);
+  }
+  .mapa__ruta {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .mapa__ruta[hidden] {
+    display: none;
+  }
+  .mapa__campo {
+    position: relative;
+    display: grid;
+    grid-template-columns: 52px minmax(0, 1fr);
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--color-slate);
+  }
+  .mapa__campo .mapa__resultados {
+    left: 60px;
+  }
+  .mapa__desvio {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--color-slate);
+  }
+  .mapa__desvio select {
+    font: inherit;
+    font-size: 15px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    border: 1px solid var(--color-pale-sage);
+    background: var(--color-sheet-white);
+  }
+  .mapa__ruta-botones {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .mapa__ruta-botones .btn {
+    flex: 1 1 auto;
+  }
+  /* Con la ruta ya calculada, el formulario se queda en una línea («✎ Madrid → Valencia  ✕») para dejar sitio a la lista. */
+  .mapa__ruta-hecha {
+    display: none;
+    gap: 6px;
+  }
+  .mapa__ruta--hecha .mapa__ruta-hecha {
+    display: flex;
+  }
+  .mapa__ruta--hecha .mapa__campo,
+  .mapa__ruta--hecha .mapa__desvio,
+  .mapa__ruta--hecha .mapa__ruta-botones {
+    display: none;
+  }
+  .mapa__editar,
+  .mapa__quitar {
+    font: inherit;
+    font-size: 14px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--color-pale-sage);
+    background: var(--color-sheet-white);
+    color: var(--color-bark);
+    cursor: pointer;
+  }
+  .mapa__editar {
+    flex: 1 1 auto;
+    min-width: 0;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .mapa__panel h2 {
+    font-size: 16px;
+    margin-bottom: 6px;
+  }
+  .mapa__orden {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+  .mapa__orden[hidden] {
+    display: none;
+  }
+  .mapa__orden button {
+    font: inherit;
+    font-size: 13px;
+    padding: 4px 10px;
+    border-radius: var(--radius-pills);
+    border: 1px solid var(--color-pale-sage);
+    background: var(--color-sheet-white);
+    color: var(--color-bark);
+    cursor: pointer;
+  }
+  .mapa__orden [aria-pressed="true"] {
+    border-color: var(--color-canopy);
+    color: var(--color-canopy);
+    font-weight: var(--font-weight-bold);
+  }
+  .mapa__resumen {
+    font-size: 13px;
+    color: var(--color-slate);
+    margin: 0 0 8px;
+  }
+  .mapa__resumen:empty {
+    display: none;
+  }
+  .mapa__panel ol {
     margin: 0;
     padding: 0;
     list-style: none;
     display: grid;
-    gap: 4px;
-    max-height: calc(min(70vh, 620px) - 32px);
+    gap: 6px;
+    align-content: start;
     overflow-y: auto;
+    min-height: 0;
+    flex: 1 1 auto;
+    overscroll-behavior: contain;
   }
-  .mapa__lista :global(button) {
+  .mapa__panel :global(ol button) {
     width: 100%;
     text-align: left;
     font: inherit;
     font-size: 14px;
     background: var(--color-sheet-white);
     border: 1px solid var(--color-pale-sage);
-    border-radius: 8px;
-    padding: 8px 10px;
+    border-radius: 10px;
+    padding: 6px 10px 6px 6px;
     cursor: pointer;
     display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 2px 10px;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px;
   }
-  .mapa__lista :global(button:hover) {
+  .mapa__panel :global(ol button:hover) {
     border-color: var(--color-canopy);
   }
-  .mapa__lista :global(.precio) {
+  .mapa__panel :global(.txt) {
+    display: grid;
+    min-width: 0;
+  }
+  .mapa__panel :global(.nom) {
+    font-weight: var(--font-weight-bold);
+    color: var(--color-bark);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .mapa__panel :global(.tag) {
+    font-style: normal;
+    font-size: 11px;
+    font-weight: var(--font-weight-bold);
+    color: #fff;
+    background: #1a9850;
+    border-radius: 4px;
+    padding: 1px 5px;
+    vertical-align: 1px;
+  }
+  .mapa__panel :global(.donde) {
+    color: var(--color-slate);
+    font-size: 12.5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .mapa__panel :global(.precio) {
     font-weight: var(--font-weight-bold);
     color: var(--color-canopy);
-    grid-row: span 2;
-    align-self: center;
+    font-size: 15px;
+    white-space: nowrap;
   }
-  .mapa__lista :global(.donde) {
-    color: var(--color-slate);
-    font-size: 13px;
-  }
-  .mapa__lista :global(.vacio) {
+  .mapa__panel :global(.vacio) {
     color: var(--color-slate);
     font-size: 14px;
   }
+
+  /* Insignia de la marca con el aro del color del precio (listas y ventanita) */
+  .mapa :global(.ins) {
+    flex: none;
+    display: inline-grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--bg);
+    color: var(--fg);
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    box-shadow: 0 0 0 3px var(--aro), 0 0 0 4px #fff;
+    margin: 4px;
+  }
+
   .mapa :global(.maplibregl-popup-content) {
     font-family: inherit;
     font-size: 14px;
     padding: 12px 14px;
-    border-radius: 10px;
-    min-width: 200px;
+    border-radius: 12px;
+    min-width: 210px;
+  }
+  .mapa :global(.maplibregl-popup-close-button) {
+    font-size: 20px;
+    width: 30px;
+    height: 30px;
+  }
+  .mapa :global(.popup__cab) {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 18px 6px 0;
   }
   .mapa :global(.popup__precios) {
     margin: 8px 0;
@@ -350,6 +680,60 @@ const enlaceFuel = propio ? urlPrecios(p) : PAISES_C.includes(p) ? urlDestino(p,
     font-size: 12px;
     color: var(--color-slate);
   }
+  .mapa :global(.popup__acciones) {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 6px;
+  }
+  .mapa :global(.mapa__ctrl-app) {
+    font-size: 18px;
+  }
+  .mapa__osm {
+    white-space: nowrap;
+  }
+
+  /* Pantalla completa: el mapa ocupa toda la pantalla, como una aplicación */
+  :global(html.mapa-abierto),
+  :global(html.mapa-abierto body) {
+    overflow: hidden;
+  }
+  .mapa--app {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    max-width: none;
+    width: auto;
+    margin: 0;
+    padding: max(10px, env(safe-area-inset-top)) 12px 0;
+    background: var(--color-sheet-white, #fff);
+    grid-template-rows: auto auto minmax(0, 1fr);
+    gap: 8px;
+    height: 100vh;
+    height: 100dvh;
+  }
+  .mapa--app .mapa__salir {
+    display: block;
+  }
+  .mapa--app > .caption {
+    display: none;
+  }
+  .mapa--app .mapa__cuerpo {
+    min-height: 0;
+  }
+  .mapa--app .mapa__lienzo {
+    height: auto;
+    min-height: 0;
+  }
+  .mapa--app .mapa__panel {
+    max-height: none;
+    min-height: 0;
+    padding-bottom: max(10px, env(safe-area-inset-bottom));
+  }
+  .mapa--app .mapa__abrir {
+    display: none !important;
+  }
+
   .visually-hidden {
     position: absolute;
     width: 1px;
@@ -369,15 +753,82 @@ const enlaceFuel = propio ? urlPrecios(p) : PAISES_C.includes(p) ? urlDestino(p,
   .g-faq p {
     padding: 4px 0 12px 20px;
   }
+  .mapa-provincias {
+    list-style: none;
+    padding: 0;
+    columns: 4 160px;
+    column-gap: 24px;
+  }
+  .mapa-provincias li {
+    padding: 3px 0;
+    break-inside: avoid;
+  }
+
   @media (max-width: 860px) {
     .mapa__cuerpo {
       grid-template-columns: 1fr;
     }
     .mapa__lienzo {
-      height: 60vh;
+      height: 58vh;
+      height: 58svh;
+      min-height: 320px;
     }
-    .mapa__lista ol {
+    .mapa__abrir {
+      display: block;
+    }
+    .mapa__panel {
       max-height: none;
+    }
+    .mapa__panel ol {
+      max-height: 70vh;
+    }
+    .mapa__cerca {
+      padding-inline: 12px;
+    }
+    /* Cabecera más corta en el móvil: el mapa tiene que verse sin bajar mucho. */
+    .hero--compacto h1 {
+      font-size: 28px;
+    }
+    .hero--compacto .lead {
+      font-size: 15px;
+    }
+
+    /* En el móvil, a pantalla completa la lista es una hoja que sube desde abajo y se puede plegar. */
+    .mapa--app .mapa__cuerpo {
+      grid-template-columns: 1fr;
+      grid-template-rows: minmax(0, 1fr) auto;
+      gap: 0;
+      margin: 0 -12px;
+    }
+    .mapa--app .mapa__lienzo {
+      border-radius: 0;
+    }
+    .mapa--app .mapa__panel {
+      max-height: 42vh;
+      max-height: 42dvh;
+      margin-top: -14px;
+      position: relative;
+      z-index: 5;
+      padding: 10px 12px max(10px, env(safe-area-inset-bottom));
+      background: var(--color-sheet-white, #fff);
+      border-radius: 16px 16px 0 0;
+      box-shadow: 0 -6px 20px rgba(16, 67, 54, 0.18);
+    }
+    .mapa--app .mapa__panel ol {
+      max-height: none;
+    }
+    .mapa--app .mapa__plegar {
+      display: block;
+    }
+    .mapa--plegado .mapa__plegar span {
+      display: inline-block;
+      transform: rotate(180deg);
+    }
+    .mapa--plegado .mapa__panel > :not(.mapa__pestanas, h2, .mapa__resumen) {
+      display: none;
+    }
+    .mapa--plegado .mapa__panel h2 {
+      margin: 0;
     }
   }
 </style>

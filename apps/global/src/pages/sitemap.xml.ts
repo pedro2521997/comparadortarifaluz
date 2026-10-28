@@ -5,7 +5,7 @@ import { PAISES_C, CC, urlPrecios, urlCalefaccion, urlEuropa, urlDestino, destin
 import { ACTUALIZADO } from "../../../web/src/lib/compartido/carburantes-ue";
 import { GUIAS, urlGuia, urlGuias } from "../lib/guias";
 import { MAPAS, tieneMapas, urlMapa, estaciones } from "../lib/mapa";
-import { HAY_GASOLINERAS, FECHA as FECHA_ES, PROVINCIAS, MUNICIPIOS, urlProvincia, urlMunicipio } from "../lib/gasolineras";
+import { HAY_GASOLINERAS, FECHA as FECHA_ES, PROVINCIAS, MUNICIPIOS, ESTACIONES, urlProvincia, urlMunicipio, urlEstacion } from "../lib/gasolineras";
 import { tieneEnergia, tieneMix, mixDe, meses, urlMix, urlNegativos, urlMeses, urlMes } from "../lib/energia";
 
 export const GET: APIRoute = () => {
@@ -35,6 +35,7 @@ export const GET: APIRoute = () => {
     rutas.push(["/es/precio-gasoil-hoy/", FECHA_ES], ["/es/precio-glp-hoy/", FECHA_ES], ["/es/gasolineras-baratas/", FECHA_ES]);
     for (const p of PROVINCIAS) rutas.push([urlProvincia(p), FECHA_ES]);
     for (const m of MUNICIPIOS) rutas.push([urlMunicipio(m), FECHA_ES]);
+    for (const e of ESTACIONES) if (e.lat && e.lon && Object.keys(e.p).length) rutas.push([urlEstacion(e), FECHA_ES]);
   }
   for (const cc of new Set(GUIAS.map((g) => g.cc))) rutas.push([urlGuias(cc), "2026-10-27"]);
   for (const g of GUIAS) rutas.push([urlGuia(g), "2026-10-27"]);
