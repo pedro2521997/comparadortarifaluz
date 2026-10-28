@@ -539,6 +539,8 @@
 /* ---------- Decoración: orbes ---------- */
 .orbes {
   position: relative;
+  /* Solo adorno: en la portada ocupa todo el hero por encima del texto y no debe quedarse con los clics. */
+  pointer-events: none;
 }
 .orbe {
   position: absolute;
