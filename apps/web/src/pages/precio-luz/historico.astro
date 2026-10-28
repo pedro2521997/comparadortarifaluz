@@ -41,7 +41,9 @@ const schema = {
   name: "Histórico mensual del precio de la luz PVPC y OMIE en España",
   description: `Precio medio mensual del PVPC 2.0TD (total, punta, llano y valle) y del mercado diario OMIE desde junio de 2021.`,
   temporalCoverage: `${meses[0][0]}/${ultimo[0]}`,
-  creator: { "@type": "Organization", name: "Red Eléctrica" },
+  creator: { "@type": "Organization", name: "Red Eléctrica", url: "https://www.ree.es/" },
+  url: "https://comparadortarifaluz.es/precio-luz/historico/",
+  license: "https://www.ree.es/es/apidatos",
   isAccessibleForFree: true,
 };
 ---

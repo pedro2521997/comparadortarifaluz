@@ -49,7 +49,7 @@ const preguntas = [
 ];
 const schema = [
   esquemaFaq(preguntas),
-  { "@context": "https://schema.org", "@type": "Dataset", name: `Precio ${articulo.replace(/^la |^el /, "")} en España, ${fecha}`, description: desc, temporalCoverage: FECHA, spatialCoverage: "España", creator: { "@type": "Organization", name: "Ministerio para la Transición Ecológica y el Reto Demográfico" }, isAccessibleForFree: true },
+  { "@context": "https://schema.org", "@type": "Dataset", name: `Precio ${articulo.replace(/^la |^el /, "")} en España, ${fecha}`, description: desc, temporalCoverage: FECHA, spatialCoverage: "España", creator: { "@type": "Organization", name: "Ministerio para la Transición Ecológica y el Reto Demográfico" }, license: "https://datos.gob.es/es/aviso-legal", isAccessibleForFree: true },
 ];
 ---
 

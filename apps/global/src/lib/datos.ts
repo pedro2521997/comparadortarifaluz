@@ -170,6 +170,8 @@ export function esquemaDataset(i: Info, ruta: string, fuente: string) {
     inLanguage: i.m.pais.locale,
     spatialCoverage: `${i.m.pais.nombreEn} (${i.m.zona.id})`,
     creator: { "@type": "Organization", name: fuente.startsWith("ENTSO-E") ? "ENTSO-E" : "Bundesnetzagentur | SMARD.de" },
+    // SMARD publica con CC BY 4.0; los datos de ENTSO-E se reutilizan según sus condiciones, recogidas en /legal/.
+    license: fuente.startsWith("ENTSO-E") ? absoluta("/legal/") : "https://creativecommons.org/licenses/by/4.0/",
     isAccessibleForFree: true,
   };
 }
