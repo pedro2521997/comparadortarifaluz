@@ -5,6 +5,8 @@
   Referrer-Policy: strict-origin-when-cross-origin
   X-Frame-Options: SAMEORIGIN
   Permissions-Policy: camera=(), microphone=(), geolocation=(self), payment=()
+  # Una vez visitada por HTTPS, el navegador ya no vuelve a pedir la web por http:// durante un año.
+  Strict-Transport-Security: max-age=31536000
 
 # Ficheros con huella en el nombre: no cambian nunca, se pueden guardar un año.
 /_astro/*
