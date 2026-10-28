@@ -11,8 +11,11 @@ import { GUIAS, urlGuias, TITULO_GUIAS } from "../lib/guias";
 import { PAISES, MERCADOS, absoluta } from "../lib/datos";
 import { tieneMapas, urlMapa } from "../lib/mapa";
 import { TEXTOS_M } from "../lib/textos-mapa";
+import { zonasDe, urlZonas } from "../lib/zonas";
 import { TEXTOS, type Idioma } from "../lib/textos";
 import { codigoAdsense, clienteAdsense, cuentaAdsense } from "../lib/anuncios-html.mjs";
+// La fuente del texto (alfabeto latino básico) se pide junto al HTML, sin esperar a la hoja de estilos.
+import fuente from "@fontsource-variable/dm-sans/files/dm-sans-latin-wght-normal.woff2?url";
 
 interface Props {
   titulo: string;
@@ -39,6 +42,7 @@ if (migas.length)
   });
 const L = TEXTOS[lang];
 const ruta = Astro.url.pathname;
+const PRERENDER = { prerender: [{ where: { and: [{ href_matches: "/*" }, { not: { href_matches: "/data/*" } }, { not: { selector_matches: "[rel~=nofollow]" } }] }, eagerness: "moderate" }] };
 
 // Menú de la sección del país en que se está (/de/…, /es/…): luz, carburantes, mapa, Europa y guías, en su idioma.
 const sec = PAISES.find((p) => ruta.startsWith(`/${p.cc}/`));
@@ -49,7 +53,7 @@ const menu: { href: string; t: string; activo: boolean }[] = !sec
   ? []
   : [
       ...(tieneLuz ? [{ href: `/${sec.cc}/`, t: Ls.precio, activo: false }] : sec.cc === "es" ? [{ href: SITIO.espana, t: Ls.precio, activo: false }] : []),
-      ...(PAISES_C.includes(sec) ? [{ href: urlPrecios(sec), t: Ls.carburantes, activo: ruta.startsWith(urlPrecios(sec)) || ruta.includes("/gasolineras-baratas/") || /\/precio-(gasoil|glp)-hoy\//.test(ruta) || ruta.startsWith(`/${sec.cc}/${textosC(sec).slugCalefaccion}/`) }] : []),
+      ...(PAISES_C.includes(sec) ? [{ href: urlPrecios(sec), t: Ls.carburantes, activo: ruta.startsWith(urlPrecios(sec)) || ruta.includes("/gasolineras-baratas/") || (!!zonasDe(sec) && ruta.startsWith(urlZonas(zonasDe(sec)!))) || /\/precio-(gasoil|glp)-hoy\//.test(ruta) || ruta.startsWith(`/${sec.cc}/${textosC(sec).slugCalefaccion}/`) }] : []),
       ...(tieneMapas(sec) ? [{ href: urlMapa(sec), t: TEXTOS_M[sec.lang]!.boton, activo: ruta.startsWith(urlMapa(sec)) }] : []),
       ...(PAISES_C.includes(sec) ? [{ href: urlEuropa(sec), t: textosC(sec).tituloEuropa, activo: ruta.startsWith(urlEuropa(sec)) }] : []),
       ...(guiaCc ? [{ href: urlGuias(guiaCc), t: TITULO_GUIAS[sec.lang], activo: ruta.includes("/guide/") }] : []),
@@ -65,6 +69,7 @@ const paisesMenu = PAISES.filter((p) => PAISES_CON_DATOS.includes(p) || p.cc ===
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{tituloCompleto}</title>
+    <link rel="preload" href={fuente} as="font" type="font/woff2" crossorigin />
     <meta name="description" content={descripcion} />
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex" />}
@@ -80,6 +85,11 @@ const paisesMenu = PAISES.filter((p) => PAISES_CON_DATOS.includes(p) || p.cc ===
     <meta property="og:title" content={titulo} />
     <meta property="og:description" content={descripcion} />
     <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={absoluta("/logo.png")} />
+    <meta name="twitter:card" content="summary" />
+    <slot name="head" />
+    {/* Al pasar el dedo o el ratón por un enlace, el navegador va preparando la página: se abre al instante. */}
+    <script is:inline type="speculationrules" set:html={JSON.stringify(PRERENDER)} />
     {esquemas.length > 0 && <script type="application/ld+json" set:html={JSON.stringify(esquemas.length === 1 ? esquemas[0] : esquemas)} />}
     {cuentaAdsense() && <meta name="google-adsense-account" content={cuentaAdsense()} />}
     {codigoAdsense() && <script async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${clienteAdsense()}`} crossorigin="anonymous" />}

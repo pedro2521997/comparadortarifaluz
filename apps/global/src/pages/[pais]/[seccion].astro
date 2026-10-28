@@ -10,6 +10,8 @@ import { PAISES_C, textosC, CC, urlPrecios, urlCalefaccion, urlEuropa, urlDestin
 import { lista, semanaIso } from "../../lib/textos-carburantes";
 import { tieneMapas, urlMapa } from "../../lib/mapa";
 import { TEXTOS_M } from "../../lib/textos-mapa";
+import TablaRegiones from "../../components/TablaRegiones.astro";
+import { zonasDe, urlZonas, cifras, continental, eurZ, fechaZ } from "../../lib/zonas";
 import { TEXTOS } from "../../lib/textos";
 import type { Pais } from "../../lib/datos";
 import { esquemaFaq, MERCADOS, recortarFrases } from "../../lib/datos";
@@ -76,6 +78,9 @@ const desc =
     : recortarFrases(`${lead} (${semana})`.length <= 158 ? `${lead} (${semana})` : lead, 158);
 const recorta = (t: string, n: number) => (t.length <= n ? t : t.slice(0, t.lastIndexOf(" ", n - 1)) + "…");
 const serie = (k: ProductoUE, c = cc) => ultimas(c, k, 156);
+// Países con mapa y páginas por región: el precio de hoy en sus gasolineras y la media de cada región.
+const z = s === "precios" ? zonasDe(p) : null;
+const hoyZ = z ? z.orden.map((k) => ({ k, s: cifras(z, continental(z), k) })).filter((x) => x.s && x.s.n >= 50) : [];
 ---
 
 <Base titulo={recorta(titulo, 70)} descripcion={recorta(desc, 158)} lang={p.lang} locale={p.locale} schema={esquemaFaq(preguntas)}>
@@ -93,6 +98,32 @@ const serie = (k: ProductoUE, c = cc) => ultimas(c, k, 156);
       </div>
     </div>
   </section>
+
+  {
+    z && hoyZ.length > 0 && (
+      <section class="section section--white section--tight">
+        <div class="wrap stack" style="--stack:16px">
+          <h2 style="font-size:24px">{z.T.hoyT}</h2>
+          <div class="grid grid--4 stats">
+            {hoyZ.slice(0, 4).map(({ k, s: x }) => (
+              <div class="stat">
+                <span class="stat__label">{TEXTOS_M[p.lang]!.comb[k]}</span>
+                <span class="stat__value" style="font-size:28px">{eurZ(z, x!.media)}</span>
+                <span class="stat__sub">{TEXTOS_M[p.lang]!.statMin(TEXTOS_M[p.lang]!.comb[k])}: {eurZ(z, x!.min)}</span>
+              </div>
+            ))}
+          </div>
+          <p class="caption">{z.T.hoyLead({ n: new Intl.NumberFormat(p.locale).format(continental(z).length), fecha: fechaZ(z, z.actualizado) })}</p>
+          <h3 style="font-size:20px">{z.T.regionesT}</h3>
+          <TablaRegiones z={z} />
+          <div class="btn-row">
+            <a class="btn btn--mint" href={urlZonas(z)}>{z.T.hubH1}</a>
+            {tieneMapas(p) && <a class="btn btn--ghost" href={urlMapa(p)}>{TEXTOS_M[p.lang]!.boton}</a>}
+          </div>
+        </div>
+      </section>
+    )
+  }
 
   {
     s === "precios" && (

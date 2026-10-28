@@ -1,0 +1,40 @@
+---
+// Precio medio por región (departamento, distrito…) con enlace a la página de cada una. La más barata se resalta.
+import { TEXTOS_M } from "../lib/textos-mapa";
+import { cifras, eurZ, urlRegion, type PaisZonas } from "../lib/zonas";
+
+interface Props {
+  z: PaisZonas;
+}
+const { z } = Astro.props;
+const M = TEXTOS_M[z.p.lang]!;
+const [k, kd] = z.orden;
+const filas = z.regiones.map((r) => ({ r, g: cifras(z, r.filas, k), d: cifras(z, r.filas, kd) }));
+const mejor = Math.min(...filas.map((x) => x.g?.media ?? Infinity));
+---
+
+<div class="table-wrap" tabindex="0" role="region" aria-label={z.T.regionesT}>
+  <table class="tabla-precios">
+    <caption class="sr-only">{z.T.regionesT}</caption>
+    <thead>
+      <tr>
+        <th scope="col">{z.T.colRegion}</th>
+        <th scope="col" class="num">{M.comb[k]}</th>
+        <th scope="col" class="num">{M.comb[kd]}</th>
+        <th scope="col" class="num">{z.T.colN}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        filas.map(({ r, g, d }) => (
+          <tr class={g?.media === mejor ? "mejor" : undefined}>
+            <td><a href={urlRegion(z, r)}>{z.T.regionNombre(r.nombre, r.codigo)}</a></td>
+            <td class="num">{g ? eurZ(z, g.media).replace(" €/l", "") : "—"}</td>
+            <td class="num">{d ? eurZ(z, d.media).replace(" €/l", "") : "—"}</td>
+            <td class="num">{r.filas.length}</td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</div>

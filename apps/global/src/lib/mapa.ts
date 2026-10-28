@@ -8,8 +8,11 @@ import { TEXTOS_M } from "./textos-mapa";
 import { absoluta, type Pais } from "./datos";
 
 export type Comb = "g95" | "e10" | "g98" | "diesel" | "dieselPremium" | "glp" | "e85" | "gnc";
-/** [lat, lon, nombre, dirección, municipio, cp, precios (en el orden de «combustibles»), fecha del precio, autopista, ficha (solo España)] */
-export type Fila = [number, number, string, string, string, string, (number | null)[], string, 0 | 1, string?];
+/**
+ * [lat, lon, nombre, dirección, municipio, cp, precios (en el orden de «combustibles»), fecha del precio, autopista, ficha (solo España)]
+ * y en Portugal, además, [distrito, concelho].
+ */
+export type Fila = [number, number, string, string, string, string, (number | null)[], string, 0 | 1, string?, string?, string?];
 export interface Estaciones { cc: string; actualizado: string; combustibles: Comb[]; e: Fila[] }
 
 const datos = new Map<string, Estaciones | null>();

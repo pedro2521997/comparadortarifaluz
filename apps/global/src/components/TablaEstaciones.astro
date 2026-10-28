@@ -1,6 +1,6 @@
 ---
 // Tabla de gasolineras con sus precios. La primera columna de precio es la que ordena; la fila más barata se resalta.
-import { PRODUCTOS, bonito, eurL, mapa, urlEstacion, nombreEstacion, type Estacion, type Producto } from "../lib/gasolineras";
+import { PRODUCTOS, bonito, eurL, mapa, urlEstacion, nombreEstacion, tieneFicha, type Estacion, type Producto } from "../lib/gasolineras";
 
 interface Props {
   estaciones: Estacion[];
@@ -30,7 +30,7 @@ const minimo = Math.min(...estaciones.map((e) => e.p[k0] ?? Infinity));
         estaciones.map((e) => (
           <tr class={e.p[k0] === minimo ? "mejor" : undefined}>
             <td>
-              <a href={urlEstacion(e)}><strong>{nombreEstacion(e.rotulo)}</strong></a>
+              {tieneFicha(e) ? <a href={urlEstacion(e)}><strong>{nombreEstacion(e.rotulo)}</strong></a> : <strong>{nombreEstacion(e.rotulo)}</strong>}
               <span class="sub">
                 {bonito(e.dir)}
                 {municipio && <> · {e.mun}{provincias?.[e.prov] && ` (${provincias[e.prov]})`}</>}

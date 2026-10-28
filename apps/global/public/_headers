@@ -14,3 +14,14 @@
 # La dirección de pruebas *.workers.dev no debe aparecer en Google (el sitio bueno es powerpricenow.com).
 https://:worker.:cuenta.workers.dev/*
   X-Robots-Tag: noindex
+
+# Gasolineras de los mapas: cambian varias veces al día. El navegador las guarda cinco minutos y, pasado ese
+# tiempo, enseña la copia guardada mientras comprueba si hay una nueva.
+/data/gasolineras/*
+  Cache-Control: public, max-age=300, stale-while-revalidate=3600
+
+# Icono y logotipo: cambian muy poco.
+/favicon.svg
+  Cache-Control: public, max-age=604800
+/logo.png
+  Cache-Control: public, max-age=604800

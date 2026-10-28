@@ -1,0 +1,9 @@
+---
+// Stations-service pas chères en France: /fr/stations-service-pas-cheres/, /<département>/ y /<département>/<commune>/.
+import PaginaZona from "../../../components/PaginaZona.astro";
+import { rutasZonas } from "../../../lib/zonas";
+
+export const getStaticPaths = () => rutasZonas("FR");
+---
+
+<PaginaZona {...Astro.props} />

@@ -1,0 +1,51 @@
+---
+// Tabla de gasolineras de un país con mapa (filas de data/estaciones/<CC>.json), con el precio de cada carburante.
+// La primera columna de precio es la que ordena; la fila más barata se resalta.
+import { TEXTOS_M } from "../lib/textos-mapa";
+import { eurZ, fechaCorta, precio, type PaisZonas } from "../lib/zonas";
+import type { Comb, Fila } from "../lib/mapa";
+
+interface Props {
+  z: PaisZonas;
+  filas: Fila[];
+  productos: Comb[];
+  /** Mostrar la ciudad (listas de una región o del país) */
+  ciudad?: boolean;
+  caption: string;
+}
+const { z, filas, productos, ciudad = false, caption } = Astro.props;
+const M = TEXTOS_M[z.p.lang]!;
+const k0 = productos[0];
+const minimo = Math.min(...filas.map((f) => precio(z, f, k0) ?? Infinity));
+const corto = (s: string) => s.replace(/^Gasolina /, "").replace(/^Gasóleo especial$/, "G. especial");
+---
+
+<div class="table-wrap" tabindex="0" role="region" aria-label={caption}>
+  <table class="tabla-precios">
+    <caption class="sr-only">{caption}</caption>
+    <thead>
+      <tr>
+        <th scope="col">{z.T.colEstacion}</th>
+        {productos.map((k) => <th scope="col" class="num">{corto(M.comb[k])}</th>)}
+      </tr>
+    </thead>
+    <tbody>
+      {
+        filas.map((f) => (
+          <tr class={precio(z, f, k0) === minimo ? "mejor" : undefined}>
+            <td>
+              <strong>{f[2] || f[3] || z.T.sinNombre}</strong>
+              <span class="sub">
+                {f[2] && f[3] && <>{f[3]} · </>}
+                {ciudad && <>{f[4]} · </>}
+                <a href={`https://www.google.com/maps/dir/?api=1&destination=${f[0]},${f[1]}`} rel="noopener nofollow">{M.ruta}</a>
+                {f[7] && <> · {M.precioDel(fechaCorta(z, f[7])).toLowerCase()}</>}
+              </span>
+            </td>
+            {productos.map((k) => <td class="num">{precio(z, f, k) !== null ? eurZ(z, precio(z, f, k)!).replace(" €/l", "") : "—"}</td>)}
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</div>

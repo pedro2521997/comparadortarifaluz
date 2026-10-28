@@ -1,44 +1,11 @@
-// Mapa del sitio de la web global con la fecha de cada página de día.
+// Índice de sitemaps de la web global: uno por grupo de páginas (lib/sitemap.ts).
 import type { APIRoute } from "astro";
-import { MERCADOS, diasDe, diasConPagina, hoyDe, urlManana, urlFecha, absoluta } from "../lib/datos";
-import { PAISES_C, CC, urlPrecios, urlCalefaccion, urlEuropa, urlDestino, destinos, hay } from "../lib/carburantes";
-import { ACTUALIZADO } from "../../../web/src/lib/compartido/carburantes-ue";
-import { GUIAS, urlGuia, urlGuias } from "../lib/guias";
-import { MAPAS, tieneMapas, urlMapa, estaciones } from "../lib/mapa";
-import { HAY_GASOLINERAS, FECHA as FECHA_ES, PROVINCIAS, MUNICIPIOS, ESTACIONES, urlProvincia, urlMunicipio, urlEstacion } from "../lib/gasolineras";
-import { tieneEnergia, tieneMix, mixDe, meses, urlMix, urlNegativos, urlMeses, urlMes } from "../lib/energia";
+import { absoluta } from "../lib/datos";
+import { GRUPOS, rutasSitemap, ultimaFecha } from "../lib/sitemap";
 
 export const GET: APIRoute = () => {
-  const rutas: [string, string?][] = [["/"], ["/legal/"]];
-  for (const m of MERCADOS) {
-    const ultimo = diasDe(m.zona.id).filter((d) => d.fecha <= hoyDe(m)).at(-1)?.fecha;
-    rutas.push([m.ruta, ultimo], [urlManana(m), diasDe(m.zona.id).at(-1)?.fecha]);
-    for (const d of diasConPagina(m)) rutas.push([urlFecha(m, d.fecha), d.fecha]);
-    if (!tieneEnergia(m)) continue;
-    if (tieneMix(m)) rutas.push([urlMix(m), mixDe(m.zona.id).at(-1)?.fecha]);
-    rutas.push([urlNegativos(m), ultimo]);
-    const ms = meses(m);
-    if (ms.length) rutas.push([urlMeses(m), ultimo], ...ms.map((x): [string, string?] => [urlMes(m, x.mes), x.completo ? undefined : ultimo]));
-  }
-  for (const p of PAISES_C) {
-    rutas.push([urlPrecios(p), ACTUALIZADO], [urlEuropa(p), ACTUALIZADO]);
-    if (hay(CC(p), "calefaccion")) rutas.push([urlCalefaccion(p), ACTUALIZADO]);
-    for (const d of destinos(p)) rutas.push([urlDestino(p, d), ACTUALIZADO]);
-    if (tieneMapas(p)) {
-      rutas.push([urlMapa(p), estaciones(MAPAS[0])!.actualizado.slice(0, 10)]);
-      for (const cc of MAPAS.filter((x) => x !== CC(p))) rutas.push([urlMapa(p, cc), estaciones(cc)!.actualizado.slice(0, 10)]);
-    }
-  }
-  // España (en español): portada y páginas con cada gasolinera, que vienen de la web española.
-  rutas.push(["/es/", FECHA_ES || undefined]);
-  if (HAY_GASOLINERAS) {
-    rutas.push(["/es/precio-gasoil-hoy/", FECHA_ES], ["/es/precio-glp-hoy/", FECHA_ES], ["/es/gasolineras-baratas/", FECHA_ES]);
-    for (const p of PROVINCIAS) rutas.push([urlProvincia(p), FECHA_ES]);
-    for (const m of MUNICIPIOS) rutas.push([urlMunicipio(m), FECHA_ES]);
-    for (const e of ESTACIONES) if (e.lat && e.lon && Object.keys(e.p).length) rutas.push([urlEstacion(e), FECHA_ES]);
-  }
-  for (const cc of new Set(GUIAS.map((g) => g.cc))) rutas.push([urlGuias(cc), "2026-10-27"]);
-  for (const g of GUIAS) rutas.push([urlGuia(g), "2026-10-27"]);
-  const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${rutas.map(([r, f]) => `<url><loc>${absoluta(r)}</loc>${f ? `<lastmod>${f}</lastmod>` : ""}</url>`).join("\n")}\n</urlset>`;
+  const r = rutasSitemap();
+  const sitemaps = GRUPOS.filter((g) => r[g].length).map((g) => `<sitemap><loc>${absoluta(`/sitemap-${g}.xml`)}</loc>${ultimaFecha(r[g]) ? `<lastmod>${ultimaFecha(r[g])}</lastmod>` : ""}</sitemap>`);
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemaps.join("\n")}\n</sitemapindex>`;
   return new Response(xml, { headers: { "Content-Type": "application/xml" } });
 };

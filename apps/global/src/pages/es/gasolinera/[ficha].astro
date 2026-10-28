@@ -8,12 +8,12 @@ import { fechaMedia } from "../../../../../web/src/lib/formato";
 import { insignia, marca } from "../../../lib/marcas";
 import { slugFicha } from "../../../lib/fichas.mjs";
 import {
-  ESTACIONES, FECHA, HORA, PRODUCTOS, stats, bonito, eurL, eurL2, ahorroDeposito, urlProvincia, urlMunicipio, urlEstacion, nombreEstacion,
+  ESTACIONES, FECHA, HORA, PRODUCTOS, stats, bonito, eurL, eurL2, ahorroDeposito, urlProvincia, urlMunicipio, urlEstacion, nombreEstacion, tieneFicha,
   vecinasDeMunicipio, municipioDe, provinciaDe, cercanas, type Estacion, type Producto,
 } from "../../../lib/gasolineras";
 
 export function getStaticPaths() {
-  return ESTACIONES.filter((e) => e.lat && e.lon && Object.keys(e.p).length).map((e) => ({ params: { ficha: slugFicha(e.rotulo, e.mun, e.id) }, props: { e } }));
+  return ESTACIONES.filter(tieneFicha).map((e) => ({ params: { ficha: slugFicha(e.rotulo, e.mun, e.id) }, props: { e } }));
 }
 const { e } = Astro.props as { e: Estacion };
 const fecha = fechaMedia(FECHA);

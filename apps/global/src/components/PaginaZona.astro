@@ -1,0 +1,247 @@
+---
+// Gasolineras baratas de un país con mapa (lib/zonas.ts), en su idioma, a tres niveles:
+//  - país: medias, las más baratas del país y todas las regiones;
+//  - región (departamento, distrito): medias frente al país, las más baratas y todas sus ciudades;
+//  - ciudad: todas sus gasolineras de la más barata a la más cara y las ciudades cercanas.
+import Base from "../layouts/Base.astro";
+import Anuncio from "./Anuncio.astro";
+import TablaFilas from "./TablaFilas.astro";
+import TablaRegiones from "./TablaRegiones.astro";
+import { esquemaFaq, recortarFrases } from "../lib/datos";
+import { TEXTOS_M } from "../lib/textos-mapa";
+import { urlMapa, type Fila } from "../lib/mapa";
+import {
+  baratas, cercanas, cifras, continental, cts, eurZ, fechaZ, precio, urlCiudad, urlEnMapaZ, urlRegion, urlZonas, vendidos, type Ciudad, type PaisZonas, type Region,
+} from "../lib/zonas";
+
+interface Props {
+  z: PaisZonas;
+  r?: Region;
+  c?: Ciudad;
+}
+const { z, r, c } = Astro.props;
+const { T, p } = z;
+const M = TEXTOS_M[p.lang]!;
+const nf = new Intl.NumberFormat(p.locale);
+const dinero = (x: number) => new Intl.NumberFormat(p.locale, { style: "currency", currency: "EUR" }).format(x);
+const [k, kd] = z.orden;
+const nivel = c ? "ciudad" : r ? "region" : "pais";
+const pais = continental(z);
+const filas: Fila[] = c ? c.filas : r ? r.filas : pais;
+const g = cifras(z, filas, k);
+const d = cifras(z, filas, kd);
+const gPais = cifras(z, pais, k);
+const gRegion = r ? cifras(z, r.filas, k) : null;
+const fecha = fechaZ(z, z.actualizado);
+const donde = c ? T.enCiudad(c.nombre) : r ? T.enRegion(r.nombre, r.codigo) : T.enPais;
+const comparar = (a: { media: number } | null, b: { media: number } | null, region: boolean) =>
+  a && b && Math.abs(a.media - b.media) >= 0.001 ? T.comp(cts(z, a.media - b.media), a.media > b.media, region) : "";
+const sitio = (f: Fila) => [f[2], f[3], f[4]].filter(Boolean).join(", ");
+const prods = vendidos(z, filas);
+
+// Ciudad: todas sus gasolineras, de la más barata a la más cara en el primer carburante que vendan.
+const ko = prods[0] ?? k;
+const lista = c ? [...c.filas].sort((a, b) => (precio(z, a, ko) ?? 99) - (precio(z, b, ko) ?? 99)) : [];
+const top = (x: typeof k) => baratas(z, filas, x, 10);
+const cerca = c ? cercanas(z, c) : [];
+
+// Región: puesto entre todas por precio medio del primer carburante, y sus ciudades con su media.
+const rank = z.regiones.map((x) => ({ x, s: cifras(z, x.filas, k) })).filter((x) => x.s).sort((a, b) => a.s!.media - b.s!.media);
+const puesto = r ? rank.findIndex((x) => x.x === r) + 1 : 0;
+const ciudades = r && !c ? z.todas.filter((x) => x.region === r).map((x) => ({ x, g: cifras(z, x.filas, k), d: cifras(z, x.filas, kd), pagina: x.filas.length >= 2 })) : [];
+
+const pregunta = (x: typeof k) => {
+  const b = baratas(z, filas, x, 1)[0];
+  const s = cifras(z, filas, x);
+  return b && s ? [{ p: T.pBarata(M.combArt[x], donde), r: T.rBarata({ sitio: sitio(b), precio: eurZ(z, precio(z, b, x)!), media: eurZ(z, s.media) }) }] : [];
+};
+const ahorro = d && d.n >= 2 ? d : g && g.n >= 2 ? g : null;
+const preguntas = [
+  ...pregunta(k),
+  ...pregunta(kd),
+  ...(c || r ? [{ p: T.pCuantas(donde), r: T.rCuantas(filas.length, donde) }] : []),
+  ...(ahorro && ahorro.max > ahorro.min ? [{ p: T.pAhorro, r: T.rAhorro(dinero((ahorro.max - ahorro.min) * 50), M.combArt[ahorro === d ? kd : k]) }] : []),
+  ...(r && !c && puesto ? [{ p: T.pRank(donde), r: T.rRank(puesto, rank.length, M.combArt[k]) }] : []),
+];
+
+const datosLead = { gArt: M.combArt[k], g: g ? eurZ(z, g.media) : "—", dArt: M.combArt[kd], d: d ? eurZ(z, d.media) : "—" };
+const lead =
+  nivel === "ciudad"
+    ? T.ciudadLead({ ...datosLead, n: filas.length, deC: T.deCiudad(c!.nombre), comp: comparar(g, gRegion, true) })
+    : nivel === "region"
+      ? T.regionLead({ ...datosLead, n: filas.length, de: T.deRegion(r!.nombre, r!.codigo), comp: comparar(g, gPais, false) })
+      : T.hubLead({ ...datosLead, n: nf.format(filas.length) });
+// «Gazole», «Gasolina 95» van en minúscula dentro de la frase; siglas como «SP95-E10» se quedan igual.
+const minus = (s: string) => (/^\p{Lu}\p{Ll}/u.test(s) ? s.charAt(0).toLowerCase() + s.slice(1) : s);
+const desc = g && d ? T.desc({ donde, gN: minus(M.comb[k]), g: eurZ(z, g.min), dN: minus(M.comb[kd]), d: eurZ(z, d.min), n: nf.format(filas.length) }) : lead;
+const h1 = c ? T.ciudadH1(donde) : r ? T.regionH1(r.nombre, r.codigo) : T.hubH1;
+const titulo = c ? (T.ciudadT(donde).length <= 65 ? T.ciudadT(donde) : T.ciudadTCorto(donde)) : r ? T.regionT(r.nombre, r.codigo) : T.hubT;
+const migas: [string, string?][] = [[T.miga, c || r ? urlZonas(z) : undefined]];
+if (r) migas.push([T.regionNombre(r.nombre, r.codigo), c ? urlRegion(z, r) : undefined]);
+if (c) migas.push([c.nombre]);
+const schema = [
+  esquemaFaq(preguntas),
+  ...(c
+    ? [{
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        name: h1,
+        itemListElement: lista.slice(0, 30).map((f, i) => ({
+          "@type": "ListItem",
+          position: i + 1,
+          item: {
+            "@type": "GasStation",
+            name: f[2] || T.sinNombre,
+            address: { "@type": "PostalAddress", streetAddress: f[3], addressLocality: f[4], postalCode: f[5], addressCountry: z.cc },
+            geo: { "@type": "GeoCoordinates", latitude: f[0], longitude: f[1] },
+          },
+        })),
+      }]
+    : []),
+];
+---
+
+<Base titulo={titulo} descripcion={recortarFrases(desc, 158)} lang={p.lang} locale={p.locale} schema={schema} migas={migas}>
+  <section class="hero hero--compacto">
+    <div class="wrap">
+      {
+        (r || c) && (
+          <p class="breadcrumbs">
+            <a href={urlZonas(z)}>{T.miga}</a>
+            {r && <> / {c ? <a href={urlRegion(z, r)}>{T.regionNombre(r.nombre, r.codigo)}</a> : T.regionNombre(r.nombre, r.codigo)}</>}
+            {c && <> / {c.nombre}</>}
+          </p>
+        )
+      }
+      <h1>{h1}</h1>
+      <p class="lead">{lead}</p>
+      <div class="btn-row">
+        <a class="btn btn--mint" href={c || r ? urlEnMapaZ(z, filas) : urlMapa(p)}>{T.verMapa}</a>
+        {(r || c) && <a class="btn btn--ghost" href={urlZonas(z)}>{T.verRegiones}</a>}
+      </div>
+    </div>
+  </section>
+
+  {
+    !c && (
+      <section class="section section--tight">
+        <div class="wrap stack" style="--stack:32px">
+          <div class="grid grid--4 stats">
+            <div class="stat"><span class="stat__label">{M.statN}</span><span class="stat__value">{nf.format(filas.length)}</span><span class="stat__sub">{fecha}</span></div>
+            {g && <div class="stat"><span class="stat__label">{M.statMedia(M.comb[k])}</span><span class="stat__value">{eurZ(z, g.media).replace(" €/l", "")}<small> €/l</small></span><span class="stat__sub">{M.statMin(M.comb[k])}: {eurZ(z, g.min)}</span></div>}
+            {d && <div class="stat"><span class="stat__label">{M.statMedia(M.comb[kd])}</span><span class="stat__value">{eurZ(z, d.media).replace(" €/l", "")}<small> €/l</small></span><span class="stat__sub">{M.statMin(M.comb[kd])}: {eurZ(z, d.min)}</span></div>}
+            {r && puesto > 0 && <div class="stat"><span class="stat__label">{T.rankT}</span><span class="stat__value">{puesto}<small> / {rank.length}</small></span><span class="stat__sub">{M.comb[k]} · 1 = {z.T.regionNombre(rank[0].x.nombre, rank[0].x.codigo)}</span></div>}
+          </div>
+          {[k, kd].filter((x) => cifras(z, filas, x)).map((x) => (
+            <div>
+              <h2 style="font-size:22px;margin-bottom:12px">{T.baratasT(M.combArt[x], donde)}</h2>
+              <TablaFilas z={z} filas={top(x)} productos={[x, ...prods.filter((y) => y !== x)].slice(0, 4)} ciudad caption={T.baratasT(M.combArt[x], donde)} />
+            </div>
+          ))}
+          <p class="caption">{T.fuente}</p>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    c && (
+      <section class="section section--tight">
+        <div class="wrap">
+          <TablaFilas z={z} filas={lista} productos={prods} caption={h1} />
+          <p class="caption" style="margin-top:8px">{T.ordenadas(M.comb[ko])} {T.fuente}</p>
+        </div>
+      </section>
+    )
+  }
+
+  <Anuncio tipo="horizontal" seccion />
+
+  {
+    nivel === "pais" && (
+      <section class="section section--white section--tight">
+        <div class="wrap stack" style="--stack:16px">
+          <h2 style="font-size:24px">{T.regionesT}</h2>
+          <TablaRegiones z={z} />
+        </div>
+      </section>
+    )
+  }
+
+  {
+    ciudades.length > 0 && (
+      <section class="section section--white section--tight">
+        <div class="wrap stack" style="--stack:16px">
+          <h2 style="font-size:24px">{T.ciudadesT}</h2>
+          <div class="table-wrap" tabindex="0" role="region" aria-label={T.ciudadesT}>
+            <table class="tabla-precios">
+              <thead><tr><th scope="col">{T.colCiudad}</th><th scope="col" class="num">{M.comb[k]}</th><th scope="col" class="num">{M.comb[kd]}</th><th scope="col" class="num">{T.colN}</th></tr></thead>
+              <tbody>
+                {ciudades.map((x) => (
+                  <tr>
+                    <td>{x.pagina ? <a href={urlCiudad(z, x.x)}>{x.x.nombre}</a> : x.x.nombre}</td>
+                    <td class="num">{x.g ? eurZ(z, x.g.media).replace(" €/l", "") : "—"}</td>
+                    <td class="num">{x.d ? eurZ(z, x.d.media).replace(" €/l", "") : "—"}</td>
+                    <td class="num">{x.x.filas.length}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <section class={`section section--tight${nivel === "ciudad" ? " section--white" : ""}`}>
+    <div class={`wrap ${cerca.length ? "grid grid--2" : "wrap--narrow"}`} style="gap:40px">
+      <div>
+        <h2 style="font-size:22px;margin-bottom:12px">{T.faqT}</h2>
+        {preguntas.map((q) => (
+          <details class="faq-c">
+            <summary>{q.p}</summary>
+            <p>{q.r}</p>
+          </details>
+        ))}
+      </div>
+      {
+        cerca.length > 0 && c && (
+          <div>
+            <h2 style="font-size:22px;margin-bottom:12px">{T.cercaT(T.deCiudad(c.nombre))}</h2>
+            <ul class="lista-cerca">
+              {cerca.map((x) => {
+                const s = cifras(z, x.filas, k);
+                return (
+                  <li>
+                    <a href={urlCiudad(z, x)}>{x.nombre}</a>
+                    {s && <span class="caption"> · {M.comb[k]} {eurZ(z, s.media)}</span>}
+                  </li>
+                );
+              })}
+            </ul>
+            <p style="margin-top:12px"><a href={urlRegion(z, c.region)}>{T.todaRegion(c.region.nombre, c.region.codigo)}</a></p>
+          </div>
+        )
+      }
+    </div>
+  </section>
+</Base>
+
+<style>
+  .faq-c {
+    border-bottom: 1px solid var(--color-pale-sage);
+    padding: 6px 0;
+  }
+  .faq-c summary {
+    color: var(--color-bark);
+  }
+  .faq-c p {
+    padding: 4px 0 12px 20px;
+  }
+  .lista-cerca {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+  }
+</style>

@@ -125,6 +125,8 @@ export function serieDiaria(k: Producto, prov?: string) {
 
 /** /es/gasolinera/repsol-la-solana-5122/ */
 export const urlEstacion = (e: Estacion) => urlFicha(slugFicha(e.rotulo, e.mun, e.id));
+/** Solo tienen ficha las gasolineras con coordenadas (algunas vienen con 0, 0) y algún precio. */
+export const tieneFicha = (e: Estacion) => !!(e.lat && e.lon && Object.keys(e.p).length);
 
 /** «REPSOL» → «Repsol»; «BP ROMICA» → «BP Romica»; «Nº 10.935» → «Gasolinera». */
 export function nombreEstacion(rotulo: string): string {

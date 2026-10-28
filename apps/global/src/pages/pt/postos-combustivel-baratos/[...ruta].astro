@@ -1,0 +1,9 @@
+---
+// Postos de combustível baratos em Portugal: /pt/postos-combustivel-baratos/, /<distrito>/ y /<distrito>/<concelho>/.
+import PaginaZona from "../../../components/PaginaZona.astro";
+import { rutasZonas } from "../../../lib/zonas";
+
+export const getStaticPaths = () => rutasZonas("PT");
+---
+
+<PaginaZona {...Astro.props} />

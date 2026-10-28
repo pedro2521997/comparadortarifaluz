@@ -13,7 +13,7 @@ import { TEXTOS } from "../lib/textos";
 import { bloque, noPublicado, valor, fechaLocal, sumarDias } from "../lib/bloque";
 import {
   MERCADOS, diasConPagina, diaDe, info, titulo, descripcion, entradilla, preguntas, esquemaFaq, esquemaDataset, alternativas,
-  urlManana, urlFecha, etiquetaZona, formato, type Mercado, type Pagina,
+  urlManana, urlFecha, etiquetaZona, formato, recortarFrases, type Mercado, type Pagina,
 } from "../lib/datos";
 
 interface Props {
@@ -32,7 +32,7 @@ const cuando = pag === "hoy" ? L.hoy : pag === "manana" ? L.manana : "";
 const z = etiquetaZona(m);
 const h1 = [L.precio, z, cuando].filter(Boolean).join(" ");
 const tit = i ? titulo(i, pag) : `${h1} ${fechaLocal(fecha, m.pais.locale)}`;
-const desc = i ? descripcion(i, pag) : `${h1} ${fechaLocal(fecha, m.pais.locale)}. ${L.noPublicado}`;
+const desc = i ? descripcion(i, pag) : recortarFrases(`${h1} ${fechaLocal(fecha, m.pais.locale)}. ${L.noPublicado}`, 158);
 const schema = i ? [esquemaDataset(i, ruta, fuente), esquemaFaq(preguntas(i))] : undefined;
 const hermanas = MERCADOS.filter((x) => x.pais.cc === m.pais.cc);
 const fechas = new Set(diasConPagina(m).map((d) => d.fecha));

@@ -45,12 +45,13 @@ describe("Gasolineras para los mapas", () => {
     expect(e[0][8]).toBe(1);
   });
 
-  it("Portugal: junta los carburantes de cada posto", () => {
-    const posto = { Id: 7, Nome: "Posto", Marca: "GALP", Morada: "Rua A", Localidade: "Porto", CodPostal: "4000-001", Latitude: 41.15, Longitude: -8.61, DataAtualizacao: "2026-10-26 08:00" };
+  it("Portugal: junta los carburantes de cada posto y guarda su distrito y concelho", () => {
+    const posto = { Id: 7, Nome: "Posto", Marca: "GALP", Morada: "Rua A", Localidade: "Porto", Distrito: "Porto", Municipio: "Porto", CodPostal: "4000-001", Latitude: 41.15, Longitude: -8.61, DataAtualizacao: "2026-10-26 08:00" };
     const { combustibles, e } = portugal({ g95: [{ ...posto, Preco: "1,899 €" }], diesel: [{ ...posto, Preco: "1,749 €" }] }, hoy);
     expect(e).toHaveLength(1);
     expect(e[0][6][combustibles.indexOf("g95")]).toBe(1.899);
     expect(e[0][6][combustibles.indexOf("diesel")]).toBe(1.749);
+    expect(e[0].slice(9)).toEqual(["", "Porto", "Porto"]);
   });
 
   it("España: sin rótulos que solo son un número, nombres en minúsculas y enlace a la ficha", () => {

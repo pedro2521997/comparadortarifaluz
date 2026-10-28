@@ -7,6 +7,7 @@
 //
 // Formato: { cc, actualizado, combustibles: [claves], e: [[lat, lon, nombre, dirección, municipio, cp, [precios], "AAAA-MM-DD", autopista, ficha]] }
 // «ficha» solo en España: la parte final de la URL de su página (/es/gasolinera/<ficha>/).
+// Portugal añade detrás [ficha vacía, distrito, concelho], para sus páginas por distrito y concelho.
 // Los precios van en €/l en el mismo orden que «combustibles» (null si la gasolinera no lo vende).
 //
 // Uso: node scripts/estaciones-global.mjs [FR ES IT PT]
@@ -63,11 +64,12 @@ export function capitalizar(s) {
 }
 
 /** Fila de salida; descarta gasolineras sin coordenadas válidas o sin ningún precio. */
-export function fila({ lat, lon, nombre, dir, ciudad, cp, precios, fecha, autopista, ficha }, combustibles) {
+export function fila({ lat, lon, nombre, dir, ciudad, cp, precios, fecha, autopista, ficha, zona }, combustibles) {
   if (!(Math.abs(lat) > 1 && Math.abs(lon) > 0.01 && Math.abs(lat) <= 90 && Math.abs(lon) <= 180)) return null;
   const p = combustibles.map((k) => precio(precios[k]));
   if (p.every((x) => x === null)) return null;
   const f = [redondear(lat, 5), redondear(lon, 5), limpio(nombre), capitalizar(dir), capitalizar(ciudad), limpio(cp), p, fecha ?? "", autopista ? 1 : 0];
+  if (zona) return [...f, ficha ?? "", ...zona.map(limpio)];
   return ficha ? [...f, ficha] : f;
 }
 
@@ -213,7 +215,10 @@ export function portugal(porCombustible, hoy = new Date()) {
     }
   const e = [...postos.values()]
     .map(({ s, precios, fecha }) =>
-      fila({ lat: s.Latitude, lon: s.Longitude, nombre: limpio(s.Marca) || s.Nome, dir: s.Morada, ciudad: s.Localidade || s.Municipio, cp: s.CodPostal, precios, fecha, autopista: /autoestrada/i.test(s.TipoPosto ?? "") }, combustibles),
+      fila(
+        { lat: s.Latitude, lon: s.Longitude, nombre: limpio(s.Marca) || s.Nome, dir: s.Morada, ciudad: s.Localidade || s.Municipio, cp: s.CodPostal, precios, fecha, autopista: /autoestrada/i.test(s.TipoPosto ?? ""), zona: s.Distrito && s.Municipio ? [s.Distrito, s.Municipio] : null },
+        combustibles,
+      ),
     )
     .filter(Boolean);
   return { combustibles, e };
