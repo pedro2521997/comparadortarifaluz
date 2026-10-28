@@ -11,7 +11,7 @@ import { esquemaFaq, recortarFrases } from "../lib/datos";
 import { TEXTOS_M } from "../lib/textos-mapa";
 import { urlMapa, type Fila } from "../lib/mapa";
 import {
-  baratas, cercanas, cifras, continental, cts, eurZ, fechaZ, precio, urlCiudad, urlEnMapaZ, urlRegion, urlZonas, vendidos, type Ciudad, type PaisZonas, type Region,
+  baratas, cercanas, cifras, minus, continental, cts, eurZ, fechaZ, precio, urlCiudad, urlEnMapaZ, urlRegion, urlZonas, vendidos, type Ciudad, type PaisZonas, type Region,
 } from "../lib/zonas";
 
 interface Props {
@@ -71,8 +71,6 @@ const lead =
     : nivel === "region"
       ? T.regionLead({ ...datosLead, n: filas.length, de: T.deRegion(r!.nombre, r!.codigo), comp: comparar(g, gPais, false) })
       : T.hubLead({ ...datosLead, n: nf.format(filas.length) });
-// «Gazole», «Gasolina 95» van en minúscula dentro de la frase; siglas como «SP95-E10» se quedan igual.
-const minus = (s: string) => (/^\p{Lu}\p{Ll}/u.test(s) ? s.charAt(0).toLowerCase() + s.slice(1) : s);
 const desc = g && d ? T.desc({ donde, gN: minus(M.comb[k]), g: eurZ(z, g.min), dN: minus(M.comb[kd]), d: eurZ(z, d.min), n: nf.format(filas.length) }) : lead;
 const h1 = c ? T.ciudadH1(donde) : r ? T.regionH1(r.nombre, r.codigo) : T.hubH1;
 const titulo = c ? (T.ciudadT(donde).length <= 65 ? T.ciudadT(donde) : T.ciudadTCorto(donde)) : r ? T.regionT(r.nombre, r.codigo) : T.hubT;

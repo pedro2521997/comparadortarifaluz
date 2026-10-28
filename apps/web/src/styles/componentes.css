@@ -156,6 +156,14 @@
     flex-direction: row;
   }
 }
+/* Con el menú entero (siete enlaces y el botón), menos aire entre enlaces para que quepa en una línea. */
+@media (min-width: 1200px) {
+  .nav__links > ul > li > a,
+  .nav__links .nav__desplegar {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+}
 
 /* ---------- Desplegable de herramientas ---------- */
 [hidden] {
@@ -284,6 +292,10 @@
 @media (min-width: 900px) {
   .pie__grid {
     grid-template-columns: 1.4fr 1fr 1fr 1fr;
+  }
+  .pie__grid--5 {
+    grid-template-columns: 1.4fr 1fr 1fr 1fr 1fr;
+    gap: 32px;
   }
 }
 .pie__marca p {

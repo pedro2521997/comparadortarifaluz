@@ -160,6 +160,9 @@ export function cercanas(z: PaisZonas, c: Ciudad, n = 8): Ciudad[] {
     .map((y) => y.x);
 }
 
+/** «Gazole», «Gasolina 95» van en minúscula dentro de una frase; siglas como «SP95-E10» se quedan igual. */
+export const minus = (s: string) => (/^\p{Lu}\p{Ll}/u.test(s) ? s.charAt(0).toLowerCase() + s.slice(1) : s);
+
 /** Precio en €/l con el formato del país («1,749 €/l»). */
 export const eurZ = (z: PaisZonas, x: number) => `${new Intl.NumberFormat(z.p.locale, { minimumFractionDigits: 3, maximumFractionDigits: 3 }).format(x)} €/l`;
 /** Diferencia en céntimos («4,2»). */

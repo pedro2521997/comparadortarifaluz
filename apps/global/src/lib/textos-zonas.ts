@@ -52,6 +52,9 @@ export interface TextosZonas {
   faqT: string;
   /** Línea de la sección de precios del país (/fr/prix-carburants/): hoy, en las gasolineras. */
   hoyT: string;
+  /** Título y descripción de la página de precios del país (/fr/prix-carburants/) con el precio de hoy. */
+  tituloHoy: (enP: string, c: string, precio: string) => string;
+  descHoy: (o: { enP: string; gN: string; g: string; dN: string; d: string; n: string }) => string;
   hoyLead: (o: { n: string; fecha: string }) => string;
   pBarata: (cArt: string, donde: string) => string;
   rBarata: (o: { sitio: string; precio: string; media: string }) => string;
@@ -118,6 +121,8 @@ export const TEXTOS_Z: Record<string, TextosZonas> = {
     sinNombre: "Station-service",
     faqT: "Questions fréquentes",
     hoyT: "Aujourd'hui dans les stations",
+    tituloHoy: (e, c, x) => `Prix des carburants aujourd'hui ${e} : ${c} à ${x}`,
+    descHoy: (o) => `Prix moyen aujourd'hui ${o.enP} : ${o.gN} à ${o.g}, ${o.dN} à ${o.d}. Les ${o.n} stations-service, les moins chères par département et la carte.`,
     hoyLead: (o) => `Moyenne des prix déclarés par les ${o.n} stations-service de France métropolitaine (mise à jour : ${o.fecha}). Les chiffres ci-dessus sont les moyennes hebdomadaires de la Commission européenne.`,
     pBarata: (c, d) => `Où trouver ${c} le moins cher ${d} ?`,
     rBarata: (o) => `En ce moment, c'est ici : ${o.sitio}, à ${o.precio}. La moyenne est de ${o.media}.`,
@@ -168,6 +173,8 @@ export const TEXTOS_Z: Record<string, TextosZonas> = {
     sinNombre: "Posto",
     faqT: "Perguntas frequentes",
     hoyT: "Hoje nos postos",
+    tituloHoy: (e, c, x) => `Preço dos combustíveis hoje ${e}: ${c} a ${x}`,
+    descHoy: (o) => `Preço médio hoje ${o.enP}: ${o.gN} a ${o.g}, ${o.dN} a ${o.d}. Os ${o.n} postos, os mais baratos por distrito e o mapa.`,
     hoyLead: (o) => `Média dos preços comunicados pelos ${o.n} postos de Portugal continental (atualizado: ${o.fecha}). Os valores acima são as médias semanais da Comissão Europeia.`,
     pBarata: (c, d) => `Qual é o posto mais barato ${d} para ${c}?`,
     rBarata: (o) => `Neste momento é este: ${o.sitio}, a ${o.precio}. A média é de ${o.media}.`,

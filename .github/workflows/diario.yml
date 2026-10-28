@@ -26,9 +26,27 @@ permissions:
   contents: write
 
 jobs:
+  # La ejecución «de medianoche» va a dos horas UTC para cubrir verano e invierno. La que cae antes de medianoche
+  # en Madrid (22:05 UTC en invierno) no cambiaría nada: se salta y no gasta minutos de GitHub Actions.
+  cuando:
+    runs-on: ubuntu-latest
+    outputs:
+      seguir: ${{ steps.hora.outputs.seguir }}
+    steps:
+      - id: hora
+        run: |
+          H=$(TZ=Europe/Madrid date +%H)
+          if [ "${{ github.event.schedule }}" = "5 22,23 * * *" ] && [ "$H" = "23" ]; then echo "seguir=false" >> "$GITHUB_OUTPUT"; else echo "seguir=true" >> "$GITHUB_OUTPUT"; fi
+
   build:
+    needs: cuando
+    if: needs.cuando.outputs.seguir == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 90
+    env:
+      # La web global no se reconstruye en el repaso de las 21:30 UTC (solo sirve para la luz de España):
+      # ahorra unos 7 minutos al día. Se actualiza a las 12:15, a las 19:45 y a medianoche.
+      GLOBAL: ${{ github.event.schedule != '30 21 * * *' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -36,7 +54,10 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
-      - run: npm run precios -- 45
+      # Si Red Eléctrica no responde, se construye igual con los precios que ya hay (la siguiente ejecución los trae).
+      - name: Precios de la luz de España
+        continue-on-error: true
+        run: npm run precios -- 45
       # Las gasolineras no van al repositorio: se guarda la última descarga buena en la caché de GitHub y,
       # si el Ministerio (o la fuente de un mapa) falla, se usa la de la vez anterior.
       - name: Recuperar las gasolineras de la última vez
@@ -62,7 +83,9 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       # Web global (apps/global): mismos datos y código, otro dominio. Se construye siempre (así se prueba),
       # pero solo se despliega cuando la variable del repositorio GLOBAL_ACTIVO vale "true".
+      # Los pasos de la web global van aparte: si algo de la web española falla, la global se actualiza igual.
       - name: Precios de la web global
+        if: ${{ !cancelled() && env.GLOBAL == 'true' }}
         continue-on-error: true
         timeout-minutes: 40
         run: npm run precios:global -- 400
@@ -71,11 +94,12 @@ jobs:
       # Gasolineras de los mapas (Francia, España, Italia, Portugal). No van al repositorio: se guarda la última
       # copia buena en la caché de GitHub y, si un país falla, se usa la de la vez anterior.
       - name: Gasolineras para los mapas de la web global
+        if: ${{ !cancelled() && env.GLOBAL == 'true' }}
         continue-on-error: true
         timeout-minutes: 10
         run: npm run estaciones:global
       - name: Guardar las gasolineras para la próxima vez
-        if: hashFiles('data/estaciones/*.json', 'data/carburantes/estaciones.json') != ''
+        if: ${{ !cancelled() && hashFiles('data/estaciones/*.json', 'data/carburantes/estaciones.json') != '' }}
         continue-on-error: true
         uses: actions/cache/save@v4
         with:
@@ -86,13 +110,22 @@ jobs:
       # Sin límite, Node llega a ~5,6 GB y el runner (privado: ~7 GB) se queda sin memoria y se cuelga.
       # Con 1,5 GB de heap el build tarda lo mismo y no pasa de ~3 GB.
       - name: Construir la web global
+        id: build_global
+        if: ${{ !cancelled() && env.GLOBAL == 'true' }}
         continue-on-error: true
         timeout-minutes: 20
-        run: npm run build:global
+        # Sin las gasolineras (fuente caída y sin copia en la caché) desaparecerían miles de páginas de Google:
+        # mejor no construir y dejar publicada la versión anterior.
+        run: |
+          for f in data/carburantes/estaciones.json data/estaciones/ES.json data/estaciones/FR.json data/estaciones/PT.json; do
+            [ -s "$f" ] || { echo "::error::Falta $f: no se publica la web global y sigue la versión anterior"; exit 1; }
+          done
+          npm run build:global
         env:
           NODE_OPTIONS: --max-old-space-size=1536
       - name: Desplegar la web global
-        if: vars.GLOBAL_ACTIVO == 'true'
+        id: deploy_global
+        if: ${{ !cancelled() && env.GLOBAL == 'true' && steps.build_global.outcome == 'success' && vars.GLOBAL_ACTIVO == 'true' }}
         continue-on-error: true
         run: npx wrangler deploy
         working-directory: apps/worker-global
@@ -100,7 +133,7 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       - name: Avisar a los buscadores de la web global (IndexNow)
-        if: vars.GLOBAL_ACTIVO == 'true'
+        if: ${{ !cancelled() && steps.deploy_global.outcome == 'success' }}
         continue-on-error: true
         run: node scripts/indexnow-global.mjs
       # Avisa a Bing (y otros buscadores con IndexNow) de que las páginas del día han cambiado.
@@ -112,8 +145,16 @@ jobs:
           B=https://comparadortarifaluz.es
           curl -sS -X POST https://api.indexnow.org/indexnow -H "Content-Type: application/json; charset=utf-8" -d "{\"host\":\"comparadortarifaluz.es\",\"key\":\"c49c4772c9f6fee5ecdcab50ed8c7c4a\",\"keyLocation\":\"$B/c49c4772c9f6fee5ecdcab50ed8c7c4a.txt\",\"urlList\":[\"$B/precio-luz-hoy/\",\"$B/precio-luz-manana/\",\"$B/precio-luz-ayer/\",\"$B/precio-luz/\",\"$B/precio-luz/$HOY/\",\"$B/precio-luz/$MANANA/\",\"$B/precio-luz/$AYER/\",\"$B/\"]}" -w "IndexNow: %{http_code}\n"
       - name: Guardar los precios nuevos en el repositorio
+        if: ${{ !cancelled() }}
         run: |
           git config user.name "comparadortarifaluz-bot"
           git config user.email "bot@comparadortarifaluz.es"
           git add data/precios data/mercado-ajustes.json data/global data/global-mix data/global-prevision data/carburantes/resumen data/carburantes-ue.json
           git diff --cached --quiet || (git commit -m "Precios PVPC $(date +%F)" && git pull --rebase --autostash origin main && git push)
+      # Los pasos de la web global no paran la ejecución si fallan (así la española sigue), pero si la global no se
+      # ha podido construir o publicar, la ejecución acaba en rojo para que GitHub mande un correo de aviso.
+      - name: Comprobar que la web global se ha publicado
+        if: ${{ !cancelled() && (steps.build_global.outcome == 'failure' || steps.deploy_global.outcome == 'failure') }}
+        run: |
+          echo "::error::La web global no se ha construido o publicado (build: ${{ steps.build_global.outcome }}, despliegue: ${{ steps.deploy_global.outcome }}). La web sigue con la versión anterior."
+          exit 1

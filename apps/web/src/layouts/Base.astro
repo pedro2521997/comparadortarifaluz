@@ -2,7 +2,7 @@
 import "../styles/global.css";
 import "../styles/componentes.css";
 import Logo from "../components/Logo.astro";
-import { SITIO, NAV, TELEGRAM_URL } from "../config";
+import { SITIO, NAV, TELEGRAM_URL, CARBURANTES } from "../config";
 import { dias } from "../lib/datos";
 import { frase } from "../lib/grafico";
 import { fechaCorta, hoyMadrid } from "../lib/formato";
@@ -166,7 +166,7 @@ const aviso = ultimo
 
     <footer class="pie">
       <div class="wrap">
-        <div class="pie__grid">
+        <div class="pie__grid pie__grid--5">
           <div class="pie__marca">
             <Logo blanco />
             <p>Pagar menos luz con tus datos y el precio real de hoy. Sin letra pequeña.</p>
@@ -192,6 +192,15 @@ const aviso = ultimo
               <li><a href="/guias/potencia-contratada/">Potencia contratada</a></li>
               <li><a href="/guias/por-que-sube-la-luz/">Por qué sube la luz</a></li>
               {TELEGRAM_URL && <li><a href={TELEGRAM_URL}>Canal de Telegram</a></li>}
+            </ul>
+          </div>
+          <div>
+            <p class="pie__titulo">Gasolina y gasoil</p>
+            <ul>
+              <li><a href={CARBURANTES.gasolina}>Precio de la gasolina hoy</a></li>
+              <li><a href={CARBURANTES.gasoil}>Precio del gasoil hoy</a></li>
+              <li><a href={CARBURANTES.mapa}>Mapa de gasolineras</a></li>
+              <li><a href={CARBURANTES.baratas}>Gasolineras baratas por provincia</a></li>
             </ul>
           </div>
           <div>

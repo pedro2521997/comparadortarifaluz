@@ -4,7 +4,7 @@ import AyudaHerramienta from "../../components/AyudaHerramienta.astro";
 import { esquemaFaq, esquemaHerramienta, type Pregunta } from "../../lib/faq";
 import { dias, factorImpuestos, tarifas } from "../../lib/datos";
 import { hoyMadrid, num, fechaCorta } from "../../lib/formato";
-import { SITIO } from "../../config";
+import { SITIO, CARBURANTES } from "../../config";
 import { mejorFranja } from "../../lib/grafico";
 
 const hoy = hoyMadrid();
@@ -140,7 +140,7 @@ const schema = [
             <div class="field">
               <label for="ce-pl">Precio del combustible</label>
               <input id="ce-pl" name="plitro" type="number" min="0.5" max="3" step="0.01" inputmode="decimal" value="1.55" />
-              <span class="hint">€/litro: pon el de tu gasolinera</span>
+              <span class="hint">€/litro: pon el de tu gasolinera (<a href={CARBURANTES.gasolina}>gasolina</a> y <a href={CARBURANTES.gasoil}>gasoil</a> hoy)</span>
             </div>
           </div>
         </fieldset>

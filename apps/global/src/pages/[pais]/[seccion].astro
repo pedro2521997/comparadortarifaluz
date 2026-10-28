@@ -11,7 +11,7 @@ import { lista, semanaIso } from "../../lib/textos-carburantes";
 import { tieneMapas, urlMapa } from "../../lib/mapa";
 import { TEXTOS_M } from "../../lib/textos-mapa";
 import TablaRegiones from "../../components/TablaRegiones.astro";
-import { zonasDe, urlZonas, cifras, continental, eurZ, fechaZ } from "../../lib/zonas";
+import { zonasDe, urlZonas, cifras, continental, eurZ, fechaZ, minus } from "../../lib/zonas";
 import { TEXTOS } from "../../lib/textos";
 import type { Pais } from "../../lib/datos";
 import { esquemaFaq, MERCADOS, recortarFrases } from "../../lib/datos";
@@ -81,9 +81,16 @@ const serie = (k: ProductoUE, c = cc) => ultimas(c, k, 156);
 // Países con mapa y páginas por región: el precio de hoy en sus gasolineras y la media de cada región.
 const z = s === "precios" ? zonasDe(p) : null;
 const hoyZ = z ? z.orden.map((k) => ({ k, s: cifras(z, continental(z), k) })).filter((x) => x.s && x.s.n >= 50) : [];
+// Con precios de hoy de cada gasolinera, el título y la descripción dan el de hoy (lo que más se busca) en lugar del semanal.
+const MZ = TEXTOS_M[p.lang]!;
+const tituloSeo = z && hoyZ.length >= 2 ? z.T.tituloHoy(enP, MZ.comb[hoyZ[0].k], eurZ(z, hoyZ[0].s!.media)) : titulo;
+const descSeo =
+  z && hoyZ.length >= 2
+    ? z.T.descHoy({ enP, gN: minus(MZ.comb[hoyZ[0].k]), g: eurZ(z, hoyZ[0].s!.media), dN: minus(MZ.comb[hoyZ[1].k]), d: eurZ(z, hoyZ[1].s!.media), n: new Intl.NumberFormat(p.locale).format(continental(z).length) })
+    : desc;
 ---
 
-<Base titulo={recorta(titulo, 70)} descripcion={recorta(desc, 158)} lang={p.lang} locale={p.locale} schema={esquemaFaq(preguntas)}>
+<Base titulo={recorta(tituloSeo, 70)} descripcion={recortarFrases(descSeo, 158)} lang={p.lang} locale={p.locale} schema={esquemaFaq(preguntas)}>
   <section class="hero hero--compacto">
     <div class="wrap">
       <span class="eyebrow">{p.nombre} · {semana}</span>

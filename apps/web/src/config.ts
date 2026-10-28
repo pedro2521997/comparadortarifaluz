@@ -16,6 +16,17 @@ export const SITIO = {
   domicilio: "C/ Cirugeda, 67, 13240 La Solana (Ciudad Real)",
 };
 
+/**
+ * Precios de la gasolina y el gasoil: están en la web hermana PowerPriceNow (en español, con mapa de gasolineras).
+ * Aquí solo se enlazan; las antiguas páginas de carburantes redirigen allí (public/_redirects).
+ */
+export const CARBURANTES = {
+  gasolina: "https://powerpricenow.com/es/precio-gasolina-hoy/",
+  gasoil: "https://powerpricenow.com/es/precio-gasoil-hoy/",
+  mapa: "https://powerpricenow.com/es/mapa-gasolineras/",
+  baratas: "https://powerpricenow.com/es/gasolineras-baratas/",
+};
+
 /** PENDIENTE: crear el canal. Mientras sea null, no se enlaza. */
 export const TELEGRAM_URL: string | null = null;
 
@@ -50,4 +61,5 @@ export const NAV = [
   { href: "/calcular-factura-luz/", texto: "Calcular factura" },
   { href: "/herramientas/", texto: "Herramientas" },
   { href: "/guias/", texto: "Guías" },
+  { href: CARBURANTES.gasolina, texto: "Gasolina" },
 ];
