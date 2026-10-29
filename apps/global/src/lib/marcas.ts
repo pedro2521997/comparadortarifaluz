@@ -1,6 +1,8 @@
-// Marcas de gasolineras para los iconos del mapa y de las fichas: cada una con su nombre bien escrito, unas
-// letras y sus colores. No son los logotipos (son marcas registradas): es una insignia con los colores de la marca
-// para reconocerla de un vistazo. Las que no están salen con la inicial en gris.
+// Marcas de gasolineras para los iconos del mapa y de las fichas: cada una con su nombre bien escrito, su logotipo
+// (el icono oficial de su web, en public/marcas/, lo descarga scripts/logos-gasolineras.mjs) y, si no hay logotipo,
+// una insignia con unas letras y sus colores. Las que no están salen con la inicial en gris.
+
+import LOGOS from "./logos-marcas.json";
 
 export interface Marca {
   id: string;
@@ -9,6 +11,8 @@ export interface Marca {
   t: string;
   bg: string;
   fg: string;
+  /** /marcas/repsol.png si hay logotipo */
+  logo?: string;
 }
 
 // [palabras con las que empieza o que contiene el rótulo (en mayúsculas, sin tildes), nombre, letras, fondo, texto]
@@ -69,7 +73,11 @@ const norm = (s: string) =>
     .replace(/[^A-Z0-9]+/g, " ")
     .trim()} `;
 
-const MARCAS: { claves: string[]; m: Marca }[] = LISTA.map(([claves, nombre, t, bg, fg]) => ({ claves: claves.map((c) => ` ${c} `), m: { id: norm(claves[0]).trim().replace(/ /g, "-").toLowerCase(), nombre, t, bg, fg } }));
+const conLogo = new Set<string>(LOGOS);
+const MARCAS: { claves: string[]; m: Marca }[] = LISTA.map(([claves, nombre, t, bg, fg]) => {
+  const id = norm(claves[0]).trim().replace(/ /g, "-").toLowerCase();
+  return { claves: claves.map((c) => ` ${c} `), m: { id, nombre, t, bg, fg, ...(conLogo.has(id) ? { logo: `/marcas/${id}.png` } : {}) } };
+});
 
 /** Marca de un rótulo («BP ROMICA» → BP; «ESTACIÓN DE SERVICIO REPSOL» → Repsol), o null si no es ninguna conocida. */
 export function marca(rotulo: string): Marca | null {

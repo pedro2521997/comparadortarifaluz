@@ -147,13 +147,36 @@ function iniciar(raiz: HTMLElement, cfg: Config) {
 
   // ---------------- Capas ----------------
 
-  /** Dibuja la insignia de una marca (la pide MapLibre la primera vez que la necesita). */
+  /**
+   * Dibuja la insignia de una marca (la pide MapLibre la primera vez que la necesita). Si la marca tiene logotipo,
+   * primero sale la insignia de colores y, en cuanto llega la imagen, se cambia por el logotipo en un círculo blanco.
+   */
   function dibujarInsignia(id: string) {
     const m = marcas.find((x) => `m-${x.id}` === id) ?? insignia("");
     const px = 48;
     const c = document.createElement("canvas");
     c.width = c.height = px;
     const g = c.getContext("2d")!;
+    if (m.logo) {
+      const img = new Image();
+      img.onload = () => {
+        const l = document.createElement("canvas");
+        l.width = l.height = px;
+        const h = l.getContext("2d")!;
+        h.beginPath();
+        h.arc(px / 2, px / 2, px / 2, 0, Math.PI * 2);
+        h.fillStyle = "#ffffff";
+        h.fill();
+        h.save();
+        h.beginPath();
+        h.arc(px / 2, px / 2, px / 2 - 3, 0, Math.PI * 2);
+        h.clip();
+        h.drawImage(img, 3, 3, px - 6, px - 6);
+        h.restore();
+        if (mapa.hasImage(id)) mapa.updateImage(id, h.getImageData(0, 0, px, px));
+      };
+      img.src = m.logo;
+    }
     // Borde blanco fino que separa la insignia del aro de color.
     g.beginPath();
     g.arc(px / 2, px / 2, px / 2, 0, Math.PI * 2);
@@ -324,7 +347,9 @@ function iniciar(raiz: HTMLElement, cfg: Config) {
   const nombre = (f: Fila) => (f[2] ? nombreMarca(f[2]) : f[3] || T.estacion);
   const htmlInsignia = (i: number, p: number | undefined) => {
     const m = marcas[i];
-    return `<span class="ins" style="--bg:${m.bg};--fg:${m.fg};--aro:${p != null ? colorPrecio(p) : "#888"}" aria-hidden="true">${esc(m.t || "⛽")}</span>`;
+    const aro = `--aro:${p != null ? colorPrecio(p) : "#888"}`;
+    if (m.logo) return `<span class="ins ins--logo" style="${aro}" aria-hidden="true"><img src="${m.logo}" alt="" width="30" height="30" loading="lazy" decoding="async"></span>`;
+    return `<span class="ins" style="--bg:${m.bg};--fg:${m.fg};${aro}" aria-hidden="true">${esc(m.t || "⛽")}</span>`;
   };
 
   interface Item { i: number; extra?: string; tag?: string }

@@ -650,6 +650,15 @@ const tituloProvincias = z ? z.T.regionesT : "Gasolineras baratas por provincia"
     box-shadow: 0 0 0 3px var(--aro), 0 0 0 4px #fff;
     margin: 4px;
   }
+  .mapa :global(.ins--logo) {
+    background: #fff;
+    overflow: hidden;
+  }
+  .mapa :global(.ins--logo img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 
   .mapa :global(.maplibregl-popup-content) {
     font-family: inherit;
