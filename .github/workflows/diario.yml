@@ -150,7 +150,9 @@ jobs:
           git config user.name "comparadortarifaluz-bot"
           git config user.email "bot@comparadortarifaluz.es"
           git add data/precios data/mercado-ajustes.json data/global data/global-mix data/global-prevision data/carburantes/resumen data/carburantes-ue.json
-          git diff --cached --quiet || (git commit -m "Precios PVPC $(date +%F)" && git pull --rebase --autostash origin main && git push)
+          # Si otra ejecución guardó los mismos ficheros justo antes (dos builds seguidos), gana esta descarga, que
+          # es la más reciente (-X theirs en un rebase = los cambios de este commit).
+          git diff --cached --quiet || (git commit -m "Precios PVPC $(date +%F)" && git pull --rebase -X theirs --autostash origin main && git push)
       # Los pasos de la web global no paran la ejecución si fallan (así la española sigue), pero si la global no se
       # ha podido construir o publicar, la ejecución acaba en rojo para que GitHub mande un correo de aviso.
       - name: Comprobar que la web global se ha publicado
