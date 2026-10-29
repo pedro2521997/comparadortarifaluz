@@ -59,7 +59,7 @@ function iniciar(raiz: HTMLElement, cfg: Config) {
   const nf0 = new Intl.NumberFormat(cfg.locale);
   const nf1 = new Intl.NumberFormat(cfg.locale, { maximumFractionDigits: 1 });
   const euros = (x: number) => `${nf.format(x)} €`;
-  const distancia = (km: number) => (km < 1 ? `${nf0.format(Math.round((km * 1000) / 50) * 50)} m` : `${(km < 10 ? nf1 : nf0).format(km)} km`);
+  const distancia = (km: number) => (km < 1 ? `${nf0.format(Math.round((km * 1000) / 50) * 50)} m` : `${km < 10 ? nf1.format(km) : nf0.format(Math.round(km))} km`);
   const fechaCorta = new Intl.DateTimeFormat(cfg.locale, { day: "numeric", month: "short", timeZone: "UTC" });
   const esc = (s: string) => s.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
   const norm = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
@@ -114,6 +114,8 @@ function iniciar(raiz: HTMLElement, cfg: Config) {
   let escala = { q10: 0, q50: 0, q90: 0 };
   let popup: maplibregl.Popup | null = null;
   let yo: maplibregl.Marker | null = null;
+  /** Pueblo buscado que no tiene gasolineras (se marca en el mapa). */
+  let sitio: maplibregl.Marker | null = null;
 
   type Modo = "baratas" | "cerca" | "ruta";
   let modo: Modo = "baratas";
@@ -457,6 +459,10 @@ function iniciar(raiz: HTMLElement, cfg: Config) {
     if (q) {
       const o = buscador.proponer(q)[0];
       if (o) buscador.elegir(o, false);
+      else cargarLocalidades().then(() => {
+        const p = buscador.proponer(q)[0];
+        if (p) buscador.elegir(p, false);
+      });
     }
   }
 
@@ -587,9 +593,37 @@ function iniciar(raiz: HTMLElement, cfg: Config) {
 
   // ---------------- Buscador ----------------
 
-  interface Lugar { nombre: string; clave: string; cp: Set<string>; n: number; b: [number, number, number, number] }
+  /** Localidad del buscador: las que tienen gasolineras (n > 0) y las del nomenclátor (n = 0, con su provincia). */
+  interface Lugar { nombre: string; clave: string; cp: Set<string>; n: number; b: [number, number, number, number]; region?: string }
   let lugares: Lugar[] = [];
   let claves: string[] = [];
+  let nomenclator: Promise<void> | null = null;
+
+  /**
+   * Todos los pueblos del país (public/localidades/<cc>.json, de GeoNames), también los que no tienen gasolinera, para
+   * poder buscarlos y ver las más cercanas. Se descarga la primera vez que se escribe en un buscador.
+   */
+  function cargarLocalidades(): Promise<void> {
+    nomenclator ??= fetch(`/localidades/${cfg.cc.toLowerCase()}.json`)
+      .then((r) => (r.ok ? (r.json() as Promise<{ r: string[]; l: [string, number, number, number][] }>) : null))
+      .then((j) => {
+        if (!j) return;
+        const conGasolineras = new Map(lugares.map((l) => [l.clave, l]));
+        const nuevos: Lugar[] = [];
+        for (const [nombre, lat, lon, ri] of j.l) {
+          const clave = norm(nombre);
+          // Si ya está porque tiene gasolineras (mismo nombre y cerca), se queda esa, que sabe cuántas hay.
+          const g = conGasolineras.get(clave);
+          if (g && Math.abs(centro(g)[1] - lat) < 0.2 && Math.abs(centro(g)[0] - lon) < 0.25) continue;
+          nuevos.push({ nombre, clave, cp: new Set(), n: 0, b: [lon, lat, lon, lat], region: j.r[ri] });
+        }
+        lugares = [...lugares, ...nuevos];
+      })
+      .catch(() => {
+        nomenclator = null;
+      });
+    return nomenclator ?? Promise.resolve();
+  }
 
   function indexar() {
     const m = new Map<string, Lugar>();
@@ -654,7 +688,7 @@ function iniciar(raiz: HTMLElement, cfg: Config) {
         li.setAttribute("role", "option");
         li.setAttribute("aria-selected", String(k === activa));
         if (op.tipo === "yo") li.innerHTML = `<span>⌖ ${esc(A.miUbicacion)}</span>`;
-        else if (op.tipo === "lugar") li.innerHTML = `<span>${esc(op.l.nombre)}</span><small>${esc(nEst(op.l.n))}</small>`;
+        else if (op.tipo === "lugar") li.innerHTML = `<span>${esc(op.l.nombre)}</span><small>${esc(op.l.n ? nEst(op.l.n) : op.l.region ?? "")}</small>`;
         else {
           const f = datos!.e[op.i];
           li.innerHTML = `<span>${esc([f[2] ? nombreMarca(f[2]) : "", f[3]].filter(Boolean).join(", "))}</span><small>${esc(f[4])}</small>`;
@@ -684,14 +718,17 @@ function iniciar(raiz: HTMLElement, cfg: Config) {
     }
 
     let espera: number | undefined;
+    const sugerir = () => {
+      opciones = proponer(input.value);
+      activa = -1;
+      if (norm(input.value).length < 2 && !opciones.length) return cerrar();
+      pintarOpciones();
+    };
     input.addEventListener("input", () => {
       clearTimeout(espera);
-      espera = window.setTimeout(() => {
-        opciones = proponer(input.value);
-        activa = -1;
-        if (norm(input.value).length < 2 && !opciones.length) return cerrar();
-        pintarOpciones();
-      }, 120);
+      espera = window.setTimeout(sugerir, 120);
+      // La primera vez llegan después los pueblos sin gasolinera: se vuelve a sugerir con ellos.
+      if (!nomenclator) cargarLocalidades().then(() => document.activeElement === input && input.value && sugerir());
     });
     input.addEventListener("focus", () => {
       if (o.yo && !input.value) {
@@ -721,10 +758,19 @@ function iniciar(raiz: HTMLElement, cfg: Config) {
     yo: false,
     alElegir(op, desplazar) {
       if (op.tipo === "lugar") {
-        const [a, b, c, d] = op.l.b;
-        mapa.fitBounds([a, b, c, d], { padding: 40, maxZoom: 13.5 });
+        sitio?.remove();
         ref = { c: centro(op.l), tipo: "lugar", nombre: op.l.nombre };
-        if (modo === "cerca") listar();
+        if (op.l.n) {
+          const [a, b, c, d] = op.l.b;
+          mapa.fitBounds([a, b, c, d], { padding: 40, maxZoom: 13.5 });
+          if (modo === "cerca") listar();
+        } else {
+          // Pueblo sin gasolineras: se marca en el mapa y se enseñan las más cercanas, con su distancia.
+          sitio = new maplibregl.Marker({ color: "#104336", scale: 0.8 }).setLngLat(ref.c).addTo(mapa);
+          if (movil()) entrarApp();
+          raiz.classList.remove("mapa--plegado");
+          cerca(false);
+        }
       } else if (op.tipo === "estacion") {
         const f = datos!.e[op.i];
         mapa.flyTo({ center: [f[1], f[0]], zoom: 15 });
@@ -764,6 +810,7 @@ function iniciar(raiz: HTMLElement, cfg: Config) {
   formRuta.addEventListener("submit", async (ev) => {
     ev.preventDefault();
     if (!datos) return;
+    await cargarLocalidades();
     const o = resolver(origen, selOrigen, { tipo: "yo" });
     const d = resolver(destino, selDestino);
     if (!o || !d) return aviso(A.rutaFalta);

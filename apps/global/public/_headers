@@ -22,6 +22,10 @@ https://:worker.:cuenta.workers.dev/*
 /data/gasolineras/*
   Cache-Control: public, max-age=300, stale-while-revalidate=3600
 
+# Pueblos del buscador del mapa (scripts/localidades.mjs): no cambian.
+/localidades/*
+  Cache-Control: public, max-age=2592000
+
 # Icono y logotipo: cambian muy poco.
 /favicon.svg
   Cache-Control: public, max-age=604800

@@ -156,7 +156,7 @@ const tituloProvincias = z ? z.T.regionesT : "Gasolineras baratas por provincia"
           <ol data-lista></ol>
         </aside>
       </div>
-      <p class="caption">{L.fuente}{sep}<a href={FUENTE_MAPA[cc].url} rel="noopener">{FUENTE_MAPA[cc].nombre}</a>. {T.aviso} <span class="mapa__osm"><a href="https://routing.openstreetmap.de/" rel="noopener">OSRM (FOSSGIS)</a> · © OpenStreetMap.</span></p>
+      <p class="caption">{L.fuente}{sep}<a href={FUENTE_MAPA[cc].url} rel="noopener">{FUENTE_MAPA[cc].nombre}</a>. {T.aviso} <span class="mapa__osm"><a href="https://routing.openstreetmap.de/" rel="noopener">OSRM (FOSSGIS)</a> · © OpenStreetMap · <a href="https://www.geonames.org/" rel="noopener">GeoNames</a> (CC BY 4.0).</span></p>
     </div>
     <script type="application/json" id="mapa-config" set:html={configJson} />
   </section>
