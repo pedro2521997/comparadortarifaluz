@@ -5,7 +5,7 @@
  "indicador_spot": "Precio del mercado diario (600), media horaria",
  "fuente": "Red Eléctrica · REData",
  "fuente_url": "https://www.ree.es/es/apidatos",
- "descargado": "2026-10-29T01:43:41.644Z",
+ "descargado": "2026-10-29T07:40:33.278Z",
  "precios": [
   0.20328,
   0.19806,
