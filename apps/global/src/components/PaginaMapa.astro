@@ -126,11 +126,17 @@ const tituloProvincias = z ? z.T.regionesT : "Gasolineras baratas por provincia"
               <input id="mapa-origen" type="search" placeholder={A.miUbicacion} autocomplete="off" role="combobox" aria-expanded="false" aria-controls="mapa-origen-op" data-origen />
               <ul id="mapa-origen-op" class="mapa__resultados" role="listbox" hidden></ul>
             </label>
+            <label class="mapa__campo" data-campo-parada hidden>
+              <span>{A.por}</span>
+              <input id="mapa-parada" type="search" placeholder={A.paradaPh} autocomplete="off" role="combobox" aria-expanded="false" aria-controls="mapa-parada-op" data-parada />
+              <ul id="mapa-parada-op" class="mapa__resultados" role="listbox" hidden></ul>
+            </label>
             <label class="mapa__campo">
               <span>{A.hasta}</span>
               <input id="mapa-destino" type="search" placeholder={A.destinoPh} autocomplete="off" role="combobox" aria-expanded="false" aria-controls="mapa-destino-op" data-destino required />
               <ul id="mapa-destino-op" class="mapa__resultados" role="listbox" hidden></ul>
             </label>
+            <button type="button" class="mapa__anadir" data-anadir-parada>+ {A.anadirParada}</button>
             <label class="mapa__desvio">
               <span>{A.desvio}</span>
               <select data-desvio>
@@ -147,6 +153,7 @@ const tituloProvincias = z ? z.T.regionesT : "Gasolineras baratas por provincia"
               <button type="button" class="mapa__quitar" data-quitar aria-label={A.quitar} title={A.quitar}>✕</button>
             </div>
           </form>
+          <div class="mapa__alternativas" data-alternativas role="group" aria-label={A.elegirRuta} hidden></div>
           <h2 data-titulo>{T.baratasZona}</h2>
           <div class="mapa__orden" data-orden hidden>
             <button type="button" data-orden-ruta="precio" aria-pressed="true">{A.porPrecio}</button>
@@ -252,6 +259,24 @@ const tituloProvincias = z ? z.T.regionesT : "Gasolineras baratas por provincia"
     min-width: 0;
   }
   .mapa__buscar input,
+  .mapa__campo[hidden],
+  .mapa__anadir[hidden] {
+    display: none;
+  }
+  .mapa__anadir {
+    align-self: flex-start;
+    justify-self: start;
+    width: auto;
+    text-align: left;
+    padding: 4px 0;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-canopy);
+    background: none;
+    border: 0;
+    cursor: pointer;
+  }
   .mapa__campo input {
     width: 100%;
     font-size: 16px; /* 16 px: así el iPhone no hace zoom al escribir */
@@ -506,6 +531,7 @@ const tituloProvincias = z ? z.T.regionesT : "Gasolineras baratas por provincia"
     display: flex;
   }
   .mapa__ruta--hecha .mapa__campo,
+  .mapa__ruta--hecha .mapa__anadir,
   .mapa__ruta--hecha .mapa__desvio,
   .mapa__ruta--hecha .mapa__ruta-botones {
     display: none;
@@ -701,6 +727,79 @@ const tituloProvincias = z ? z.T.regionesT : "Gasolineras baratas por provincia"
     gap: 14px;
     flex-wrap: wrap;
     margin-top: 6px;
+  }
+  /* «Cómo llegar» con Google Maps, Apple Maps o Waze: botones grandes para el dedo. */
+  .mapa :global(.popup__navegar) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .mapa :global(.popup__navegar span) {
+    width: 100%;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-slate);
+  }
+  .mapa :global(.popup__navegar a) {
+    flex: 1 1 auto;
+    text-align: center;
+    padding: 7px 8px;
+    min-height: 36px;
+    border: 1px solid var(--color-pale-sage);
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-canopy);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .mapa :global(.popup__navegar a:hover) {
+    background: var(--color-cream-paper);
+  }
+  .mapa :global(.popup__parada) {
+    display: block;
+    margin-top: 8px;
+    font-weight: 600;
+  }
+  /* Rutas alternativas: una fila de botones con el tiempo y los kilómetros de cada una. */
+  .mapa__alternativas {
+    flex: none;
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    margin: 0 0 8px;
+  }
+  .mapa__alternativas[hidden] {
+    display: none;
+  }
+  .mapa__alternativas :global(button) {
+    flex: 1 0 auto;
+    display: grid;
+    gap: 1px;
+    padding: 6px 10px;
+    font: inherit;
+    font-size: 12px;
+    text-align: left;
+    color: var(--color-slate);
+    background: #fff;
+    border: 1px solid var(--color-pale-sage);
+    border-left: 4px solid #8a94a6;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  .mapa__alternativas :global(button strong) {
+    font-size: 14px;
+    color: var(--color-bark);
+  }
+  .mapa__alternativas :global(button[aria-pressed="true"]) {
+    border-color: #2f6fde;
+    border-left-color: #2f6fde;
+    background: #eef3fd;
   }
   .mapa :global(.mapa__ctrl-app) {
     font-size: 18px;

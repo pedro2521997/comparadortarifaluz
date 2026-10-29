@@ -98,6 +98,15 @@ export interface TextosApp {
   lista: string;
   ocultar: string;
   ficha: string;
+  /** Abrir en Google Maps una ruta con la gasolinera como parada (salida → gasolinera → destino). */
+  conParada: string;
+  /** Etiqueta de la ruta alternativa más rápida */
+  rapida: string;
+  elegirRuta: string;
+  /** Parada intermedia opcional de la ruta (Madrid → Albacete → Valencia) */
+  anadirParada: string;
+  por: string;
+  paradaPh: string;
 }
 
 export const TEXTOS_M: Partial<Record<Idioma, TextosMapa>> = {
@@ -183,6 +192,12 @@ export const TEXTOS_M: Partial<Record<Idioma, TextosMapa>> = {
       lista: "Ver la lista",
       ocultar: "Ocultar la lista",
       ficha: "Ver la ficha",
+      conParada: "Ruta con parada aquí",
+      rapida: "más rápida",
+      elegirRuta: "Elige una ruta",
+      anadirParada: "Añadir parada",
+      por: "Por",
+      paradaPh: "Localidad por la que pasar",
     },
   },
   de: {
@@ -267,6 +282,12 @@ export const TEXTOS_M: Partial<Record<Idioma, TextosMapa>> = {
       lista: "Liste zeigen",
       ocultar: "Liste ausblenden",
       ficha: "Details",
+      conParada: "Route mit Stopp hier",
+      rapida: "schnellste",
+      elegirRuta: "Route wählen",
+      anadirParada: "Zwischenstopp hinzufügen",
+      por: "Über",
+      paradaPh: "Ort, über den die Route führt",
     },
   },
   fr: {
@@ -351,6 +372,12 @@ export const TEXTOS_M: Partial<Record<Idioma, TextosMapa>> = {
       lista: "Voir la liste",
       ocultar: "Masquer la liste",
       ficha: "Fiche",
+      conParada: "Itinéraire avec arrêt ici",
+      rapida: "la plus rapide",
+      elegirRuta: "Choisissez un itinéraire",
+      anadirParada: "Ajouter une étape",
+      por: "Via",
+      paradaPh: "Ville par laquelle passer",
     },
   },
   it: {
@@ -435,6 +462,12 @@ export const TEXTOS_M: Partial<Record<Idioma, TextosMapa>> = {
       lista: "Mostra l'elenco",
       ocultar: "Nascondi l'elenco",
       ficha: "Scheda",
+      conParada: "Percorso con sosta qui",
+      rapida: "più veloce",
+      elegirRuta: "Scegli un percorso",
+      anadirParada: "Aggiungi una tappa",
+      por: "Via",
+      paradaPh: "Località da cui passare",
     },
   },
   nl: {
@@ -519,6 +552,12 @@ export const TEXTOS_M: Partial<Record<Idioma, TextosMapa>> = {
       lista: "Lijst tonen",
       ocultar: "Lijst verbergen",
       ficha: "Details",
+      conParada: "Route met stop hier",
+      rapida: "snelste",
+      elegirRuta: "Kies een route",
+      anadirParada: "Tussenstop toevoegen",
+      por: "Via",
+      paradaPh: "Plaats om langs te rijden",
     },
   },
   pt: {
@@ -603,6 +642,12 @@ export const TEXTOS_M: Partial<Record<Idioma, TextosMapa>> = {
       lista: "Ver a lista",
       ocultar: "Esconder a lista",
       ficha: "Ficha",
+      conParada: "Rota com paragem aqui",
+      rapida: "mais rápida",
+      elegirRuta: "Escolha uma rota",
+      anadirParada: "Adicionar paragem",
+      por: "Por",
+      paradaPh: "Localidade por onde passar",
     },
   },
   sv: {
@@ -687,6 +732,12 @@ export const TEXTOS_M: Partial<Record<Idioma, TextosMapa>> = {
       lista: "Visa listan",
       ocultar: "Dölj listan",
       ficha: "Detaljer",
+      conParada: "Rutt med stopp här",
+      rapida: "snabbast",
+      elegirRuta: "Välj rutt",
+      anadirParada: "Lägg till stopp",
+      por: "Via",
+      paradaPh: "Ort att åka via",
     },
   },
   da: {
@@ -771,6 +822,12 @@ export const TEXTOS_M: Partial<Record<Idioma, TextosMapa>> = {
       lista: "Vis listen",
       ocultar: "Skjul listen",
       ficha: "Detaljer",
+      conParada: "Rute med stop her",
+      rapida: "hurtigst",
+      elegirRuta: "Vælg rute",
+      anadirParada: "Tilføj stop",
+      por: "Via",
+      paradaPh: "By at køre via",
     },
   },
   fi: {
@@ -855,6 +912,12 @@ export const TEXTOS_M: Partial<Record<Idioma, TextosMapa>> = {
       lista: "Näytä luettelo",
       ocultar: "Piilota luettelo",
       ficha: "Tiedot",
+      conParada: "Reitti pysähdyksellä tässä",
+      rapida: "nopein",
+      elegirRuta: "Valitse reitti",
+      anadirParada: "Lisää välipysähdys",
+      por: "Kautta",
+      paradaPh: "Paikkakunta, jonka kautta ajetaan",
     },
   },
 };

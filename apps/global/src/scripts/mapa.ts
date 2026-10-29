@@ -51,6 +51,10 @@ function iniciar(raiz: HTMLElement, cfg: Config) {
   const desvio = $<HTMLSelectElement>("[data-desvio]");
   const quitar = $<HTMLButtonElement>("[data-quitar]");
   const trayecto = $<HTMLSpanElement>("[data-trayecto]");
+  const alternativas = $<HTMLDivElement>("[data-alternativas]");
+  const parada = $<HTMLInputElement>("[data-parada]");
+  const campoParada = $<HTMLLabelElement>("[data-campo-parada]");
+  const anadirParada = $<HTMLButtonElement>("[data-anadir-parada]");
   const ordenRutaEl = $<HTMLDivElement>("[data-orden]");
   const T = cfg.t;
   const A = T.app;
@@ -62,6 +66,17 @@ function iniciar(raiz: HTMLElement, cfg: Config) {
   const distancia = (km: number) => (km < 1 ? `${nf0.format(Math.round((km * 1000) / 50) * 50)} m` : `${km < 10 ? nf1.format(km) : nf0.format(Math.round(km))} km`);
   const fechaCorta = new Intl.DateTimeFormat(cfg.locale, { day: "numeric", month: "short", timeZone: "UTC" });
   const esc = (s: string) => s.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
+  /** Enlaces para ir a un punto con Google Maps, Apple Maps o Waze (en el móvil abren la aplicación si está instalada). En iPhone, iPad y Mac, Apple Maps primero. */
+  const apple = /iPhone|iPad|Macintosh/.test(navigator.userAgent);
+  const navegar = (lat: number, lon: number) => {
+    const apps: [string, string][] = [
+      ["Google Maps", `https://www.google.com/maps/dir/?api=1&amp;destination=${lat},${lon}&amp;travelmode=driving`],
+      ["Apple Maps", `https://maps.apple.com/?daddr=${lat},${lon}&amp;dirflg=d`],
+      ["Waze", `https://waze.com/ul?ll=${lat},${lon}&amp;navigate=yes`],
+    ];
+    if (apple) apps.unshift(apps.splice(1, 1)[0]);
+    return apps.map(([n, u]) => `<a href="${u}" target="_blank" rel="noopener">${n}</a>`).join("");
+  };
   const norm = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
   const nEst = (n: number) => (n === 1 ? T.estaciones[0] : T.estaciones[1].replace("{n}", nf0.format(n)));
   const rellenar = (s: string, v: Record<string, string>) => s.replace(/\{(\w+)\}/g, (_, k: string) => v[k] ?? "");
@@ -121,7 +136,13 @@ function iniciar(raiz: HTMLElement, cfg: Config) {
   let modo: Modo = "baratas";
   /** Punto de referencia de «más cercanas»: tu ubicación, el sitio buscado o el centro del mapa. */
   let ref: { c: [number, number]; tipo: "yo" | "lugar" | "centro"; nombre?: string } | null = null;
-  let ruta: { km: number; en: Map<number, { d: number; km: number }> } | null = null;
+  /** Ruta elegida: kilómetros, gasolineras cerca (distancia y punto kilométrico), salida y destino [lon, lat]. */
+  let ruta: { km: number; en: Map<number, { d: number; km: number }>; a: [number, number]; b: [number, number]; v?: { c: [number, number]; km: number } } | null = null;
+  /** Las rutas que propone OSRM (la primera es la más rápida) y cuál se ha elegido. */
+  let rutas: { coords: [number, number][]; km: number; min: number }[] = [];
+  let rutaElegida = 0;
+  /** Parada intermedia de la ruta, si se ha puesto. */
+  let paradaRuta: [number, number] | null = null;
   let ordenRuta: "precio" | "paso" = "precio";
 
   const cargaDatos = fetch(cfg.datos).then((r) => {
@@ -222,8 +243,17 @@ function iniciar(raiz: HTMLElement, cfg: Config) {
       if (ev.id.startsWith("m-")) dibujarInsignia(ev.id);
     });
     mapa.addSource("ruta", { type: "geojson", data: { type: "FeatureCollection", features: [] } });
-    mapa.addLayer({ id: "ruta-borde", type: "line", source: "ruta", layout: { "line-join": "round", "line-cap": "round" }, paint: { "line-color": "#ffffff", "line-width": 9 } });
-    mapa.addLayer({ id: "ruta", type: "line", source: "ruta", layout: { "line-join": "round", "line-cap": "round" }, paint: { "line-color": "#2f6fde", "line-width": 5, "line-opacity": 0.85 } });
+    // Las rutas alternativas, en gris por debajo; se eligen tocándolas.
+    const linea = { "line-join": "round", "line-cap": "round" } as const;
+    mapa.addLayer({ id: "ruta-alt", type: "line", source: "ruta", filter: ["==", ["get", "sel"], 0], layout: linea, paint: { "line-color": "#8a94a6", "line-width": 6, "line-opacity": 0.75 } });
+    mapa.addLayer({ id: "ruta-borde", type: "line", source: "ruta", filter: ["==", ["get", "sel"], 1], layout: linea, paint: { "line-color": "#ffffff", "line-width": 9 } });
+    mapa.addLayer({ id: "ruta", type: "line", source: "ruta", filter: ["==", ["get", "sel"], 1], layout: linea, paint: { "line-color": "#2f6fde", "line-width": 5, "line-opacity": 0.85 } });
+    mapa.on("click", "ruta-alt", (ev) => {
+      const k = ev.features?.[0]?.properties?.k;
+      if (typeof k === "number") usarRuta(k);
+    });
+    mapa.on("mouseenter", "ruta-alt", () => (mapa.getCanvas().style.cursor = "pointer"));
+    mapa.on("mouseleave", "ruta-alt", () => (mapa.getCanvas().style.cursor = ""));
     mapa.addSource("gasolineras", { type: "geojson", data: { type: "FeatureCollection", features: [] } });
     const opacidad = ["case", ["==", ["get", "r"], 1], 1, 0.22];
     // Aro de color (y, de lejos, el punto entero).
@@ -428,10 +458,16 @@ function iniciar(raiz: HTMLElement, cfg: Config) {
     const fecha = f[7] ? T.precioDel.replace("{f}", fechaCorta.format(new Date(`${f[7]}T12:00:00Z`))) : "";
     const pie = [fecha, f[8] ? T.autopista : "", ref?.tipo === "yo" ? rellenar(A.a, { d: distancia(km(ref.c, [f[1], f[0]])) }) : ""].filter(Boolean).join(" · ");
     const ficha = cfg.fichas && f[9] ? `<a href="${cfg.fichas}${encodeURIComponent(f[9])}/">${esc(A.ficha)}</a>` : "";
+    // Con una ruta calculada y la gasolinera en ella: abrir el viaje entero en Google Maps con la parada aquí.
+    const parada =
+      ruta && ruta.en.has(i)
+        ? `<a class="popup__parada" href="https://www.google.com/maps/dir/?api=1&amp;origin=${ruta.a[1]},${ruta.a[0]}&amp;destination=${ruta.b[1]},${ruta.b[0]}&amp;waypoints=${paradas(i)}&amp;travelmode=driving" target="_blank" rel="noopener">${esc(A.conParada)} →</a>`
+        : "";
     const html = `<div class="popup__cab">${htmlInsignia(i, precioDe.get(i))}<strong>${esc(f[2] ? nombreMarca(f[2]) : T.estacion)}</strong></div>${esc(f[3])}<br>${esc([f[5], f[4]].filter(Boolean).join(" "))}
       <ul class="popup__precios">${precios}</ul>
       <div class="popup__pie">${esc(pie)}</div>
-      <div class="popup__acciones"><a href="https://www.google.com/maps/dir/?api=1&destination=${f[0]},${f[1]}" target="_blank" rel="noopener">${esc(T.ruta)} →</a>${ficha}</div>`;
+      <div class="popup__navegar"><span>${esc(T.ruta)}</span>${navegar(f[0], f[1])}</div>${parada}
+      ${ficha ? `<div class="popup__acciones">${ficha}</div>` : ""}`;
     if (popup) popup.remove();
     popup = new maplibregl.Popup({ offset: 14, maxWidth: "290px" }).setLngLat([f[1], f[0]]).setHTML(html).addTo(mapa);
     mapa.setFilter("elegida", ["==", ["get", "i"], i]);
@@ -785,8 +821,16 @@ function iniciar(raiz: HTMLElement, cfg: Config) {
 
   let selOrigen: Opcion | null = null;
   let selDestino: Opcion | null = null;
+  let selParada: Opcion | null = null;
   autocompletar(origen, { estaciones: false, yo: true, alElegir: (op) => (selOrigen = op) });
   autocompletar(destino, { estaciones: false, yo: false, alElegir: (op) => (selDestino = op) });
+  autocompletar(parada, { estaciones: false, yo: false, alElegir: (op) => (selParada = op) });
+  parada.addEventListener("input", () => (selParada = null));
+  anadirParada.addEventListener("click", () => {
+    campoParada.hidden = false;
+    anadirParada.hidden = true;
+    parada.focus();
+  });
   origen.addEventListener("input", () => (selOrigen = null));
   destino.addEventListener("input", () => (selDestino = null));
 
@@ -813,7 +857,8 @@ function iniciar(raiz: HTMLElement, cfg: Config) {
     await cargarLocalidades();
     const o = resolver(origen, selOrigen, { tipo: "yo" });
     const d = resolver(destino, selDestino);
-    if (!o || !d) return aviso(A.rutaFalta);
+    const v = parada.value.trim() ? resolver(parada, selParada) : null;
+    if (!o || !d || (parada.value.trim() && !v)) return aviso(A.rutaFalta);
     const boton = formRuta.querySelector<HTMLButtonElement>("button[type=submit]")!;
     boton.disabled = true;
     resumen.textContent = A.calculando;
@@ -827,20 +872,22 @@ function iniciar(raiz: HTMLElement, cfg: Config) {
         return;
       }
       const b = await punto(d);
-      const r = await fetch(`${OSRM}${a.map((x) => x.toFixed(5)).join(",")};${b.map((x) => x.toFixed(5)).join(",")}?overview=full&geometries=geojson`, { signal: AbortSignal.timeout(20000) });
-      const j = (await r.json()) as { code: string; routes?: { distance: number; geometry: { coordinates: [number, number][] } }[] };
-      const rt = j.routes?.[0];
-      if (!r.ok || j.code !== "Ok" || !rt) throw new Error(j.code);
-      const coords = rt.geometry.coordinates;
-      ruta = { km: rt.distance / 1000, en: corredor(coords, Number(desvio.value), rt.distance / 1000) };
-      (mapa.getSource("ruta") as maplibregl.GeoJSONSource).setData({ type: "Feature", properties: {}, geometry: { type: "LineString", coordinates: coords } });
-      const caja = coords.reduce((bb, c) => bb.extend(c), new maplibregl.LngLatBounds(coords[0], coords[0]));
+      paradaRuta = v ? await punto(v) : null;
+      // Hasta tres rutas: la más rápida y dos alternativas, si OSRM las encuentra (con parada solo hay una).
+      const puntos = [a, ...(paradaRuta ? [paradaRuta] : []), b].map((p) => p.map((x) => x.toFixed(5)).join(",")).join(";");
+      const r = await fetch(`${OSRM}${puntos}?overview=full&geometries=geojson&alternatives=${paradaRuta ? "false" : "3"}`, { signal: AbortSignal.timeout(20000) });
+      const j = (await r.json()) as { code: string; routes?: { distance: number; duration: number; geometry: { coordinates: [number, number][] } }[] };
+      if (!r.ok || j.code !== "Ok" || !j.routes?.length) throw new Error(j.code);
+      rutas = j.routes.slice(0, 3).map((x) => ({ coords: x.geometry.coordinates, km: x.distance / 1000, min: x.duration / 60 }));
+      const todas = rutas.flatMap((x) => x.coords);
+      const caja = todas.reduce((bb, c) => bb.extend(c), new maplibregl.LngLatBounds(todas[0], todas[0]));
       encuadrar(caja, { padding: movil() ? 30 : 50 });
-      trayecto.textContent = `${origen.value || A.miUbicacion} → ${destino.value}`;
+      trayecto.textContent = [origen.value || A.miUbicacion, ...(paradaRuta ? [parada.value] : []), destino.value].join(" → ");
       formRuta.classList.add("mapa__ruta--hecha");
-      actualizarFuente();
+      // Si la hoja de abajo estaba plegada, se despliega para que se vean las rutas y la lista.
+      raiz.classList.remove("mapa--plegado");
       modo = "ruta";
-      listar();
+      usarRuta(0, a, b);
       if (movil()) (document.activeElement as HTMLElement | null)?.blur();
     } catch {
       resumen.textContent = "";
@@ -850,8 +897,75 @@ function iniciar(raiz: HTMLElement, cfg: Config) {
     }
   });
 
+  /** Elige una de las rutas: la pinta en azul (las otras en gris) y busca las gasolineras que quedan en ella. */
+  function usarRuta(k: number, a = ruta?.a, b = ruta?.b) {
+    const rt = rutas[k];
+    if (!rt || !a || !b) return;
+    rutaElegida = k;
+    ruta = { km: rt.km, en: corredor(rt.coords, Number(desvio.value), rt.km), a, b, ...(paradaRuta ? { v: { c: paradaRuta, km: kmEnRuta(rt, paradaRuta) } } : {}) };
+    (mapa.getSource("ruta") as maplibregl.GeoJSONSource).setData({
+      type: "FeatureCollection",
+      features: rutas.map((x, n) => ({ type: "Feature", properties: { k: n, sel: n === k ? 1 : 0 }, geometry: { type: "LineString", coordinates: x.coords } })),
+    });
+    pintarAlternativas();
+    popup?.remove();
+    actualizarFuente();
+    listar();
+  }
+
+  /** Punto kilométrico de la ruta más cercano a un sitio (para ordenar las paradas en Google Maps). */
+  function kmEnRuta(rt: { coords: [number, number][]; km: number }, c: [number, number]) {
+    let acum = 0;
+    let mejor = { d: Infinity, km: 0 };
+    rt.coords.forEach((p, n) => {
+      if (n) acum += km(rt.coords[n - 1], p);
+      const d = km(p, c);
+      if (d < mejor.d) mejor = { d, km: acum };
+    });
+    return mejor.km;
+  }
+
+  /** Paradas para Google Maps en el orden en que se pasa por ellas: la de la ruta (si hay) y la gasolinera. */
+  function paradas(i: number) {
+    const f = datos!.e[i];
+    const g = { t: `${f[0]},${f[1]}`, km: ruta!.en.get(i)!.km };
+    const lista = ruta!.v ? [g, { t: `${ruta!.v.c[1]},${ruta!.v.c[0]}`, km: ruta!.v.km }] : [g];
+    return lista
+      .sort((x, y) => x.km - y.km)
+      .map((x) => x.t)
+      .join("%7C");
+  }
+
+  /** «3 h 20 min», «45 min» */
+  const duracion = (min: number) => {
+    const m = Math.round(min);
+    return m < 60 ? `${m} min` : `${Math.floor(m / 60)} h${m % 60 ? ` ${m % 60} min` : ""}`;
+  };
+
+  /** Botones para cambiar de ruta (solo si hay más de una). */
+  function pintarAlternativas() {
+    alternativas.hidden = rutas.length < 2;
+    alternativas.replaceChildren(
+      ...rutas.map((x, n) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.setAttribute("aria-pressed", String(n === rutaElegida));
+        b.innerHTML = `<strong>${esc(duracion(x.min))}</strong> <span>${esc(nf0.format(Math.round(x.km)))} km${n === 0 ? ` · ${esc(A.rapida)}` : ""}</span>`;
+        b.addEventListener("click", () => usarRuta(n));
+        return b;
+      }),
+    );
+  }
+
   quitar.addEventListener("click", () => {
     ruta = null;
+    rutas = [];
+    paradaRuta = null;
+    parada.value = "";
+    selParada = null;
+    campoParada.hidden = true;
+    anadirParada.hidden = false;
+    pintarAlternativas();
     formRuta.classList.remove("mapa__ruta--hecha");
     (mapa.getSource("ruta") as maplibregl.GeoJSONSource).setData({ type: "FeatureCollection", features: [] });
     actualizarFuente();
@@ -861,8 +975,9 @@ function iniciar(raiz: HTMLElement, cfg: Config) {
     formRuta.classList.remove("mapa__ruta--hecha");
     destino.focus({ preventScroll: true });
   });
+  // Cambiar cuánto se está dispuesto a desviarse no cambia la ruta: solo qué gasolineras quedan en ella.
   desvio.addEventListener("change", () => {
-    if (ruta) formRuta.requestSubmit();
+    if (ruta) usarRuta(rutaElegida);
   });
 
   /**

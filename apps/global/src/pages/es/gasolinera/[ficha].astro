@@ -86,7 +86,12 @@ const esquema = {
   geo: { "@type": "GeoCoordinates", latitude: e.lat, longitude: e.lon },
 };
 const mapaUrl = `/es/mapa-gasolineras/?e=${slugFicha(e.rotulo, e.mun, e.id)}`;
-const llegar = `https://www.google.com/maps/dir/?api=1&destination=${e.lat},${e.lon}`;
+// Cómo llegar con la aplicación que use cada uno (en el móvil se abre la aplicación si está instalada).
+const llegar = [
+  { n: "Google Maps", u: `https://www.google.com/maps/dir/?api=1&destination=${e.lat},${e.lon}&travelmode=driving` },
+  { n: "Apple Maps", u: `https://maps.apple.com/?daddr=${e.lat},${e.lon}&dirflg=d` },
+  { n: "Waze", u: `https://waze.com/ul?ll=${e.lat},${e.lon}&navigate=yes` },
+];
 ---
 
 <Base lang="es" locale="es-ES"
@@ -118,8 +123,9 @@ const llegar = `https://www.google.com/maps/dir/?api=1&destination=${e.lat},${e.
       <p class="lead">
         Precios de hoy, {fecha} ({HORA}): {resumenPrecios}.{comparacion && <> {Cap(conArt(principal))} está <strong>{comparacion}</strong>.</>}
       </p>
+      <p class="ficha__llegar">Cómo llegar</p>
       <div class="btn-row">
-        <a class="btn" href={llegar} rel="noopener nofollow" target="_blank">Cómo llegar</a>
+        {llegar.map((x, k) => <a class:list={["btn", { "btn--ghost": k > 0 }]} href={x.u} rel="noopener nofollow" target="_blank">{x.n}</a>)}
         <a class="btn btn--ghost" href={mapaUrl}>Ver en el mapa</a>
       </div>
     </div>
@@ -233,6 +239,14 @@ const llegar = `https://www.google.com/maps/dir/?api=1&destination=${e.lat},${e.
     font-size: 22px;
     font-weight: 700;
     box-shadow: 0 2px 10px rgba(16, 67, 54, 0.2);
+  }
+  .ficha__llegar {
+    margin: 0 0 8px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-slate);
   }
   .ficha__ins--logo {
     background: #fff;
