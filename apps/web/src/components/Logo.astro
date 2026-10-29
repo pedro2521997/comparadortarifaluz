@@ -1,4 +1,6 @@
 ---
+// Logotipo: símbolo (la «C» con el punto menta, mismo dibujo que scripts/iconos.mjs) y el nombre.
+// En fondo oscuro (pie) el cuadro va en menta y la «C» en verde para que no se pierda contra el fondo.
 interface Props {
   blanco?: boolean;
 }
@@ -6,9 +8,10 @@ const { blanco = false } = Astro.props;
 ---
 
 <span class:list={["logo", { "logo--blanco": blanco }]}>
-  <svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true">
-    <circle cx="16" cy="16" r="16" fill={blanco ? "#ffffff" : "#104336"}></circle>
-    <path d="M18 5 9 18h6l-2 9 10-14h-6l1-8z" fill="#0fff87"></path>
+  <svg class="logo__s" width="30" height="30" viewBox="0 0 48 48" aria-hidden="true">
+    <rect width="48" height="48" rx="12" fill={blanco ? "#0fff87" : "#104336"}></rect>
+    <path d="M31.71 14.81A12 12 0 1 0 31.71 33.19" fill="none" stroke={blanco ? "#104336" : "#ffffff"} stroke-width="7"></path>
+    <circle cx="32" cy="24" r="4.5" fill={blanco ? "#ffffff" : "#0fff87"}></circle>
   </svg>
   <span class="logo__t">Comparador<strong>TarifaLuz</strong><span class="logo__es">.es</span></span>
 </span>
@@ -19,12 +22,17 @@ const { blanco = false } = Astro.props;
     align-items: center;
     gap: 10px;
     font-size: 20px;
-    font-weight: 400;
-    letter-spacing: -0.01em;
+    font-weight: 500;
+    letter-spacing: -0.02em;
     color: var(--color-canopy);
+  }
+  .logo__s {
+    flex: none;
   }
   .logo__es {
     font-size: 0.75em;
+    font-weight: 400;
+    letter-spacing: 0;
     color: var(--color-slate);
     margin-left: 1px;
   }
@@ -37,7 +45,7 @@ const { blanco = false } = Astro.props;
     }
   }
   .logo strong {
-    font-weight: 500;
+    font-weight: 700;
   }
   .logo--blanco {
     color: #fff;

@@ -1,0 +1,46 @@
+---
+// Logotipo de PowerPriceNow: símbolo (la «P» con el punto amarillo, mismo dibujo que scripts/iconos.mjs) y el nombre,
+// con «Now» en naranja. En fondo oscuro (pie), el texto en blanco y «Now» en un naranja más claro.
+interface Props {
+  blanco?: boolean;
+}
+const { blanco = false } = Astro.props;
+// Cada logotipo de la página necesita su propio id de degradado.
+const id = `ppn-${blanco ? "b" : "n"}`;
+---
+
+<span class:list={["g-marca", { "g-marca--blanco": blanco }]}>
+  <svg class="g-marca__s" width="30" height="30" viewBox="0 0 48 48" aria-hidden="true">
+    <defs>
+      <linearGradient id={id} x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F97316"></stop><stop offset="1" stop-color="#C2410C"></stop></linearGradient>
+    </defs>
+    <rect width="48" height="48" rx="12" fill={`url(#${id})`}></rect>
+    <path d="M17 35.5V12.5H25.5a7.75 7.75 0 0 1 0 15.5H17" fill="none" stroke="#fff" stroke-width="6.5" stroke-linejoin="round"></path>
+    <circle cx="33.5" cy="33.5" r="4.2" fill="#FDE047"></circle>
+  </svg>
+  <span class="g-marca__t">PowerPrice<span class="g-marca__now">Now</span></span>
+</span>
+
+<style>
+  .g-marca {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--color-ink);
+  }
+  .g-marca__s {
+    flex: none;
+  }
+  .g-marca__now {
+    color: #ea580c;
+  }
+  .g-marca--blanco {
+    color: #fff;
+  }
+  .g-marca--blanco .g-marca__now {
+    color: #fdba74;
+  }
+</style>

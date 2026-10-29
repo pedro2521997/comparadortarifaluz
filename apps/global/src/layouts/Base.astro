@@ -4,6 +4,7 @@
 import "../../../web/src/styles/global.css";
 import "../../../web/src/styles/componentes.css";
 import Anuncio from "../components/Anuncio.astro";
+import Logo from "../components/Logo.astro";
 import { SITIO } from "../config";
 import { PAISES_CON_DATOS } from "../lib/datos";
 import { PAISES_C, textosC, urlPrecios, urlEuropa, en, CC } from "../lib/carburantes";
@@ -74,8 +75,8 @@ const paisesMenu = PAISES.filter((p) => PAISES_CON_DATOS.includes(p) || p.cc ===
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex" />}
     {alternativas.map((a) => <link rel="alternate" hreflang={a.lang} href={a.href} />)}
-    <link rel="icon" href="/favicon.ico" sizes="32x32" />
-    <link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.ico?v=3" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg?v=3" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="theme-color" content="#EA580C" />
@@ -98,7 +99,7 @@ const paisesMenu = PAISES.filter((p) => PAISES_CON_DATOS.includes(p) || p.cc ===
     <a class="sr-only" href="#contenido">Skip to content</a>
     <header class="nav">
       <div class="wrap nav__in g-nav">
-        <a href={sec ? `/${sec.cc}/` : "/"} class="g-logo">⚡ {SITIO.nombre}</a>
+        <a href={sec ? `/${sec.cc}/` : "/"} class="g-logo" aria-label={`${SITIO.nombre}, ${sec ? sec.nombre : "home"}`}><Logo /></a>
         <details class="g-selector">
           <summary aria-label="Country / language"><span aria-hidden="true">🌐</span> {sec ? sec.cc.toUpperCase() : "EN"} <span aria-hidden="true" class="g-flecha">▾</span></summary>
           <ul>
@@ -134,7 +135,7 @@ const paisesMenu = PAISES.filter((p) => PAISES_CON_DATOS.includes(p) || p.cc ===
       <div class="wrap">
         <div class="pie__grid">
           <div class="pie__marca">
-            <p><strong>⚡ {SITIO.nombre}</strong></p>
+            <Logo blanco />
             <p>{L.nota}</p>
           </div>
           <div>
@@ -211,13 +212,11 @@ const paisesMenu = PAISES.filter((p) => PAISES_CON_DATOS.includes(p) || p.cc ===
     gap: 8px 24px;
   }
   .g-logo {
-    font-weight: 700;
-    font-size: 20px;
-    color: var(--color-ink);
+    display: inline-flex;
     text-decoration: none;
   }
   .g-logo:hover {
-    color: #ea580c;
+    opacity: 0.85;
   }
   /* Selector de país: desplegable sin JavaScript */
   .g-selector {
