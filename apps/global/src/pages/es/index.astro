@@ -2,6 +2,7 @@
 // Portada de España en la web global: carburantes (precio de hoy, mapa, gasolineras baratas, Europa) y guías.
 // El precio de la luz de España está en la web española (comparadortarifaluz.es), a la que se enlaza.
 import Base from "../../layouts/Base.astro";
+import MarcaCtl from "../../components/MarcaCtl.astro";
 import { HAY_GASOLINERAS, ESTACIONES, FECHA, HORA, PROVINCIAS, stats, eurL } from "../../lib/gasolineras";
 import { PAISES } from "../../lib/datos";
 import { urlCalefaccion, urlEuropa } from "../../lib/carburantes";
@@ -44,7 +45,15 @@ const desc = g && d ? `Precio de la gasolina y el gasóleo hoy en España (gasol
   </section>
   <section class="section section--tight">
     <div class="wrap grid grid--2">
-      {tarjetas.map((x) => <a class="card card--link" href={x.href}><strong>{x.t}</strong><span class="muted small">{x.d}</span></a>)}
+      {
+        tarjetas.map((x) =>
+          x.href === SITIO.espana ? (
+            <a class="card card--link" href={x.href} target="_blank" rel="noopener"><strong><MarcaCtl />{x.t} <span aria-hidden="true">↗</span></strong><span class="muted small">{x.d}</span></a>
+          ) : (
+            <a class="card card--link" href={x.href}><strong>{x.t}</strong><span class="muted small">{x.d}</span></a>
+          ),
+        )
+      }
     </div>
   </section>
   <section class="section section--white section--tight">

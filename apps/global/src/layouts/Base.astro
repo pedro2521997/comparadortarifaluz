@@ -5,6 +5,7 @@ import "../../../web/src/styles/global.css";
 import "../../../web/src/styles/componentes.css";
 import Anuncio from "../components/Anuncio.astro";
 import Logo from "../components/Logo.astro";
+import MarcaCtl from "../components/MarcaCtl.astro";
 import { SITIO } from "../config";
 import { PAISES_CON_DATOS } from "../lib/datos";
 import { PAISES_C, textosC, urlPrecios, urlEuropa, en, CC } from "../lib/carburantes";
@@ -50,10 +51,11 @@ const sec = PAISES.find((p) => ruta.startsWith(`/${p.cc}/`));
 const Ls = sec ? TEXTOS[sec.lang] : L;
 const guiaCc = sec ? GUIAS.find((g) => g.lang === sec.lang)?.cc : undefined;
 const tieneLuz = sec && MERCADOS.some((m) => m.pais.cc === sec.cc && m.principal);
-const menu: { href: string; t: string; activo: boolean }[] = !sec
+// «externo»: la luz de España está en ComparadorTarifaLuz.es; se abre en otra pestaña y lleva su símbolo.
+const menu: { href: string; t: string; activo: boolean; externo?: boolean }[] = !sec
   ? []
   : [
-      ...(tieneLuz ? [{ href: `/${sec.cc}/`, t: Ls.precio, activo: false }] : sec.cc === "es" ? [{ href: SITIO.espana, t: Ls.precio, activo: false }] : []),
+      ...(tieneLuz ? [{ href: `/${sec.cc}/`, t: Ls.precio, activo: false }] : sec.cc === "es" ? [{ href: SITIO.espana, t: Ls.precio, activo: false, externo: true }] : []),
       ...(PAISES_C.includes(sec) ? [{ href: urlPrecios(sec), t: Ls.carburantes, activo: ruta.startsWith(urlPrecios(sec)) || ruta.includes("/gasolineras-baratas/") || (!!zonasDe(sec) && ruta.startsWith(urlZonas(zonasDe(sec)!))) || /\/precio-(gasoil|glp)-hoy\//.test(ruta) || ruta.startsWith(`/${sec.cc}/${textosC(sec).slugCalefaccion}/`) }] : []),
       ...(tieneMapas(sec) ? [{ href: urlMapa(sec), t: TEXTOS_M[sec.lang]!.boton, activo: ruta.startsWith(urlMapa(sec)) }] : []),
       ...(PAISES_C.includes(sec) ? [{ href: urlEuropa(sec), t: textosC(sec).tituloEuropa, activo: ruta.startsWith(urlEuropa(sec)) }] : []),
@@ -118,7 +120,16 @@ const paisesMenu = PAISES.filter((p) => PAISES_CON_DATOS.includes(p) || p.cc ===
           <nav class="g-menu" aria-label={sec?.nombre}>
             <div class="wrap g-menu__in">
               {menu.map((x) => (
-                <a href={x.href} aria-current={x.activo ? "page" : undefined}>{x.t}</a>
+                x.externo ? (
+                  <a href={x.href} target="_blank" rel="noopener" class="g-externo" title="ComparadorTarifaLuz.es">
+                    <MarcaCtl />
+                    {x.t}
+                    <span class="g-externo__flecha" aria-hidden="true">↗</span>
+                    <span class="sr-only"> (ComparadorTarifaLuz.es)</span>
+                  </a>
+                ) : (
+                  <a href={x.href} aria-current={x.activo ? "page" : undefined}>{x.t}</a>
+                )
               ))}
             </div>
           </nav>
@@ -142,7 +153,7 @@ const paisesMenu = PAISES.filter((p) => PAISES_CON_DATOS.includes(p) || p.cc ===
             <p class="pie__titulo">{L.otrosPaises}</p>
             <ul>
               {PAISES_CON_DATOS.map((p) => <li><a href={`/${p.cc}/`}>{TEXTOS[p.lang].precio} {TEXTOS[p.lang].hoy} · {p.nombre}</a></li>)}
-              <li><a href={SITIO.espana} hreflang="es">Precio de la luz hoy · España</a></li>
+              <li><a href={SITIO.espana} hreflang="es" target="_blank" rel="noopener"><MarcaCtl tam={16} />Precio de la luz hoy · España <span aria-hidden="true">↗</span></a></li>
             </ul>
           </div>
           <div>
@@ -217,6 +228,15 @@ const paisesMenu = PAISES.filter((p) => PAISES_CON_DATOS.includes(p) || p.cc ===
   }
   .g-logo:hover {
     opacity: 0.85;
+  }
+  .g-externo {
+    display: inline-flex;
+    align-items: center;
+  }
+  .g-externo__flecha {
+    margin-left: 4px;
+    font-size: 0.85em;
+    opacity: 0.6;
   }
   /* Selector de país: desplegable sin JavaScript */
   .g-selector {

@@ -2,6 +2,7 @@
 // Portada global (inglés): el precio de hoy en cada país, con enlace a su página en su idioma.
 import Base from "../layouts/Base.astro";
 import Anuncio from "../components/Anuncio.astro";
+import MarcaCtl from "../components/MarcaCtl.astro";
 import { SITIO } from "../config";
 import { MERCADOS, info, hoyDe, alternativas } from "../lib/datos";
 import { TEXTOS } from "../lib/textos";
@@ -36,8 +37,8 @@ const filas = MERCADOS.filter((m) => m.principal).map((m) => ({ m, i: info(m, ho
           </a>
         ))
       }
-      <a class="card card--link" href={SITIO.espana} hreflang="es-ES">
-        <strong>España <span class="muted small">· Spain</span></strong>
+      <a class="card card--link" href={SITIO.espana} hreflang="es-ES" target="_blank" rel="noopener">
+        <strong><MarcaCtl />España <span class="muted small">· Spain</span> <span aria-hidden="true">↗</span></strong>
         <span>Precio de la luz hoy (PVPC)</span>
         <span class="caption">comparadortarifaluz.es</span>
       </a>

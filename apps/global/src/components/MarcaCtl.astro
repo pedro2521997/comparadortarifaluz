@@ -1,0 +1,22 @@
+---
+// Símbolo de ComparadorTarifaLuz (la «C» con el punto menta, mismo dibujo que scripts/iconos.mjs) para los enlaces que
+// llevan a esa web: así se ve que es otra web, la nuestra de la luz en España.
+interface Props {
+  tam?: number;
+}
+const { tam = 18 } = Astro.props;
+---
+
+<svg class="marca-ctl" width={tam} height={tam} viewBox="0 0 48 48" aria-hidden="true">
+  <rect width="48" height="48" rx="12" fill="#104336"></rect>
+  <path d="M31.71 14.81A12 12 0 1 0 31.71 33.19" fill="none" stroke="#ffffff" stroke-width="7"></path>
+  <circle cx="32" cy="24" r="4.5" fill="#0fff87"></circle>
+</svg>
+
+<style>
+  .marca-ctl {
+    flex: none;
+    vertical-align: -0.2em;
+    margin-right: 6px;
+  }
+</style>
