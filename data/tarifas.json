@@ -1,6 +1,6 @@
 {
  "_nota": "Precios SIN impuestos. Las tarifas cnmc-* se generan con scripts/importar-cnmc.mjs a partir del comparador oficial de la CNMC (precios del segundo año, sin promociones). Las demás se mantienen a mano. Una tarifa con más de 45 días sin comprobar se marca 'por revisar'.",
- "actualizado": "2026-10-21",
+ "actualizado": "2026-11-01",
  "tarifas": [
   {
    "id": "pvpc",
@@ -20,102 +20,6 @@
    "origen": "regulada"
   },
   {
-   "id": "cnmc-6779",
-   "comercializadora": "ADX RENOVABLES, S.L.",
-   "nombre": "Luz Fijo 24h",
-   "tipo": "fijo",
-   "potencia": {
-    "p1": 0.101948,
-    "p2": 0.08553
-   },
-   "energia": {
-    "p1": 0.19138,
-    "p2": 0.19138,
-    "p3": 0.19138
-   },
-   "cuota_fija_mes": 0,
-   "permanencia_meses": 12,
-   "servicios_obligatorios": [],
-   "url_fuente": "https://www.adxenergia.es/tarifa-luz-fija/",
-   "fecha_comprobacion": "2026-10-21",
-   "comision": false,
-   "url_contratar": "https://www.adxenergia.es/tarifa-luz-fija/",
-   "notas": "PRECIO SIN IEE e IVA: 1. Término de potencia: (P1): 37.2112 (€/kW/año) (P2): 31.2186 (€/kW/año) 2. Término de energía: (P1): 0,19138 (€/kW) (P2): 0,19138 (€/kW) (P3): 0,19138 (€/kW) Se añadirá el coste regulado asociado al mecanismo de financiación del bono social: Coste fijo por CUPS 0,750964 €/mes",
-   "origen": "cnmc",
-   "info": {
-    "cnmc_id": 6779,
-    "incluye_bono_social": false,
-    "horario_propio": false,
-    "verde": false,
-    "servicios_adicionales": false,
-    "penalizacion": "Permanencia 12 meses.\nPenalización por baja anticipada 5% energía estimada pendiente de suministro. \nEl compromiso de permanencia no será de aplicación para el suministro eléctrico de la vivienda habitual de personas físicas con potencia contratada igual o inferior a 10kW que se cambien al PVPC con derecho a percepción de bono social, según lo establecido en el R.D 897/2017.",
-    "validez": "Oferta válida desde 16-oct-2026 hasta 30-oct-2026",
-    "limitaciones": "Válida para cualquier consumidor",
-    "potencia_max_kw": 15,
-    "consumo_max_kwh": 999999,
-    "revision": "Anual",
-    "condiciones_revision": "Con carácter general, Los precios pactados en este Contrato se actualizarán automáticamente el día 1 de enero de cada año. Las sucesivas actualizaciones a partir de la primera se realizarán sobre los precios anteriormente actualizados.\n\nEn caso de que hubiera una revisión adicional, se informaría con un preaviso de 30 días al cliente con nota en factura o notificación en la misma forma de envío de las facturas.",
-    "contratacion": {
-     "internet": true,
-     "telefono": true,
-     "oficina": false
-    },
-    "url_contrato": "https://www.adxenergia.es/wp-content/uploads/2026/07/CG-CONTRATO-ADX_Julio26.pdf",
-    "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
-  },
-  {
-   "id": "cnmc-7001",
-   "comercializadora": "ADX RENOVABLES, S.L.",
-   "nombre": "Luz Fijo 3P",
-   "tipo": "periodos",
-   "potencia": {
-    "p1": 0.101948,
-    "p2": 0.08553
-   },
-   "energia": {
-    "p1": 0.270552,
-    "p2": 0.184097,
-    "p3": 0.138582
-   },
-   "cuota_fija_mes": 0,
-   "permanencia_meses": 12,
-   "servicios_obligatorios": [],
-   "url_fuente": "https://www.adxenergia.es/tarifa-luz-por-tramos/",
-   "fecha_comprobacion": "2026-10-21",
-   "comision": false,
-   "url_contratar": "https://www.adxenergia.es/tarifa-luz-por-tramos/",
-   "notas": "PRECIO SIN IEE e IVA: 1. Término de potencia: (P1): 37.2112 (€/kW/año) (P2): 31.2186 (€/kW/año) 2. Término de energía: (P1): 0,270552 (€/kW) (P2): 0,184097 (€/kW) (P3): 0,138582 (€/kW) Se añadirá el coste regulado asociado al mecanismo de financiación del bono social: Coste fijo por CUPS 0,750964 €/mes",
-   "origen": "cnmc",
-   "info": {
-    "cnmc_id": 7001,
-    "incluye_bono_social": false,
-    "horario_propio": false,
-    "verde": false,
-    "servicios_adicionales": false,
-    "penalizacion": "Permanencia 12 meses.\nPenalización por baja anticipada 5% energía estimada pendiente de suministro. \nEl compromiso de permanencia no será de aplicación para el suministro eléctrico de la vivienda habitual de personas físicas con potencia contratada igual o inferior a 10kW que se cambien al PVPC con derecho a percepción de bono social, según lo establecido en el R.D 897/2017.",
-    "validez": "Oferta válida desde 16-oct-2026 hasta 30-oct-2026",
-    "limitaciones": "Válida para cualquier consumidor",
-    "potencia_max_kw": 15,
-    "consumo_max_kwh": 999999,
-    "revision": "Anual",
-    "condiciones_revision": "Con carácter general, Los precios pactados en este Contrato se actualizarán automáticamente el día 1 de enero de cada año. Las sucesivas actualizaciones a partir de la primera se realizarán sobre los precios anteriormente actualizados.\n\nEn caso de que hubiera una revisión adicional, se informaría con un preaviso de 30 días al cliente con nota en factura o notificación en la misma forma de envío de las facturas.",
-    "contratacion": {
-     "internet": true,
-     "telefono": true,
-     "oficina": false
-    },
-    "url_contrato": "https://www.adxenergia.es/wp-content/uploads/2026/07/CG-CONTRATO-ADX_Julio26.pdf",
-    "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
-  },
-  {
    "id": "cnmc-4744",
    "comercializadora": "AGRI-ENERGIA, S.A.",
    "nombre": "TARIFA 10 EFICIENT",
@@ -130,10 +34,11 @@
     "p3": 0.141134
    },
    "cuota_fija_mes": 0,
+   "servicio_mes": 0,
    "permanencia_meses": 12,
    "servicios_obligatorios": [],
    "url_fuente": "https://www.agrienergia.com/tarifa-domestica-10/?lang=es",
-   "fecha_comprobacion": "2026-10-21",
+   "fecha_comprobacion": "2026-11-01",
    "comision": false,
    "url_contratar": "https://www.agrienergia.com/tarifa-domestica-10/?lang=es",
    "notas": "Precios Potencia: Periodo 1: 32,704413 €/kW/año Periodo 2: 9,725423 €/kW/año Precio Energia: Periodo 1: 0,244828 €/kWh Periodo 2: 0,167488 €/kWh Periodo 3: 0,141134 €/kWh Cuota Mensual Bono Social: 0,750941 €/mes Esta oferta no conlleva la obligación de contratación de servicios adicionales.",
@@ -141,6 +46,7 @@
    "info": {
     "cnmc_id": 4744,
     "incluye_bono_social": false,
+    "servicio_sin_precio": false,
     "horario_propio": false,
     "verde": false,
     "servicios_adicionales": false,
@@ -158,10 +64,8 @@
     },
     "url_contrato": "https://agrienergia.com/docs/con_com_ap_cast.pdf",
     "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
+    "descuento_energia": null
+   }
   },
   {
    "id": "cnmc-4546",
@@ -178,10 +82,11 @@
     "p3": 0.169
    },
    "cuota_fija_mes": 0,
+   "servicio_mes": 0,
    "permanencia_meses": 12,
    "servicios_obligatorios": [],
    "url_fuente": "https://www.agrienergia.com/tarifa-domestica-10/?lang=es",
-   "fecha_comprobacion": "2026-10-21",
+   "fecha_comprobacion": "2026-11-01",
    "comision": false,
    "url_contratar": "https://www.agrienergia.com/tarifa-domestica-10/?lang=es",
    "notas": "Precios Potencia: Periodo 1: 32,704413 €/kW/año Periodo 2: 9,725423 €/kW/año Precio Energia: Periodo 1: 0,169000 €/kWh Periodo 2: 0,169000 €/kWh Periodo 3: 0,169000 €/kWh Cuota Mensual Bono Social: 0,750941 €/mes Esta oferta no conlleva la obligación de contratación de servicios adicionales.",
@@ -189,6 +94,7 @@
    "info": {
     "cnmc_id": 4546,
     "incluye_bono_social": false,
+    "servicio_sin_precio": false,
     "horario_propio": false,
     "verde": false,
     "servicios_adicionales": false,
@@ -206,10 +112,8 @@
     },
     "url_contrato": "https://agrienergia.com/docs/con_com_ap_cast.pdf",
     "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
+    "descuento_energia": null
+   }
   },
   {
    "id": "cnmc-4687",
@@ -226,10 +130,11 @@
     "p3": 0.257421
    },
    "cuota_fija_mes": 0,
+   "servicio_mes": 0,
    "permanencia_meses": 12,
    "servicios_obligatorios": [],
    "url_fuente": "https://www.logosenergia.es/tarifas-de-energia/tarifas-hogar/tarifa-de-luz-para-el-hogar",
-   "fecha_comprobacion": "2026-10-21",
+   "fecha_comprobacion": "2026-11-01",
    "comision": false,
    "url_contratar": "https://www.logosenergia.es/tarifas-de-energia/tarifas-hogar/tarifa-de-luz-para-el-hogar",
    "notas": "Oferta para suministros domésticos. Los precios de potencia son en horas punta 31,704413 €/kW/año y en horas valle 4,725423 €/kW/año. El precio de energia es 0,257421 €/kWh en todos los periodos, al cual se le aplicará, durante el primer año, un descuento del 25% resultando un precio con descuentos aplicados de 0,193066 €/kWh en todos los periodos. Estos precios no incluyen el coste asociado a la financiación del mecanismo vigente de bono social de 9,011295 €/año. Este coste se repercutirá al cliente en factura en una linea adicional.",
@@ -237,6 +142,7 @@
    "info": {
     "cnmc_id": 4687,
     "incluye_bono_social": false,
+    "servicio_sin_precio": false,
     "horario_propio": false,
     "verde": false,
     "servicios_adicionales": false,
@@ -254,10 +160,8 @@
     },
     "url_contrato": "https://logosenergia.es/wp-content/uploads/2026/03/CCGG-Hogar-Electricidad.pdf",
     "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
+    "descuento_energia": null
+   }
   },
   {
    "id": "cnmc-3912",
@@ -274,10 +178,11 @@
     "p3": 0.209735
    },
    "cuota_fija_mes": 0,
+   "servicio_mes": 0,
    "permanencia_meses": 12,
    "servicios_obligatorios": [],
    "url_fuente": "https://www.logosenergia.es/tarifas-de-energia/tarifas-hogar/tarifa-de-luz-para-el-hogar",
-   "fecha_comprobacion": "2026-10-21",
+   "fecha_comprobacion": "2026-11-01",
    "comision": false,
    "url_contratar": "https://www.logosenergia.es/tarifas-de-energia/tarifas-hogar/tarifa-de-luz-para-el-hogar",
    "notas": "Oferta para suministros domésticos. Los precios de potencia son en horas punta 31,704413 €/kW/año y en horas valle 4,725423 €/kW/año.. Los precios de energia son en horas punta 0,345776 €/kWh, en horas llanas 0,253553 €/kWh y en horas valle 0,209735 €/kWh sin descuentos, a los que se les aplicará, durante el primer año, un descuento del 25% en el término de energía resultando los precios con descuento incluido en horas punta 0,259332€/kWh, en horas llanas 0,190165€/kWh y en horas valle 0,157301€/kWh Estos precios no incluyen el coste asociado a la financiación del mecanismo vigente de bono social de 9,011295 €/año. Este coste se repercutirá al cliente en factura en una linea adicional.",
@@ -285,6 +190,7 @@
    "info": {
     "cnmc_id": 3912,
     "incluye_bono_social": false,
+    "servicio_sin_precio": false,
     "horario_propio": false,
     "verde": false,
     "servicios_adicionales": false,
@@ -302,10 +208,8 @@
     },
     "url_contrato": "https://logosenergia.es/wp-content/uploads/2026/03/CCGG-Hogar-Electricidad.pdf",
     "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
+    "descuento_energia": null
+   }
   },
   {
    "id": "cnmc-5941",
@@ -322,10 +226,11 @@
     "p3": 0.1799
    },
    "cuota_fija_mes": 0,
+   "servicio_mes": 0,
    "permanencia_meses": 0,
    "servicios_obligatorios": [],
    "url_fuente": "https://catgas.cat/es/tarifes-catllum-llar",
-   "fecha_comprobacion": "2026-10-21",
+   "fecha_comprobacion": "2026-11-01",
    "comision": false,
    "url_contratar": "https://catgas.cat/es/tarifes-catllum-llar",
    "notas": "Tarifa eléctrica con una potencia contratada igual o inferior a 15 kW. Potencia Periodo 1: 34,21 €/kW/año Potencia Periodo 2: 10,23 €/kW/año Término variable 24 horas: 0,1799 €/kwh No se requiere la contratación de servicios adicionales. No se facturará adicionalmente el importe del Bono Social",
@@ -333,6 +238,7 @@
    "info": {
     "cnmc_id": 5941,
     "incluye_bono_social": true,
+    "servicio_sin_precio": false,
     "horario_propio": false,
     "verde": true,
     "servicios_adicionales": false,
@@ -350,115 +256,17 @@
     },
     "url_contrato": "https://catgas.cat/es/condiciones-generales/",
     "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
+    "descuento_energia": null
+   }
   },
   {
-   "id": "cnmc-7137",
-   "comercializadora": "CIDE HCENERGÍA S.A",
-   "nombre": "Plan Estrella Dúo",
-   "tipo": "fijo",
-   "potencia": {
-    "p1": 0.078144,
-    "p2": 0.059938
-   },
-   "energia": {
-    "p1": 0.141871,
-    "p2": 0.141871,
-    "p3": 0.141871
-   },
-   "cuota_fija_mes": 0,
-   "permanencia_meses": 0,
-   "servicios_obligatorios": [],
-   "url_fuente": "https://chcenergia.es/luz/plan-estrella-duo",
-   "fecha_comprobacion": "2026-10-21",
-   "comision": false,
-   "url_contratar": "https://chcenergia.es/luz/plan-estrella-duo",
-   "notas": "OFERTA de electricidad para clientes con potencia contratada hasta 15 kW. Precios sin IVA ni otros impuestos aplicables: Término de Potencia P1= 28,52256 €/kW año P2= 21,87737 €/kW año Término de Energía = 0,139000 €/kWh. El término de energía indicado es único. Término de energía con importe del Fondo Nacional de Eficiencia Energética incluido = 0,141871 €/kWh Promoción: 10€ de descuento al mes durante 5 meses. La oferta no está condicionada a la contratación de servicios adicionales. Los precios indicados no incluyen el coste de financiación del bono social, que, de conformidad con lo establecido en la Orden TED/634/2026, de 17 de junio, asciende a 9,011295 €/CUPS, ni la aportación al Fond",
-   "origen": "cnmc",
-   "info": {
-    "cnmc_id": 7137,
-    "incluye_bono_social": false,
-    "horario_propio": false,
-    "verde": false,
-    "servicios_adicionales": false,
-    "penalizacion": "Sin compromiso de permanencia. La oferta no está condicionada a la contratación de servicios adicionales. Duración 12 meses, dicho periodo empezará a contar a partir de la fecha de activación del contrato de acceso a la red. Una vez llegado su vencimiento, se entenderá prorrogado por periodos anuales, salvo denuncia de cualquiera de las partes con al menos 15 días de antelación.",
-    "validez": "Oferta válida desde 01-oct-2026 hasta 30-sept-2027",
-    "limitaciones": "Oferta válida solo para nuevos clientes",
-    "potencia_max_kw": 15,
-    "consumo_max_kwh": 200000,
-    "revision": "Anual",
-    "condiciones_revision": "CHC podrá revisar el precio del contrato en cada prórroga anual (transcurridos 12 meses). Se informará al cliente de cualquier cambio en las condiciones económicas o en el producto contratado con el preaviso mínimo 30 días antes de la renovación tácita. El cliente podrá oponerse de forma fehaciente con al menos 20 días de antelación; en caso contrario, se entenderá aceptado. En cualquier caso, el cliente podrá resolver el contrato sin penalización.\nLos precios podrán actualizarse conforme al IPC",
-    "contratacion": {
-     "internet": true,
-     "telefono": true,
-     "oficina": false
-    },
-    "url_contrato": "https://chcenergia.es/condiciones-generales",
-    "promo_primer_anio_eur": 50.69,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
-  },
-  {
-   "id": "cnmc-5473",
-   "comercializadora": "CIDE HCENERGÍA S.A",
-   "nombre": "Plan Ilumina Dúo Promo",
-   "tipo": "fijo",
-   "potencia": {
-    "p1": 0.077568,
-    "p2": 0.031747
-   },
-   "energia": {
-    "p1": 0.181871,
-    "p2": 0.181871,
-    "p3": 0.181871
-   },
-   "cuota_fija_mes": 0,
-   "permanencia_meses": 0,
-   "servicios_obligatorios": [],
-   "url_fuente": "https://chcenergia.es/luz/plan-ilumina-duo-promo",
-   "fecha_comprobacion": "2026-10-21",
-   "comision": false,
-   "url_contratar": "https://chcenergia.es/luz/plan-ilumina-duo-promo",
-   "notas": "OFERTA de electricidad para clientes con potencia contratada hasta 15 kW. Precios sin IVA ni otros impuestos aplicables: Término de Potencia P1= 28,312685 €/kW año P2= 11,587095 €/kW año Término de Energía 0,179000 €/kWh La oferta no está condicionada a la contratación de servicios adicionales. Los precios indicados no incluyen el coste de financiación del bono social, que, de conformidad con lo establecido en la Orden TED/634/2026, de 17 de junio, asciende a 9,011295 €/CUPS, ni la aportación al Fondo Nacional de Eficiencia Energética (FNEE), correspondiente al Sistema Nacional de Obligaciones de Eficiencia Energética (SNOEE), que se facturará como un concepto independiente en la factura elé",
-   "origen": "cnmc",
-   "info": {
-    "cnmc_id": 5473,
-    "incluye_bono_social": false,
-    "horario_propio": false,
-    "verde": false,
-    "servicios_adicionales": false,
-    "penalizacion": "Sin compromiso de permanencia. La oferta no está condicionada a la contratación de servicios adicionales. Duración 12 meses, dicho periodo empezará a contar a partir de la fecha de activación del contrato de acceso a la red. Una vez llegado su vencimiento, se entenderá prorrogado por periodos anuales, salvo denuncia de cualquiera de las partes con al menos 15 días de antelación.",
-    "validez": "Oferta válida desde 01-oct-2026 hasta 31-ago-2027",
-    "limitaciones": "Válida para cualquier consumidor",
-    "potencia_max_kw": 15,
-    "consumo_max_kwh": 200000,
-    "revision": "Anual",
-    "condiciones_revision": "CHC podrá revisar el precio del contrato en cada prórroga anual (transcurridos 12 meses). Se informará al cliente de cualquier cambio en las condiciones económicas o en el producto contratado con el preaviso mínimo 30 días antes de la renovación tácita. El cliente podrá oponerse de forma fehaciente con al menos 20 días de antelación; en caso contrario, se entenderá aceptado. En cualquier caso, el cliente podrá resolver el contrato sin penalización.\nLos precios podrán actualizarse conforme al IPC",
-    "contratacion": {
-     "internet": false,
-     "telefono": true,
-     "oficina": true
-    },
-    "url_contrato": "https://chcenergia.es/condiciones-generales",
-    "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
-  },
-  {
-   "id": "cnmc-6325",
+   "id": "cnmc-7203",
    "comercializadora": "CIDE HCENERGÍA S.A",
    "nombre": "Plan Vehículo Eléctrico",
    "tipo": "periodos",
    "potencia": {
-    "p1": 0.088957,
-    "p2": 0.091121
+    "p1": 0.119588,
+    "p2": 0.111958
    },
    "energia": {
     "p1": 0.251616,
@@ -466,230 +274,38 @@
     "p3": 0.086952
    },
    "cuota_fija_mes": 0,
+   "servicio_mes": 0,
    "permanencia_meses": 0,
    "servicios_obligatorios": [],
    "url_fuente": "https://chcenergia.es/tarifa-luz/vehiculo-electrico/",
-   "fecha_comprobacion": "2026-10-21",
+   "fecha_comprobacion": "2026-11-01",
    "comision": false,
    "url_contratar": "https://chcenergia.es/tarifa-luz/vehiculo-electrico/",
-   "notas": "OFERTA de electricidad para clientes con potencia contratada menor o igual que 15 kW. La oferta no está condicionada a la contratación de servicios adicionales. Precios sin IVA ni otros impuestos aplicables: Término de Potencia P1= 32,46894 €/kW año P2= 33,25943 €/kW año Término de Energía Punta =0,248745 €/kWh Llano =0,248745 €/kWh Valle=0,084081 €/kWh Punta con importe SNOEE incluido = 0,251616 €/kWh Llano con importe SNOEE incluido = 0,251616 €/kWh Valle con importe SNOEE incluido = 0,086952 €/kWh Los precios indicados no incluyen el coste de financiación del bono social, que, de conformidad con lo establecido en la Orden TED/634/2026, de 17 de junio, asciende a 9,011295 €/CUPS, ni la apo",
+   "notas": "OFERTA de electricidad para clientes con potencia contratada menor o igual que 15 kW. La oferta no está condicionada a la contratación de servicios adicionales. Precios sin IVA ni otros impuestos aplicables: Término de Potencia P1= 43,649985 €/kW año P2= 40,864999 €/kW año Término de Energía Punta =0,248745 €/kWh Llano =0,248745 €/kWh Valle=0,084081 €/kWh Punta con importe SNOEE incluido = 0,251616 €/kWh Llano con importe SNOEE incluido = 0,251616 €/kWh Valle con importe SNOEE incluido = 0,086952 €/kWh Los precios indicados no incluyen el coste de financiación del bono social, que, de conformidad con lo establecido en la Orden TED/634/2026, de 17 de junio, asciende a 9,011295 €/CUPS, ni la a",
    "origen": "cnmc",
    "info": {
-    "cnmc_id": 6325,
+    "cnmc_id": 7203,
     "incluye_bono_social": false,
+    "servicio_sin_precio": false,
     "horario_propio": false,
     "verde": false,
     "servicios_adicionales": false,
     "penalizacion": "Sin compromiso de permanencia. Duración 12 meses, dicho periodo empezará a contar a partir de la fecha de activación del contrato de acceso a la red. Una vez llegado su vencimiento, se entenderá prorrogado por periodos anuales, salvo denuncia de cualquiera de las partes con al menos 15 días de antelación.",
-    "validez": "Oferta válida desde 01-oct-2026 hasta 31-ago-2027",
+    "validez": "Oferta válida desde 01-nov-2026 hasta 31-dic-2026",
     "limitaciones": "Válida para cualquier consumidor",
     "potencia_max_kw": 15,
     "consumo_max_kwh": 200000,
     "revision": "Anual",
     "condiciones_revision": "CHC podrá revisar el precio del contrato en cada prórroga anual (transcurridos 12 meses). Se informará al cliente de cualquier cambio en las condiciones económicas o en el producto contratado con el preaviso mínimo 30 días antes de la renovación tácita. El cliente podrá oponerse de forma fehaciente con al menos 20 días de antelación; en caso contrario, se entenderá aceptado. En cualquier caso, el cliente podrá resolver el contrato sin penalización.\nLos precios podrán actualizarse conforme al IPC",
     "contratacion": {
-     "internet": false,
+     "internet": true,
      "telefono": true,
      "oficina": true
     },
     "url_contrato": "https://chcenergia.es/condiciones-generales",
     "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
-  },
-  {
-   "id": "cnmc-7165",
-   "comercializadora": "CORPORACIÓN ALIMENTARIA GUISSONA, S.A.",
-   "nombre": "TARIFA RELAX",
-   "tipo": "fijo",
-   "potencia": {
-    "p1": 0.095,
-    "p2": 0.095
-   },
-   "energia": {
-    "p1": 0.149,
-    "p2": 0.149,
-    "p3": 0.149
-   },
-   "cuota_fija_mes": 0,
-   "permanencia_meses": 0,
-   "servicios_obligatorios": [],
-   "url_fuente": "https://www.bonarea-energia.com/es/Electricitat/TarifaRelaxElectricitat",
-   "fecha_comprobacion": "2026-10-21",
-   "comision": false,
-   "url_contratar": "https://www.bonarea-energia.com/es/Electricitat/TarifaRelaxElectricitat",
-   "notas": "Precio fijo de luz las 24h durante un año. Término de Potencia: P1: 34,6750 €/kW/año; P2: 34,6750 €/kW/año. Término de Energía: P1: 0,1490 €/kWh; P2: 0,1490 €/kWh; P3: 0,1490 €/kWh. Estos precios no incluyen el importe del Bono Social (0,024689€/día), ni el impuesto eléctrico ni el IVA. No se incluye el importe correspondiente al equipo de medida. Validez de 12 meses desde el inicio del contrato.",
-   "origen": "cnmc",
-   "info": {
-    "cnmc_id": 7165,
-    "incluye_bono_social": false,
-    "horario_propio": false,
-    "verde": false,
-    "servicios_adicionales": false,
-    "penalizacion": "Sin permanencia ni penalizaciones.",
-    "validez": "Oferta válida desde 01-oct-2026 hasta 31-oct-2026",
-    "limitaciones": "Válida para cualquier consumidor",
-    "potencia_max_kw": 15,
-    "consumo_max_kwh": 10000,
-    "revision": "Anual",
-    "condiciones_revision": "Las condiciones económicas podrán revisarse por acuerdo entre las partes o por cambios regulatorios o de mercado que alteren el equilibrio del contrato. En renovaciones se podrá comunicar una nueva oferta, permitiendo al cliente rescindir sin coste si no la acepta. En baja tensión a precio fijo, el precio se mantiene al menos un año salvo supuestos excepcionales. No se consideran revisiones los cambios en peajes, cargos, impuestos u otros costes regulados.",
-    "contratacion": {
-     "internet": true,
-     "telefono": true,
-     "oficina": true
-    },
-    "url_contrato": "https://ww2.bonarea-energia.com/energia/ci4/public/pdf/condiciones_generales_bonarea_Castellano.pdf",
-    "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
-  },
-  {
-   "id": "cnmc-7166",
-   "comercializadora": "CORPORACIÓN ALIMENTARIA GUISSONA, S.A.",
-   "nombre": "TARIFA RELAX SOLAR",
-   "tipo": "fijo",
-   "potencia": {
-    "p1": 0.113601,
-    "p2": 0.113601
-   },
-   "energia": {
-    "p1": 0.159,
-    "p2": 0.159,
-    "p3": 0.159
-   },
-   "cuota_fija_mes": 0,
-   "permanencia_meses": 0,
-   "servicios_obligatorios": [],
-   "url_fuente": "https://www.bonarea-energia.com/es/Electricitat/TarifaSolarRelaxElectricitat",
-   "fecha_comprobacion": "2026-10-21",
-   "comision": false,
-   "url_contratar": "https://www.bonarea-energia.com/es/Electricitat/TarifaSolarRelaxElectricitat",
-   "notas": "Precio fijo de luz las 24 h durante un año para clientes con autoconsumo. Término de Potencia: P1: 41,4640 €/kW/año;P2: 41,4640 €/kW/año Término de Energía: P1: 0,1590 €/kWh; P2: 0,1590 €/kWh; P3: 0,1590 €/kWh. Estos precios no incluyen el importe del Bono Social (0,024689 €/día), ni el impuesto eléctrico ni el IVA. No se incluye el importe correspondiente al equipo de medida. Validez de 12 meses desde el inicio del contrato.",
-   "origen": "cnmc",
-   "info": {
-    "cnmc_id": 7166,
-    "incluye_bono_social": false,
-    "horario_propio": false,
-    "verde": false,
-    "servicios_adicionales": false,
-    "penalizacion": "Sin permanencia ni penalizaciones.",
-    "validez": "Oferta válida desde 01-oct-2026 hasta 31-oct-2026",
-    "limitaciones": "Válida para cualquier consumidor",
-    "potencia_max_kw": 15,
-    "consumo_max_kwh": 10000,
-    "revision": "Anual",
-    "condiciones_revision": "Las condiciones económicas podrán revisarse por acuerdo entre las partes o por cambios regulatorios o de mercado que alteren el equilibrio del contrato. En renovaciones se podrá comunicar una nueva oferta, permitiendo al cliente rescindir sin coste si no la acepta. En baja tensión a precio fijo, el precio se mantiene al menos un año salvo supuestos excepcionales. No se consideran revisiones los cambios en peajes, cargos, impuestos u otros costes regulados.",
-    "contratacion": {
-     "internet": true,
-     "telefono": true,
-     "oficina": true
-    },
-    "url_contrato": "https://ww2.bonarea-energia.com/energia/ci4/public/pdf/condiciones_generales_bonarea_Castellano.pdf",
-    "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
-  },
-  {
-   "id": "cnmc-7167",
-   "comercializadora": "CORPORACIÓN ALIMENTARIA GUISSONA, S.A.",
-   "nombre": "TARIFA TRIPLE",
-   "tipo": "periodos",
-   "potencia": {
-    "p1": 0.093,
-    "p2": 0.093
-   },
-   "energia": {
-    "p1": 0.235,
-    "p2": 0.1745,
-    "p3": 0.125
-   },
-   "cuota_fija_mes": 0,
-   "permanencia_meses": 0,
-   "servicios_obligatorios": [],
-   "url_fuente": "https://www.bonarea-energia.com/es/Electricitat/TarifaTripleElectricitat",
-   "fecha_comprobacion": "2026-10-21",
-   "comision": false,
-   "url_contratar": "https://www.bonarea-energia.com/es/Electricitat/TarifaTripleElectricitat",
-   "notas": "Precio fijo de luz para 3 períodos durante un año. Término de Potencia: P1: 33,9450 €/kW/año; P2: 33,9450 €/kW/año. Término de Energía: P1: 0,2350 €/kWh; P2: 0,1745 €/kWh; P3: 0,1250 €/kWh. Estos precios no incluyen el importe del Bono Social (0,024689€/día), ni el impuesto eléctrico ni el IVA. No se incluye el importe correspondiente al equipo de medida. Validez de 12 meses desde el inicio del contrato.",
-   "origen": "cnmc",
-   "info": {
-    "cnmc_id": 7167,
-    "incluye_bono_social": false,
-    "horario_propio": false,
-    "verde": false,
-    "servicios_adicionales": false,
-    "penalizacion": "Sin permanencia ni penalizaciones.",
-    "validez": "Oferta válida desde 01-oct-2026 hasta 31-oct-2026",
-    "limitaciones": "Válida para cualquier consumidor",
-    "potencia_max_kw": 15,
-    "consumo_max_kwh": 10000,
-    "revision": "Anual",
-    "condiciones_revision": "Las condiciones económicas podrán revisarse por acuerdo entre las partes o por cambios regulatorios o de mercado que alteren el equilibrio del contrato. En renovaciones se podrá comunicar una nueva oferta, permitiendo al cliente rescindir sin coste si no la acepta. En baja tensión a precio fijo, el precio se mantiene al menos un año salvo supuestos excepcionales. No se consideran revisiones los cambios en peajes, cargos, impuestos u otros costes regulados.",
-    "contratacion": {
-     "internet": true,
-     "telefono": true,
-     "oficina": true
-    },
-    "url_contrato": "https://ww2.bonarea-energia.com/energia/ci4/public/pdf/condiciones_generales_bonarea_Castellano.pdf",
-    "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
-  },
-  {
-   "id": "cnmc-7183",
-   "comercializadora": "CORPORACIÓN ALIMENTARIA GUISSONA, S.A.",
-   "nombre": "TARIFA TRIPLE SOLAR",
-   "tipo": "periodos",
-   "potencia": {
-    "p1": 0.109601,
-    "p2": 0.109601
-   },
-   "energia": {
-    "p1": 0.235,
-    "p2": 0.1745,
-    "p3": 0.125
-   },
-   "cuota_fija_mes": 0,
-   "permanencia_meses": 0,
-   "servicios_obligatorios": [],
-   "url_fuente": "https://www.bonarea-energia.com/es/Electricitat/TarifaSolarTripleElectricitat",
-   "fecha_comprobacion": "2026-10-21",
-   "comision": false,
-   "url_contratar": "https://www.bonarea-energia.com/es/Electricitat/TarifaSolarTripleElectricitat",
-   "notas": "Precio fijo de luz para 3 períodos para clientes con autoconsumo durante un año. Término de Potencia: P1: 40,004 €/kW/año;P2: 40,004 €/kW/año Término de Energía: P1: 0,2350 €/kWh; P2: 0,1745 €/kWh; P3: 0,1250 €/kWh. Estos precios no incluyen el importe del Bono Social (0,024689 €/día), ni el impuesto eléctrico ni el IVA. No se incluye el importe correspondiente al equipo de medida. Validez de 12 meses desde el inicio del contrato.",
-   "origen": "cnmc",
-   "info": {
-    "cnmc_id": 7183,
-    "incluye_bono_social": false,
-    "horario_propio": false,
-    "verde": false,
-    "servicios_adicionales": false,
-    "penalizacion": "Sin permanencia ni penalizaciones.",
-    "validez": "Oferta válida desde 01-oct-2026 hasta 31-oct-2026",
-    "limitaciones": "Válida para cualquier consumidor",
-    "potencia_max_kw": 15,
-    "consumo_max_kwh": 10000,
-    "revision": "Anual",
-    "condiciones_revision": "Las condiciones económicas podrán revisarse por acuerdo entre las partes o por cambios regulatorios o de mercado que alteren el equilibrio del contrato. En renovaciones se podrá comunicar una nueva oferta, permitiendo al cliente rescindir sin coste si no la acepta. En baja tensión a precio fijo, el precio se mantiene al menos un año salvo supuestos excepcionales. No se consideran revisiones los cambios en peajes, cargos, impuestos u otros costes regulados.",
-    "contratacion": {
-     "internet": true,
-     "telefono": true,
-     "oficina": true
-    },
-    "url_contrato": "https://ww2.bonarea-energia.com/energia/ci4/public/pdf/condiciones_generales_bonarea_Castellano.pdf",
-    "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
+    "descuento_energia": null
+   }
   },
   {
    "id": "cnmc-6484",
@@ -706,10 +322,11 @@
     "p3": 0.144757
    },
    "cuota_fija_mes": 0,
+   "servicio_mes": 0,
    "permanencia_meses": 0,
    "servicios_obligatorios": [],
    "url_fuente": "https://visalia.es/luz/fijo24horas/",
-   "fecha_comprobacion": "2026-10-21",
+   "fecha_comprobacion": "2026-11-01",
    "comision": false,
    "url_contratar": "https://visalia.es/luz/fijo24horas/",
    "notas": "Precios antes de impuestos: Término fijo P1: 28,000000 €/kW año. Término fijo P2: 28,000000 €/kW año. Término energía P1: 0,144757 €/kWh Término energía P2: 0,144757 €/kWh Término energía P3: 0,144757 €/kWh No se incluye el importe correspondiente al equipo de medida. Nuestra nueva tarifa te permite disfrutar durante 12 meses del mismo precio las 24 horas del día, 365 días al año. Los precios incluyen todos los costes regulados salvo impuesto eléctrico, alquiler de equipo de medida, financiación del bono social (que de conformidad con lo establecido en la Orden TED/634/2026, de 17 de junio es de 0,024688€/día, impuestos no incluidos), e IVA.",
@@ -717,6 +334,7 @@
    "info": {
     "cnmc_id": 6484,
     "incluye_bono_social": false,
+    "servicio_sin_precio": false,
     "horario_propio": false,
     "verde": true,
     "servicios_adicionales": false,
@@ -734,10 +352,8 @@
     },
     "url_contrato": "https://visalia.es/wp-content/uploads/2025/11/CG-Electricidad-Gas_VISALIA_290525DCOMPDO126.pdf",
     "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
+    "descuento_energia": null
+   }
   },
   {
    "id": "cnmc-6772",
@@ -754,10 +370,11 @@
     "p3": 0.142047
    },
    "cuota_fija_mes": 0,
+   "servicio_mes": 0,
    "permanencia_meses": 0,
    "servicios_obligatorios": [],
    "url_fuente": "https://visalia.es/luz/luz-3-periodos/",
-   "fecha_comprobacion": "2026-10-21",
+   "fecha_comprobacion": "2026-11-01",
    "comision": false,
    "url_contratar": "https://visalia.es/luz/luz-3-periodos/",
    "notas": "Precios antes de impuestos: Término fijo P1: 27,704413 €/kW año. Término fijo P2: 0,725423 €/kW año. Término energía P1: 0,260402 €/kWh. Término energía P2: 0,170417 €/kWh. Término energía P3: 0,142047 €/kWh. No se incluye el importe correspondiente al equipo de medida. Los precios incluyen todos los costes regulados salvo impuesto eléctrico, alquiler de equipo de medida, financiación del bono social (que de conformidad con lo establecido en la Orden TED/634/2026, de 17 de junio es de 0,024688€/día, impuestos no incluidos), e IVA.",
@@ -765,6 +382,7 @@
    "info": {
     "cnmc_id": 6772,
     "incluye_bono_social": false,
+    "servicio_sin_precio": false,
     "horario_propio": false,
     "verde": true,
     "servicios_adicionales": false,
@@ -782,10 +400,8 @@
     },
     "url_contrato": "https://visalia.es/wp-content/uploads/2025/11/CG-Electricidad-Gas_VISALIA_290525DCOMPDO126.pdf",
     "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
+    "descuento_energia": null
+   }
   },
   {
    "id": "cnmc-7045",
@@ -802,10 +418,11 @@
     "p3": 0.159875
    },
    "cuota_fija_mes": 0,
+   "servicio_mes": 0,
    "permanencia_meses": 0,
    "servicios_obligatorios": [],
    "url_fuente": "https://visalia.es/luz/tarifas-flash/",
-   "fecha_comprobacion": "2026-10-21",
+   "fecha_comprobacion": "2026-11-01",
    "comision": false,
    "url_contratar": "https://visalia.es/luz/tarifas-flash/",
    "notas": "Ahorra 6€ al mes durante 3 meses Precios antes de impuestos: Término fijo P1: 23,000000 €/kW año. Término fijo P2: 23,000000 €/kW año. Término energía P1: 0,159875 €/kWh Término energía P2: 0,159875 €/kWh Término energía P3: 0,159875 €/kWh No se incluye el importe correspondiente al equipo de medida. Nuestra nueva tarifa te permite disfrutar de un descuento mensual de 6€ al mes durante los 3 primeros meses. Los precios incluyen todos los costes regulados salvo impuesto eléctrico, alquiler de equipo de medida, financiación del bono social (que de conformidad con lo establecido en la Orden TED/634/2026, de 17 de junio es de 0,024688€/día, impuestos no incluidos), e IVA.",
@@ -813,6 +430,7 @@
    "info": {
     "cnmc_id": 7045,
     "incluye_bono_social": false,
+    "servicio_sin_precio": false,
     "horario_propio": false,
     "verde": true,
     "servicios_adicionales": false,
@@ -830,10 +448,8 @@
     },
     "url_contrato": "https://visalia.es/wp-content/uploads/2025/11/CG-Electricidad-Gas_VISALIA_290525DCOMPDO126.pdf",
     "promo_primer_anio_eur": 18.93,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
+    "descuento_energia": null
+   }
   },
   {
    "id": "cnmc-4514",
@@ -845,27 +461,29 @@
     "p2": 0.030181
    },
    "energia": {
-    "p1": 0.198375,
-    "p2": 0.198375,
-    "p3": 0.198375
+    "p1": 0.22615,
+    "p2": 0.22615,
+    "p3": 0.22615
    },
    "cuota_fija_mes": 0,
+   "servicio_mes": 0,
    "permanencia_meses": 12,
    "servicios_obligatorios": [],
    "url_fuente": "https://elekluz.com/oferta-vigente/",
-   "fecha_comprobacion": "2026-10-21",
+   "fecha_comprobacion": "2026-11-01",
    "comision": false,
    "url_contratar": "https://elekluz.com/oferta-vigente/",
-   "notas": "Oferta propia de la comercializadora. Termino de Potencia €/kw/año: P1:36,212745 P2:11,01643 Termino de Energía €/kw hora: Precio único: 0,198375. Los precios no incluyen la cuota del Bono social. La cuota mensual del bono social es: 0,7508333€",
+   "notas": "Oferta propia de la comercializadora. Termino de Potencia €/kw/año: P1:36,212745 P2:11,01643 Termino de Energía €/kw hora: Precio único: 0,226150. Los precios no incluyen la cuota del Bono social. La cuota mensual del bono social es: 0,7508333€",
    "origen": "cnmc",
    "info": {
     "cnmc_id": 4514,
     "incluye_bono_social": false,
+    "servicio_sin_precio": false,
     "horario_propio": false,
     "verde": false,
     "servicios_adicionales": false,
     "penalizacion": "Por desistimiento unilateral del cliente durante el primer año de vigencia del contrato, el cliente deberá abonar a la comercializadora una penalización consistente en el 5% de la energía estimada pendiente de suministro. En caso de ser beneficiario del Bono social o cliente vulnerable (según normativa) no aplicará penalización alguna.",
-    "validez": "Oferta válida desde 01-ene-2026 hasta 31-dic-2026",
+    "validez": "Oferta válida desde 21-oct-2026 hasta 21-ene-2027",
     "limitaciones": "Válida para consumidores domésticos y pequeños negocios",
     "potencia_max_kw": 15,
     "consumo_max_kwh": 5000,
@@ -878,10 +496,8 @@
     },
     "url_contrato": "https://elekluz.com/condiciones-generales/",
     "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
+    "descuento_energia": null
+   }
   },
   {
    "id": "cnmc-4515",
@@ -893,27 +509,29 @@
     "p2": 0.030181
    },
    "energia": {
-    "p1": 0.251975,
-    "p2": 0.177903,
-    "p3": 0.151028
+    "p1": 0.291921,
+    "p2": 0.215783,
+    "p3": 0.191313
    },
    "cuota_fija_mes": 0,
+   "servicio_mes": 0,
    "permanencia_meses": 12,
    "servicios_obligatorios": [],
    "url_fuente": "https://elekluz.com/oferta-vigente/",
-   "fecha_comprobacion": "2026-10-21",
+   "fecha_comprobacion": "2026-11-01",
    "comision": false,
    "url_contratar": "https://elekluz.com/oferta-vigente/",
-   "notas": "Oferta propia de la comercializadora Termino de potencia kw/año: P1:36,212745 P2: 11,01643 Termino de energía kw/hora P1: 0,251975 P2: 0,177903 P3: 0,151028. Los precios no incluyen la cuota del Bono Social. La cuota mensual del bono social es: 0,7508333€",
+   "notas": "Oferta propia de la comercializadora Termino de potencia kw/año: P1:36,212745 P2: 11,01643 Termino de energía kw/hora P1: 0,291921 P2: 0,215783 P3: 0,191313. Los precios no incluyen la cuota del Bono Social. La cuota mensual del bono social es: 0,7508333€",
    "origen": "cnmc",
    "info": {
     "cnmc_id": 4515,
     "incluye_bono_social": false,
+    "servicio_sin_precio": false,
     "horario_propio": false,
     "verde": false,
     "servicios_adicionales": false,
     "penalizacion": "Por desistimiento unilateral del cliente durante el primer año de vigencia del contrato, el cliente deberá abonar a la comercializadora una penalización consistente en el 5% de la energía estimada pendiente de suministro. En caso de ser beneficiario del Bono social o cliente vulnerable (según normativa) no aplicará penalización alguna.",
-    "validez": "Oferta válida desde 01-ene-2026 hasta 31-dic-2026",
+    "validez": "Oferta válida desde 21-oct-2026 hasta 21-ene-2027",
     "limitaciones": "Válida para consumidores domésticos y pequeños negocios",
     "potencia_max_kw": 15,
     "consumo_max_kwh": 5000,
@@ -926,10 +544,8 @@
     },
     "url_contrato": "https://elekluz.com/condiciones-generales/",
     "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
+    "descuento_energia": null
+   }
   },
   {
    "id": "cnmc-6952",
@@ -946,10 +562,11 @@
     "p3": 0.1229
    },
    "cuota_fija_mes": 0,
+   "servicio_mes": 0,
    "permanencia_meses": 0,
    "servicios_obligatorios": [],
    "url_fuente": "https://www.endesa.com/es/luz-y-gas/luz/one/tarifa-one-luz-3periodos",
-   "fecha_comprobacion": "2026-10-21",
+   "fecha_comprobacion": "2026-11-01",
    "comision": false,
    "url_contratar": "https://www.endesa.com/es/luz-y-gas/luz/one/tarifa-one-luz-3periodos",
    "notas": "Tarifa Conecta 3 Períodos. 10% de descuento adicional en el Término de Energía durante el 1º año, oferta válida para nuevas contrataciones de luz. Precios del Término potencia antes de impuestos: Punta 26,88; Valle 26,88 €/kW y año. Precio del Término energía sin descuentos: Punta: 0,224900 €/kWh.; Llano: 0,1489 €/kWh ; Valle: 0,122900 €/kWh Precio del Término energía con descuento 10%: Punta: 0,202410€/kWh.; Llano: 0,13410 €/kWh ; Valle: 0,110610 €/kWh A los precios se añadirá el coste regulado asociado al mecanismo de financiación del bono social. Este coste fijo por cliente (comercialización) es de 0,024688 €/día en Península y Baleares, de 0,031400 €/día en Canarias para clientes domésti",
@@ -957,6 +574,7 @@
    "info": {
     "cnmc_id": 6952,
     "incluye_bono_social": false,
+    "servicio_sin_precio": false,
     "horario_propio": false,
     "verde": false,
     "servicios_adicionales": false,
@@ -974,10 +592,8 @@
     },
     "url_contrato": "https://www.endesaclientes.com/static/iberia/condicionesgenerales.pdf",
     "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
+    "descuento_energia": null
+   }
   },
   {
    "id": "cnmc-6741",
@@ -985,26 +601,28 @@
    "nombre": "ENERGIA NUFRI - CON HORARIOS",
    "tipo": "periodos",
    "potencia": {
-    "p1": 0.078644,
-    "p2": 0.078616
+    "p1": 0.084123,
+    "p2": 0.084178
    },
    "energia": {
-    "p1": 0.187103,
-    "p2": 0.108331,
-    "p3": 0.07419
+    "p1": 0.197282,
+    "p2": 0.11851,
+    "p3": 0.08437
    },
    "cuota_fija_mes": 0,
+   "servicio_mes": 0,
    "permanencia_meses": 0,
    "servicios_obligatorios": [],
    "url_fuente": "https://www.energianufri.com/es/tarifas-luz",
-   "fecha_comprobacion": "2026-10-21",
+   "fecha_comprobacion": "2026-11-01",
    "comision": false,
    "url_contratar": "https://www.energianufri.com/es/tarifas-luz",
-   "notas": "Tarifa TRES PRECIOS para nuevos clientes que contraten con tarifa peaje 2.0TD por la web, por teléfono o presencialmente. Precios: Término de Potencia Punta: 28,70433 €/kW/año Término de Potencia Valle: 28,69557 €/kW/año Término de Energía Punta: 0,187103€/kWh Término de Energía Llano: 0,108331 €/kWh Término de Energía Valle: 0,074190 €/kWh Estos precios no incluyen el coste asociado al mecanismo de financiación del bono social (9,011295 €/año).",
+   "notas": "Tarifa TRES PRECIOS para nuevos clientes que contraten con tarifa peaje 2.0TD por la web, por teléfono o presencialmente. Precios: Término de Potencia Punta: 30,70453 €/kW/año Término de Potencia Valle: 30,725335 €/kW/año Término de Energía Punta: 0,197282€/kWh Término de Energía Llano: 0,118510 €/kWh Término de Energía Valle: 0,084370 €/kWh En caso de disponer de compensación de excedentes por autoconsumo, la energía excedentaria será compensada a un precio fijo de 30€/MWh. Estos precios no incluyen el coste asociado al mecanismo de financiación del bono social (9,011295 €/año).",
    "origen": "cnmc",
    "info": {
     "cnmc_id": 6741,
     "incluye_bono_social": false,
+    "servicio_sin_precio": false,
     "horario_propio": false,
     "verde": true,
     "servicios_adicionales": false,
@@ -1022,10 +640,8 @@
     },
     "url_contrato": "https://www.energianufri.com/api/documents/file/condiciones_generales_LuzEs.pdf",
     "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
+    "descuento_energia": null
+   }
   },
   {
    "id": "cnmc-6743",
@@ -1033,26 +649,28 @@
    "nombre": "ENERGIA NUFRI - SIN HORARIOS",
    "tipo": "fijo",
    "potencia": {
-    "p1": 0.078644,
-    "p2": 0.078616
+    "p1": 0.084123,
+    "p2": 0.084178
    },
    "energia": {
-    "p1": 0.119146,
-    "p2": 0.119146,
-    "p3": 0.119146
+    "p1": 0.129326,
+    "p2": 0.129326,
+    "p3": 0.129326
    },
    "cuota_fija_mes": 0,
+   "servicio_mes": 0,
    "permanencia_meses": 0,
    "servicios_obligatorios": [],
    "url_fuente": "https://www.energianufri.com/es/tarifas-luz",
-   "fecha_comprobacion": "2026-10-21",
+   "fecha_comprobacion": "2026-11-01",
    "comision": false,
    "url_contratar": "https://www.energianufri.com/es/tarifas-luz",
-   "notas": "Tarifa UN SOLO PRECIO para nuevos clientes que contraten con tarifa peaje 2.0TD por la web, por teléfono o presencialmente. Precios: Término de Potencia Punta: 28,70433 €/kW/año Término de Potencia Valle: 28,69557 €/kW/año Término de Energía Punta/Llano/Valle: 0,119146 €/kWh Estos precios no incluyen el coste asociado al mecanismo de financiación del bono social (9,011295 €/año).",
+   "notas": "Tarifa UN SOLO PRECIO para nuevos clientes que contraten con tarifa peaje 2.0TD por la web, por teléfono o presencialmente. Precios: Término de Potencia Punta: 30,70453 €/kW/año Término de Potencia Valle: 30,725335 €/kW/año Término de Energía Punta/Llano/Valle: 0,129326 €/kWh En caso de disponer de compensación de excedentes por autoconsumo, la energía excedentaria será compensada a un precio fijo de 30€/MWh. Estos precios no incluyen el coste asociado al mecanismo de financiación del bono social (9,011295 €/año).",
    "origen": "cnmc",
    "info": {
     "cnmc_id": 6743,
     "incluye_bono_social": false,
+    "servicio_sin_precio": false,
     "horario_propio": false,
     "verde": true,
     "servicios_adicionales": false,
@@ -1070,10 +688,8 @@
     },
     "url_contrato": "https://www.energianufri.com/api/documents/file/condiciones_generales_LuzEs.pdf",
     "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
+    "descuento_energia": null
+   }
   },
   {
    "id": "cnmc-6754",
@@ -1085,22 +701,24 @@
     "p2": 0.037603
    },
    "energia": {
-    "p1": 0.326128,
-    "p2": 0.237855,
-    "p3": 0.195351
+    "p1": 0.36121,
+    "p2": 0.269418,
+    "p3": 0.223817
    },
    "cuota_fija_mes": 0,
+   "servicio_mes": 0,
    "permanencia_meses": 0,
    "servicios_obligatorios": [],
    "url_fuente": "https://www.energianufri.com/es/tarifas-luz",
-   "fecha_comprobacion": "2026-10-21",
+   "fecha_comprobacion": "2026-11-01",
    "comision": false,
    "url_contratar": "https://www.energianufri.com/es/tarifas-luz",
-   "notas": "Tarifa TRES PRECIOS para clientes que contraten Tarifa 2.0TD por la web, por teléfono o presencialmente con dos precios de potencia y tres de energía. Precios: Término de Potencia Punta: 40,704435 €/kW/año Término de Potencia Valle: 13,72546 €/kW/año Término de Energía Punta: 0,326128 €/kWh Término de Energía Llano: 0,237855 €/kWh Término de Energía Valle: 0,195351 €/kWh Estos precios no incluyen el coste asociado al mecanismo de financiación del bono social (9,011295 €/año). No requieren la contratación de productos ni servicios complementarios. No hay permanencia ni penalizaciones.",
+   "notas": "Tarifa TRES PRECIOS para clientes que contraten Tarifa 2.0TD por la web, por teléfono o presencialmente con dos precios de potencia y tres de energía. Precios: Término de Potencia Punta: 40,704435 €/kW/año Término de Potencia Valle: 13,72546 €/kW/año Término de Energía Punta: 0,361210 €/kWh Término de Energía Llano: 0,269418 €/kWh Término de Energía Valle: 0,223817€/kWh En caso de disponer de compensación de excedentes por autoconsumo la energía excedentaria será compensada a 80 €/MWh. Estos precios no incluyen el coste asociado al mecanismo de financiación del bono social (9,011295 €/año). No requieren la contratación de productos ni servicios complementarios. No hay permanencia ni penaliza",
    "origen": "cnmc",
    "info": {
     "cnmc_id": 6754,
     "incluye_bono_social": false,
+    "servicio_sin_precio": false,
     "horario_propio": false,
     "verde": true,
     "servicios_adicionales": false,
@@ -1118,10 +736,8 @@
     },
     "url_contrato": "https://www.energianufri.com/api/documents/file/condiciones_generales_LuzEs.pdf",
     "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
+    "descuento_energia": null
+   }
   },
   {
    "id": "cnmc-5790",
@@ -1130,25 +746,27 @@
    "tipo": "periodos",
    "potencia": {
     "p1": 0.075904,
-    "p2": 0.034863
+    "p2": 0.048562
    },
    "energia": {
-    "p1": 0.211551,
-    "p2": 0.132778,
-    "p3": 0.098638
+    "p1": 0.221424,
+    "p2": 0.142652,
+    "p3": 0.108511
    },
    "cuota_fija_mes": 0,
+   "servicio_mes": 0,
    "permanencia_meses": 0,
    "servicios_obligatorios": [],
    "url_fuente": "https://www.energianufri.com/es/tarifas-luz",
-   "fecha_comprobacion": "2026-10-21",
+   "fecha_comprobacion": "2026-11-01",
    "comision": false,
    "url_contratar": "https://www.energianufri.com/es/tarifas-luz",
-   "notas": "Tarifa TRES PRECIOS para clientes que contraten con tarifa peaje 2.0TD por la web, por teléfono o presencialmente. Precios: Término de Potencia Punta: 27,704595 €/kW/año Término de Potencia Valle: 12,72536 €/kW/año Término de Energía Punta: 0,211551 €/kWh Término de Energía Llano: 0,132778 €/kWh Término de Energía Valle: 0,098638 €/kWh Estos precios no incluyen el coste asociado al mecanismo de financiación del bono social (9,011295 €/año).",
+   "notas": "Tarifa TRES PRECIOS para clientes que contraten con tarifa peaje 2.0TD por la web, por teléfono o presencialmente. Precios: Término de Potencia Punta: 27,704595 €/kW/año Término de Potencia Valle: 17,725495 €/kW/año Término de Energía Punta: 0,221424 €/kWh Término de Energía Llano: 0,142652 €/kWh Término de Energía Valle: 0,108511 €/kWh En caso de disponer de compensación de excedentes por autoconsumo, la energía excedentaria será compensada a un precio fijo de 30€/MWh. Estos precios no incluyen el coste asociado al mecanismo de financiación del bono social (9,011295 €/año).",
    "origen": "cnmc",
    "info": {
     "cnmc_id": 5790,
     "incluye_bono_social": false,
+    "servicio_sin_precio": false,
     "horario_propio": false,
     "verde": true,
     "servicios_adicionales": false,
@@ -1166,10 +784,8 @@
     },
     "url_contrato": "https://www.energianufri.com/api/documents/file/condiciones_generales_LuzEs.pdf",
     "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
+    "descuento_energia": null
+   }
   },
   {
    "id": "cnmc-5789",
@@ -1178,25 +794,27 @@
    "tipo": "fijo",
    "potencia": {
     "p1": 0.075904,
-    "p2": 0.034863
+    "p2": 0.048562
    },
    "energia": {
-    "p1": 0.143594,
-    "p2": 0.143594,
-    "p3": 0.143594
+    "p1": 0.153467,
+    "p2": 0.153467,
+    "p3": 0.153467
    },
    "cuota_fija_mes": 0,
+   "servicio_mes": 0,
    "permanencia_meses": 0,
    "servicios_obligatorios": [],
    "url_fuente": "https://www.energianufri.com/es/tarifas-luz",
-   "fecha_comprobacion": "2026-10-21",
+   "fecha_comprobacion": "2026-11-01",
    "comision": false,
    "url_contratar": "https://www.energianufri.com/es/tarifas-luz",
-   "notas": "Tarifa UN SOLO PRECIO para nuevos clientes que contraten con tarifa peaje 2.0TD por la web, por teléfono o presencialmente. Precios: Término de Potencia Punta: 27,704595 €/kW/año Término de Potencia Valle: 12,72536 €/kW/año Término de Energía Punta/Llano/Valle: 0,143594 €/kWh Estos precios no incluyen el coste asociado al mecanismo de financiación del bono social (9,011295 €/año).",
+   "notas": "Tarifa UN SOLO PRECIO para nuevos clientes que contraten con tarifa peaje 2.0TD por la web, por teléfono o presencialmente. Precios: Término de Potencia Punta: 27,704595 €/kW/año Término de Potencia Valle: 17,725495 €/kW/año Término de Energía Punta/Llano/Valle: 0,153467€/kWh En caso de disponer de compensación de excedentes por autoconsumo, la energía excedentaria será compensada a un precio fijo de 30€/MWh. Estos precios no incluyen el coste asociado al mecanismo de financiación del bono social (9,011295 €/año).",
    "origen": "cnmc",
    "info": {
     "cnmc_id": 5789,
     "incluye_bono_social": false,
+    "servicio_sin_precio": false,
     "horario_propio": false,
     "verde": true,
     "servicios_adicionales": false,
@@ -1214,10 +832,8 @@
     },
     "url_contrato": "https://www.energianufri.com/api/documents/file/condiciones_generales_LuzEs.pdf",
     "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
+    "descuento_energia": null
+   }
   },
   {
    "id": "cnmc-5520",
@@ -1234,10 +850,11 @@
     "p3": 0.099
    },
    "cuota_fija_mes": 0,
+   "servicio_mes": 0,
    "permanencia_meses": 0,
    "servicios_obligatorios": [],
    "url_fuente": "https://www.energyavm.es/luz/formula-fija-3-periodos-luz/",
-   "fecha_comprobacion": "2026-10-21",
+   "fecha_comprobacion": "2026-11-01",
    "comision": false,
    "url_contratar": "https://www.energyavm.es/luz/formula-fija-3-periodos-luz/",
    "notas": "Oferta para puntos de suministro con tarifa 2.0 TD. Término de potencia (Tp): P1 = 33,999996 EUR/kW/año, P2 = 33,999996 EUR/kW/año. Término de energía (Te): P1 = 0,169000 EUR/kWh, P2 = 0,129000 EUR/kWh, P3 = 0,099000 EUR/kWh Estos precios incluyen la financiación del bono social. Estos precios no incluyen ni descuentos ni IVA ni el impuesto eléctrico y, por último, esta oferta no está vinculada a la contratación de un servicio adicional. Esta oferta es para cliente con consumo anual inferior a 5.000 kWh. Sin penalizaciones por cambio de compañía ni cláusulas de permanencia.",
@@ -1245,6 +862,7 @@
    "info": {
     "cnmc_id": 5520,
     "incluye_bono_social": true,
+    "servicio_sin_precio": false,
     "horario_propio": false,
     "verde": false,
     "servicios_adicionales": false,
@@ -1262,10 +880,8 @@
     },
     "url_contrato": "https://www.energyavm.es/wp-content/uploads/2023/10/Energya_generalConditionsLuz_260930.pdf",
     "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
+    "descuento_energia": null
+   }
   },
   {
    "id": "cnmc-5356",
@@ -1282,10 +898,11 @@
     "p3": 0.117
    },
    "cuota_fija_mes": 0,
+   "servicio_mes": 0,
    "permanencia_meses": 0,
    "servicios_obligatorios": [],
    "url_fuente": "https://www.energyavm.es/luz/formula-fija-24-horas-luz/",
-   "fecha_comprobacion": "2026-10-21",
+   "fecha_comprobacion": "2026-11-01",
    "comision": false,
    "url_contratar": "https://www.energyavm.es/luz/formula-fija-24-horas-luz/",
    "notas": "Oferta para puntos de suministro con tarifa 2.0 TD. Término de potencia (Tp): P1 = 33,999996 EUR/kW/año, P2 = 33,999996 EUR/kW/año. Término de energía (Te): P1 = 0,117000 EUR/kWh, P2 = 0,117000 EUR/kWh, P3 = 0,117000 EUR/kWh Estos precios incluyen la financiación del bono social. Estos precios no incluyen ni descuentos ni IVA ni el impuesto eléctrico y, por último, esta oferta no está vinculada a la contratación de un servicio adicional. Sin penalizaciones por cambio de compañía ni cláusulas de permanencia y esta oferta es para suministros con consumos anuales inferiores a 5.000 kWh.",
@@ -1293,6 +910,7 @@
    "info": {
     "cnmc_id": 5356,
     "incluye_bono_social": true,
+    "servicio_sin_precio": false,
     "horario_propio": false,
     "verde": false,
     "servicios_adicionales": false,
@@ -1310,10 +928,8 @@
     },
     "url_contrato": "https://www.energyavm.es/wp-content/uploads/2023/10/Energya_generalConditionsLuz_260930.pdf",
     "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
+    "descuento_energia": null
+   }
   },
   {
    "id": "cnmc-5521",
@@ -1330,12 +946,13 @@
     "p3": 0.09945
    },
    "cuota_fija_mes": 0,
+   "servicio_mes": 0,
    "permanencia_meses": 0,
    "servicios_obligatorios": [
-    "Mantenimiento de instalación eléctrica: Servicio On Luz Hogar: - Servicio de reparación urgente de luz - Servicio de reparación de aparatos de gama blanca - Servicio de protección de pagos - Manitas el"
+    "Mantenimiento de instalación eléctrica: Servicio On Luz Hogar: - Servicio de reparación urgente de luz - Servicio de reparación de aparatos de gama blanca - Servicio de protección de pagos - Manitas eléctrico"
    ],
    "url_fuente": "https://www.energyavm.es/luz/formula-fija-24horas-asistencia-luz/",
-   "fecha_comprobacion": "2026-10-21",
+   "fecha_comprobacion": "2026-11-01",
    "comision": false,
    "url_contratar": "https://www.energyavm.es/luz/formula-fija-24horas-asistencia-luz/",
    "notas": "Oferta para puntos de suministro con tarifa 2.0 TD. Término de potencia (Tp): P1 = 33,999996 EUR/kW/año, P2 = 33,999996 EUR/kW/año. Término de energía (Te): P1 = 0,117000 EUR/kWh, P2 = 0,117000 EUR/kWh, P3 = 0,117000 EUR/kWh (Precios sin descuento). Promoción: 15% T. Energía para siempre mientras que tengas contratado con nosotros el servicio On Luz Hogar. P1 = 0,099450 EUR/kWh, P2 = 0,099450 EUR/kWh, P3 = 0,099450 EUR/kWh (Precios con descuento). Estos precios incluyen la financiación del bono social. Estos precios no incluyen IVA ni el impuesto eléctrico. Esta oferta está está vinculada a la contratación del servicio On Luz. Esta oferta es para cliente con consumo anual inferior a 5.000 kW",
@@ -1343,6 +960,7 @@
    "info": {
     "cnmc_id": 5521,
     "incluye_bono_social": true,
+    "servicio_sin_precio": true,
     "horario_propio": false,
     "verde": false,
     "servicios_adicionales": true,
@@ -1360,10 +978,8 @@
     },
     "url_contrato": "https://www.energyavm.es/wp-content/uploads/2023/10/Energya_generalConditionsLuz_260930.pdf",
     "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": true
-   },
-   "servicio_mes": 0
+    "descuento_energia": null
+   }
   },
   {
    "id": "cnmc-5944",
@@ -1380,10 +996,11 @@
     "p3": 0.099
    },
    "cuota_fija_mes": 0,
+   "servicio_mes": 0,
    "permanencia_meses": 12,
    "servicios_obligatorios": [],
    "url_fuente": "https://www.energyavm.es/luz/formula-fija-3-periodos-luz/",
-   "fecha_comprobacion": "2026-10-21",
+   "fecha_comprobacion": "2026-11-01",
    "comision": false,
    "url_contratar": "https://www.energyavm.es/luz/formula-fija-3-periodos-luz/",
    "notas": "Oferta para puntos de suministro con tarifa 2.0 TD. Término de potencia (Tp): P1 = 33,999996 EUR/kW/año, P2 = 33,999996 EUR/kW/año. Término de energía (Te) P1 = 0,169000 EUR/kWh, P2 = 0,129000 EUR/kWh, P3 = 0,099000 EUR/kWh. Promociones no aplicables en contratación telefónica, sólo en online. Estos precios incluyen la financiación del bono social. Estos precios no incluyen ni descuentos ni IVA ni el impuesto eléctrico y, por último, esta oferta no está vinculada a la contratación de un servicio adicional. Esta oferta es para suministros con consumo anuales inferiores a 6.000 kWh.",
@@ -1391,6 +1008,7 @@
    "info": {
     "cnmc_id": 5944,
     "incluye_bono_social": true,
+    "servicio_sin_precio": false,
     "horario_propio": false,
     "verde": false,
     "servicios_adicionales": false,
@@ -1408,10 +1026,8 @@
     },
     "url_contrato": "https://www.energyavm.es/wp-content/uploads/2023/10/Energya_generalConditionsLuz_260930.pdf",
     "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
+    "descuento_energia": null
+   }
   },
   {
    "id": "cnmc-5943",
@@ -1428,10 +1044,11 @@
     "p3": 0.117
    },
    "cuota_fija_mes": 0,
+   "servicio_mes": 0,
    "permanencia_meses": 12,
    "servicios_obligatorios": [],
    "url_fuente": "https://www.energyavm.es/luz/formula-fija-24-horas-luz/",
-   "fecha_comprobacion": "2026-10-21",
+   "fecha_comprobacion": "2026-11-01",
    "comision": false,
    "url_contratar": "https://www.energyavm.es/luz/formula-fija-24-horas-luz/",
    "notas": "Oferta para puntos de suministro con tarifa 2.0 TD. Término de potencia (Tp): P1 = 33,999996 EUR/kW/año, P2 = 33,999996 EUR/kW/año. Término de energía (Te) P1 = 0,117000 EUR/kWh, P2 = 0,117000 EUR/kWh, P3 = 0,117000 EUR/kWh. Las promociones no aplican a contratación telefónica, sólo a contratación online. Estos precios incluyen la financiación del bono social. Estos precios no incluyen ni descuentos ni IVA ni el impuesto eléctrico y, por último, esta oferta no está vinculada a la contratación de un servicio adicional. Esta oferta es para suministros con consumo anuales inferiores a 6.000 kWh.",
@@ -1439,6 +1056,7 @@
    "info": {
     "cnmc_id": 5943,
     "incluye_bono_social": true,
+    "servicio_sin_precio": false,
     "horario_propio": false,
     "verde": false,
     "servicios_adicionales": false,
@@ -1456,10 +1074,8 @@
     },
     "url_contrato": "https://www.energyavm.es/wp-content/uploads/2023/10/Energya_generalConditionsLuz_260930.pdf",
     "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
+    "descuento_energia": null
+   }
   },
   {
    "id": "cnmc-7194",
@@ -1476,10 +1092,11 @@
     "p3": 0.145
    },
    "cuota_fija_mes": 0,
+   "servicio_mes": 0,
    "permanencia_meses": 0,
    "servicios_obligatorios": [],
    "url_fuente": "https://energyasset.es/tarifa",
-   "fecha_comprobacion": "2026-10-21",
+   "fecha_comprobacion": "2026-11-01",
    "comision": false,
    "url_contratar": "https://energyasset.es/tarifa",
    "notas": "Precio fijo de la energía durante 12 meses, manteniéndose estable las 24 horas del día, los 365 días del año, independientemente de las variaciones del mercado eléctrico. Precio antes de impuestos: Término de potencia: P1: 38 €/kW año P2: 38 €/kW año Término de energía: Precio único las 24 horas del día a 0,145 €/kWh. Descuento de 5 € durante los tres primeros meses en el término de energía. Los precios incluyen todos los costes regulados, excepto: Impuesto eléctrico, alquiler del equipo de medida, financiación del bono social e IVA. La financiación del bono social se facturará conforme a la Orden TED/634/2026 (0,024688 €/día).",
@@ -1487,6 +1104,7 @@
    "info": {
     "cnmc_id": 7194,
     "incluye_bono_social": false,
+    "servicio_sin_precio": false,
     "horario_propio": false,
     "verde": false,
     "servicios_adicionales": false,
@@ -1504,10 +1122,8 @@
     },
     "url_contrato": "https://energyasset.es/assets/Condiciones_Generales_EnergyAsset-C1eVJUfM.pdf",
     "promo_primer_anio_eur": 19.08,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
+    "descuento_energia": null
+   }
   },
   {
    "id": "cnmc-7193",
@@ -1524,10 +1140,11 @@
     "p3": 0.1
    },
    "cuota_fija_mes": 0,
+   "servicio_mes": 0,
    "permanencia_meses": 0,
    "servicios_obligatorios": [],
    "url_fuente": "https://energyasset.es/tarifa",
-   "fecha_comprobacion": "2026-10-21",
+   "fecha_comprobacion": "2026-11-01",
    "comision": false,
    "url_contratar": "https://energyasset.es/tarifa",
    "notas": "Precio fijo por periodos horarios, estructurados según la tarifa de acceso 2.0 TD. Precio antes de impuestos: Término de potencia: P1: 50 €/kW año P2: 25 €/kW año Término de energía: P1: 0,22 €/kWh P2: 0,14 €/kWh P3: 0,10 €/kWh Descuento de 5 € en el término de energía los 3 primeros meses. Los precios incluyen todos los costes regulados, excepto: Impuesto eléctrico, alquiler del equipo de medida, financiación del bono social e IVA. La financiación del bono social se facturará conforme a la Orden TED/634/2026 (0,024688 €/día).",
@@ -1535,6 +1152,7 @@
    "info": {
     "cnmc_id": 7193,
     "incluye_bono_social": false,
+    "servicio_sin_precio": false,
     "horario_propio": false,
     "verde": false,
     "servicios_adicionales": false,
@@ -1552,638 +1170,104 @@
     },
     "url_contrato": "https://energyasset.es/assets/Condiciones_Generales_EnergyAsset-C1eVJUfM.pdf",
     "promo_primer_anio_eur": 19.07,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
+    "descuento_energia": null
+   }
   },
   {
-   "id": "cnmc-6227",
-   "comercializadora": "ENI PLENITUDE IBERIA, S.L.",
-   "nombre": "Tarifa Fácil Plus Luz",
-   "tipo": "fijo",
+   "id": "cnmc-5937",
+   "comercializadora": "IMAGINA ENERGIA",
+   "nombre": "PLAN BASE NOCHE Y FINDES",
+   "tipo": "periodos",
    "potencia": {
-    "p1": 0.112497,
-    "p2": 0.112497
+    "p1": 0.108532,
+    "p2": 0.055196
    },
    "energia": {
-    "p1": 0.11999,
-    "p2": 0.11999,
-    "p3": 0.11999
+    "p1": 0.207096,
+    "p2": 0.133275,
+    "p3": 0.098878
    },
    "cuota_fija_mes": 0,
+   "servicio_mes": 0,
    "permanencia_meses": 0,
    "servicios_obligatorios": [],
-   "url_fuente": "https://eniplenitude.es/hogar/tarifas-luz/facil/?svaluz=false",
-   "fecha_comprobacion": "2026-10-21",
+   "url_fuente": "https://imaginaenergia.com/plan-base-imagina/",
+   "fecha_comprobacion": "2026-11-01",
    "comision": false,
-   "url_contratar": "https://eniplenitude.es/hogar/tarifas-luz/facil/?svaluz=false",
-   "notas": "Oferta para HOGAR con tarifa 2.0TD. El precio del término de potencia es en el periodo 1 41,061770 €/kW año, en el periodo 2 41,061405 €/kW año. El precio del término de energía es igual en todos los períodos: 0,119990 €/kWh. Los precios indicados incluyen el coste del bono social.",
+   "url_contratar": "https://imaginaenergia.com/plan-base-imagina/",
+   "notas": "PLAN BASE NOCHE Y FINDES - Precio Fijo 1 año PLAN BASE NOCHE Y FINDES incluye precio por periodos para consumidores domésticos tarifa 2.0TD con potencia contratada hasta 15 kW. Precios del Término de Potencia: P1 = 39,614545 €/kW y año, P2 = 20,146540 €/kW y año. Precios del Término de Energía: P1 = 0,207096 €/kWh, P2 = 0,133275 €/kWh, P3 = 0,098878 €/kWh. La oferta PLAN BASE NOCHE Y FINDES no requiere la contratación obligatoria de ningún servicio adicional. El precio de Término de Potencia y de Término de Energía podría verse actualizado con las modificaciones del IPC. Coste del bono social (9,011295 €/año) no incluido en el precio del término de energía.",
    "origen": "cnmc",
    "info": {
-    "cnmc_id": 6227,
-    "incluye_bono_social": true,
+    "cnmc_id": 5937,
+    "incluye_bono_social": false,
+    "servicio_sin_precio": false,
     "horario_propio": false,
     "verde": true,
     "servicios_adicionales": false,
-    "penalizacion": "El contrato tendrá una duración de un año. Para suministros de electricidad con tarifa 2.0 TD correspondientes a hogares: no se procederá a la aplicación de penalización alguna a estos suministros.",
-    "validez": "Oferta válida desde 01-oct-2026 hasta 31-oct-2026",
-    "limitaciones": "Válida sólo para consumidores domésticos",
-    "potencia_max_kw": 5,
-    "consumo_max_kwh": 100000,
+    "penalizacion": "Sin permanencia: el producto no incluye permanencia de ningún tipo con Imagina Energía, en cualquier momento el cliente podrá abandonar la compañía sin ninguna penalización asociada.",
+    "validez": "Oferta válida desde 21-oct-2026 hasta 31-dic-2026",
+    "limitaciones": "Oferta válida solo para nuevos clientes",
+    "potencia_max_kw": 15,
+    "consumo_max_kwh": 4000,
     "revision": "Anual",
-    "condiciones_revision": "Los precios del término energía se revisarán anualmente y/o a la renovación del contrato. Las modificaciones serán notificadas al cliente con una antelación mínima de 30 días a su aplicación, pudiendo resolver el contrato en caso de no estar de acuerdo con las mismas, sin ningún tipo de indemnización, debiendo notificarlo 15 días antes. \nLos precios del suministro de gas y/o electricidad, así como los de los servicios contratados, se actualizarán cada 1 de enero, una vez transcurrido el año inic",
+    "condiciones_revision": "Tu precio se someterá a revisión antes del inicio de cada prórroga del contrato (12 meses), comunicándote cualquier modificación de precio con antelación de 30 días naturales. Tu nuevo precio (tanto término de potencia como de energía) se calculará en función de la mejor previsión de costes disponible, incluyendo el coste de la energía y el resto de costes del sistema eléctrico. No obstante, si no estuvieras de acuerdo con el nuevo precio, podrás revolver el Contrato sin que te cobremos ninguna ",
     "contratacion": {
      "internet": true,
      "telefono": false,
      "oficina": false
     },
-    "url_contrato": "https://eniplenitude.es/condiciones-generales-de-contratacion/",
+    "url_contrato": "https://imaginaenergia.com/condiciones_generales_contrato/",
     "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
+    "descuento_energia": null
+   }
   },
   {
-   "id": "cnmc-4958",
-   "comercializadora": "ESTABANELL IMPULSA, S.A.U.",
-   "nombre": "PLAN ESTABLE HORARIO AHORRO",
-   "tipo": "periodos",
-   "potencia": {
-    "p1": 0.093,
-    "p2": 0.019
-   },
-   "energia": {
-    "p1": 0.225,
-    "p2": 0.155,
-    "p3": 0.129
-   },
-   "cuota_fija_mes": 0,
-   "permanencia_meses": 0,
-   "servicios_obligatorios": [
-    "Otros servicios: Fibra 600 + 2 líneas móvil 60 GB"
-   ],
-   "url_fuente": "https://estabanell.com/particulars/es/energia/dinamico-horarios-ahorro/",
-   "fecha_comprobacion": "2026-10-21",
-   "comision": false,
-   "url_contratar": "https://estabanell.com/particulars/es/energia/dinamico-horarios-ahorro/",
-   "notas": "Término de potencia Precio sin impuestos: Periodo 1: 33,945000 €/kW/año Periodo 2: 6,935000 €/kW/año Término de energía Precio sin impuestos: Periodo 1: 0,225000 €/kWh Periodo 2: 0,155000 €/kWh Periodo 3: 0,129000 €/kWh A estos precios se añadirá el coste del bono social 0,024688 €/día Se requiere la contratación de fibra óptica (34,90€/mes)",
-   "origen": "cnmc",
-   "info": {
-    "cnmc_id": 4958,
-    "incluye_bono_social": false,
-    "horario_propio": false,
-    "verde": true,
-    "servicios_adicionales": true,
-    "penalizacion": "No",
-    "validez": "Oferta válida desde 01-oct-2026 hasta 31-oct-2026",
-    "limitaciones": "Válida para nuevos clientes que cumplen ciertos requisitos (ver detalle de la oferta)",
-    "potencia_max_kw": 10,
-    "consumo_max_kwh": 15000,
-    "revision": "Anual",
-    "condiciones_revision": "Modificación condiciones económicas. Los precios se mantendrán en vigor sin alteraciones durante la vigencia del contrato. Con 30 días de antelación respecto a la fecha de finalización del contrato, el Comercializador podrá comunicar unos nuevos precios aplicables a la renovación automática del mismo, disponiendo el Cliente del período de 30 días posteriores para comunicar su decisión de no renovar una vez alcanzada la fecha de vencimiento. Dicha comunicación se realizará mediante escrito dirigi",
-    "contratacion": {
-     "internet": true,
-     "telefono": true,
-     "oficina": true
-    },
-    "url_contrato": "https://estabanell.com/wp-content/uploads/2025/05/Contracte-energia_B2C-ESP_052025.pdf",
-    "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": true
-   },
-   "servicio_mes": 0
-  },
-  {
-   "id": "cnmc-4957",
-   "comercializadora": "ESTABANELL IMPULSA, S.A.U.",
-   "nombre": "PLAN ESTABLE SIN HORARIOS",
+   "id": "cnmc-5828",
+   "comercializadora": "IMAGINA ENERGIA",
+   "nombre": "PLAN BASE SIN HORAS",
    "tipo": "fijo",
    "potencia": {
-    "p1": 0.093,
-    "p2": 0.019
+    "p1": 0.108532,
+    "p2": 0.055196
    },
    "energia": {
-    "p1": 0.163,
-    "p2": 0.163,
-    "p3": 0.163
+    "p1": 0.134815,
+    "p2": 0.134815,
+    "p3": 0.134815
    },
    "cuota_fija_mes": 0,
-   "permanencia_meses": 0,
-   "servicios_obligatorios": [
-    "Otros servicios: Fibra 600 + 2 líneas móvil 60 GB"
-   ],
-   "url_fuente": "https://estabanell.com/particulars/es/energia/sin-horarios/",
-   "fecha_comprobacion": "2026-10-21",
-   "comision": false,
-   "url_contratar": "https://estabanell.com/particulars/es/energia/sin-horarios/",
-   "notas": "Término de potencia Precio sin impuestos: Periodo 1: 33,945000 €/kW/año Periodo 2: 6,935000 €/kW/día Término de energía Precio sin impuestos: Precio período punta: 0,163000 €/kWh Precio período llano: 0,163000 €/kWh Precio período valle: 0,163000 €/kWh A estos precios se añadirá el coste del bono social, 0,024688 €/día Se requiere la contratación de fibra óptica (34,90€/mes)",
-   "origen": "cnmc",
-   "info": {
-    "cnmc_id": 4957,
-    "incluye_bono_social": false,
-    "horario_propio": false,
-    "verde": true,
-    "servicios_adicionales": true,
-    "penalizacion": "No",
-    "validez": "Oferta válida desde 01-oct-2026 hasta 31-oct-2026",
-    "limitaciones": "Válida para nuevos clientes que cumplen ciertos requisitos (ver detalle de la oferta)",
-    "potencia_max_kw": 10,
-    "consumo_max_kwh": 15000,
-    "revision": "Anual",
-    "condiciones_revision": "Modificación condiciones económicas. Los precios se mantendrán en vigor sin alteraciones durante la vigencia del contrato. Con 30 días de antelación respecto a la fecha de finalización del contrato, el Comercializador podrá comunicar unos nuevos precios aplicables a la renovación automática del mismo, disponiendo el Cliente del período de 30 días posteriores para comunicar su decisión de no renovar una vez alcanzada la fecha de vencimiento. Dicha comunicación se realizará mediante escrito dirigi",
-    "contratacion": {
-     "internet": true,
-     "telefono": true,
-     "oficina": true
-    },
-    "url_contrato": "https://estabanell.com/wp-content/uploads/2025/05/Contracte-energia_B2C-ESP_052025.pdf",
-    "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": true
-   },
-   "servicio_mes": 0
-  },
-  {
-   "id": "cnmc-5795",
-   "comercializadora": "FENIE ENERGIA, S.A.",
-   "nombre": "Fijo 3 Periodos 2.0TD",
-   "tipo": "periodos",
-   "potencia": {
-    "p1": 0.075904,
-    "p2": 0.001986
-   },
-   "energia": {
-    "p1": 0.278884,
-    "p2": 0.197616,
-    "p3": 0.171322
-   },
-   "cuota_fija_mes": 0,
+   "servicio_mes": 0,
    "permanencia_meses": 0,
    "servicios_obligatorios": [],
-   "url_fuente": "https://www.fenieenergia.es/es/hogar/tarifas-de-luz/fijo-3-periodos",
-   "fecha_comprobacion": "2026-10-21",
+   "url_fuente": "https://imaginaenergia.com/plan-base-imagina/",
+   "fecha_comprobacion": "2026-11-01",
    "comision": false,
-   "url_contratar": "https://www.fenieenergia.es/es/hogar/tarifas-de-luz/fijo-3-periodos",
-   "notas": "Precio antes de impuestos: Término de potencia: se facturará según los cargos y peajes de acceso de la Distribuidora: Punta 27,704413; Valle 0,725423 €/kW y año Término de energía: Punta 0,278884; Llano 0,197616; Valle 0,171322 €/kWh Sin permanencia ni penalización. Estos precios requieren la contratación y la facturación electrónica Mecanismo de financiación del bono social (facturado en línea adicional): Coste fijo por cliente 9,011295 €/año",
+   "url_contratar": "https://imaginaenergia.com/plan-base-imagina/",
+   "notas": "PLAN BASE SIN HORAS - Precio Fijo 1 año PLAN BASE SIN HORAS incluye mismo precio 24/7 para consumidores domésticos tarifa 2.0TD. Precios del Término de Potencia: P1 = 39,614545 €/kW y año P2 = 20,146540 €/kW y año. Precios del Término de Energía: P1 = 0,134815 €/kWh, P2 = 0,134815 €/kWh, P3 = 0,134815 €/kWh. La oferta PLAN BASE SIN HORAS no requiere la contratación obligatoria de ningún servicio adicional. El precio de Término de Potencia y de Término de Energía no varía con las modificaciones del IPC. Coste del bono social (9,011295 €/año) no incluido en el precio del término de energía.",
    "origen": "cnmc",
    "info": {
-    "cnmc_id": 5795,
+    "cnmc_id": 5828,
     "incluye_bono_social": false,
-    "horario_propio": false,
-    "verde": false,
-    "servicios_adicionales": false,
-    "penalizacion": "Sin permanencia.",
-    "validez": "Oferta válida desde 01-oct-2026 hasta 31-oct-2026",
-    "limitaciones": "Válida para cualquier consumidor",
-    "potencia_max_kw": 15,
-    "consumo_max_kwh": 15000,
-    "revision": "Anual",
-    "condiciones_revision": "Los precios tendrán una duración anual, sin cambios hasta su renovación, los cuales serán notificados con al menos 15 días de antelación a su entrada en vigor y calculados según las condiciones particulares y teniendo en cuenta los componentes según clausula 4.1. Excepcionalmente, estos podrán tener variación (según Clausula 4.4 de las Condiciones Generales del contrato), cuando haya un cambio normativo aprobado por la Administración/Gobierno en los términos regulados, estos se trasladarán tanto",
-    "contratacion": {
-     "internet": true,
-     "telefono": true,
-     "oficina": false
-    },
-    "url_contrato": "https://www.fenieenergia.es/es/condiciones-productos",
-    "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
-  },
-  {
-   "id": "cnmc-5826",
-   "comercializadora": "FENIE ENERGIA, S.A.",
-   "nombre": "Fijo Energético 1P 2.0TD",
-   "tipo": "fijo",
-   "potencia": {
-    "p1": 0.113699,
-    "p2": 0.113699
-   },
-   "energia": {
-    "p1": 0.126926,
-    "p2": 0.126926,
-    "p3": 0.126926
-   },
-   "cuota_fija_mes": 0,
-   "permanencia_meses": 0,
-   "servicios_obligatorios": [],
-   "url_fuente": "https://www.fenieenergia.es/es/hogar/tarifas-de-luz/fijo-energetico-1p",
-   "fecha_comprobacion": "2026-10-21",
-   "comision": false,
-   "url_contratar": "https://www.fenieenergia.es/es/hogar/tarifas-de-luz/fijo-energetico-1p",
-   "notas": "Precio antes de impuestos: Término de potencia: se facturará según los cargos y peajes de acceso de la Distribuidora: Punta 41,50; Valle 41,50 €/kW y año Término de energía: Punta 0,126926; Llano 0,126926; Valle 0,126926 €/kWh Sin permanencia ni penalización. Estos precios requieren la contratación y la facturación electrónica y que el consumo de P3 sea superior al 30% del consumo total. Mecanismo de financiación del bono social (facturado en línea adicional): Coste fijo por cliente 9,011295 €/año",
-   "origen": "cnmc",
-   "info": {
-    "cnmc_id": 5826,
-    "incluye_bono_social": false,
-    "horario_propio": false,
-    "verde": false,
-    "servicios_adicionales": false,
-    "penalizacion": "Sin permanencia.",
-    "validez": "Oferta válida desde 01-oct-2026 hasta 31-oct-2026",
-    "limitaciones": "Válida para cualquier consumidor",
-    "potencia_max_kw": 15,
-    "consumo_max_kwh": 10000,
-    "revision": "Anual",
-    "condiciones_revision": "Los precios tendrán una duración anual, sin cambios hasta su renovación, los cuales serán notificados con al menos 15 días de antelación a su entrada en vigor y calculados según las condiciones particulares y teniendo en cuenta los componentes según clausula 4.1. Excepcionalmente, estos podrán tener variación (según Clausula 4.4 de las Condiciones Generales del contrato), cuando haya un cambio normativo aprobado por la Administración/Gobierno en los términos regulados, estos se trasladarán tanto",
-    "contratacion": {
-     "internet": true,
-     "telefono": false,
-     "oficina": false
-    },
-    "url_contrato": "https://www.fenieenergia.es/es/condiciones-productos",
-    "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
-  },
-  {
-   "id": "cnmc-5792",
-   "comercializadora": "FENIE ENERGIA, S.A.",
-   "nombre": "Fijo Energético 3P 2.0TD",
-   "tipo": "periodos",
-   "potencia": {
-    "p1": 0.113699,
-    "p2": 0.113699
-   },
-   "energia": {
-    "p1": 0.196884,
-    "p2": 0.115616,
-    "p3": 0.089322
-   },
-   "cuota_fija_mes": 0,
-   "permanencia_meses": 0,
-   "servicios_obligatorios": [],
-   "url_fuente": "https://www.fenieenergia.es/es/hogar/tarifas-de-luz/fijo-energetico-3p",
-   "fecha_comprobacion": "2026-10-21",
-   "comision": false,
-   "url_contratar": "https://www.fenieenergia.es/es/hogar/tarifas-de-luz/fijo-energetico-3p",
-   "notas": "Precio antes de impuestos: Término de potencia: se facturará según los cargos y peajes de acceso de la Distribuidora: Punta 41,50 €/kW y año; Valle 41,50 €/kW y año Término de energía: Punta 0,196884 €/kWh; Llano 0,115616 €/kWh; Valle 0,089322 €/kWh Sin permanencia ni penalización. Estos precios requieren la contratación y la facturación electrónica. Mecanismo de financiación del bono social: Coste fijo por cliente 9,011295 €/año.",
-   "origen": "cnmc",
-   "info": {
-    "cnmc_id": 5792,
-    "incluye_bono_social": false,
-    "horario_propio": false,
-    "verde": false,
-    "servicios_adicionales": false,
-    "penalizacion": "Sin permanencia.",
-    "validez": "Oferta válida desde 01-oct-2026 hasta 31-oct-2026",
-    "limitaciones": "Válida para cualquier consumidor",
-    "potencia_max_kw": 15,
-    "consumo_max_kwh": 10000,
-    "revision": "Anual",
-    "condiciones_revision": "Los precios tendrán una duración anual, sin cambios hasta su renovación, los cuales serán notificados con al menos 15 días de antelación a su entrada en vigor y calculados según las condiciones particulares y teniendo en cuenta los componentes según clausula 4.1. Excepcionalmente, estos podrán tener variación (según Clausula 4.4 de las Condiciones Generales del contrato), cuando haya un cambio normativo aprobado por la Administración/Gobierno en los términos regulados, estos se trasladarán tanto",
-    "contratacion": {
-     "internet": true,
-     "telefono": false,
-     "oficina": false
-    },
-    "url_contrato": "https://www.fenieenergia.es/es/condiciones-productos",
-    "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
-  },
-  {
-   "id": "cnmc-5796",
-   "comercializadora": "FENIE ENERGIA, S.A.",
-   "nombre": "Fijo Uniprecio 2.0TD",
-   "tipo": "fijo",
-   "potencia": {
-    "p1": 0.075904,
-    "p2": 0.001986
-   },
-   "energia": {
-    "p1": 0.208926,
-    "p2": 0.208926,
-    "p3": 0.208926
-   },
-   "cuota_fija_mes": 0,
-   "permanencia_meses": 0,
-   "servicios_obligatorios": [],
-   "url_fuente": "https://www.fenieenergia.es/es/hogar/tarifas-de-luz/fijo-uniprecio",
-   "fecha_comprobacion": "2026-10-21",
-   "comision": false,
-   "url_contratar": "https://www.fenieenergia.es/es/hogar/tarifas-de-luz/fijo-uniprecio",
-   "notas": "Precio antes de impuestos: Término de potencia los cuales se facturarán según los cargos y peajes de acceso de la Distribuidora: Punta 27,704413; Valle 0,725423 €/kW y año Término de energía: 0,208926 €/kWh Sin permanencia ni penalización. Estos precios requieren la contratación y la facturación electrónica y que el consumo de P3 sea superior al 30% del consumo total. Mecanismo de financiación del bono social (facturado en línea adicional): Coste fijo por cliente 9,011295 €/año",
-   "origen": "cnmc",
-   "info": {
-    "cnmc_id": 5796,
-    "incluye_bono_social": false,
-    "horario_propio": false,
-    "verde": false,
-    "servicios_adicionales": false,
-    "penalizacion": "Sin permanencia.",
-    "validez": "Oferta válida desde 01-oct-2026 hasta 31-oct-2026",
-    "limitaciones": "Válida para cualquier consumidor",
-    "potencia_max_kw": 15,
-    "consumo_max_kwh": 15000,
-    "revision": "Anual",
-    "condiciones_revision": "Los precios tendrán una duración anual, sin cambios hasta su renovación, los cuales serán notificados con al menos 15 días de antelación a su entrada en vigor y calculados según las condiciones particulares y teniendo en cuenta los componentes según clausula 4.1. Excepcionalmente, estos podrán tener variación (según Clausula 4.4 de las Condiciones Generales del contrato), cuando haya un cambio normativo aprobado por la Administración/Gobierno en los términos regulados, estos se trasladarán tanto",
-    "contratacion": {
-     "internet": true,
-     "telefono": true,
-     "oficina": false
-    },
-    "url_contrato": "https://www.fenieenergia.es/es/condiciones-productos",
-    "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
-  },
-  {
-   "id": "cnmc-7087",
-   "comercializadora": "GESTERNOVA, S.A",
-   "nombre": "Tarifa Facil",
-   "tipo": "fijo",
-   "potencia": {
-    "p1": 0.077301,
-    "p2": 0.077301
-   },
-   "energia": {
-    "p1": 0.1499,
-    "p2": 0.1499,
-    "p3": 0.1499
-   },
-   "cuota_fija_mes": 0.02,
-   "permanencia_meses": 0,
-   "servicios_obligatorios": [],
-   "url_fuente": "https://contigoenergia.com/tarifas/tarifa-de-luz-facil/",
-   "fecha_comprobacion": "2026-10-21",
-   "comision": false,
-   "url_contratar": "https://contigoenergia.com/tarifas/tarifa-de-luz-facil/",
-   "notas": "Oferta de energía 100% renovable para hogares y negocios, Puedes añadir la etiqueta EKOenergía. * Tarifa de potencia con dos periodos: Precio Termino de Potencia Punta: 28,2149 €/kW año Precio Termino de Potencia Valle: 28,2149 €/kW/año * Precio de la energía consumida a cualquier hora: 0,1499 €/kWh Los precios no incluyen alquiler de contador, financiación del bono social, impuesto de electricidad e IVA. Precios con los valores de peajes de acceso establecidos en la Resolución de la CNMC de 18 de diciembre de 2025 y cargos establecidos en la Orden TED/1524/2025, de 23 de diciembre El alquiler de contador tiene un coste acorde a las características del equipo de medida de cada punto de sumin",
-   "origen": "cnmc",
-   "info": {
-    "cnmc_id": 7087,
-    "incluye_bono_social": false,
+    "servicio_sin_precio": false,
     "horario_propio": false,
     "verde": true,
     "servicios_adicionales": false,
-    "penalizacion": "Precio vigente durante 12 meses desde la fecha pactada de inicio del contrato. \nContratos de Suministro en Baja Tensión en cualquier modalidad de contratación: Gesternova no aplicará penalización alguna al cliente por incumplimiento del plazo de duración pactado en el Contrato.",
-    "validez": "Oferta válida desde 12-jun-2026 hasta 31-dic-2026",
-    "limitaciones": "Válida para cualquier consumidor",
+    "penalizacion": "Sin permanencia: el producto no incluye permanencia de ningún tipo con Imagina Energía, en cualquier momento el cliente podrá abandonar la compañía sin ninguna penalización asociada.",
+    "validez": "Oferta válida desde 21-oct-2026 hasta 31-dic-2026",
+    "limitaciones": "Oferta válida solo para nuevos clientes",
     "potencia_max_kw": 15,
-    "consumo_max_kwh": 999999,
+    "consumo_max_kwh": 4000,
     "revision": "Anual",
-    "condiciones_revision": "Oferta válida sólo para consumidores domésticos.\nPrecio vigente durante 12 meses desde la fecha pactada de inicio del contrato. Las modificaciones de precio (tanto de energía como de potencia) se notificarán al cliente con una antelación mínima de un mes a su entrada en vigor, salvo que este cambio de precios se deba a cambios regulatorios o una alteración extraordinaria y sobrevenida de las circunstancias de mercado. El cliente podrá finalizar el contrato sin penalización si no estuviese de acu",
-    "contratacion": {
-     "internet": true,
-     "telefono": false,
-     "oficina": true
-    },
-    "url_contrato": "https://contigoenergia.com/wp-content/uploads/2026/06/Contigo_Energia_CCGG_20260611.pdf",
-    "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
-  },
-  {
-   "id": "cnmc-5271",
-   "comercializadora": "HIDROELECTRICA DE SILLEDA COMERCIALIZADORA, S.L",
-   "nombre": "Eficiente 20TD",
-   "tipo": "periodos",
-   "potencia": {
-    "p1": 0.08499,
-    "p2": 0.012935
-   },
-   "energia": {
-    "p1": 0.207734,
-    "p2": 0.181916,
-    "p3": 0.164151
-   },
-   "cuota_fija_mes": 0,
-   "permanencia_meses": 0,
-   "servicios_obligatorios": [],
-   "url_fuente": "https://www.hscomercializadora.com/tarifas-precios-periodo-3/hogar#verPrecios",
-   "fecha_comprobacion": "2026-10-21",
-   "comision": false,
-   "url_contratar": "https://www.hscomercializadora.com/tarifas-precios-periodo-3/hogar#verPrecios",
-   "notas": "Oferta de Hidroeléctrica de Silleda comercializadora anual a precio revisable: Término de potencia P1=31.021753 €/kW año Término de potencia P2=4.721064 €/kW año, Termino de energía P1=0,207734 €/kWh Termino de energía P2=0,181916 €/kWh Termino de energía P3= 0,164151 €/kWh. No requiere servicios adicionales. Estos precios no incluyen el coste regulado asociado al mecanismo de financiación del bono social, cuyo importe es de 0,024688 €/día e incluyen el FNEE (fondo nacional de eficiencia energética) cuyo importe es 0,002657 €/kwh",
-   "origen": "cnmc",
-   "info": {
-    "cnmc_id": 5271,
-    "incluye_bono_social": false,
-    "horario_propio": false,
-    "verde": false,
-    "servicios_adicionales": false,
-    "penalizacion": "No tiene permanencia",
-    "validez": "Oferta válida desde 01-jun-2026 hasta 01-jun-2027",
-    "limitaciones": "Válida para cualquier consumidor",
-    "potencia_max_kw": 15,
-    "consumo_max_kwh": 999999,
-    "revision": "Mensual",
-    "condiciones_revision": "HSC podrá modificar las Condiciones del Contrato a precio revisable si se cumpliera una o ambas de las condiciones: La media aritmética del precio del mercado mayorista para el mes m supera los 90 €/MWh o/y la media aritmética del coste de los servicios de ajuste repercutidos a la demanda (CAD) para el mes m es mayor de 20 €/MWh. En cumplimiento RD 88/2026 y en particular el artículo 28. 3., el cliente será debidamente avisado de forma transparente y comprensible de cualquier intención de modifi",
-    "contratacion": {
-     "internet": true,
-     "telefono": true,
-     "oficina": true
-    },
-    "url_contrato": "https://www.hscomercializadora.com/descargar-pdf-condiciones-generales/2",
-    "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
-  },
-  {
-   "id": "cnmc-4130",
-   "comercializadora": "INER ENERGIA CASTILLA LA MANCHA SL",
-   "nombre": "LA CLASICA",
-   "tipo": "periodos",
-   "potencia": {
-    "p1": 0.0889,
-    "p2": 0.0889
-   },
-   "energia": {
-    "p1": 0.2563,
-    "p2": 0.1745,
-    "p3": 0.1375
-   },
-   "cuota_fija_mes": 0,
-   "permanencia_meses": 0,
-   "servicios_obligatorios": [],
-   "url_fuente": "https://inerenergia.es/luz/hogar",
-   "fecha_comprobacion": "2026-10-21",
-   "comision": false,
-   "url_contratar": "https://inerenergia.es/luz/hogar",
-   "notas": "PRECIO POTENCIA P1(Punta) = 32,4485 €/KW año P3(Valle) = 32,4485 €/KW año PRECIO ENERGIA P1(Punta) = 0,2563 €/KWh P2(Llano) = 0,1745 €/KWh P3(Valle) = 0,1375 €/KWh CUOTA INER ENERGIA = 0 €/mes FINANCIACION BONO SOCIAL = 0.024688 €/día. No obligatorio contratar servicios adicionales. No dispone de descuentos adicionales.",
-   "origen": "cnmc",
-   "info": {
-    "cnmc_id": 4130,
-    "incluye_bono_social": false,
-    "horario_propio": false,
-    "verde": true,
-    "servicios_adicionales": false,
-    "penalizacion": "SIN PERMANENCIA",
-    "validez": "Oferta válida desde 22-sept-2026 hasta 31-oct-2026",
-    "limitaciones": "Válida para consumidores domésticos y pequeños negocios",
-    "potencia_max_kw": 15,
-    "consumo_max_kwh": 100000,
-    "revision": "Anual",
-    "condiciones_revision": "Los precios del suministro serán revisados con periodicidad anual, coincidiendo con la fecha de renovación del contrato. La revisión podrá afectar al término de energía y vendrá motivada por variaciones en los costes de adquisición de la energía en el mercado mayorista, así como por cambios en los peajes de acceso, cargos del sistema, impuestos u otros conceptos regulados que resulten de aplicación.\n\nCualquier modificación de los precios será comunicada al consumidor con un preaviso mínimo de un",
+    "condiciones_revision": "Tu precio se someterá a revisión antes del inicio de cada prórroga del contrato (12 meses), comunicándote cualquier modificación de precio con antelación de 30 días naturales. Tu nuevo precio (tanto término de potencia como de energía) se calculará en función de la mejor previsión de costes disponible, incluyendo el coste de la energía y el resto de costes del sistema eléctrico. No obstante, si no estuvieras de acuerdo con el nuevo precio, podrás revolver el Contrato sin que te cobremos ninguna ",
     "contratacion": {
      "internet": true,
      "telefono": false,
      "oficina": false
     },
-    "url_contrato": "https://inerenergia.es/static/condiciones-luz-iner-energia.pdf",
+    "url_contrato": "https://imaginaenergia.com/condiciones_generales_contrato/",
     "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
-  },
-  {
-   "id": "cnmc-4132",
-   "comercializadora": "INER ENERGIA CASTILLA LA MANCHA SL",
-   "nombre": "TRANQUILIDAD",
-   "tipo": "fijo",
-   "potencia": {
-    "p1": 0.0889,
-    "p2": 0.0889
-   },
-   "energia": {
-    "p1": 0.1797,
-    "p2": 0.1797,
-    "p3": 0.1797
-   },
-   "cuota_fija_mes": 0,
-   "permanencia_meses": 0,
-   "servicios_obligatorios": [],
-   "url_fuente": "https://inerenergia.es/luz/hogar",
-   "fecha_comprobacion": "2026-10-21",
-   "comision": false,
-   "url_contratar": "https://inerenergia.es/luz/hogar",
-   "notas": "PRECIO POTENCIA P1(Punta) = 32,4485 €/KW año P3(Valle) = 32,4485 €/KW año PRECIO ENERGIA P1(Punta) = 0,1797 €/KWh P2(Llano) = 0,1797 €/KWh P3(Valle) = 0,1797 €/KWh CUOTA INER ENERGIA = 0 €/mes FINANCIACION BONO SOCIAL = 0.024688 €/día. No obligatorio contratar servicios adicionales. No dispone de descuentos adicionales.",
-   "origen": "cnmc",
-   "info": {
-    "cnmc_id": 4132,
-    "incluye_bono_social": false,
-    "horario_propio": false,
-    "verde": true,
-    "servicios_adicionales": false,
-    "penalizacion": "SIN PERMANENCIA",
-    "validez": "Oferta válida desde 22-sept-2026 hasta 31-oct-2026",
-    "limitaciones": "Válida para consumidores domésticos y pequeños negocios",
-    "potencia_max_kw": 15,
-    "consumo_max_kwh": 100000,
-    "revision": "Anual",
-    "condiciones_revision": "Los precios del suministro serán revisados con periodicidad anual, coincidiendo con la fecha de renovación del contrato. La revisión podrá afectar al término de energía y vendrá motivada por variaciones en los costes de adquisición de la energía en el mercado mayorista, así como por cambios en los peajes de acceso, cargos del sistema, impuestos u otros conceptos regulados que resulten de aplicación.\n\nCualquier modificación de los precios será comunicada al consumidor con un preaviso mínimo de un",
-    "contratacion": {
-     "internet": true,
-     "telefono": false,
-     "oficina": false
-    },
-    "url_contrato": "https://inerenergia.es/static/condiciones-luz-iner-energia.pdf",
-    "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
-  },
-  {
-   "id": "cnmc-4131",
-   "comercializadora": "INER EUSKADI, S.L.",
-   "nombre": "LA CLASICA",
-   "tipo": "periodos",
-   "potencia": {
-    "p1": 0.0882,
-    "p2": 0.0882
-   },
-   "energia": {
-    "p1": 0.2563,
-    "p2": 0.1745,
-    "p3": 0.1375
-   },
-   "cuota_fija_mes": 0,
-   "permanencia_meses": 0,
-   "servicios_obligatorios": [],
-   "url_fuente": "https://inerenergia.es/luz/hogar",
-   "fecha_comprobacion": "2026-10-21",
-   "comision": false,
-   "url_contratar": "https://inerenergia.es/luz/hogar",
-   "notas": "PRECIO POTENCIA P1(Punta) = 32,8135 €/KW año P3(Valle) = 32,8135 €/KW año PRECIO ENERGIA P1(Punta) = 0,2563 €/KWh P2(Llano) = 0,1745 €/KWh P3(Valle) = 0,2563 €/KWh CUOTA INER ENERGIA = 0 €/mes FINANCIACION BONO SOCIAL = 0.024688 €/día. No obligatorio contratar servicios adicionales. No dispone de descuentos adicionales.",
-   "origen": "cnmc",
-   "info": {
-    "cnmc_id": 4131,
-    "incluye_bono_social": false,
-    "horario_propio": false,
-    "verde": false,
-    "servicios_adicionales": false,
-    "penalizacion": "SIN PERMANENCIA",
-    "validez": "Oferta válida desde 22-sept-2026 hasta 31-oct-2026",
-    "limitaciones": "Válida para consumidores domésticos y pequeños negocios",
-    "potencia_max_kw": 15,
-    "consumo_max_kwh": 100000,
-    "revision": "Anual",
-    "condiciones_revision": "Los precios del suministro serán revisados con periodicidad anual, coincidiendo con la fecha de renovación del contrato. La revisión podrá afectar al término de energía y vendrá motivada por variaciones en los costes de adquisición de la energía en el mercado mayorista, así como por cambios en los peajes de acceso, cargos del sistema, impuestos u otros conceptos regulados que resulten de aplicación.\n\nCualquier modificación de los precios será comunicada al consumidor con un preaviso mínimo de un",
-    "contratacion": {
-     "internet": true,
-     "telefono": false,
-     "oficina": false
-    },
-    "url_contrato": "https://inerenergia.es/static/condiciones-luz-iner-energia.pdf",
-    "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
-  },
-  {
-   "id": "cnmc-4401",
-   "comercializadora": "INER EUSKADI, S.L.",
-   "nombre": "TRANQUILIDAD",
-   "tipo": "fijo",
-   "potencia": {
-    "p1": 0.0889,
-    "p2": 0.0889
-   },
-   "energia": {
-    "p1": 0.1797,
-    "p2": 0.1797,
-    "p3": 0.1797
-   },
-   "cuota_fija_mes": 0,
-   "permanencia_meses": 0,
-   "servicios_obligatorios": [],
-   "url_fuente": "https://inerenergia.es/luz/hogar",
-   "fecha_comprobacion": "2026-10-21",
-   "comision": false,
-   "url_contratar": "https://inerenergia.es/luz/hogar",
-   "notas": "PRECIO POTENCIA P1(Punta) = 32,4485 €/KW año P3(Valle) = 32,4485 €/KW año PRECIO ENERGIA P1(Punta) = 0,1797 €/KWh P2(Llano) = 0,1797 €/KWh P3(Valle) = 0,1797 €/KWh CUOTA INER ENERGIA = 0 €/mes FINANCIACION BONO SOCIAL = 0.024688 €/día. No obligatorio contratar servicios adicionales. No dispone de descuentos adicionales.",
-   "origen": "cnmc",
-   "info": {
-    "cnmc_id": 4401,
-    "incluye_bono_social": false,
-    "horario_propio": false,
-    "verde": false,
-    "servicios_adicionales": false,
-    "penalizacion": "SIN PERMANENCIA",
-    "validez": "Oferta válida desde 22-sept-2026 hasta 31-oct-2026",
-    "limitaciones": "Válida para consumidores domésticos y pequeños negocios",
-    "potencia_max_kw": 15,
-    "consumo_max_kwh": 100000,
-    "revision": "Anual",
-    "condiciones_revision": "Los precios del suministro serán revisados con periodicidad anual, coincidiendo con la fecha de renovación del contrato. La revisión podrá afectar al término de energía y vendrá motivada por variaciones en los costes de adquisición de la energía en el mercado mayorista, así como por cambios en los peajes de acceso, cargos del sistema, impuestos u otros conceptos regulados que resulten de aplicación.\n\nCualquier modificación de los precios será comunicada al consumidor con un preaviso mínimo de un",
-    "contratacion": {
-     "internet": true,
-     "telefono": false,
-     "oficina": false
-    },
-    "url_contrato": "https://inerenergia.es/static/condiciones-luz-iner-energia.pdf",
-    "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
+    "descuento_energia": null
+   }
   },
   {
    "id": "cnmc-7158",
@@ -2200,10 +1284,11 @@
     "p3": 0.14
    },
    "cuota_fija_mes": 0,
+   "servicio_mes": 0,
    "permanencia_meses": 0,
    "servicios_obligatorios": [],
    "url_fuente": "https://www.masnorte.es/ofertaeconomicaloto",
-   "fecha_comprobacion": "2026-10-21",
+   "fecha_comprobacion": "2026-11-01",
    "comision": false,
    "url_contratar": "https://www.masnorte.es/ofertaeconomicaloto",
    "notas": "Oferta para suministros eléctricos con peaje 2.0TD. Potencia P1: 27,70 €/kW y año. PotenciaP2: 27,70 €/kW y año. Término de energía 24h: 0,140000 €/kWh. Financiación del Bono social: 0,74 €/mes Precios sin impuestos y sin descuentos. No requiere la contratación de servicios adicionales.",
@@ -2211,6 +1296,7 @@
    "info": {
     "cnmc_id": 7158,
     "incluye_bono_social": false,
+    "servicio_sin_precio": false,
     "horario_propio": false,
     "verde": true,
     "servicios_adicionales": false,
@@ -2228,10 +1314,8 @@
     },
     "url_contrato": "https://www.masnorte.es/condiciones-generales-de-contratacion/",
     "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
+    "descuento_energia": null
+   }
   },
   {
    "id": "cnmc-7200",
@@ -2248,10 +1332,11 @@
     "p3": 0.210513
    },
    "cuota_fija_mes": 0,
+   "servicio_mes": 0,
    "permanencia_meses": 12,
    "servicios_obligatorios": [],
    "url_fuente": "https://es.met.com/es/customers/power-tariffs/",
-   "fecha_comprobacion": "2026-10-21",
+   "fecha_comprobacion": "2026-11-01",
    "comision": false,
    "url_contratar": "https://es.met.com/es/customers/power-tariffs/",
    "notas": "Término de Potencia: Precio periodo punta (P1) 0,11 €/kW y día. Precio periodo valle (P2) 0,11 €/kW y día. Término de Energía: Precio periodo punta (P1) 0,210513 €/kW hora. Precio periodo llano (P2) 0,210513 €/kW hora. Precio periodo valle (P3) 0,210513 €/kW hora. *Estos precios no incluyen impuestos. Los costes del Bono Social y del Fondo Nacional de Eficiencia Energética están incluidos en los precios.",
@@ -2259,6 +1344,7 @@
    "info": {
     "cnmc_id": 7200,
     "incluye_bono_social": true,
+    "servicio_sin_precio": false,
     "horario_propio": false,
     "verde": false,
     "servicios_adicionales": false,
@@ -2276,154 +1362,104 @@
     },
     "url_contrato": "https://es.met.com/media/urufqptn/condiciones_generales_power_residencial.pdf",
     "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
+    "descuento_energia": null
+   }
   },
   {
-   "id": "cnmc-4488",
-   "comercializadora": "NEXUS ENERGIA SA",
-   "nombre": "Luz Eficiente",
+   "id": "cnmc-6678",
+   "comercializadora": "NATURGY CLIENTES, S.A.U.",
+   "nombre": "Plan Fijo Luz 2.0TD Trihoraria",
    "tipo": "periodos",
    "potencia": {
-    "p1": 0.088999,
-    "p2": 0.068218
+    "p1": 0.122971,
+    "p2": 0.043978
    },
    "energia": {
-    "p1": 0.1689,
-    "p2": 0.1306,
-    "p3": 0.0957
+    "p1": 0.2548,
+    "p2": 0.1819,
+    "p3": 0.1469
    },
    "cuota_fija_mes": 0,
-   "permanencia_meses": 0,
-   "servicios_obligatorios": [],
-   "url_fuente": "https://www.nexusenergia.com/hogar/tarifas-luz/",
-   "fecha_comprobacion": "2026-10-21",
-   "comision": false,
-   "url_contratar": "https://www.nexusenergia.com/hogar/tarifas-luz/",
-   "notas": "Precio fijo por periodos. La oferta no exige contratación de servicios adicionales y tampoco tiene permanencia. Gestión 100% online y energía certificada 100% renovable. Precio fijo durante 1 (un) año: El precio incluye todos los conceptos regulados. Precios Potencia: Punta: 41,208 €/kW/año. Valle: 28,212 €/kW/año Precios Energía: Punta: 0,21886 €/kWh Llano: 0,16606 €/kWh Valle: 0,0956 €/kWh",
-   "origen": "cnmc",
-   "info": {
-    "cnmc_id": 4488,
-    "incluye_bono_social": true,
-    "horario_propio": false,
-    "verde": true,
-    "servicios_adicionales": false,
-    "penalizacion": "La condición del contrato será anual, prorrogándose automáticamente por periodos sucesivos de un año desde la fecha de finalización prevista o de cualquiera de sus prórrogas. El cliente tiene la posibilidad de darse de baja cuando lo desee, sin penalización alguna, al tratarse de un contrato sin permanencia.  ",
-    "validez": "Oferta válida desde 01-ago-2026 hasta 31-dic-2026",
-    "limitaciones": "Válida para cualquier consumidor",
-    "potencia_max_kw": 15,
-    "consumo_max_kwh": 15000,
-    "revision": "Anual",
-    "condiciones_revision": "El precio se mantendrá fijo durante un año, siempre y cuando la administración pública competente no varíe los términos regulados, modificación que se trasladará directamente en el precio final, tanto al alza como a la baja.\n\nEl Comercializador podrá modificar la parte no regulada de los precios, previa notificación al Cliente con un (1) mes de preaviso a la terminación del Contrato inicial o de cualquiera de sus prórrogas.\n\n",
-    "contratacion": {
-     "internet": true,
-     "telefono": true,
-     "oficina": false
-    },
-    "url_contrato": "https://www.nexusenergia.com/condiciones-generales-de-contratacion/",
-    "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
-  },
-  {
-   "id": "cnmc-7022",
-   "comercializadora": "niba",
-   "nombre": "niba Zen",
-   "tipo": "fijo",
-   "potencia": {
-    "p1": 0.091,
-    "p2": 0.091
-   },
-   "energia": {
-    "p1": 0.123,
-    "p2": 0.123,
-    "p3": 0.123
-   },
-   "cuota_fija_mes": 0,
-   "permanencia_meses": 0,
-   "servicios_obligatorios": [],
-   "url_fuente": "https://niba.es/enchufate50",
-   "fecha_comprobacion": "2026-10-21",
-   "comision": false,
-   "url_contratar": "https://niba.es/enchufate50",
-   "notas": "Precio fijo por kWh las 24 horas del día. Precio antes de impuestos: Término Potencia Punta: 33,215 €/kW año; Término Potencia Valle: 33,215 €/kW año; Término Energía P1: 0,123€/kWh Término Energía P2: 0,123€/kWh Término Energía P3: 0,123€/kWh Financiación bono social cuota fija: 0,024688 €/día No requieren la contratación de productos ni servicios adicionales. Descuento de 50€ añadiendo el código descuento ENCHUFATE50 en el momento de la contratación.",
-   "origen": "cnmc",
-   "info": {
-    "cnmc_id": 7022,
-    "incluye_bono_social": false,
-    "horario_propio": false,
-    "verde": true,
-    "servicios_adicionales": false,
-    "penalizacion": "Sin permanencia ni penalización",
-    "validez": "Oferta válida desde 14-oct-2026 hasta 31-oct-2026",
-    "limitaciones": "Oferta válida solo para nuevos clientes y consumidores domésticos",
-    "potencia_max_kw": 15,
-    "consumo_max_kwh": 130000,
-    "revision": "Anual",
-    "condiciones_revision": "2.2 La duración del Contrato será de UN (1) AÑO desde la fecha de inicio del suministro efectivo y se prorrogará de forma automática por periodos anuales si ninguna de las partes indica su voluntad de no renovarlo con al menos QUINCE (15) días naturales de antelación a la finalización de cada periodo. niba podrá comunicar unas nuevas condiciones económicas de aplicación al periodo de prórroga comunicándolo con al menos 30 días de antelación a su inicio, las cuáles serán efectivas si no manifiest",
-    "contratacion": {
-     "internet": true,
-     "telefono": true,
-     "oficina": false
-    },
-    "url_contrato": "https://static.niba.es/public/2025-07/20250701_Condiciones_Generales_MVP.pdf",
-    "promo_primer_anio_eur": 63.58,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
-  },
-  {
-   "id": "cnmc-7175",
-   "comercializadora": "NOBE SOLUCIONES Y ENERGÍA, S.L.",
-   "nombre": "Tarifa tipo 2.0 TD",
-   "tipo": "fijo",
-   "potencia": {
-    "p1": 0.106849,
-    "p2": 0.046575
-   },
-   "energia": {
-    "p1": 0.159569,
-    "p2": 0.159569,
-    "p3": 0.159569
-   },
-   "cuota_fija_mes": 0,
+   "servicio_mes": 0,
    "permanencia_meses": 12,
    "servicios_obligatorios": [],
-   "url_fuente": "https://nobe.es/particulares/tarifas-nobe/#tarifas",
-   "fecha_comprobacion": "2026-10-21",
+   "url_fuente": "https://www.naturgy.es/negocios_y_autonomos/luz/plan_fijo_luz_DH#precios-y-condiciones",
+   "fecha_comprobacion": "2026-11-01",
    "comision": false,
-   "url_contratar": "https://nobe.es/particulares/tarifas-nobe/#tarifas",
-   "notas": "Para contratos de luz con potencia de hasta 15 kW. Los precios no incluyen el bono social Bono Social son 0,024688 €/día Precio sin impuestos: Término de potencia (€/kW/año) P1: 39 €/kW/año P2: 17 €/kW/año Término de energía (€/kWh) P1: 0,159569 €/kWh P2: 0,159569 €/kWh P3: 0,159569 €/kWh Los impuestos aplicables en cada momento y que se desglosarán en la factura serán: Para el suministro de electricidad, el Impuesto Eléctrico del 5,11269632%, o el que corresponda por ley. Adicionalmente, aplica el IVA en Península y Baleares del 21%, o según corresponda por ley.",
+   "url_contratar": "https://www.naturgy.es/negocios_y_autonomos/luz/plan_fijo_luz_DH#precios-y-condiciones",
+   "notas": "Precio termino potencia: P1 44,885145 €/kW/año P2 16,051240 €/kW/año Precio término de energía: P1 0,254800 €/kWh P2 0,181900 €/kWh P3 0,146900 €/kWh Los precios indicados no incluyen ni IVA ni el impuesto eléctrico. Se añadirá el coste regulado asociado al mecanismo de financiación del bono social: Coste fijo por cliente 0,024688 €/día -> 0,750927 €/mes No requiere la contratación de productos ni servicios adicionales",
    "origen": "cnmc",
    "info": {
-    "cnmc_id": 7175,
+    "cnmc_id": 6678,
     "incluye_bono_social": false,
+    "servicio_sin_precio": false,
     "horario_propio": false,
     "verde": false,
     "servicios_adicionales": false,
-    "penalizacion": "5. INCUMPLIMIENTO E INDEMNIZACIONES. En caso de terminación del contrato por desistimiento unilateral por parte del cliente o cambio de comercializadora por parte del cliente de manera anticipada al normal vencimiento del presente contrato, el cliente deberá abonar a NOBE una penalización económica consistente en el valor del 5% de la energía pendiente de suministrar.",
-    "validez": "Oferta válida desde 24-sept-2026 hasta 27-oct-2026",
-    "limitaciones": "Válida para cualquier consumidor",
+    "penalizacion": "El presente contrato tendrá una duración de un año, prorrogándose tácitamente por períodos anuales, salvo denuncia de cualquiera de las partes con al menos 15 días de antelación a la fecha de su vencimiento.En caso de resolución unilateral anticipada del contrato de suministro de electricidad por parte del Cliente, antes de iniciada la primera prórroga, podrá serle aplicada una penalización de hasta un 5% del precio del contrato por la energía estimada pendiente de suministro.",
+    "validez": "Oferta válida desde 20-oct-2026 hasta 06-nov-2026",
+    "limitaciones": "Oferta válida solo para comercios o negocios",
     "potencia_max_kw": 15,
-    "consumo_max_kwh": 999999,
+    "consumo_max_kwh": 131760,
     "revision": "Anual",
-    "condiciones_revision": "16. MODIFICACIÓN DE LAS CONDICIONES ECONÓMICAS. NOBE podrá modificar las condiciones económicas, informando al Cliente con un preaviso mínimo de 30 días antes de la entrada en vigor de la modificación. En caso de que la modificación del precio suponga un aumento del mismo, el Cliente podrá resolver el contrato sin que se aplique penalización económica alguna para ninguna de las partes, comunicando su decisión dentro de los 14 días siguientes a la notificación. En caso de que el Cliente no hubier",
+    "condiciones_revision": "Término de potencia y término de energía incluyen los peajes de acceso y demás conceptos regulados por el Gobierno y están sujetos a la variación que dichos conceptos u otros de nueva creación experimenten. Los precios se actualizaran cada 1 de enero de acuerdo con la variación del IPC. Cualquier otra modificación del precio deberá ser comunicada  al cliente con una antelación de 2 meses a su entrada en vigor quien podrá optar por resolver el contrato comunicándolo  con al menos 30 días de antel",
     "contratacion": {
      "internet": true,
-     "telefono": false,
-     "oficina": false
+     "telefono": true,
+     "oficina": true
     },
-    "url_contrato": "https://nobe.es/condiciones-generales-contrato/",
+    "url_contrato": "https://www.naturgy.es/content/dam/naturgy/espana/global/condiciones/empresas/es/Condiciones%20Generales%20contrato%20Pymes%20dic%2025.pdf",
     "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
+    "descuento_energia": null
+   }
+  },
+  {
+   "id": "cnmc-6676",
+   "comercializadora": "NATURGY CLIENTES, S.A.U.",
+   "nombre": "Plan Fijo Luz 24h",
+   "tipo": "fijo",
+   "potencia": {
+    "p1": 0.122971,
+    "p2": 0.043978
    },
-   "servicio_mes": 0
+   "energia": {
+    "p1": 0.1753,
+    "p2": 0.1753,
+    "p3": 0.1753
+   },
+   "cuota_fija_mes": 0,
+   "servicio_mes": 0,
+   "permanencia_meses": 12,
+   "servicios_obligatorios": [],
+   "url_fuente": "https://www.naturgy.es/negocios_y_autonomos/luz/plan_fijo_luz#precios-y-condiciones",
+   "fecha_comprobacion": "2026-11-01",
+   "comision": false,
+   "url_contratar": "https://www.naturgy.es/negocios_y_autonomos/luz/plan_fijo_luz#precios-y-condiciones",
+   "notas": "Clientes que contraten tarifa 2.0TD con un único precio de energía las 24h del día. Precio término potencia: P1 44,885145 €/kW/año, P2 16,051240 €/kW/año Precio término de energía (mismo precio para los 3 periodos - punta, llano y valle -): 0,175300 €/kWh Los precios indicados no incluyen ni IVA ni el impuesto eléctrico. Se añadirá el coste regulado asociado al mecanismo de financiación del bono social: Coste fijo por cliente 0,024688 €/día -> 0,750927 €/mes No requiere contratación de servicios ni productos adicionales",
+   "origen": "cnmc",
+   "info": {
+    "cnmc_id": 6676,
+    "incluye_bono_social": false,
+    "servicio_sin_precio": false,
+    "horario_propio": false,
+    "verde": false,
+    "servicios_adicionales": false,
+    "penalizacion": "El presente contrato tendrá una duración de un año, prorrogándose tácitamente por períodos anuales, salvo denuncia de cualquiera de las partes con al menos 15 días de antelación a la fecha de su vencimiento.En caso de resolución unilateral anticipada del contrato de suministro de electricidad por parte del Cliente, antes de iniciada la primera prórroga, podrá serle aplicada una penalización de hasta un 5% del precio del contrato por la energía estimada pendiente de suministro.",
+    "validez": "Oferta válida desde 20-oct-2026 hasta 06-nov-2026",
+    "limitaciones": "Oferta válida solo para comercios o negocios",
+    "potencia_max_kw": 15,
+    "consumo_max_kwh": 131760,
+    "revision": "Anual",
+    "condiciones_revision": "Término de potencia y término de energía incluyen los peajes de acceso y demás conceptos regulados por el Gobierno y están sujetos a la variación que dichos conceptos u otros de nueva creación experimenten. Los precios se actualizaran cada 1 de enero de acuerdo con la variación del IPC del mes de Noviembre. Cualquier otra modificación del precio deberá ser comunicada  al cliente con una antelación de 2 meses a su entrada en vigor quien podrá optar por resolver el contrato comunicándolo  con al m",
+    "contratacion": {
+     "internet": true,
+     "telefono": true,
+     "oficina": true
+    },
+    "url_contrato": "https://www.naturgy.es/content/dam/naturgy/espana/global/condiciones/empresas/es/Condiciones%20Generales%20contrato%20Pymes%20dic%2025.pdf",
+    "promo_primer_anio_eur": 0,
+    "descuento_energia": null
+   }
   },
   {
    "id": "cnmc-5387",
@@ -2435,27 +1471,29 @@
     "p2": 0.12
    },
    "energia": {
-    "p1": 0.185,
-    "p2": 0.134,
-    "p3": 0.129
+    "p1": 0.196,
+    "p2": 0.143,
+    "p3": 0.139
    },
    "cuota_fija_mes": 0,
+   "servicio_mes": 0,
    "permanencia_meses": 0,
    "servicios_obligatorios": [],
    "url_fuente": "https://octopusenergy.es/precios",
-   "fecha_comprobacion": "2026-10-21",
+   "fecha_comprobacion": "2026-11-01",
    "comision": false,
    "url_contratar": "https://octopusenergy.es/precios",
-   "notas": "Precio fijo de luz para cada uno de los 3 periodos durante 1 año. El precio de la potencia es: - Punta (P1): 43,8 €/kW/año - Valle (P2): 43,8 €/kW/año El precio de la energía sin descuentos ni impuestos, es: - Punta (P1) 0,185 €/kWh - Llano (P2): 0,134 €/kWh - Valle (P3): 0,129 €/kWh No se precisa la contratación de servicios adicionales y no se incluye el precio del Bono Social cuyo importe es de 0,024688 €/día. Los precios tienen una validez de 12 meses desde el inicio de contrato. Esta tarifa no tiene permanencia ni penalización por no cumplir los 12 del contrato. Cualquier modificación de tasas, impuestos o componentes del precio por la autoridad competente, se reflejará en los precios f",
+   "notas": "Precio fijo de luz para cada uno de los 3 periodos durante 1 año. El precio de la potencia es: - Punta (P1): 43,8 €/kW/año - Valle (P2): 43,8 €/kW/año El precio de la energía sin descuentos ni impuestos, es: - Punta (P1) 0,196 €/kWh - Llano (P2): 0,143 €/kWh - Valle (P3): 0,139 €/kWh No se precisa la contratación de servicios adicionales y no se incluye el precio del Bono Social cuyo importe es de 0,024688 €/día. Los precios tienen una validez de 12 meses desde el inicio de contrato. Esta tarifa no tiene permanencia ni penalización por no cumplir los 12 del contrato. Cualquier modificación de tasas, impuestos o componentes del precio por la autoridad competente, se reflejará en los precios f",
    "origen": "cnmc",
    "info": {
     "cnmc_id": 5387,
     "incluye_bono_social": false,
+    "servicio_sin_precio": false,
     "horario_propio": false,
     "verde": true,
     "servicios_adicionales": false,
     "penalizacion": "Sin permanencia",
-    "validez": "Oferta válida desde 02-oct-2026 hasta 02-dic-2026",
+    "validez": "Oferta válida desde 02-oct-2026 hasta 02-feb-2027",
     "limitaciones": "Válida sólo para consumidores domésticos",
     "potencia_max_kw": 15,
     "consumo_max_kwh": 999999,
@@ -2468,10 +1506,8 @@
     },
     "url_contrato": "https://octopusenergy.es/politicas/terminos-y-condiciones",
     "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
+    "descuento_energia": null
+   }
   },
   {
    "id": "cnmc-5690",
@@ -2483,27 +1519,29 @@
     "p2": 0.1
    },
    "energia": {
-    "p1": 0.392,
-    "p2": 0.392,
-    "p3": 0.119
+    "p1": 0.423,
+    "p2": 0.423,
+    "p3": 0.129
    },
    "cuota_fija_mes": 0,
+   "servicio_mes": 0,
    "permanencia_meses": 0,
    "servicios_obligatorios": [],
    "url_fuente": "https://octopusenergy.es/precios/tarifa-ev?",
-   "fecha_comprobacion": "2026-10-21",
+   "fecha_comprobacion": "2026-11-01",
    "comision": false,
    "url_contratar": "https://octopusenergy.es/precios/tarifa-ev?",
-   "notas": "Tarifa pensada para consumidores con vehículo eléctrico. Precio fijo de luz para cada uno de los 3 periodos durante 1 año. El precio de la potencia es: - Punta (P1): 43,8 €/kW/año - Valle (P2): 36,5 €/kW/año El precio de la energía sin descuentos ni impuestos, es: - Punta (P1) 0,392 €/kWh - Llano (P2): 0,392 €/kWh - Valle (P3): 0,119 €/kWh No se precisa la contratación de servicios adicionales y no se incluye el precio Bono Social cuyo importe es de 0,024688 €/día. Los precios tienen una validez de 12 meses desde el inicio de contrato.",
+   "notas": "Tarifa pensada para consumidores con vehículo eléctrico. Precio fijo de luz para cada uno de los 3 periodos durante 1 año. El precio de la potencia es: - Punta (P1): 43,8 €/kW/año - Valle (P2): 36,5 €/kW/año El precio de la energía sin descuentos ni impuestos, es: - Punta (P1) 0,423 €/kWh - Llano (P2): 0,423 €/kWh - Valle (P3): 0,129 €/kWh No se precisa la contratación de servicios adicionales y no se incluye el precio Bono Social cuyo importe es de 0,024688 €/día. Los precios tienen una validez de 12 meses desde el inicio de contrato.",
    "origen": "cnmc",
    "info": {
     "cnmc_id": 5690,
     "incluye_bono_social": false,
+    "servicio_sin_precio": false,
     "horario_propio": false,
     "verde": true,
     "servicios_adicionales": false,
     "penalizacion": "Sin permanencia",
-    "validez": "Oferta válida desde 16-jun-2026 hasta 31-oct-2026",
+    "validez": "Oferta válida desde 16-jun-2026 hasta 01-feb-2027",
     "limitaciones": "Válida sólo para consumidores domésticos",
     "potencia_max_kw": 15,
     "consumo_max_kwh": 999999,
@@ -2516,10 +1554,8 @@
     },
     "url_contrato": "https://octopusenergy.es/politicas/terminos-y-condiciones",
     "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
+    "descuento_energia": null
+   }
   },
   {
    "id": "cnmc-5388",
@@ -2531,27 +1567,29 @@
     "p2": 0.12
    },
    "energia": {
-    "p1": 0.144,
-    "p2": 0.144,
-    "p3": 0.144
+    "p1": 0.154,
+    "p2": 0.154,
+    "p3": 0.154
    },
    "cuota_fija_mes": 0,
+   "servicio_mes": 0,
    "permanencia_meses": 0,
    "servicios_obligatorios": [],
    "url_fuente": "https://octopusenergy.es/precios",
-   "fecha_comprobacion": "2026-10-21",
+   "fecha_comprobacion": "2026-11-01",
    "comision": false,
    "url_contratar": "https://octopusenergy.es/precios",
-   "notas": "Precio fijo de luz para cada uno de los 3 periodos durante 1 año. El precio de la potencia es: - Punta (P1): 43,8 €/kW/año - Valle (P2): 43,8€/kW/año El precio de la energía sin descuentos ni impuestos es el mismo en los tres periodos: - Punta (P1), Llano (P2), Valle (P3): 0,144 €/kWh. No se precisa la contratación de servicios adicionales y no se incluye el precio del mecanismo de ajuste ni el Bono Social cuyo importe es de 0,024688 €/día. Los precios tienen una validez de 12 meses desde el inicio de contrato. Esta tarifa no tiene permanencia ni penalización por no cumplir los 12 del contrato. Cualquier modificación de tasas, impuestos o componentes del precio por la autoridad competente, s",
+   "notas": "Precio fijo de luz para cada uno de los 3 periodos durante 1 año. El precio de la potencia es: - Punta (P1): 43,8 €/kW/año - Valle (P2): 43,8€/kW/año El precio de la energía sin descuentos ni impuestos es el mismo en los tres periodos: - Punta (P1), Llano (P2), Valle (P3): 0,154 €/kWh. No se precisa la contratación de servicios adicionales y no se incluye el precio del mecanismo de ajuste ni el Bono Social cuyo importe es de 0,024688 €/día. Los precios tienen una validez de 12 meses desde el inicio de contrato. Esta tarifa no tiene permanencia ni penalización por no cumplir los 12 del contrato. Cualquier modificación de tasas, impuestos o componentes del precio por la autoridad competente, s",
    "origen": "cnmc",
    "info": {
     "cnmc_id": 5388,
     "incluye_bono_social": false,
+    "servicio_sin_precio": false,
     "horario_propio": false,
     "verde": true,
     "servicios_adicionales": false,
     "penalizacion": "Esta tarifa no tiene permanencia ni penalización por no cumplir los 12 del contrato",
-    "validez": "Oferta válida desde 27-jul-2026 hasta 31-oct-2026",
+    "validez": "Oferta válida desde 27-jul-2026 hasta 01-feb-2027",
     "limitaciones": "Válida sólo para consumidores domésticos",
     "potencia_max_kw": 15,
     "consumo_max_kwh": 999999,
@@ -2564,10 +1602,8 @@
     },
     "url_contrato": "https://octopusenergy.es/politicas/terminos-y-condiciones",
     "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
+    "descuento_energia": null
+   }
   },
   {
    "id": "cnmc-5386",
@@ -2579,22 +1615,24 @@
     "p2": 0.12
    },
    "energia": {
-    "p1": 0.233,
-    "p2": 0.177,
-    "p3": 0.137
+    "p1": 0.273,
+    "p2": 0.17,
+    "p3": 0.143
    },
    "cuota_fija_mes": 0,
+   "servicio_mes": 0,
    "permanencia_meses": 0,
    "servicios_obligatorios": [],
    "url_fuente": "https://octopusenergy.es/precios/tarifa-solar?type=electricity",
-   "fecha_comprobacion": "2026-10-21",
+   "fecha_comprobacion": "2026-11-01",
    "comision": false,
    "url_contratar": "https://octopusenergy.es/precios/tarifa-solar?type=electricity",
-   "notas": "Precio fijo de luz para cada uno de los 3 periodos durante 1 año. El precio de la potencia es: - Punta (P1): 43,8 €/kW/año - Valle (P2): 43,8 €/kW/año El precio de la energía sin descuentos ni impuestos, es: - Punta (P1) 0,233 €/kWh - Llano (P2): 0,177 €/kWh - Valle (P3): 0,137 €/kWh No se precisa la contratación de servicios adicionales y no se incluye el precio del Bono Social cuyo importe es de 0,024688 €/día. Los precios tienen una validez de 12 meses desde el inicio de contrato.",
+   "notas": "Precio fijo de luz para cada uno de los 3 periodos durante 1 año. El precio de la potencia es: - Punta (P1): 43,8 €/kW/año - Valle (P2): 43,8 €/kW/año El precio de la energía sin descuentos ni impuestos, es: - Punta (P1) 0,273 €/kWh - Llano (P2): 0,170 €/kWh - Valle (P3): 0,143 €/kWh No se precisa la contratación de servicios adicionales y no se incluye el precio del Bono Social cuyo importe es de 0,024688 €/día. Los precios tienen una validez de 12 meses desde el inicio de contrato.",
    "origen": "cnmc",
    "info": {
     "cnmc_id": 5386,
     "incluye_bono_social": false,
+    "servicio_sin_precio": false,
     "horario_propio": false,
     "verde": true,
     "servicios_adicionales": false,
@@ -2612,10 +1650,8 @@
     },
     "url_contrato": "https://octopusenergy.es/politicas/terminos-y-condiciones",
     "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
+    "descuento_energia": null
+   }
   },
   {
    "id": "cnmc-6853",
@@ -2632,10 +1668,11 @@
     "p3": 0.12999
    },
    "cuota_fija_mes": 0,
+   "servicio_mes": 0,
    "permanencia_meses": 12,
    "servicios_obligatorios": [],
    "url_fuente": "https://quantiumlux.com/energia/",
-   "fecha_comprobacion": "2026-10-21",
+   "fecha_comprobacion": "2026-11-01",
    "comision": false,
    "url_contratar": "https://quantiumlux.com/energia/",
    "notas": "Producto fijo Hogar Plan constante 2.0TD, el mismo precio en todos los periodos de tarifa energía, para potencia igual o menor a 10 kwh/año . Precio Potencia: P1: 27,97 €/KW/año P2: 27,97 €/KW/año Precio Termino Energia: P1: 0.12999 €/kWh P2: 0.12999 €/kWh P3: 0.12999 €/kWh Estos precios No incluyen el coste asociado al mecanismo de financiación del bono social (0.024688 €/dia) Estos precios no incluyen ni el impuesto eléctrico ni el IVA.",
@@ -2643,6 +1680,7 @@
    "info": {
     "cnmc_id": 6853,
     "incluye_bono_social": false,
+    "servicio_sin_precio": false,
     "horario_propio": false,
     "verde": false,
     "servicios_adicionales": false,
@@ -2660,10 +1698,8 @@
     },
     "url_contrato": "https://quantiumlux.com/contacto/",
     "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
+    "descuento_energia": null
+   }
   },
   {
    "id": "cnmc-7094",
@@ -2680,10 +1716,11 @@
     "p3": 0.140189
    },
    "cuota_fija_mes": 0,
+   "servicio_mes": 0,
    "permanencia_meses": 0,
    "servicios_obligatorios": [],
    "url_fuente": "https://www.repsol.es/particulares/hogar/luz-y-gas/tarifas/tarifa-10h-descuento/#opcion2",
-   "fecha_comprobacion": "2026-10-21",
+   "fecha_comprobacion": "2026-11-01",
    "comision": false,
    "url_contratar": "https://www.repsol.es/particulares/hogar/luz-y-gas/tarifas/tarifa-10h-descuento/#opcion2",
    "notas": "Precios ofertados antes de impuestos. Términos de potencia fijos: En horas Punta (8 a 24h)= 32,900 €/kW año En horas Valle (0 a 8h, fines de semanas y festivos)= 32,900 €/kW año Precios de energía: En Horario Promocionado = 0,084950 €/kWh en las 10 horas al día que elija el Cliente En Horario No Promocionado = 0,199900 €/kWh: durante el resto de horas En Horario No Promocionado (con importe SNOEE incluido) = 0,20256€/kWh Configuración inicial de las horas promocionadas: de 7:00 a 9:59 y de 17:00 a 23:59, de lunes a domingo. Desde el Área Cliente, personalización de cada día de la semana (máximo 6 veces al año) y de la relación de horas promocionadas de la “semana tipo”. Además, configuración",
@@ -2691,6 +1728,7 @@
    "info": {
     "cnmc_id": 7094,
     "incluye_bono_social": false,
+    "servicio_sin_precio": false,
     "horario_propio": true,
     "verde": false,
     "servicios_adicionales": false,
@@ -2708,10 +1746,8 @@
     },
     "url_contrato": "https://www.repsol.es/content/dam/images-ecommerce/particulares/hogar/luz-y-gas/documentos/condiciones_generales_contrato_suministro_energia_SProducts.pdf",
     "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
+    "descuento_energia": null
+   }
   },
   {
    "id": "cnmc-7095",
@@ -2728,12 +1764,13 @@
     "p3": 0.140189
    },
    "cuota_fija_mes": 0,
+   "servicio_mes": 4.12,
    "permanencia_meses": 0,
    "servicios_obligatorios": [
-    "Mantenimiento de instalación eléctrica: Tu Asistente 24 horas por 4,12 €/mes -Servicios de urgencia 24 h, el cliente contará con las primeras 3 horas de mano de obra gratuita y hasta 50€ en materiales."
+    "Mantenimiento de instalación eléctrica: Tu Asistente 24 horas por 4,12 €/mes -Servicios de urgencia 24 h, el cliente contará con las primeras 3 horas de mano de obra gratuita y hasta 50€ en materiales. El presupuesto y desplazamiento del técnico será gratuito. Los precios no incluyen impuestos y los"
    ],
    "url_fuente": "https://www.repsol.es/particulares/hogar/luz-y-gas/tarifas/tarifa-10h-descuento/#opcion1",
-   "fecha_comprobacion": "2026-10-21",
+   "fecha_comprobacion": "2026-11-01",
    "comision": false,
    "url_contratar": "https://www.repsol.es/particulares/hogar/luz-y-gas/tarifas/tarifa-10h-descuento/#opcion1",
    "notas": "Precios ofertados antes de impuestos Términos de potencia: En horas Punta (8 a 24h)= 32,900 €/kW año En horas Valle (0 a 8h, fines de semanas y festivos)= 32,900 €/kW año Precios de energía: En Horario Promocionado = 0,099950 €/kWh en las 10 horas al día que elija el Cliente En Horario No Promocionado = 0,199900 €/kWh: durante el resto de horas En Horario No Promocionado (con importe SNOEE incluido) = 0,20256€/kWh Configuración inicial de las horas promocionadas: de 7 a 9:59 y de 17 a 23:59, de lunes a domingo. Desde el Área Cliente, personalización de cada día de la semana (máximo 6 veces al año) y de la relación de horas promocionadas de la “semana tipo”. Además, configuración de 10 “días ",
@@ -2741,6 +1778,7 @@
    "info": {
     "cnmc_id": 7095,
     "incluye_bono_social": false,
+    "servicio_sin_precio": false,
     "horario_propio": true,
     "verde": false,
     "servicios_adicionales": true,
@@ -2758,10 +1796,8 @@
     },
     "url_contrato": "https://www.repsol.es/content/dam/images-ecommerce/particulares/hogar/luz-y-gas/documentos/condiciones_generales_contrato_suministro_energia_SProducts.pdf",
     "promo_primer_anio_eur": 9.97,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 4.12
+    "descuento_energia": null
+   }
   },
   {
    "id": "cnmc-7091",
@@ -2778,10 +1814,11 @@
     "p3": 0.1899
    },
    "cuota_fija_mes": 0,
+   "servicio_mes": 0,
    "permanencia_meses": 0,
    "servicios_obligatorios": [],
    "url_fuente": "https://www.repsol.es/particulares/hogar/luz-y-gas/tarifas/tarifa-ahorro-potencia/#opcion2",
-   "fecha_comprobacion": "2026-10-21",
+   "fecha_comprobacion": "2026-11-01",
    "comision": false,
    "url_contratar": "https://www.repsol.es/particulares/hogar/luz-y-gas/tarifas/tarifa-ahorro-potencia/#opcion2",
    "notas": "Precios ofertados antes de impuestos. Términos de potencia: En horas Punta (8 a 24h) = 30,817400 €/kW año. En horas Valle (0 a 8h, fines de semanas y festivos) = 0,725400 €/kW año Término de energía = 0,18990 €/kWh Término de energía (con importe SNOEE incluido): 0,19256 €/kWh. Los precios no incluyen el coste de financiación del bono social (que de conformidad con lo establecido en la Orden TED634/2026, de 17 de junio es 0,750941 €/mes) ni del Sistema Nacional de Obligaciones de Eficiencia Energética (SNOEE) que se te facturará como un concepto adicional en la factura. El importe correspondiente al SNOEE es 0,00266 €/kWh, de acuerdo con lo publicado en el BOE, si bien se actualizará según s",
@@ -2789,6 +1826,7 @@
    "info": {
     "cnmc_id": 7091,
     "incluye_bono_social": false,
+    "servicio_sin_precio": false,
     "horario_propio": false,
     "verde": false,
     "servicios_adicionales": false,
@@ -2806,10 +1844,8 @@
     },
     "url_contrato": "https://www.repsol.es/content/dam/images-ecommerce/particulares/hogar/luz-y-gas/documentos/condiciones_generales_contrato_suministro_energia.pdf",
     "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
+    "descuento_energia": null
+   }
   },
   {
    "id": "cnmc-7090",
@@ -2826,12 +1862,13 @@
     "p3": 0.1799
    },
    "cuota_fija_mes": 0,
+   "servicio_mes": 4.12,
    "permanencia_meses": 0,
    "servicios_obligatorios": [
-    "Mantenimiento de instalación eléctrica: Tu Asistente 24 horas por 4,12 €/mes (sin impuesto) -Servicios de urgencia 24 h, el cliente contará con las primeras 3 horas de mano de obra gratuita y hasta 50€"
+    "Mantenimiento de instalación eléctrica: Tu Asistente 24 horas por 4,12 €/mes (sin impuesto) -Servicios de urgencia 24 h, el cliente contará con las primeras 3 horas de mano de obra gratuita y hasta 50€ en materiales. El presupuesto y desplazamiento del técnico será gratuito. Los precios no incluyen "
    ],
    "url_fuente": "https://www.repsol.es/particulares/hogar/luz-y-gas/tarifas/tarifa-ahorro-potencia/#opcion1",
-   "fecha_comprobacion": "2026-10-21",
+   "fecha_comprobacion": "2026-11-01",
    "comision": false,
    "url_contratar": "https://www.repsol.es/particulares/hogar/luz-y-gas/tarifas/tarifa-ahorro-potencia/#opcion1",
    "notas": "Precios ofertados antes de impuestos. Términos de potencia: En horas Punta (8 a 24h) = 30,817400 €/kW año. En horas Valle (0 a 8h, fines de semanas y festivos) = 0,725400 €/kW año. Término de energía = 0,179900 €/kWh Término de energía (con importe SNOEE incluido): 0,18256 €/kWh. El precio del Término de Energía es el mismo en los 3 periodos: Punta, Llano y Valle. Además, la oferta incluye el servicio de mantenimiento de luz por 4,99 €/mes (IVA incluido), gratis durante los primeros 2 meses, desde la activación del contrato, por toda la duración del mismo. Los precios no incluyen el coste de financiación del bono social (que de conformidad con lo establecido en la Orden TED634/2026, de 17 de",
@@ -2839,6 +1876,7 @@
    "info": {
     "cnmc_id": 7090,
     "incluye_bono_social": false,
+    "servicio_sin_precio": false,
     "horario_propio": false,
     "verde": false,
     "servicios_adicionales": true,
@@ -2856,10 +1894,8 @@
     },
     "url_contrato": "https://www.repsol.es/content/dam/images-ecommerce/particulares/hogar/luz-y-gas/documentos/condiciones_generales_contrato_suministro_energia.pdf",
     "promo_primer_anio_eur": 9.97,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 4.12
+    "descuento_energia": null
+   }
   },
   {
    "id": "cnmc-7100",
@@ -2876,10 +1912,11 @@
     "p3": 0.1499
    },
    "cuota_fija_mes": 0,
+   "servicio_mes": 0,
    "permanencia_meses": 0,
    "servicios_obligatorios": [],
    "url_fuente": "https://www.repsol.es/particulares/hogar/luz-y-gas/tarifas/tarifa-ahorro-energia-renovable/#opcion2",
-   "fecha_comprobacion": "2026-10-21",
+   "fecha_comprobacion": "2026-11-01",
    "comision": false,
    "url_contratar": "https://www.repsol.es/particulares/hogar/luz-y-gas/tarifas/tarifa-ahorro-energia-renovable/#opcion2",
    "notas": "Precios ofertados antes de impuestos. Términos de potencia: En horas Punta (8 a 24h) = 32,900 €/kW año. En horas Valle (0 a 8h, fines de semanas y festivos) = 32,900 €/kW año Término de energía = 0,149900 €/kWh Término de energía (con importe SNOEE incluido): 0,15256 €/kWh. Los precios no incluyen el coste de financiación del bono social (que de conformidad con lo establecido en la Orden TED634/2026, de 17 de junio es 0,750941 €/mes) ni del Sistema Nacional de Obligaciones de Eficiencia Energética (SNOEE) que se te facturará como un concepto adicional en la factura. El importe correspondiente al SNOEE es 0,00266 €/kWh, de acuerdo con lo publicado en el BOE, si bien se actualizará según su va",
@@ -2887,6 +1924,7 @@
    "info": {
     "cnmc_id": 7100,
     "incluye_bono_social": false,
+    "servicio_sin_precio": false,
     "horario_propio": false,
     "verde": true,
     "servicios_adicionales": false,
@@ -2904,10 +1942,8 @@
     },
     "url_contrato": "https://www.repsol.es/content/dam/images-ecommerce/particulares/hogar/luz-y-gas/documentos/condiciones_generales_contrato_suministro_energia.pdf",
     "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
+    "descuento_energia": null
+   }
   },
   {
    "id": "cnmc-7101",
@@ -2924,12 +1960,13 @@
     "p3": 0.1499
    },
    "cuota_fija_mes": 0,
+   "servicio_mes": 4.12,
    "permanencia_meses": 0,
    "servicios_obligatorios": [
-    "Mantenimiento de instalación eléctrica: Tu Asistente 24 horas por 4,12 €/mes (sin impuesto) -Servicios de urgencia 24 h, el cliente contará con las primeras 3 horas de mano de obra gratuita y hasta 50€"
+    "Mantenimiento de instalación eléctrica: Tu Asistente 24 horas por 4,12 €/mes (sin impuesto) -Servicios de urgencia 24 h, el cliente contará con las primeras 3 horas de mano de obra gratuita y hasta 50€ en materiales. El presupuesto y desplazamiento del técnico será gratuito. Los precios no incluyen "
    ],
    "url_fuente": "https://www.repsol.es/particulares/hogar/luz-y-gas/tarifas/tarifa-ahorro-energia-renovable/#opcion1",
-   "fecha_comprobacion": "2026-10-21",
+   "fecha_comprobacion": "2026-11-01",
    "comision": false,
    "url_contratar": "https://www.repsol.es/particulares/hogar/luz-y-gas/tarifas/tarifa-ahorro-energia-renovable/#opcion1",
    "notas": "Precios ofertados antes de impuestos. Términos de potencia: En horas Punta (8 a 24h) = 32,900 €/kW año. En horas Valle (0 a 8h, fines de semanas y festivos) = 32,900 €/kW año Término de energía = 0,149900 €/kWh Término de energía (con importe SNOEE incluido): 0,15256 €/kWh. Servicio de mantenimiento luz incluido por 4,12 €/mes desde la activación del contrato, por toda la duración del mismo. Para más información, descargar las bases promocionales colgadas en la URL de esta oferta. Los precios no incluyen el coste de financiación del bono social (que de conformidad con lo establecido en la Orden TED634/2026, de 17 de junio es 0,750941 €/mes) ni del Sistema Nacional de Obligaciones de Eficienc",
@@ -2937,6 +1974,7 @@
    "info": {
     "cnmc_id": 7101,
     "incluye_bono_social": false,
+    "servicio_sin_precio": false,
     "horario_propio": false,
     "verde": true,
     "servicios_adicionales": true,
@@ -2954,42 +1992,140 @@
     },
     "url_contrato": "https://www.repsol.es/content/dam/images-ecommerce/particulares/hogar/luz-y-gas/documentos/condiciones_generales_contrato_suministro_energia.pdf",
     "promo_primer_anio_eur": 9.97,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 4.12
+    "descuento_energia": null
+   }
   },
   {
-   "id": "cnmc-7092",
+   "id": "cnmc-7096",
    "comercializadora": "REPSOL COMERCIALIZADORA DE ELECTRICIDAD Y GAS, S.L.U",
-   "nombre": "Tarifa Sin Horarios",
+   "nombre": "Tarifa Discriminación Horaria",
+   "tipo": "periodos",
+   "potencia": {
+    "p1": 0.120274,
+    "p2": 0.06
+   },
+   "energia": {
+    "p1": 0.1859,
+    "p2": 0.1359,
+    "p3": 0.1169
+   },
+   "cuota_fija_mes": 0,
+   "servicio_mes": 0,
+   "permanencia_meses": 0,
+   "servicios_obligatorios": [],
+   "url_fuente": "https://www.repsol.es/particulares/hogar/luz-y-gas/tarifas/tarifa-discriminacion-horaria/#opcion2",
+   "fecha_comprobacion": "2026-11-01",
+   "comision": false,
+   "url_contratar": "https://www.repsol.es/particulares/hogar/luz-y-gas/tarifas/tarifa-discriminacion-horaria/#opcion2",
+   "notas": "Precios ofertados antes de impuestos. Términos de potencia: En horas punta (8 a 24h) = 43,9000 €/kW año En horas valle (0 a 8h, fines de semanas y festivos) = 21,9000 €/kW año. Término de energía punta = 0,185900 €/kWh Término de energía llano = 0,135900 €/kWh Término de energía valle = 0,116900 €/kWh Término de energía punta con importe SNOEE incluido = 0,18856 €/kWh Término de energía llano con importe SNOEE incluido = 0,13856 €/kWh Término de energía valle con importe SNOEE incluido = 0,11956€/kWh. Los precios no incluyen el coste de financiación del bono social (que de conformidad con lo establecido en la Orden TED634/2026, de 17 de junio es 0,750941 €/mes) ni del Sistema Nacional de Obl",
+   "origen": "cnmc",
+   "info": {
+    "cnmc_id": 7096,
+    "incluye_bono_social": false,
+    "servicio_sin_precio": false,
+    "horario_propio": false,
+    "verde": false,
+    "servicios_adicionales": false,
+    "penalizacion": "No hay compromiso de permanencia para el Cliente, que podrá resolver anticipadamente el Contrato en cualquier momento.",
+    "validez": "Oferta válida desde 01-oct-2026 hasta 01-dic-2026",
+    "limitaciones": "Válido para clientes domésticos, pequeños negocios y comunidades de propietarios.",
+    "potencia_max_kw": 15,
+    "consumo_max_kwh": 999999,
+    "revision": "Anual",
+    "condiciones_revision": "El precio de la oferta podrá ser modificado en cada una de las sucesivas prórrogas. La modificación de las condiciones del contrato, salvo que sea consecuencia de la normativa aplicable o se limite a la actualización de los precios aplicando el porcentaje de variación del IPC o índice que lo sustituya, será notificada al Cliente con una antelación mínima de un (1) mes a su entrada en vigor, informándole de sus derechos a resolver el contrato sin penalización si no estuviese de acuerdo.  La varia",
+    "contratacion": {
+     "internet": true,
+     "telefono": true,
+     "oficina": false
+    },
+    "url_contrato": "https://www.repsol.es/content/dam/images-ecommerce/particulares/hogar/luz-y-gas/documentos/condiciones_generales_contrato_suministro_energia.pdf",
+    "promo_primer_anio_eur": 0,
+    "descuento_energia": null
+   }
+  },
+  {
+   "id": "cnmc-7097",
+   "comercializadora": "REPSOL COMERCIALIZADORA DE ELECTRICIDAD Y GAS, S.L.U",
+   "nombre": "Tarifa Discriminación Horaria con mantenimiento Luz",
+   "tipo": "periodos",
+   "potencia": {
+    "p1": 0.120274,
+    "p2": 0.06
+   },
+   "energia": {
+    "p1": 0.1859,
+    "p2": 0.1359,
+    "p3": 0.1169
+   },
+   "cuota_fija_mes": 0,
+   "servicio_mes": 4.12,
+   "permanencia_meses": 0,
+   "servicios_obligatorios": [
+    "Mantenimiento de instalación eléctrica: Tu Asistente 24 horas por 4,12 €/mes -Servicios de urgencia 24 h, el cliente contará con las primeras 3 horas de mano de obra gratuita y hasta 50€ en materiales. El presupuesto y desplazamiento del técnico será gratuito. Los precios no incluyen impuestos y los"
+   ],
+   "url_fuente": "https://www.repsol.es/particulares/hogar/luz-y-gas/tarifas/tarifa-discriminacion-horaria/#opcion1",
+   "fecha_comprobacion": "2026-11-01",
+   "comision": false,
+   "url_contratar": "https://www.repsol.es/particulares/hogar/luz-y-gas/tarifas/tarifa-discriminacion-horaria/#opcion1",
+   "notas": "Precios ofertados antes de impuestos. Términos de potencia: En horas punta (8 a 24h) = 43,9000 €/kW año En horas valle (0 a 8h, fines de semanas y festivos) = 21,9000 €/kW año. Término de energía punta = 0,185900 €/kWh Término de energía llano = 0,135900 €/kWh Término de energía valle = 0,116900 €/kWh Término de energía punta con importe SNOEE incluido = 0,18856 €/kWh Término de energía llano con importe SNOEE incluido = 0,13856 €/kWh Término de energía valle con importe SNOEE incluido = 0,11956€/kWh. Además, incluye el servicio de mantenimiento de luz (Tu Asistente 24H) por 4,12 €/mes, gratis durante los primeros 2 meses, desde la activación del contrato, por toda la duración del mismo. Los",
+   "origen": "cnmc",
+   "info": {
+    "cnmc_id": 7097,
+    "incluye_bono_social": false,
+    "servicio_sin_precio": false,
+    "horario_propio": false,
+    "verde": false,
+    "servicios_adicionales": true,
+    "penalizacion": "No hay compromiso de permanencia para el Cliente, que podrá resolver anticipadamente el Contrato en cualquier momento.",
+    "validez": "Oferta válida desde 15-oct-2026 hasta 01-dic-2026",
+    "limitaciones": "Válido para clientes domésticos, pequeños negocios y comunidades de propietarios.",
+    "potencia_max_kw": 15,
+    "consumo_max_kwh": 999999,
+    "revision": "Anual",
+    "condiciones_revision": "El precio de la oferta podrá ser modificado en cada una de las sucesivas prórrogas. La modificación de las condiciones del contrato, salvo que sea consecuencia de la normativa aplicable o se limite a la actualización de los precios aplicando el porcentaje de variación del IPC o índice que lo sustituya, será notificada al Cliente con una antelación mínima de un (1) mes a su entrada en vigor, informándole de sus derechos a resolver el contrato sin penalización si no estuviese de acuerdo.  La varia",
+    "contratacion": {
+     "internet": true,
+     "telefono": true,
+     "oficina": false
+    },
+    "url_contrato": "https://www.repsol.es/content/dam/images-ecommerce/particulares/hogar/luz-y-gas/documentos/condiciones_generales_contrato_suministro_energia.pdf",
+    "promo_primer_anio_eur": 9.97,
+    "descuento_energia": null
+   }
+  },
+  {
+   "id": "cnmc-7188",
+   "comercializadora": "REPSOL COMERCIALIZADORA DE ELECTRICIDAD Y GAS, S.L.U",
+   "nombre": "Tarifa Te Da Más",
    "tipo": "fijo",
    "potencia": {
     "p1": 0.090137,
     "p2": 0.090137
    },
    "energia": {
-    "p1": 0.13166,
-    "p2": 0.13166,
-    "p3": 0.13166
+    "p1": 0.1399,
+    "p2": 0.1399,
+    "p3": 0.1399
    },
    "cuota_fija_mes": 0,
+   "servicio_mes": 0,
    "permanencia_meses": 0,
    "servicios_obligatorios": [],
-   "url_fuente": "https://www.repsol.es/particulares/hogar/luz-y-gas/tarifas/tarifa-sin-horarios/#opcion2",
-   "fecha_comprobacion": "2026-10-21",
+   "url_fuente": "https://www.repsol.es/particulares/hogar/luz-y-gas/tarifas/tarifa-te-da-mas/?#opcion1",
+   "fecha_comprobacion": "2026-11-01",
    "comision": false,
-   "url_contratar": "https://www.repsol.es/particulares/hogar/luz-y-gas/tarifas/tarifa-sin-horarios/#opcion2",
-   "notas": "Precios ofertados antes de impuestos. Términos de potencia: En horas Punta (8 a 24h) = 32,900 €/kW año. En horas Valle (0 a 8h, fines de semanas y festivos) = 32,900 €/kW año Término de energía = 0,129000 €/kWh Término de energía (con importe SNOEE incluido): 0,13166 €/kWh. Los precios no incluyen el coste de financiación del bono social (que de conformidad con lo establecido en la Orden TED634/2026, de 17 de junio es 0,750941 €/mes) que se te facturará como un concepto adicional en la factura. El importe correspondiente al SNOEE es 0,00266 €/kWh, de acuerdo con lo publicado en el BOE, si bien se actualizará según su valor vigente en cada momento.",
+   "url_contratar": "https://www.repsol.es/particulares/hogar/luz-y-gas/tarifas/tarifa-te-da-mas/?#opcion1",
+   "notas": "Precios ofertados antes de impuestos. Términos de potencia: En horas Punta (8 a 24h) = 32,900 €/kW año. En horas Valle (0 a 8h, fines de semanas y festivos) = 32,900 €/kW año Término de energía = 0,139900 €/kWh Término de energía (con importe SNOEE incluido): 0,142560 €/kWh. Los precios no incluyen el coste de financiación del bono social (que de conformidad con lo establecido en la Orden TED634/2026, de 17 de junio es 0,750941 €/mes) que se te facturará como un concepto adicional en la factura. El importe correspondiente al SNOEE es 0,00266 €/kWh, de acuerdo con lo publicado en el BOE, si bien se actualizará según su valor vigente en cada momento.",
    "origen": "cnmc",
    "info": {
-    "cnmc_id": 7092,
+    "cnmc_id": 7188,
     "incluye_bono_social": false,
+    "servicio_sin_precio": false,
     "horario_propio": false,
     "verde": false,
     "servicios_adicionales": false,
     "penalizacion": "No hay compromiso de permanencia para el Cliente, que podrá resolver anticipadamente el Contrato en cualquier momento.",
-    "validez": "Oferta válida desde 05-ago-2026 hasta 31-oct-2026",
+    "validez": "Oferta válida desde 15-oct-2026 hasta 31-dic-2026",
     "limitaciones": "Válida para cualquier consumidor",
     "potencia_max_kw": 15,
     "consumo_max_kwh": 999999,
@@ -3002,44 +2138,44 @@
     },
     "url_contrato": "https://www.repsol.es/content/dam/images-ecommerce/particulares/hogar/luz-y-gas/documentos/condiciones_generales_contrato_suministro_energia.pdf",
     "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
+    "descuento_energia": null
+   }
   },
   {
-   "id": "cnmc-7093",
+   "id": "cnmc-7189",
    "comercializadora": "REPSOL COMERCIALIZADORA DE ELECTRICIDAD Y GAS, S.L.U",
-   "nombre": "Tarifa Sin Horarios con mantenimiento luz",
+   "nombre": "Tarifa Te Da Más con mantenimiento luz",
    "tipo": "fijo",
    "potencia": {
     "p1": 0.090137,
     "p2": 0.090137
    },
    "energia": {
-    "p1": 0.12256,
-    "p2": 0.12256,
-    "p3": 0.12256
+    "p1": 0.1399,
+    "p2": 0.1399,
+    "p3": 0.1399
    },
    "cuota_fija_mes": 0,
+   "servicio_mes": 4.12,
    "permanencia_meses": 0,
    "servicios_obligatorios": [
-    "Mantenimiento de instalación eléctrica: Tu Asistente 24 horas por 4,12 €/mes -Servicios de urgencia 24 h, el cliente contará con las primeras 3 horas de mano de obra gratuita y hasta 50€ en materiales."
+    "Mantenimiento de instalación eléctrica: Tu Asistente 24 horas por 4,12 €/mes -Servicios de urgencia 24 h, el cliente contará con las primeras 3 horas de mano de obra gratuita y hasta 50€ en materiales. El presupuesto y desplazamiento del técnico será gratuito. Los precios no incluyen impuestos y los"
    ],
-   "url_fuente": "https://www.repsol.es/particulares/hogar/luz-y-gas/tarifas/tarifa-sin-horarios/#opcion1",
-   "fecha_comprobacion": "2026-10-21",
+   "url_fuente": "https://www.repsol.es/particulares/hogar/luz-y-gas/tarifas/tarifa-te-da-mas/?#opcion2",
+   "fecha_comprobacion": "2026-11-01",
    "comision": false,
-   "url_contratar": "https://www.repsol.es/particulares/hogar/luz-y-gas/tarifas/tarifa-sin-horarios/#opcion1",
-   "notas": "Precios ofertados antes de impuestos. Términos de potencia: En horas Punta (8 a 24h) = 32,900 €/kW año. En horas Valle (0 a 8h, fines de semanas y festivos) = 32,900 €/kW año Término de energía = 0,119900 €/kWh Término de energía (con importe SNOEE incluido): 0,12256 €/kWh. Además, incluye el servicio de mantenimiento de luz (Tu asistente 24H) por 4,99 €/mes (IVA incluido), gratis durante los primeros 2 meses, desde la activación del contrato, por toda la duración del mismo. Los precios no incluyen el coste de financiación del bono social (que de conformidad con lo establecido en la Orden TED634/2026, de 17 de junio es 0,750941 €/mes) que se te facturará como un concepto adicional en la fact",
+   "url_contratar": "https://www.repsol.es/particulares/hogar/luz-y-gas/tarifas/tarifa-te-da-mas/?#opcion2",
+   "notas": "Precios ofertados antes de impuestos. Términos de potencia: En horas Punta (8 a 24h) = 32,900 €/kW año. En horas Valle (0 a 8h, fines de semanas y festivos) = 32,900 €/kW año Término de energía = 0,139900 €/kWh Término de energía (con importe SNOEE incluido): 0,142560 €/kWh. Además, incluye el servicio de mantenimiento de luz (Tu asistente 24H) por 4,99 €/mes (IVA incluido), gratis durante los primeros 2 meses, desde la activación del contrato, por toda la duración del mismo. Los precios no incluyen el coste de financiación del bono social (que de conformidad con lo establecido en la Orden TED634/2026, de 17 de junio es 0,750941 €/mes) que se te facturará como un concepto adicional en la fac",
    "origen": "cnmc",
    "info": {
-    "cnmc_id": 7093,
+    "cnmc_id": 7189,
     "incluye_bono_social": false,
+    "servicio_sin_precio": false,
     "horario_propio": false,
     "verde": false,
     "servicios_adicionales": true,
     "penalizacion": "No hay compromiso de permanencia para el Cliente, que podrá resolver anticipadamente el Contrato en cualquier momento.",
-    "validez": "Oferta válida desde 05-ago-2026 hasta 31-oct-2026",
+    "validez": "Oferta válida desde 15-oct-2026 hasta 31-dic-2026",
     "limitaciones": "Válida para cualquier consumidor",
     "potencia_max_kw": 15,
     "consumo_max_kwh": 999999,
@@ -3052,108 +2188,8 @@
     },
     "url_contrato": "https://www.repsol.es/content/dam/images-ecommerce/particulares/hogar/luz-y-gas/documentos/condiciones_generales_contrato_suministro_energia.pdf",
     "promo_primer_anio_eur": 9.97,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 4.12
-  },
-  {
-   "id": "cnmc-7113",
-   "comercializadora": "REPSOL COMERCIALIZADORA DE ELECTRICIDAD Y GAS, S.L.U",
-   "nombre": "Tarifa Sin Horarios Pyme",
-   "tipo": "fijo",
-   "potencia": {
-    "p1": 0.090137,
-    "p2": 0.090137
-   },
-   "energia": {
-    "p1": 0.13166,
-    "p2": 0.13166,
-    "p3": 0.13166
-   },
-   "cuota_fija_mes": 0,
-   "permanencia_meses": 0,
-   "servicios_obligatorios": [],
-   "url_fuente": "https://www.repsol.es/autonomos-y-empresas/soluciones/luz-y-gas/tarifas/tarifa-sin-horarios-pyme/#opcion2",
-   "fecha_comprobacion": "2026-10-21",
-   "comision": false,
-   "url_contratar": "https://www.repsol.es/autonomos-y-empresas/soluciones/luz-y-gas/tarifas/tarifa-sin-horarios-pyme/#opcion2",
-   "notas": "Precios ofertados antes de impuestos. Términos de potencia: En horas Punta (8 a 24h) = 32,900 €/kW año. En horas Valle (0 a 8h, fines de semanas y festivos) = 32,900 €/kW año Término de energía = 0,129000 €/kWh Término de energía (con importe SNOEE incluido): 0,13166 €/kWh. Los precios no incluyen el coste de financiación del bono social (que de conformidad con lo establecido en la Orden TED634/2026, de 17 de junio es 0,750941 €/mes) ni del Sistema Nacional de Obligaciones de Eficiencia Energética (SNOEE) que se te facturará como un concepto adicional en la factura. El importe correspondiente al SNOEE es 0,00266 €/kWh, de acuerdo con lo publicado en el BOE, si bien se actualizará según su va",
-   "origen": "cnmc",
-   "info": {
-    "cnmc_id": 7113,
-    "incluye_bono_social": false,
-    "horario_propio": false,
-    "verde": false,
-    "servicios_adicionales": false,
-    "penalizacion": "No hay compromiso de permanencia para el Cliente, que podrá resolver anticipadamente el Contrato en cualquier momento.",
-    "validez": "Oferta válida desde 05-ago-2026 hasta 31-oct-2026",
-    "limitaciones": "Válida sólo para consumidores no domésticos",
-    "potencia_max_kw": 15,
-    "consumo_max_kwh": 999999,
-    "revision": "Anual",
-    "condiciones_revision": "El precio de la oferta podrá ser modificado en cada una de las sucesivas prórrogas. La modificación de las condiciones del contrato, salvo que sea consecuencia de la normativa aplicable o se limite a la actualización de los precios aplicando el porcentaje de variación del IPC o índice que lo sustituya, será notificada al Cliente con una antelación mínima de un (1) mes a su entrada en vigor, informándole de sus derechos a resolver el contrato sin penalización si no estuviese de acuerdo.  La varia",
-    "contratacion": {
-     "internet": true,
-     "telefono": true,
-     "oficina": false
-    },
-    "url_contrato": "https://www.repsol.es/content/dam/images-ecommerce/particulares/hogar/luz-y-gas/documentos/condiciones_generales_contrato_suministro_energia.pdf",
-    "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 0
-  },
-  {
-   "id": "cnmc-7114",
-   "comercializadora": "REPSOL COMERCIALIZADORA DE ELECTRICIDAD Y GAS, S.L.U",
-   "nombre": "Tarifa Sin Horarios PYME con mantenimiento Luz",
-   "tipo": "fijo",
-   "potencia": {
-    "p1": 0.090137,
-    "p2": 0.090137
-   },
-   "energia": {
-    "p1": 0.13166,
-    "p2": 0.13166,
-    "p3": 0.13166
-   },
-   "cuota_fija_mes": 0,
-   "permanencia_meses": 0,
-   "servicios_obligatorios": [
-    "Mantenimiento de instalación eléctrica: Tu Asistente 24 horas pyme por 8,26 €/mes -Servicios de urgencia 24 h, el cliente contará con las primeras 2 horas de mano de obra gratuita y hasta 50€ en materi"
-   ],
-   "url_fuente": "https://www.repsol.es/autonomos-y-empresas/soluciones/luz-y-gas/tarifas/luz-plan-ahorro-plus/",
-   "fecha_comprobacion": "2026-10-21",
-   "comision": false,
-   "url_contratar": "https://www.repsol.es/autonomos-y-empresas/soluciones/luz-y-gas/tarifas/luz-plan-ahorro-plus/",
-   "notas": "Precios ofertados antes de impuestos. Términos de potencia: En horas Punta (8 a 24h) = 32,900 €/kW año. En horas Valle (0 a 8h, fines de semanas y festivos) = 32,900 €/kW año Término de energía = 0,119900 €/kWh Término de energía (con importe SNOEE incluido): 0,13166 €/kWh. Además, incluye el servicio de mantenimiento de luz (Tu Asistente 24H Pyme) por 9,99 €/mes, desde la activación del contrato, por toda la duración del mismo. Los precios no incluyen el coste de financiación del bono social (que de conformidad con lo establecido en la Orden TED634/2026, de 17 de junio es 0,750941 €/mes) ni del Sistema Nacional de Obligaciones de Eficiencia Energética (SNOEE) que se te facturará como un con",
-   "origen": "cnmc",
-   "info": {
-    "cnmc_id": 7114,
-    "incluye_bono_social": false,
-    "horario_propio": false,
-    "verde": false,
-    "servicios_adicionales": true,
-    "penalizacion": "No hay compromiso de permanencia para el Cliente, que podrá resolver anticipadamente el Contrato en cualquier momento, dando un preaviso a la Comercializadora de 15 días.",
-    "validez": "Oferta válida desde 05-ago-2026 hasta 31-oct-2026",
-    "limitaciones": "Válida sólo para consumidores no domésticos",
-    "potencia_max_kw": 15,
-    "consumo_max_kwh": 999999,
-    "revision": "Anual",
-    "condiciones_revision": "El precio de la oferta podrá ser modificado en cada una de las sucesivas prórrogas. La modificación de las condiciones del contrato, salvo que sea consecuencia de la normativa aplicable o se limite a la actualización de los precios aplicando el porcentaje de variación del IPC o índice que lo sustituya, será notificada al Cliente con una antelación mínima de un (1) mes a su entrada en vigor, informándole de sus derechos a resolver el contrato sin penalización si no estuviese de acuerdo.  La varia",
-    "contratacion": {
-     "internet": true,
-     "telefono": true,
-     "oficina": false
-    },
-    "url_contrato": "https://www.repsol.es/content/dam/images-ecommerce/particulares/hogar/luz-y-gas/documentos/condiciones_generales_contrato_suministro_energia.pdf",
-    "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 8.26
+    "descuento_energia": null
+   }
   },
   {
    "id": "cnmc-7102",
@@ -3170,12 +2206,13 @@
     "p3": 0.1599
    },
    "cuota_fija_mes": 0,
+   "servicio_mes": 5.78,
    "permanencia_meses": 0,
    "servicios_obligatorios": [
-    "Mantenimiento de instalación eléctrica: Tu Asistente 24 horas plus por 5,78 €/mes -Servicios de urgencia 24 h, el cliente contará con las primeras 3 horas de mano de obra gratuita y hasta 50€ en materi"
+    "Mantenimiento de instalación eléctrica: Tu Asistente 24 horas plus por 5,78 €/mes -Servicios de urgencia 24 h, el cliente contará con las primeras 3 horas de mano de obra gratuita y hasta 50€ en materiales. El presupuesto y desplazamiento del técnico será gratuito. Reparación de electrodomésticos. L"
    ],
    "url_fuente": "https://www.repsol.es/particulares/hogar/luz-y-gas/tarifas/tarifa-tranquilisima/",
-   "fecha_comprobacion": "2026-10-21",
+   "fecha_comprobacion": "2026-11-01",
    "comision": false,
    "url_contratar": "https://www.repsol.es/particulares/hogar/luz-y-gas/tarifas/tarifa-tranquilisima/",
    "notas": "Precios ofertados antes de impuestos, fijos en los siguientes 5 años, excepto en los componentes regulados del coste (que incluyen entre otros el coste de las redes de transporte y distribución) y que pueden modificarse según normativa vigente. Términos de potencia: En horas Punta (8 a 24h) = 29,900 €/kW año. En horas Valle (0 a 8h, fines de semanas y festivos) = 29,900 €/kW año Término de energía = 0,15990 €/kWh Término de energía (con importe SNOEE incluido): 0,16256 €/kWh. Además, incluye el servicio de mantenimiento de luz (Tu Asistente 24H Plus) por 5,78 €/mes desde la activación del contrato, por toda la duración del mismo. Los precios no incluyen el coste de financiación del bono soci",
@@ -3183,6 +2220,7 @@
    "info": {
     "cnmc_id": 7102,
     "incluye_bono_social": false,
+    "servicio_sin_precio": false,
     "horario_propio": false,
     "verde": false,
     "servicios_adicionales": true,
@@ -3200,60 +2238,8 @@
     },
     "url_contrato": "https://www.repsol.es/content/dam/images-ecommerce/particulares/hogar/luz-y-gas/documentos/condiciones_generales_contrato_suministro_energia.pdf",
     "promo_primer_anio_eur": 13.98,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 5.78
-  },
-  {
-   "id": "cnmc-7098",
-   "comercializadora": "REPSOL COMERCIALIZADORA DE ELECTRICIDAD Y GAS, S.L.U",
-   "nombre": "Tarifa Vehículo Eléctrico con mantenimiento luz",
-   "tipo": "periodos",
-   "potencia": {
-    "p1": 0.090137,
-    "p2": 0.090137
-   },
-   "energia": {
-    "p1": 0.20256,
-    "p2": 0.20256,
-    "p3": 0.06356
-   },
-   "cuota_fija_mes": 0,
-   "permanencia_meses": 0,
-   "servicios_obligatorios": [
-    "Otros servicios: Tu Asistente 24 horas plus por 8,26 €/mes -Servicios de urgencia 24 h, el cliente contará con las primeras 3 horas de mano de obra gratuita y hasta 50€ en materiales. El presupuesto y"
-   ],
-   "url_fuente": "https://www.repsol.es/particulares/vehiculos/movilidad-electrica/tarifa-vehiculo-electrico/#opcion1",
-   "fecha_comprobacion": "2026-10-21",
-   "comision": false,
-   "url_contratar": "https://www.repsol.es/particulares/vehiculos/movilidad-electrica/tarifa-vehiculo-electrico/#opcion1",
-   "notas": "Precios ofertados antes de impuestos: incluyen las recargas eléctrica en casa y en los puntos públicos de Repsol. Términos de potencia: En horas punta (8 a 24h) = 32,9000 €/kW año En horas valle (0 a 8h, fines de semanas y festivos) = 32,9000 €/kW año Términos de energía: Punta = 0,199900 €/kWh Llano = 0,199900 €/kWh Valle = 0,060900 €/kWh Términos de energía con importe SNOEE incluido: Punta = 0,20256 €/kWh Llano = 0,20256 €/kWh Valle = 0,06356 €/kWh. Además, incluye el servicio de mantenimiento de luz (Tu Asistente 24h Plus + Servicio Movilidad Eléctrica) por 9,99 €/mes (impuesto incluido) desde la activación del contrato, por toda la duración del mismo. Los precios no incluyen el coste de",
-   "origen": "cnmc",
-   "info": {
-    "cnmc_id": 7098,
-    "incluye_bono_social": false,
-    "horario_propio": false,
-    "verde": true,
-    "servicios_adicionales": true,
-    "penalizacion": "No hay compromiso de permanencia para el Cliente, que podrá resolver anticipadamente el Contrato en cualquier momento.",
-    "validez": "Oferta válida desde 05-ago-2026 hasta 31-oct-2026",
-    "limitaciones": "Válida para cualquier consumidor",
-    "potencia_max_kw": 15,
-    "consumo_max_kwh": 999999,
-    "revision": "Anual",
-    "condiciones_revision": "El precio de la oferta podrá ser modificado en cada una de las sucesivas prórrogas. La modificación de las condiciones del contrato, salvo que sea consecuencia de la normativa aplicable o se limite a la actualización de los precios aplicando el porcentaje de variación del IPC o índice que lo sustituya, será notificada al Cliente con una antelación mínima de un (1) mes a su entrada en vigor, informándole de sus derechos a resolver el contrato sin penalización si no estuviese de acuerdo.  La varia",
-    "contratacion": {
-     "internet": false,
-     "telefono": true,
-     "oficina": false
-    },
-    "url_contrato": "https://www.repsol.es/content/dam/images-ecommerce/particulares/hogar/luz-y-gas/documentos/condiciones_generales_contrato_suministro_energia.pdf",
-    "promo_primer_anio_eur": 0,
-    "descuento_energia": null,
-    "servicio_sin_precio": false
-   },
-   "servicio_mes": 8.26
+    "descuento_energia": null
+   }
   }
  ]
 }
