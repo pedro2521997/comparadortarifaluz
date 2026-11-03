@@ -1,0 +1,49 @@
+---
+// Cómo escribirnos (versión inglesa: pages/contact.astro).
+import Base from "../../layouts/Base.astro";
+import { SITIO } from "../../config";
+import { absoluta } from "../../lib/datos";
+---
+
+<Base
+  titulo="Contacto"
+  descripcion={`Cómo escribir a ${SITIO.nombre}: errores en un precio o en una gasolinera, problemas con el mapa o sugerencias para la web.`}
+  lang="es"
+  locale="es-ES"
+  anuncioFinal={false}
+  migas={[["Inicio", "/es/"], ["Contacto"]]}
+  alternativas={[{ lang: "es", href: absoluta("/es/contacto/") }, { lang: "en", href: absoluta("/contact/") }]}
+>
+  <section class="hero hero--compacto">
+    <div class="wrap wrap--narrow">
+      <h1>Contacto</h1>
+      <p class="lead">Escríbenos a <a href={`mailto:${SITIO.correo}`}><strong>{SITIO.correo}</strong></a>. Respondemos normalmente en 2–3 días laborables.</p>
+    </div>
+  </section>
+  <section class="section section--white section--tight">
+    <div class="wrap wrap--narrow prose">
+      <h2>Nos ayuda que nos escribas si</h2>
+      <ul>
+        <li><strong>Un precio parece mal</strong> o una gasolinera ya no existe: dinos cuál y, si puedes, el enlace a su página.</li>
+        <li><strong>Algo no funciona</strong> en el mapa, el buscador o las rutas: dinos qué móvil o navegador usas.</li>
+        <li><strong>Falta tu pueblo</strong> o se te ocurre una mejora.</li>
+        <li>Eres una gasolinera o una marca y quieres que corrijamos algún dato o que retiremos tu logotipo.</li>
+      </ul>
+
+      <h2>Lo que no podemos hacer</h2>
+      <ul>
+        <li>No vendemos luz ni carburante, y no gestionamos contratos, facturas ni reclamaciones: eso lo lleva tu compañía o la gasolinera.</li>
+        <li>No cambiamos los precios a mano: salen de las fuentes oficiales. Si una gasolinera lo tiene mal, debe corregirlo ante el organismo que los publica.</li>
+        <li>No envíes facturas, DNI ni otros datos personales por correo: no los necesitamos.</li>
+      </ul>
+
+      <h2>Datos del responsable</h2>
+      <ul>
+        <li><strong>Titular:</strong> {SITIO.titular}</li>
+        <li><strong>NIF:</strong> {SITIO.nif}</li>
+        <li><strong>Domicilio:</strong> {SITIO.domicilio}</li>
+      </ul>
+      <p>Más información en <a href="/es/quienes-somos/">quiénes somos</a> y en el <a href="/legal/">aviso legal y privacidad</a>.</p>
+    </div>
+  </section>
+</Base>

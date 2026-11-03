@@ -1,0 +1,48 @@
+---
+// How to reach us (Spanish version: pages/es/contacto.astro).
+import Base from "../layouts/Base.astro";
+import { SITIO } from "../config";
+import { absoluta } from "../lib/datos";
+---
+
+<Base
+  titulo="Contact"
+  descripcion={`How to reach ${SITIO.nombre}: a wrong price or filling station, a problem with the map, or ideas for the website.`}
+  lang="en"
+  anuncioFinal={false}
+  migas={[["Home", "/"], ["Contact"]]}
+  alternativas={[{ lang: "en", href: absoluta("/contact/") }, { lang: "es", href: absoluta("/es/contacto/") }]}
+>
+  <section class="hero hero--compacto">
+    <div class="wrap wrap--narrow">
+      <h1>Contact</h1>
+      <p class="lead">Write to us at <a href={`mailto:${SITIO.correo}`}><strong>{SITIO.correo}</strong></a>. We usually reply within 2–3 working days.</p>
+    </div>
+  </section>
+  <section class="section section--white section--tight">
+    <div class="wrap wrap--narrow prose">
+      <h2>Please get in touch if</h2>
+      <ul>
+        <li><strong>A price looks wrong</strong> or a filling station no longer exists: tell us which one and, if you can, send the link to its page.</li>
+        <li><strong>Something does not work</strong> on the map, the search or the routes: tell us which phone or browser you use.</li>
+        <li><strong>Your town is missing</strong> or you have an idea for an improvement.</li>
+        <li>You are a filling station or a brand and want us to correct some data or remove your logo.</li>
+      </ul>
+
+      <h2>What we cannot do</h2>
+      <ul>
+        <li>We do not sell electricity or fuel, and we do not handle contracts, bills or complaints: your supplier or filling station does that.</li>
+        <li>We do not change prices by hand: they come from official sources. If a station's price is wrong, it has to correct it with the body that publishes it.</li>
+        <li>Please do not email us bills, ID documents or other personal data: we do not need them.</li>
+      </ul>
+
+      <h2>Who is responsible for this site</h2>
+      <ul>
+        <li><strong>Owner:</strong> {SITIO.titular}</li>
+        <li><strong>Tax ID (NIF):</strong> {SITIO.nif}</li>
+        <li><strong>Address:</strong> {SITIO.domicilio}</li>
+      </ul>
+      <p>More in <a href="/about/">about us</a> and our <a href="/legal/">legal notice and privacy policy</a>.</p>
+    </div>
+  </section>
+</Base>

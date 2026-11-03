@@ -1,0 +1,47 @@
+---
+// Quién hace la web, de dónde salen los datos y cómo se financia (versión inglesa: pages/about.astro).
+import Base from "../../layouts/Base.astro";
+import { SITIO } from "../../config";
+import { absoluta } from "../../lib/datos";
+import { FUENTE_MAPA, MAPAS } from "../../lib/mapa";
+---
+
+<Base
+  titulo="Quiénes somos"
+  descripcion={`Quién hace ${SITIO.nombre}, de dónde salen los precios de la luz y de las gasolineras, cada cuánto se actualizan y cómo se financia la web.`}
+  lang="es"
+  locale="es-ES"
+  anuncioFinal={false}
+  migas={[["Inicio", "/es/"], ["Quiénes somos"]]}
+  alternativas={[{ lang: "es", href: absoluta("/es/quienes-somos/") }, { lang: "en", href: absoluta("/about/") }]}
+>
+  <section class="hero hero--compacto">
+    <div class="wrap wrap--narrow">
+      <h1>Quiénes somos</h1>
+      <p class="lead">{SITIO.nombre} es una web independiente y gratuita para consultar el precio de la luz y de los carburantes con datos oficiales.</p>
+    </div>
+  </section>
+  <section class="section section--white section--tight">
+    <div class="wrap wrap--narrow prose">
+      <h2>Quién está detrás</h2>
+      <p>La web la hace {SITIO.titular}, desde La Solana (Ciudad Real, España). También es el responsable de <a href="https://comparadortarifaluz.es/" target="_blank" rel="noopener">ComparadorTarifaLuz.es</a>, la web hermana sobre la luz en España. No vendemos luz ni carburante, y no pertenecemos a ninguna compañía eléctrica, petrolera, gasolinera ni organismo público.</p>
+
+      <h2>De dónde salen los datos</h2>
+      <ul>
+        <li><strong>Precio de la luz:</strong> precios del mercado diario de ENTSO-E y de Bundesnetzagentur | SMARD.de a través de Energy-Charts.</li>
+        <li><strong>Precio de cada gasolinera:</strong> {MAPAS.map((cc) => FUENTE_MAPA[cc]).map((f, i) => <>{i > 0 && ", "}<a href={f.url} rel="noopener">{f.nombre}</a></>)}. Son los precios que comunica cada gasolinera a esos organismos.</li>
+        <li><strong>Medias de carburantes por país:</strong> boletín petrolero semanal de la Comisión Europea.</li>
+        <li><strong>Mapas y rutas:</strong> OpenStreetMap, OSRM (FOSSGIS) y GeoNames.</li>
+      </ul>
+
+      <h2>Cada cuánto se actualiza</h2>
+      <p>La web se actualiza sola varias veces al día con lo que publican esas fuentes. Cada página indica la fecha de sus datos. Son datos orientativos: en una gasolinera manda el precio del surtidor, y en la luz, lo que diga tu contrato.</p>
+
+      <h2>Cómo se financia</h2>
+      <p>La web es gratuita, no pide registro y se financia con publicidad de Google AdSense. Los anunciantes no deciden qué precios se muestran ni en qué orden. Más detalles en el <a href="/legal/">aviso legal y privacidad</a>.</p>
+
+      <h2>Contacto</h2>
+      <p>¿Has visto un error o se te ocurre una mejora? <a href="/es/contacto/">Escríbenos</a>.</p>
+    </div>
+  </section>
+</Base>

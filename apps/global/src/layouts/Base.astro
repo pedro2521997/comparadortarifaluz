@@ -63,6 +63,12 @@ const menu: { href: string; t: string; activo: boolean; externo?: boolean }[] = 
     ];
 if (menu.length && tieneLuz && !menu.some((x) => x.activo)) menu[0].activo = true;
 // Selector de país: los que tienen precio de la luz y España (carburantes; la luz está en la web española).
+// Pie: «Quiénes somos» y «Contacto». Las páginas están en español y en inglés; los demás idiomas enlazan a las inglesas.
+const ACERCA: Record<Idioma, [string, string]> = {
+  no: ["Om oss", "Kontakt"], sv: ["Om oss", "Kontakt"], da: ["Om os", "Kontakt"], fi: ["Tietoa meistä", "Yhteystiedot"], de: ["Über uns", "Kontakt"],
+  pt: ["Quem somos", "Contacto"], fr: ["À propos", "Contact"], it: ["Chi siamo", "Contatti"], nl: ["Over ons", "Contact"], es: ["Quiénes somos", "Contacto"], en: ["About us", "Contact"],
+};
+const enEspanol = lang === "es";
 const paisesMenu = PAISES.filter((p) => PAISES_CON_DATOS.includes(p) || p.cc === "es");
 ---
 
@@ -169,6 +175,8 @@ const paisesMenu = PAISES.filter((p) => PAISES_CON_DATOS.includes(p) || p.cc ===
                 const p = PAISES.find((x) => x.cc === cc)!;
                 return <li><a href={urlGuias(cc)} hreflang={p.locale}>{TITULO_GUIAS[p.lang]} · {p.nombre}</a></li>;
               })}
+              <li><a href={enEspanol ? "/es/quienes-somos/" : "/about/"}>{ACERCA[lang][0]}</a></li>
+              <li><a href={enEspanol ? "/es/contacto/" : "/contact/"}>{ACERCA[lang][1]}</a></li>
               <li><a href="/legal/">{L.legal}</a></li>
             </ul>
           </div>

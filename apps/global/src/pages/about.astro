@@ -1,0 +1,46 @@
+---
+// Who makes the site, where the data comes from and how it is funded (Spanish version: pages/es/quienes-somos.astro).
+import Base from "../layouts/Base.astro";
+import { SITIO } from "../config";
+import { absoluta } from "../lib/datos";
+import { FUENTE_MAPA, MAPAS } from "../lib/mapa";
+---
+
+<Base
+  titulo="About us"
+  descripcion={`Who makes ${SITIO.nombre}, where its electricity and fuel prices come from, how often they are updated and how the site is funded.`}
+  lang="en"
+  anuncioFinal={false}
+  migas={[["Home", "/"], ["About us"]]}
+  alternativas={[{ lang: "en", href: absoluta("/about/") }, { lang: "es", href: absoluta("/es/quienes-somos/") }]}
+>
+  <section class="hero hero--compacto">
+    <div class="wrap wrap--narrow">
+      <h1>About us</h1>
+      <p class="lead">{SITIO.nombre} is an independent, free website for checking electricity and fuel prices using official data.</p>
+    </div>
+  </section>
+  <section class="section section--white section--tight">
+    <div class="wrap wrap--narrow prose">
+      <h2>Who is behind it</h2>
+      <p>The site is run by {SITIO.titular} from La Solana (Ciudad Real, Spain), who also runs <a href="https://comparadortarifaluz.es/" target="_blank" rel="noopener">ComparadorTarifaLuz.es</a>, our sister site about electricity in Spain. We do not sell electricity or fuel and are not part of any energy company, oil company, filling station or public body.</p>
+
+      <h2>Where the data comes from</h2>
+      <ul>
+        <li><strong>Electricity prices:</strong> day-ahead market prices from ENTSO-E, and from Bundesnetzagentur | SMARD.de via Energy-Charts.</li>
+        <li><strong>Prices at each filling station:</strong> {MAPAS.map((cc) => FUENTE_MAPA[cc]).map((f, i) => <>{i > 0 && ", "}<a href={f.url} rel="noopener">{f.nombre}</a></>)}. These are the prices each station reports to those bodies.</li>
+        <li><strong>Average fuel prices by country:</strong> the European Commission's weekly Oil Bulletin.</li>
+        <li><strong>Maps and routes:</strong> OpenStreetMap, OSRM (FOSSGIS) and GeoNames.</li>
+      </ul>
+
+      <h2>How often it is updated</h2>
+      <p>The site updates itself several times a day with whatever those sources publish, and each page shows the date of its data. All figures are for guidance: at a filling station the price on the pump applies, and for electricity, the terms of your contract.</p>
+
+      <h2>How it is funded</h2>
+      <p>The site is free, needs no registration and is funded by Google AdSense advertising. Advertisers have no say in which prices are shown or in what order. More in our <a href="/legal/">legal notice and privacy policy</a>.</p>
+
+      <h2>Contact</h2>
+      <p>Spotted a mistake or have an idea? <a href="/contact/">Write to us</a>.</p>
+    </div>
+  </section>
+</Base>

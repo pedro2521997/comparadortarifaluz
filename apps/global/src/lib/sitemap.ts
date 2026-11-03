@@ -14,7 +14,7 @@ export const GRUPOS = ["web", "gasolineras", "fichas"] as const;
 export type Grupo = (typeof GRUPOS)[number];
 
 export function rutasSitemap(): Record<Grupo, Ruta[]> {
-  const rutas: Ruta[] = [["/"], ["/legal/"]];
+  const rutas: Ruta[] = [["/"], ["/legal/"], ["/about/"], ["/contact/"], ["/es/quienes-somos/"], ["/es/contacto/"]];
   // Gasolineras baratas por región y ciudad (España, Francia, Portugal) y fichas de cada gasolinera de España.
   const zonasR: Ruta[] = [];
   const fichas: Ruta[] = [];
