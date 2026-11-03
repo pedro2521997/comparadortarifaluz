@@ -1,0 +1,8 @@
+# Worker de www.powerpricenow.com: solo redirige a la web sin www (la web está en apps/worker-global).
+# Va en un Worker aparte para no pasar por código las visitas de la web principal.
+# Se despliega desde GitHub con .github/workflows/www-global.yml, solo cuando cambia esta carpeta.
+name = "lst-global-www"
+main = "src/index.js"
+compatibility_date = "2026-10-01"
+routes = [{ pattern = "www.powerpricenow.com", custom_domain = true }]
+workers_dev = false
