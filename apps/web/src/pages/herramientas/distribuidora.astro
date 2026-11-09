@@ -85,11 +85,11 @@ const schema = [
 <script>
   const LETRAS = "TRWAGMYFPDXBNJZSQVHLCKE";
   const DISTRIBUIDORAS: Record<string, { n: string; grupo: string; zona: string; web: string; guia: string }> = {
-    "0021": { n: "i-DE", grupo: "Iberdrola", zona: "sobre todo Madrid, Comunidad Valenciana, Castilla y León, Castilla-La Mancha, País Vasco, Navarra, La Rioja y Murcia", web: "https://www.i-de.es/", guia: "#i-de-zona-iberdrola" },
-    "0031": { n: "e-distribución", grupo: "Endesa", zona: "sobre todo Cataluña, Andalucía, Aragón, Baleares, Canarias y Extremadura", web: "https://www.edistribucion.com/", guia: "#e-distribución-zona-endesa" },
-    "0022": { n: "UFD", grupo: "Naturgy", zona: "sobre todo Galicia, Madrid y Castilla-La Mancha", web: "https://www.ufd.es/", guia: "#ufd-zona-naturgy" },
-    "0026": { n: "E-Redes", grupo: "antes EDP / Hidrocantábrico", zona: "sobre todo Asturias", web: "https://www.e-redes.es/", guia: "#e-redes-antes-edp--hc" },
-    "0027": { n: "Viesgo Distribución", grupo: "Viesgo", zona: "sobre todo Cantabria, Asturias, Galicia y Castilla y León", web: "https://www.viesgodistribucion.com/", guia: "#viesgo-distribución" },
+    "0021": { n: "i-DE", grupo: "Iberdrola", zona: "sobre todo Madrid, Comunidad Valenciana, Castilla y León, Castilla-La Mancha, País Vasco, Navarra, La Rioja y Murcia", web: "https://www.i-de.es/", guia: "/guias/descargar-consumo-por-distribuidora/#i-de-zona-iberdrola" },
+    "0031": { n: "e-distribución", grupo: "Endesa", zona: "sobre todo Cataluña, Andalucía, Aragón, Baleares, Canarias y Extremadura", web: "https://www.edistribucion.com/", guia: "/guias/descargar-consumo-por-distribuidora/#e-distribución-zona-endesa" },
+    "0022": { n: "UFD", grupo: "Naturgy", zona: "sobre todo Galicia, Madrid y Castilla-La Mancha", web: "https://www.ufd.es/", guia: "/guias/descargar-consumo-por-distribuidora/#ufd-zona-naturgy" },
+    "0026": { n: "E-Redes", grupo: "antes EDP / Hidrocantábrico", zona: "sobre todo Asturias", web: "https://www.e-redes.es/", guia: "/guias/descargar-consumo-por-distribuidora/#e-redes-antes-edp--hc" },
+    "0027": { n: "Viesgo Distribución", grupo: "Viesgo", zona: "sobre todo Cantabria, Asturias, Galicia y Castilla y León", web: "https://www.viesgodistribucion.com/", guia: "/guias/descargar-consumo-por-distribuidora/#viesgo-distribución" },
   };
 
   const input = document.getElementById("cups") as HTMLInputElement;
@@ -137,7 +137,7 @@ const schema = [
           <div><span>Dónde opera</span><span>${d.zona}</span></div>
         </div>
         <p class="small" style="margin-top:12px">Para descargar tu consumo hora a hora, entra en el área de clientes de <a href="${d.web}" rel="noopener">${d.web.replace(/^https:\/\/(www\.)?|\/$/g, "")}</a> o usa <a href="https://datadis.es" rel="noopener">Datadis</a>, que vale para todas.</p>
-        <p class="btn-row"><a class="btn btn--primary" href="/guias/descargar-consumo-por-distribuidora/${d.guia}">Ver el paso a paso de ${d.n}</a></p>`;
+        <p class="btn-row"><a class="btn btn--primary" href="${d.guia}">Ver el paso a paso de ${d.n}</a></p>`;
     } else if (/^\d{4}$/.test(codigo)) {
       o("nombre").innerHTML = `<strong>Distribuidora pequeña</strong>`;
       det.innerHTML = `

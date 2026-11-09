@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
+# El mapa con ?b= (zona) o ?e= (gasolinera) es la misma página que /es/mapa-gasolineras/ (su canónica).
+# Las fichas y zonas enlazan miles de variantes: así Google no gasta en ellas el rastreo de las páginas reales.
+Disallow: /es/mapa-gasolineras/?
 
 Sitemap: https://powerpricenow.com/sitemap.xml
