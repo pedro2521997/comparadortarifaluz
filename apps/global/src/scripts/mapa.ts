@@ -104,7 +104,21 @@ function iniciar(raiz: HTMLElement, cfg: Config) {
     },
   });
   // El hueco del mapa cambia de tamaño sin que cambie la ventana (pantalla completa, hoja de la lista que sube o baja).
-  new ResizeObserver(() => mapa.resize()).observe(lienzo);
+  // Solo si cambia de verdad y una vez por fotograma: en iPhone la barra de Safari cambia el alto al arrastrar,
+  // y redimensionar en cada aviso cortaba el gesto y dejaba el mapa sin responder.
+  let tam = "";
+  let pendiente = 0;
+  new ResizeObserver(() => {
+    if (pendiente) return;
+    pendiente = requestAnimationFrame(() => {
+      pendiente = 0;
+      const t = `${lienzo.clientWidth}x${lienzo.clientHeight}`;
+      if (t !== tam) {
+        tam = t;
+        mapa.resize();
+      }
+    });
+  }).observe(lienzo);
   mapa.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
   mapa.addControl(
     {
@@ -307,11 +321,21 @@ function iniciar(raiz: HTMLElement, cfg: Config) {
       filter: ["==", ["get", "i"], -1],
       paint: { "circle-radius": ["interpolate", ["linear"], ["zoom"], 8, 10, 11.5, 19, 15, 22], "circle-color": "rgba(0,0,0,0)", "circle-stroke-color": "#104336", "circle-stroke-width": 3 },
     });
+    // Con el dedo no se acierta al píxel: se busca la gasolinera más cercana en un margen alrededor del toque.
+    mapa.on("click", (ev) => {
+      const r = matchMedia("(pointer: coarse)").matches ? 16 : 4;
+      const { x, y } = ev.point;
+      const cerca = mapa.queryRenderedFeatures([[x - r, y - r], [x + r, y + r]], { layers: ["marcas", "gasolineras"] });
+      let mejor: { i: number; d: number } | null = null;
+      for (const f of cerca) {
+        const [lon, lat] = (f.geometry as GeoJSON.Point).coordinates;
+        const p = mapa.project([lon, lat]);
+        const d = (p.x - x) ** 2 + (p.y - y) ** 2;
+        if (!mejor || d < mejor.d) mejor = { i: Number(f.properties.i), d };
+      }
+      if (mejor) abrir(mejor.i);
+    });
     for (const capa of ["gasolineras", "marcas"]) {
-      mapa.on("click", capa, (ev) => {
-        const f = ev.features?.[0];
-        if (f) abrir(Number(f.properties.i));
-      });
       mapa.on("mouseenter", capa, () => (mapa.getCanvas().style.cursor = "pointer"));
       mapa.on("mouseleave", capa, () => (mapa.getCanvas().style.cursor = ""));
     }
@@ -1033,10 +1057,25 @@ function iniciar(raiz: HTMLElement, cfg: Config) {
 
   // ---------------- Pantalla completa (modo aplicación) ----------------
 
+  // En iPhone, «overflow: hidden» no impide que la página de detrás se desplace: el dedo movía la página
+  // (y la barra de Safari) en vez del mapa. Se fija el body en su sitio y al salir se vuelve a donde estaba.
+  let scrollAntes = 0;
+  function bloquearPagina(si: boolean) {
+    const b = document.body.style;
+    if (si) {
+      scrollAntes = scrollY;
+      Object.assign(b, { position: "fixed", top: `-${scrollAntes}px`, left: "0", right: "0", width: "100%" });
+    } else {
+      Object.assign(b, { position: "", top: "", left: "", right: "", width: "" });
+      scrollTo({ top: scrollAntes, behavior: "instant" });
+    }
+  }
+
   function entrarApp() {
     if (raiz.classList.contains("mapa--app")) return;
     raiz.classList.add("mapa--app");
     document.documentElement.classList.add("mapa-abierto");
+    bloquearPagina(true);
     mapa.cooperativeGestures.disable();
     history.pushState({ mapaApp: true }, "");
     requestAnimationFrame(() => mapa.resize());
@@ -1046,6 +1085,7 @@ function iniciar(raiz: HTMLElement, cfg: Config) {
     if (!raiz.classList.contains("mapa--app")) return;
     raiz.classList.remove("mapa--app", "mapa--plegado");
     document.documentElement.classList.remove("mapa-abierto");
+    bloquearPagina(false);
     mapa.cooperativeGestures.enable();
     if (!desdeHistorial && history.state?.mapaApp) history.back();
     requestAnimationFrame(() => mapa.resize());

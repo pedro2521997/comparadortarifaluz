@@ -813,6 +813,13 @@ const tituloProvincias = z ? z.T.regionesT : "Gasolineras baratas por provincia"
   :global(html.mapa-abierto body) {
     overflow: hidden;
   }
+  /* Sin rebote ni desplazamiento de la página de detrás (iPhone): los gestos son solo para el mapa. */
+  :global(html.mapa-abierto) {
+    overscroll-behavior: none;
+  }
+  .mapa--app .mapa__lienzo {
+    touch-action: none;
+  }
   .mapa--app {
     position: fixed;
     inset: 0;
