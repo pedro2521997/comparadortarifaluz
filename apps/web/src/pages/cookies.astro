@@ -5,7 +5,7 @@ import { SITIO } from "../config";
 const publicidad = codigoAdsense();
 ---
 
-<Legal titulo="Política de cookies" revisado="22/10/2026" descripcion="Qué cookies y qué almacenamiento del navegador usa el sitio, para qué, cuánto duran y cómo borrarlos.">
+<Legal titulo="Política de cookies" revisado="09/11/2026" descripcion="Qué cookies y qué almacenamiento del navegador usa el sitio, para qué, cuánto duran y cómo borrarlos.">
   <h2>Qué son</h2>
   <p>
     Las cookies son pequeños archivos que una web guarda en tu navegador. El almacenamiento local y el de sesión son mecanismos parecidos. Según el artículo 22.2 de la LSSI, las que son estrictamente necesarias para darte el servicio que pides no necesitan consentimiento; las demás (análisis con identificadores, publicidad), sí.
@@ -24,7 +24,30 @@ const publicidad = codigoAdsense();
       </tbody>
     </table>
   </div>
-  <p>Ninguno sale de tu navegador ni nos llega. Nuestras estadísticas de visitas (Cloudflare Web Analytics) <strong>no usan cookies</strong>. El proveedor de alojamiento, Cloudflare, puede usar alguna cookie técnica de seguridad para distinguir personas de robots en caso de ataque.</p>
+  <p>Ninguno sale de tu navegador ni nos llega. Las estadísticas de Cloudflare Web Analytics <strong>no usan cookies</strong>. El proveedor de alojamiento, Cloudflare, puede usar alguna cookie técnica de seguridad para distinguir personas de robots en caso de ataque.</p>
+
+  {
+    SITIO.analytics && (
+      <>
+        <h2>Cookies de análisis (Google Analytics)</h2>
+        <p>
+          Usamos Google Analytics para saber qué páginas y herramientas se usan más y mejorarlas. <strong>Solo instala sus cookies si lo aceptas</strong> en el aviso de privacidad. Mientras no aceptes, no se guarda ninguna cookie de análisis y Google solo recibe avisos sin identificadores (que se ha visto una página), sin cookies.
+        </p>
+        <div class="table-wrap" tabindex="0" role="region" aria-label="Cookies de Google Analytics">
+          <table>
+            <thead>
+              <tr><th scope="col">Nombre</th><th scope="col">Tipo</th><th scope="col">Para qué</th><th scope="col">Duración</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>_ga</code></td><td>Cookie de análisis (Google)</td><td>Distingue visitantes de forma anónima para contar usuarios.</td><td>2 años</td></tr>
+              <tr><td><code>_ga_*</code></td><td>Cookie de análisis (Google)</td><td>Guarda el estado de la visita en curso.</td><td>2 años</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Puedes retirar el consentimiento cuando quieras desde «Preferencias de privacidad», en el pie de página. Más información en la <a href="https://policies.google.com/technologies/partner-sites?hl=es" rel="noopener">explicación de Google sobre cómo usa los datos de los sitios que usan sus servicios</a>.</p>
+      </>
+    )
+  }
 
   {
     publicidad ? (
@@ -43,7 +66,7 @@ const publicidad = codigoAdsense();
     ) : (
       <>
         <h2>Publicidad</h2>
-        <p>Ahora mismo no hay publicidad y el sitio no instala cookies publicitarias ni de análisis. Por eso no ves un aviso de consentimiento. Si activamos publicidad, te pediremos el consentimiento con un gestor certificado antes de instalar ninguna cookie no técnica, con la opción de rechazar tan visible como la de aceptar, y actualizaremos esta página.</p>
+        <p>Ahora mismo no hay publicidad y el sitio no instala cookies publicitarias. Si activamos publicidad, te pediremos el consentimiento con un gestor certificado antes de instalar ninguna cookie no técnica, con la opción de rechazar tan visible como la de aceptar, y actualizaremos esta página.</p>
       </>
     )
   }

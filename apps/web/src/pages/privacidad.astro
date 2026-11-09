@@ -5,7 +5,7 @@ import { SITIO, INSTALADOR } from "../config";
 const publicidad = codigoAdsense();
 ---
 
-<Legal titulo="Política de privacidad" revisado="22/10/2026" descripcion="Qué datos tratamos (casi ninguno), para qué, con qué base legal, a quién se comunican, cuánto tiempo se guardan y cómo ejercer tus derechos.">
+<Legal titulo="Política de privacidad" revisado="09/11/2026" descripcion="Qué datos tratamos (casi ninguno), para qué, con qué base legal, a quién se comunican, cuánto tiempo se guardan y cómo ejercer tus derechos.">
   <h2>En resumen</h2>
   <ul>
     <li>Puedes usar todas las herramientas <strong>sin dar ningún dato personal</strong> y sin registrarte.</li>
@@ -67,6 +67,20 @@ const publicidad = codigoAdsense();
 
   <h3>Estadísticas de visitas</h3>
   <p>Contamos las visitas con Cloudflare Web Analytics, que no usa cookies, no crea identificadores persistentes y no sigue a los usuarios entre sitios. Solo obtenemos cifras agregadas (páginas vistas, país, tipo de dispositivo).</p>
+  {
+    SITIO.analytics && (
+      <>
+        <p>Además usamos Google Analytics (Google Ireland Limited) para saber qué páginas y herramientas se usan y mejorarlas:</p>
+        <ul>
+          <li><strong>Datos:</strong> páginas vistas, interacciones, tipo de dispositivo y navegador, ubicación aproximada y un identificador en cookie. Google no nos da tu dirección IP.</li>
+          <li><strong>Base legal:</strong> tu consentimiento (art. 6.1.a RGPD), que das o rechazas en el aviso de privacidad. Sin él no se instalan cookies de análisis y Google solo recibe avisos sin identificadores.</li>
+          <li><strong>Conservación:</strong> como máximo 14 meses en Google Analytics.</li>
+          <li><strong>Transferencias:</strong> Google puede tratar datos en Estados Unidos; está adherida al Marco de Privacidad de Datos UE-EE. UU.</li>
+        </ul>
+        <p>Puedes retirar el consentimiento en cualquier momento desde «Preferencias de privacidad», en el pie de página.</p>
+      </>
+    )
+  }
 
   {
     publicidad && (
@@ -84,6 +98,7 @@ const publicidad = codigoAdsense();
   <p>Para prestar el servicio usamos proveedores que tratan datos por cuenta nuestra, con contrato y garantías conforme al artículo 28 del RGPD:</p>
   <ul>
     <li><strong>Cloudflare, Inc.</strong>: alojamiento de la web{INSTALADOR.activo ? ", base de datos de las peticiones de estudio" : ""}, seguridad y estadísticas sin cookies. Puede tratar datos en Estados Unidos; Cloudflare está adherida al Marco de Privacidad de Datos UE-EE. UU. y aplica además cláusulas contractuales tipo.</li>
+    {SITIO.analytics && <li><strong>Google Ireland Limited</strong>: estadísticas de uso con Google Analytics, solo con tu consentimiento. Puede tratar datos en Estados Unidos; está adherida al Marco de Privacidad de Datos UE-EE. UU.</li>}
     {INSTALADOR.activo && <li><strong>Telegram</strong>: recibimos un aviso interno con los datos de cada petición de estudio para gestionarla con rapidez. Telegram puede tratar datos fuera del Espacio Económico Europeo.</li>}
   </ul>
   <p>No hay más cesiones de datos, salvo obligación legal.</p>

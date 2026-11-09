@@ -69,6 +69,21 @@ const aviso = ultimo
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {
+      /* Google Analytics con modo de consentimiento: todo denegado hasta que el visitante acepte en el aviso
+         de privacidad de Google (AdSense), que actualiza el consentimiento. Va lo primero, antes que AdSense. */
+      import.meta.env.PROD && SITIO.analytics && (
+        <>
+          <script
+            is:inline
+            set:html={`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}` +
+              `gtag("consent","default",{ad_storage:"denied",ad_user_data:"denied",ad_personalization:"denied",analytics_storage:"denied",wait_for_update:500});` +
+              `gtag("js",new Date());gtag("config",${JSON.stringify(SITIO.analytics)});`}
+          />
+          <script async src={`https://www.googletagmanager.com/gtag/js?id=${SITIO.analytics}`} />
+        </>
+      )
+    }
     <title>{tituloCompleto}</title>
     <meta name="description" content={descripcion} />
     {/* Las páginas noindex (la 404) no llevan canónica: apuntaría a una URL que no existe. */}

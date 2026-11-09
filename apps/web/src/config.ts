@@ -14,6 +14,8 @@ export const SITIO = {
   nif: "71359449V",
   /** Domicilio completo (art. 10 LSSI), el mismo que en elpisobarato.es. */
   domicilio: "C/ Cirugeda, 67, 13240 La Solana (Ciudad Real)",
+  /** ID de medición de Google Analytics 4 (no es secreto: va en el HTML). Vacío = sin Analytics. */
+  analytics: "G-EWDP7TDPQ9",
 };
 
 /**
