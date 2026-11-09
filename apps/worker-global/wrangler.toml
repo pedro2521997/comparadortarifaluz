@@ -1,11 +1,14 @@
-# Worker de la web global: solo sirve la web estática de apps/global/dist (sin código propio).
+# Worker de la web global: sirve la web estática de apps/global/dist. Su código (src/index.js) solo se ejecuta
+# cuando no hay fichero para la URL, para redirigir los días que ya no tienen página.
 # Solo se despliega desde GitHub cuando la variable del repositorio GLOBAL_ACTIVO vale "true"
 # (ver .github/workflows/diario.yml). El dominio está en esta misma cuenta de Cloudflare (Registrar).
 name = "lst-global"
+main = "src/index.js"
 compatibility_date = "2026-10-01"
 routes = [{ pattern = "powerpricenow.com", custom_domain = true }]
 workers_dev = true
 
 [assets]
 directory = "../global/dist"
+binding = "ASSETS"
 not_found_handling = "404-page"
