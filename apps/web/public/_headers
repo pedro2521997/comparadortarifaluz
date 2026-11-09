@@ -16,3 +16,7 @@
 # La dirección de pruebas *.workers.dev no debe aparecer en Google (el sitio bueno es comparadortarifaluz.es).
 https://:worker.:cuenta.workers.dev/*
   X-Robots-Tag: noindex
+
+# llms.txt es para asistentes de IA, no una página para el buscador: así no sale como «Rastreada: sin indexar».
+/llms.txt
+  X-Robots-Tag: noindex
