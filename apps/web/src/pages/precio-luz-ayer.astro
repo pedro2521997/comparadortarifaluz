@@ -4,6 +4,7 @@ import Anuncio from "../components/Anuncio.astro";
 import MasSobrePrecio from "../components/MasSobrePrecio.astro";
 import PrecioDia from "../components/PrecioDia.astro";
 import ResumenDia from "../components/ResumenDia.astro";
+import AnalisisDia from "../components/AnalisisDia.astro";
 import { hoyMadrid, fechaLarga, sumarDias } from "../lib/formato";
 import { infoDia, tituloDia, descripcionDia, entradillaDia } from "../lib/dia";
 
@@ -34,5 +35,6 @@ const i = infoDia(ayer);
   </section>
   <Anuncio tipo="horizontal" seccion />
   {i && <ResumenDia i={i} />}
+  {i && <AnalisisDia i={i} />}
   <MasSobrePrecio fecha={ayer} />
 </Base>

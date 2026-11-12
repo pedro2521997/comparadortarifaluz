@@ -1,0 +1,87 @@
+---
+// Análisis del día bajo el precio: por qué cuesta lo que cuesta y cuánto sale usar cada aparato.
+// Texto propio de cada fecha. En «hoy» y «mañana» se oculta si la página es de un build de otro día.
+import type { InfoDia } from "../lib/dia";
+import { analisisDia } from "../lib/analisis-dia";
+import { eur2, franja, kwh } from "../lib/formato";
+
+interface Props {
+  i: InfoDia;
+}
+const { i } = Astro.props;
+const a = analisisDia(i);
+---
+
+{
+  a && (
+    <section class="section section--tight" data-dia-fijo={i.fecha}>
+      <div class="wrap grid grid--2" style="gap:40px">
+        <div>
+          <h2 class="ad-h">Por qué la luz cuesta esto el {i.fechaM}</h2>
+          {a.porque.map((t) => <p class="ad-p">{t}</p>)}
+        </div>
+        {
+          a.aparatos.length > 0 && (
+            <div>
+              <h2 class="ad-h">Cuánto cuesta usar cada aparato este día</h2>
+              <div class="table-wrap" tabindex="0" role="region" aria-label="Coste de cada aparato en la mejor y la peor franja">
+                <table class="ad-tabla">
+                  <thead>
+                    <tr><th scope="col">Aparato</th><th scope="col" class="num">Mejor franja</th><th scope="col" class="num">Peor franja</th></tr>
+                  </thead>
+                  <tbody>
+                    {a.aparatos.map((c) => (
+                      <tr>
+                        <th scope="row">{c.nombre}<span class="caption ad-uso">{kwh(c.kwh)} en {c.horas === 1 ? "1 hora" : `${c.horas} horas`}</span></th>
+                        <td class="num"><strong>{eur2(c.mejor.coste)}</strong><span class="caption ad-uso">{franja(c.mejor.inicio, c.horas)}</span></td>
+                        <td class="num">{eur2(c.peor.coste)}<span class="caption ad-uso">{franja(c.peor.inicio, c.horas)}</span></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <p class="caption" style="margin-top:8px">Con la tarifa PVPC e impuestos incluidos, para un uso típico de cada aparato. Si tienes precio fijo, la hora no cambia lo que pagas.</p>
+            </div>
+          )
+        }
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .ad-h {
+    font-size: 22px;
+    margin-bottom: 12px;
+  }
+  .ad-p + .ad-p {
+    margin-top: 10px;
+  }
+  .ad-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+  }
+  .ad-tabla th,
+  .ad-tabla td {
+    text-align: left;
+    padding: 8px 6px;
+    border-bottom: 1px solid var(--color-pale-sage);
+    vertical-align: top;
+  }
+  .ad-tabla .num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .ad-tabla tbody th {
+    font-weight: 500;
+    font-size: 15px;
+    text-transform: none;
+    letter-spacing: normal;
+    color: inherit;
+  }
+  .ad-uso {
+    display: block;
+    font-weight: 400;
+  }
+</style>

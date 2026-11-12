@@ -5,6 +5,7 @@ import PrecioDia from "../components/PrecioDia.astro";
 import AvisoDiario from "../components/AvisoDiario.astro";
 import ExtrasDia from "../components/ExtrasDia.astro";
 import ResumenDia from "../components/ResumenDia.astro";
+import AnalisisDia from "../components/AnalisisDia.astro";
 import MasSobrePrecio from "../components/MasSobrePrecio.astro";
 import { hoyMadrid, fechaLarga, fechaMedia, sumarDias, fechaCorta } from "../lib/formato";
 import { infoDia, tituloDia, descripcionDia, entradillaDia, preguntasDia, esquemaDia } from "../lib/dia";
@@ -46,6 +47,7 @@ const schema = i ? [esquemaDia(i, new URL("/precio-luz-manana/", SITIO.url).href
   </section>
   <Anuncio tipo="horizontal" seccion />
   {i && <ResumenDia i={i} />}
+  {i && <AnalisisDia i={i} />}
   <ExtrasDia modo="manana" />
   <Anuncio tipo="horizontal" seccion />
   <MasSobrePrecio fecha={manana} />

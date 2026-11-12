@@ -6,6 +6,7 @@ import Anuncio from "../../components/Anuncio.astro";
 import MasSobrePrecio from "../../components/MasSobrePrecio.astro";
 import PrecioDia from "../../components/PrecioDia.astro";
 import ResumenDia from "../../components/ResumenDia.astro";
+import AnalisisDia from "../../components/AnalisisDia.astro";
 import { dias, type DiaPrecios } from "../../lib/datos";
 import { fechaLarga, fechaCorta, sumarDias } from "../../lib/formato";
 import { infoDia, tituloDia, descripcionDia, entradillaDia, preguntasDia, esquemaDia } from "../../lib/dia";
@@ -45,6 +46,7 @@ const enVivo = i.etiqueta === "hoy" ? "/precio-luz-hoy/" : i.etiqueta === "maña
   </section>
   <Anuncio tipo="horizontal" seccion />
   <ResumenDia i={i} />
+  <AnalisisDia i={i} />
   <Anuncio tipo="horizontal" seccion />
   <MasSobrePrecio fecha={dia.fecha} />
 </Base>
