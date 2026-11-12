@@ -64,6 +64,11 @@
    "total_eur_mwh": 168.02,
    "diario_eur_mwh": 143.09,
    "ajuste_eur_kwh": 0.02493
+  },
+  "2026-10": {
+   "total_eur_mwh": 192,
+   "diario_eur_mwh": 168.45,
+   "ajuste_eur_kwh": 0.02355
   }
  },
  "_nota": "Componentes mensuales del precio final de la demanda nacional (REData, componentes-precio-energia-cierre-desglose). ajuste_eur_kwh = precio total − mercado diario: servicios de ajuste, pagos por capacidad, intradiario y otros. Es una media nacional: se usa como aproximación del coste de ajustes de las tarifas indexadas.",
