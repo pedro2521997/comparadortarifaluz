@@ -9,7 +9,7 @@ import ResumenDia from "../../components/ResumenDia.astro";
 import AnalisisDia from "../../components/AnalisisDia.astro";
 import { dias, type DiaPrecios } from "../../lib/datos";
 import { fechaLarga, fechaCorta, sumarDias } from "../../lib/formato";
-import { infoDia, tituloDia, descripcionDia, entradillaDia, preguntasDia, esquemaDia } from "../../lib/dia";
+import { diaIndexable, infoDia, tituloDia, descripcionDia, entradillaDia, preguntasDia, esquemaDia } from "../../lib/dia";
 import { esquemaFaq } from "../../lib/faq";
 import { SITIO } from "../../config";
 
@@ -26,7 +26,7 @@ const schema = [esquemaDia(i, new URL(`/precio-luz/${dia.fecha}/`, SITIO.url).hr
 const enVivo = i.etiqueta === "hoy" ? "/precio-luz-hoy/" : i.etiqueta === "mañana" ? "/precio-luz-manana/" : null;
 ---
 
-<Base titulo={tituloDia(i, "archivo")} descripcion={descripcionDia(i, "archivo")} schema={schema} migas={[["Precio de la luz", "/precio-luz/"], [fechaCorta(dia.fecha)]]}>
+<Base noindex={!diaIndexable(dia.fecha)} titulo={tituloDia(i, "archivo")} descripcion={descripcionDia(i, "archivo")} schema={schema} migas={[["Precio de la luz", "/precio-luz/"], [fechaCorta(dia.fecha)]]}>
   <section class="hero hero--compacto">
     <div class="wrap">
       <p class="breadcrumbs"><a href="/precio-luz/">Archivo de precios</a> / {fechaCorta(dia.fecha)}</p>

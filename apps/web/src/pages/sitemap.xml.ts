@@ -7,6 +7,7 @@ import { HERRAMIENTAS } from "../lib/herramientas";
 import { marcas, urlTarifa, urlMarca } from "../lib/catalogo";
 import { tarifas } from "../lib/datos";
 import { hoyMadrid } from "../lib/formato";
+import { diaIndexable } from "../lib/dia";
 
 export const GET: APIRoute = () => {
   const hoy = hoyMadrid();
@@ -20,7 +21,8 @@ export const GET: APIRoute = () => {
     ["/herramientas/"], ["/precio-luz-ayer/", dias.filter((d) => d.fecha < hoy).at(-1)?.fecha],
     ...HERRAMIENTAS.filter((h) => !["/", "/precio-luz-hoy/", "/precio-luz-manana/", "/precio-luz/historico/", "/tarifas/", "/comparador/", "/cuanto-gasta/"].includes(h.href)).map((h): [string, string?] => [h.href]),
     ["/guias/", ultimaGuia], ["/como-funciona/"], ["/contacto/"], ["/aviso-legal/"], ["/condiciones-de-uso/"], ["/privacidad/"], ["/cookies/"],
-    ...dias.map((d): [string, string] => [`/precio-luz/${d.fecha}/`, d.fecha]),
+    // Solo los días recientes: los antiguos llevan noindex (DIAS_INDEXABLES en lib/dia.ts).
+    ...dias.filter((d) => diaIndexable(d.fecha, hoy)).map((d): [string, string] => [`/precio-luz/${d.fecha}/`, d.fecha]),
     ...aparatos.map((a): [string, string] => [`/cuanto-gasta/${a.slug}/`, ultimoDia]),
     ...guias.map((g): [string, string] => [`/guias/${g.slug}/`, g.revisado]),
     ...marcas().map((m): [string, string] => [urlMarca(m.marca), catalogo]),
