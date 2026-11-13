@@ -12,13 +12,24 @@ import { infoDia, tituloDia, descripcionDia, entradillaDia, preguntasDia, esquem
 import { esquemaFaq } from "../lib/faq";
 import { SITIO } from "../config";
 
-const manana = sumarDias(hoyMadrid(), 1);
+const hoy = hoyMadrid();
+const manana = sumarDias(hoy, 1);
 const i = infoDia(manana);
+// Red Eléctrica publica mañana hacia las 20:15 y el build de las 00:05 aún no lo tiene: casi todo el día
+// la página no tendría más que un aviso, y Google la daba por vacía («Rastreada: sin indexar»).
+// Mientras no está, se enseña el análisis de hoy y unas preguntas fijas; se ocultan al llegar el dato.
+const iHoy = i ? null : infoDia(hoy);
+const PREGUNTAS = [
+  { p: "¿A qué hora se publica el precio de la luz de mañana?", r: "Red Eléctrica publica el PVPC del día siguiente cada tarde, normalmente a partir de las 20:15. Esta página lo muestra en cuanto está disponible, sin tener que recargarla." },
+  { p: "¿Se puede saber antes cómo será el precio de mañana?", r: "Sí, aproximadamente. El mercado mayorista (OMIE) fija hacia las 13:00 el precio de la energía de cada hora del día siguiente, y es lo que más mueve el PVPC. Si el mercado sale más barato que hoy, mañana la luz suele bajar." },
+  { p: "¿Por qué la luz de mañana puede costar distinto que hoy?", r: "Por el mercado mayorista, que depende del sol, el viento, la demanda y el precio del gas, y por los peajes: los sábados, domingos y festivos nacionales todas las horas tienen el peaje más barato." },
+  { p: "¿Le afecta el precio de mañana a mi factura?", r: "Solo si tienes la tarifa regulada PVPC o una tarifa indexada al mercado. Con un precio fijo pagas lo mismo a cualquier hora, aunque el precio de mañana suba o baje." },
+];
 const titulo = i ? tituloDia(i, "mañana") : `Precio de la luz mañana ${fechaMedia(manana)} por horas`;
 const descripcion = i
   ? descripcionDia(i, "mañana")
   : `Precio de la luz de mañana, ${fechaMedia(manana)}, hora a hora en cuanto lo publica Red Eléctrica (hacia las 20:15), con las mejores horas para la lavadora.`;
-const schema = i ? [esquemaDia(i, new URL("/precio-luz-manana/", SITIO.url).href), esquemaFaq(preguntasDia(i))] : undefined;
+const schema = i ? [esquemaDia(i, new URL("/precio-luz-manana/", SITIO.url).href), esquemaFaq([...preguntasDia(i), ...PREGUNTAS])] : [esquemaFaq(PREGUNTAS)];
 ---
 
 <Base titulo={titulo} descripcion={descripcion} schema={schema} migas={[["Precio de la luz", "/precio-luz/"], ["Mañana"]]}>
@@ -50,6 +61,59 @@ const schema = i ? [esquemaDia(i, new URL("/precio-luz-manana/", SITIO.url).href
   {i && <AnalisisDia i={i} />}
   <ExtrasDia modo="manana" />
   <Anuncio tipo="horizontal" seccion />
+  {
+    iHoy && (
+      <div data-mientras>
+        <section class="section section--tight">
+          <div class="wrap">
+            <h2 class="pm-h">Mientras se publica: así está la luz hoy, {fechaMedia(hoy)}</h2>
+            <p>{entradillaDia(iHoy)} <a href="/precio-luz-hoy/">Ver el precio de hoy hora a hora</a>.</p>
+          </div>
+        </section>
+        <ResumenDia i={iHoy} />
+        <AnalisisDia i={iHoy} />
+      </div>
+    )
+  }
+  <section class="section section--white section--tight">
+    <div class="wrap" style="max-width:780px">
+      <h2 class="pm-h">Preguntas sobre el precio de mañana</h2>
+      {
+        PREGUNTAS.map((q) => (
+          <details class="pm-faq">
+            <summary>{q.p}</summary>
+            <p>{q.r}</p>
+          </details>
+        ))
+      }
+    </div>
+  </section>
   <MasSobrePrecio fecha={manana} />
   <AvisoDiario />
 </Base>
+
+<script>
+  // En cuanto llega el precio de mañana (antes del build de la noche), sobra el análisis de hoy.
+  document.addEventListener("precios-dia", (e) => {
+    const d = (e as CustomEvent).detail;
+    if (d.modo === "manana" && d.precios) for (const el of document.querySelectorAll<HTMLElement>("[data-mientras]")) el.hidden = true;
+  });
+</script>
+
+<style>
+  .pm-h {
+    font-size: 22px;
+    margin-bottom: 12px;
+  }
+  .pm-faq {
+    border-bottom: 1px solid var(--color-pale-sage);
+    padding: 6px 0;
+  }
+  .pm-faq summary {
+    color: var(--color-bark);
+    cursor: pointer;
+  }
+  .pm-faq p {
+    padding: 4px 0 12px 20px;
+  }
+</style>
