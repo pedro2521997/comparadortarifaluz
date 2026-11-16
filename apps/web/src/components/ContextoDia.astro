@@ -1,0 +1,98 @@
+---
+// Solo en la página fija de cada fecha (archivo): el día dentro de su mes y de su semana. Es contenido de
+// consulta histórica que las páginas en vivo (hoy, mañana, ayer) no llevan, para que no se parezcan.
+import { dias } from "../lib/datos";
+import { resumen } from "../lib/grafico";
+import { ekwh, hh, nombreMes, num, sumarDias } from "../lib/formato";
+
+interface Props {
+  fecha: string;
+}
+const { fecha } = Astro.props;
+const NOMBRES = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+const porFecha = new Map(dias.map((d) => [d.fecha, d]));
+
+// El mes de la fecha, con los días que hay datos hasta ella incluida.
+const mes = fecha.slice(0, 7);
+const delMes = dias.filter((d) => d.fecha.startsWith(mes)).map((d) => ({ f: d.fecha, m: resumen(d.precios).media }));
+const orden = [...delMes].sort((a, b) => a.m - b.m);
+const puesto = orden.findIndex((x) => x.f === fecha) + 1;
+const mediaMes = delMes.reduce((a, x) => a + x.m, 0) / (delMes.length || 1);
+const propio = delMes.find((x) => x.f === fecha)!;
+const dif = (propio.m - mediaMes) / mediaMes;
+
+// La semana (de lunes a domingo) que contiene la fecha.
+const dow = (new Date(`${fecha}T12:00:00Z`).getUTCDay() + 6) % 7;
+const lunes = sumarDias(fecha, -dow);
+const semana = NOMBRES.map((nombre, k) => {
+  const f = sumarDias(lunes, k);
+  const d = porFecha.get(f);
+  const r = d ? resumen(d.precios) : null;
+  return { nombre, f, r };
+});
+---
+
+{
+  delMes.length >= 3 && (
+    <section class="section section--white section--tight">
+      <div class="wrap grid grid--2" style="gap:40px">
+        <div>
+          <h2 class="cx-h">El día dentro de {nombreMes(mes)}</h2>
+          <p>
+            Con los {delMes.length} días publicados de {nombreMes(mes)}, este es el <strong>{puesto}.º más barato</strong> (de {delMes.length}).
+            Su media, {ekwh(propio.m)}, queda {Math.abs(dif) < 0.03 ? "en línea con" : `un ${num(Math.abs(dif) * 100)} % ${dif > 0 ? "por encima de" : "por debajo de"}`} la media del mes ({ekwh(mediaMes)}).
+          </p>
+          <p style="margin-top:10px">
+            El día más barato del mes fue el <a href={`/precio-luz/${orden[0].f}/`}>{Number(orden[0].f.slice(8))}</a> ({ekwh(orden[0].m)}) y el más caro el{" "}
+            <a href={`/precio-luz/${orden.at(-1)!.f}/`}>{Number(orden.at(-1)!.f.slice(8))}</a> ({ekwh(orden.at(-1)!.m)}).
+          </p>
+          <p style="margin-top:12px"><a href="/precio-luz/historico/">Histórico del precio mes a mes →</a></p>
+        </div>
+        <div>
+          <h2 class="cx-h">Su semana, día a día</h2>
+          <table class="cx-tabla">
+            <thead><tr><th scope="col">Día</th><th scope="col" class="num">Media</th><th scope="col" class="num">Hora más barata</th></tr></thead>
+            <tbody>
+              {semana.map((s) => (
+                <tr class={s.f === fecha ? "cx-este" : undefined}>
+                  <th scope="row">{s.r && s.f !== fecha ? <a href={`/precio-luz/${s.f}/`}>{s.nombre} {Number(s.f.slice(8))}</a> : <>{s.nombre} {Number(s.f.slice(8))}</>}</th>
+                  <td class="num">{s.r ? ekwh(s.r.media) : "—"}</td>
+                  <td class="num">{s.r ? hh(s.r.min.h) : "—"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .cx-h {
+    font-size: 22px;
+    margin-bottom: 12px;
+  }
+  .cx-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+  }
+  .cx-tabla th,
+  .cx-tabla td {
+    text-align: left;
+    padding: 8px 6px;
+    border-bottom: 1px solid var(--color-pale-sage);
+  }
+  .cx-tabla .num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .cx-tabla tbody th {
+    font-weight: 500;
+  }
+  .cx-este {
+    background: #f2faf6;
+    font-weight: 600;
+  }
+</style>

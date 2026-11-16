@@ -20,8 +20,10 @@ interface Props {
   anuncioFinal?: boolean;
   /** Ruta de migas de pan para los datos estructurados: [["Guías", "/guias/"], ["Título"]] */
   migas?: [string, string?][];
+  /** hreflang con las páginas equivalentes de otros países (web hermana PowerPriceNow). */
+  alternativas?: { lang: string; href: string }[];
 }
-const { titulo, descripcion = SITIO.descripcion, schema, noindex = false, anuncioFinal = true, migas } = Astro.props;
+const { titulo, descripcion = SITIO.descripcion, schema, noindex = false, anuncioFinal = true, migas, alternativas = [] } = Astro.props;
 const adsense = codigoAdsense();
 // Datos estructurados comunes: la web y, si hay, las migas de pan (ayudan a Google y a los buscadores con IA).
 const esquemas = [
@@ -89,6 +91,7 @@ const aviso = ultimo
     {/* Las páginas noindex (la 404) no llevan canónica: apuntaría a una URL que no existe. */}
     {!noindex && <link rel="canonical" href={canonical} />}
     {noindex && <meta name="robots" content="noindex" />}
+    {alternativas.map((x) => <link rel="alternate" hreflang={x.lang} href={x.href} />)}
     <link rel="icon" href="/favicon.ico?v=2" sizes="32x32" />
     <link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />

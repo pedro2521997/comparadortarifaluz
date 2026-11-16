@@ -1,0 +1,120 @@
+---
+// Qué hacer con el precio del día, distinto en cada página en vivo: la agenda de hoy, lo que conviene
+// dejar programado para mañana o lo que costó cada aparato ayer. La página de cada fecha lleva en su
+// lugar la tabla de archivo (AnalisisDia), con otro enfoque y otros textos.
+import type { InfoDia } from "../lib/dia";
+import { planDia, preguntasVivo, costeHogarDia, KWH_DIA_HOGAR, type Modo } from "../lib/dia-vivo";
+import { eur2, franja, hh, kwh, num } from "../lib/formato";
+
+interface Props {
+  i: InfoDia;
+  modo: Modo;
+}
+const { i, modo } = Astro.props;
+const plan = planDia(i);
+const preguntas = preguntasVivo(i, modo);
+const coste = modo === "ayer" ? costeHogarDia(i.fecha) : null;
+const TITULO: Record<Modo, string> = {
+  hoy: "Tu agenda para hoy",
+  mañana: "Qué dejar programado esta noche",
+  ayer: "Lo que te costó cada aparato ayer",
+};
+const INTRO: Record<Modo, string> = {
+  hoy: "Cada aparato en la hora que más te conviene hoy, en orden, y lo que ahorras frente a ponerlo en la peor franja.",
+  mañana: "Si tu lavadora, lavavajillas o coche tienen inicio diferido, déjalos listos antes de dormir para estas franjas de mañana.",
+  ayer: "Según a qué hora lo pusiste, esto es lo que te costó cada uso ayer con la tarifa PVPC.",
+};
+const PREG: Record<Modo, string> = { hoy: "Preguntas sobre el precio de hoy", mañana: "Mañana, frente a hoy", ayer: "Preguntas sobre el precio de ayer" };
+---
+
+<section class="section section--tight" data-dia-fijo={i.fecha}>
+  <div class="wrap grid grid--2" style="gap:40px">
+    {
+      plan.length > 0 && (
+        <div>
+          <h2 class="pd-h">{TITULO[modo]}</h2>
+          <p class="pd-intro">{INTRO[modo]}</p>
+          {coste !== null && (
+            <p class="pd-intro">
+              Un hogar medio ({num(KWH_DIA_HOGAR, 1)} kWh al día) pagó ayer unos <strong>{eur2(coste)}</strong> de energía, impuestos incluidos.
+            </p>
+          )}
+          <ol class="pd-lista">
+            {plan.map((c) =>
+              modo === "ayer" ? (
+                <li>
+                  <strong>{c.nombre}</strong> <span class="caption">({kwh(c.kwh)})</span>
+                  <span class="pd-det">
+                    {eur2(c.mejor.coste)} si lo pusiste {franja(c.mejor.inicio, c.horas)}; {eur2(c.peor.coste)} {franja(c.peor.inicio, c.horas)}.
+                  </span>
+                </li>
+              ) : (
+                <li>
+                  <span class="pd-hora">{hh(c.mejor.inicio)}</span> <strong>{c.nombre}</strong>
+                  <span class="pd-det">
+                    {franja(c.mejor.inicio, c.horas)}: {eur2(c.mejor.coste)}
+                    {c.ahorro >= 0.01 && <> · ahorras {eur2(c.ahorro)}</>}
+                  </span>
+                </li>
+              ),
+            )}
+          </ol>
+          <p class="caption" style="margin-top:8px">Con PVPC e impuestos incluidos, para un uso típico. Con precio fijo, la hora no cambia lo que pagas.</p>
+        </div>
+      )
+    }
+    <div>
+      <h2 class="pd-h">{PREG[modo]}</h2>
+      {
+        preguntas.map((p) => (
+          <details class="pd-faq">
+            <summary>{p.p}</summary>
+            <p>{p.r}</p>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .pd-h {
+    font-size: 22px;
+    margin-bottom: 12px;
+  }
+  .pd-intro {
+    margin-bottom: 12px;
+  }
+  .pd-lista {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+  }
+  .pd-lista li {
+    border-bottom: 1px solid var(--color-pale-sage);
+    padding-bottom: 8px;
+  }
+  .pd-hora {
+    display: inline-block;
+    min-width: 3.2em;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-bark);
+    font-weight: 600;
+  }
+  .pd-det {
+    display: block;
+    font-size: 15px;
+  }
+  .pd-faq {
+    border-bottom: 1px solid var(--color-pale-sage);
+    padding: 6px 0;
+  }
+  .pd-faq summary {
+    color: var(--color-bark);
+    cursor: pointer;
+  }
+  .pd-faq p {
+    padding: 4px 0 12px 20px;
+  }
+</style>

@@ -9,7 +9,8 @@ import { ekwh, hh, fechaLarga } from "./formato";
 /** "0,123" + unidad pequeña, para que el valor no se parta en el móvil. */
 const v = (p: number) => `${ekwh(p).replace(" €/kWh", "")}<small> €/kWh</small>`;
 
-export function bloquePrecios(fecha: string, precios: (number | null)[], ahora: number | null = null): string {
+/** `mejores`: el bloque «Las mejores horas para…», solo en hoy y mañana (en ayer y en el archivo ya no sirve para planificar). */
+export function bloquePrecios(fecha: string, precios: (number | null)[], ahora: number | null = null, mejores = true): string {
   const r = resumen(precios);
   const finde = esFinDeSemanaOFestivo(fecha, new Set(festivosJson.fechas));
   const hogar = mediaHogar(precios, forma("estandar", finde));
@@ -25,8 +26,8 @@ export function bloquePrecios(fecha: string, precios: (number | null)[], ahora: 
   <div class="stat"><span class="stat__label">Hora más cara</span><span class="stat__value">${hh(r.max.h)}</span><span class="stat__sub num">${ekwh(r.max.p)}</span></div>
   <div class="stat"><span class="stat__label">Media del día</span><span class="stat__value">${v(r.media)}</span><span class="stat__sub" title="Media ponderada con el consumo de un hogar tipo, que gasta más por la tarde-noche">Para un hogar tipo: ${ekwh(hogar)}</span></div>
 </div>
-<h2 class="h-sec">Las mejores horas para…</h2>
-${mejoresHoras(precios)}
+${mejores ? `<h2 class="h-sec">Las mejores horas para…</h2>
+${mejoresHoras(precios)}` : ""}
 <h2 class="h-sec">Precio hora a hora</h2>
 <p class="leyenda"><span><span class="pill pill--barata">barata</span> tercio más barato del día</span><span><span class="pill">normal</span></span><span><span class="pill pill--cara">cara</span> tercio más caro</span></p>
 ${graficoHoras(precios, ahora)}

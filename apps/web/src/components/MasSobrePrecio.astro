@@ -1,18 +1,28 @@
 ---
 // Bajo el precio de un día: los días de alrededor con su precio medio y lecturas relacionadas.
 // Da contexto a quien llega desde Google y separa los anuncios con contenido útil.
+// En las páginas en vivo (`vivo`) no lleva la lista de días (ya comparan con los de al lado) y enlaza
+// herramientas en lugar de lecturas, para no repetir el mismo bloque que la página de cada fecha.
 import { dias } from "../lib/datos";
 import { resumen } from "../lib/grafico";
 import { ekwh, fechaCorta, sumarDias } from "../lib/formato";
 
 interface Props {
   fecha: string;
+  vivo?: boolean;
 }
-const { fecha } = Astro.props;
+const { fecha, vivo = false } = Astro.props;
 const porFecha = new Map(dias.map((d) => [d.fecha, d]));
 const alrededor = Array.from({ length: 7 }, (_, i) => sumarDias(fecha, i - 3))
   .filter((f) => f !== fecha && porFecha.has(f))
   .map((f) => ({ f, media: resumen(porFecha.get(f)!.precios).media }));
+const HERRAMIENTAS = [
+  { href: "/periodo-luz-ahora/", t: "¿Qué periodo (punta, llano o valle) es ahora?" },
+  { href: "/calcular-factura-luz/", t: "Calcula tu factura de luz" },
+  { href: "/cuanto-gasta/", t: "Cuánto gasta cada electrodoméstico" },
+  { href: "/herramientas/coche-electrico/", t: "Coche eléctrico: cuánto cuesta cargarlo" },
+  { href: "/comparador/", t: "Comparador de tarifas de luz" },
+];
 const LEER = [
   { href: "/guias/horas-mas-baratas-luz/", t: "¿A qué hora es más barata la luz?" },
   { href: "/guias/por-que-sube-la-luz/", t: "Por qué sube y baja el precio de la luz" },
@@ -25,7 +35,7 @@ const LEER = [
 <section class="section section--white section--tight">
   <div class="wrap grid grid--2" style="gap:40px">
     {
-      alrededor.length > 0 && (
+      !vivo && alrededor.length > 0 && (
         <div>
           <h2 class="msp-h">Otros días</h2>
           <ul class="msp-dias">
@@ -40,12 +50,22 @@ const LEER = [
         </div>
       )
     }
+    {
+      vivo ? (
+        <div>
+          <h2 class="msp-h">Herramientas para ahorrar</h2>
+          <ul class="msp-leer">
+            {HERRAMIENTAS.map((l) => <li><a href={l.href}>{l.t}</a></li>)}
+          </ul>
+        </div>
+      ) : null
+    }
     <div>
       <h2 class="msp-h">Para entender el precio</h2>
       <ul class="msp-leer">
         {LEER.map((l) => <li><a href={l.href}>{l.t}</a></li>)}
       </ul>
-      <p class="small muted" style="margin-top:12px">¿Te compensa la PVPC o una tarifa fija? <a href="/comparador/">Compáralo con tu consumo</a>.</p>
+      {!vivo && <p class="small muted" style="margin-top:12px">¿Te compensa la PVPC o una tarifa fija? <a href="/comparador/">Compáralo con tu consumo</a>.</p>}
     </div>
   </div>
 </section>

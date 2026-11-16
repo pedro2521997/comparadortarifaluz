@@ -1,0 +1,92 @@
+---
+// Tabla por tramos con varios días en columnas (semana pasada, ayer, hoy, mañana…) y una frase con el
+// cambio. Solo en las páginas en vivo: la página de cada fecha no la lleva, así no repiten contenido.
+// Se oculta en el navegador si la página es de un build de otro día (data-dia-fijo).
+import type { Comparacion } from "../lib/dia-vivo";
+import { TRAMOS } from "../lib/dia";
+import { ekwh, hh } from "../lib/formato";
+
+interface Props {
+  c: Comparacion;
+  titulo: string;
+  fecha: string;
+}
+const { c, titulo, fecha } = Astro.props;
+// Se destaca la columna del día de la página.
+const destacada = c.columnas.findIndex((col) => col.fecha === fecha);
+---
+
+{
+  c.columnas.length >= 2 && (
+    <section class="section section--white section--tight" data-dia-fijo={fecha}>
+      <div class="wrap" style="max-width:900px">
+        <h2 class="cd-h">{titulo}</h2>
+        {c.frase && <p class="cd-frase">{c.frase}</p>}
+        <div class="table-wrap" tabindex="0" role="region" aria-label={titulo}>
+          <table class="cd-tabla">
+            <thead>
+              <tr>
+                <th scope="col">Tramo</th>
+                {c.columnas.map((col, k) => <th scope="col" class:list={["num", { "cd-dest": k === destacada }]}>{col.titulo}</th>)}
+              </tr>
+            </thead>
+            <tbody>
+              {TRAMOS.map((t, r) => (
+                <tr>
+                  <th scope="row">{t.nombre}<span class="caption cd-horas">{hh(t.desde)}–{hh(t.hasta)}</span></th>
+                  {c.columnas.map((col, k) => <td class:list={["num", { "cd-dest": k === destacada }]}>{col.tramos[r] !== null ? ekwh(col.tramos[r]!) : "—"}</td>)}
+                </tr>
+              ))}
+              <tr class="cd-total">
+                <th scope="row">Media del día</th>
+                {c.columnas.map((col, k) => <td class:list={["num", { "cd-dest": k === destacada }]}>{ekwh(col.media)}</td>)}
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="caption" style="margin-top:8px">PVPC 2.0TD, media de cada tramo sin impuestos.</p>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .cd-h {
+    font-size: 22px;
+    margin-bottom: 12px;
+  }
+  .cd-frase {
+    margin-bottom: 16px;
+  }
+  .cd-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+  }
+  .cd-tabla th,
+  .cd-tabla td {
+    text-align: left;
+    padding: 8px 6px;
+    border-bottom: 1px solid var(--color-pale-sage);
+  }
+  .cd-tabla .num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .cd-tabla tbody th {
+    font-weight: 500;
+  }
+  .cd-horas {
+    display: block;
+    font-weight: 400;
+  }
+  .cd-dest {
+    background: #f2faf6;
+    font-weight: 600;
+  }
+  .cd-total th,
+  .cd-total td {
+    border-top: 2px solid var(--color-pale-sage);
+  }
+</style>
