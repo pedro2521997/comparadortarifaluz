@@ -12,7 +12,7 @@ export type Etiqueta = "hoy" | "mañana" | "ayer" | null;
 /** Días de precio que se dejan indexar en Google. Los más antiguos siguen existiendo para quien llega
  *  a ellos, pero con noindex y fuera del sitemap: nadie busca el precio de hace meses, y cientos de
  *  páginas casi iguales hacen que Google valore peor toda la web. El build diario mueve la ventana. */
-export const DIAS_INDEXABLES = 30;
+export const DIAS_INDEXABLES = 7;
 export const diaIndexable = (fecha: string, hoy = hoyMadrid()) => fecha >= sumarDias(hoy, -DIAS_INDEXABLES);
 
 /** Hoy, mañana o ayer respecto al día del build (null si es otro día). */

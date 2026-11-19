@@ -13,24 +13,29 @@ import { TEXTOS } from "../lib/textos";
 import { bloque, noPublicado, valor, fechaLocal, sumarDias } from "../lib/bloque";
 import {
   MERCADOS, diasConPagina, diaDe, info, titulo, descripcion, entradilla, preguntas, esquemaFaq, esquemaDataset, alternativas,
-  urlManana, urlFecha, etiquetaZona, formato, recortarFrases, type Mercado, type Pagina,
+  urlManana, urlFecha, etiquetaZona, formato, recortarFrases, diaIndexable, canonicaDia, cabeceraDia, zonaIndexable, type Mercado, type Pagina,
 } from "../lib/datos";
 
 interface Props {
   m: Mercado;
   pag: Pagina;
   fecha: string;
+  /** Ruta pública cuando no es la del fichero (versión del día siguiente, ver pages/dia-siguiente). */
+  rutaPublica?: string;
 }
-const { m, pag, fecha } = Astro.props;
+const { m, pag, fecha, rutaPublica } = Astro.props;
 const L = TEXTOS[m.pais.lang];
 const i = info(m, fecha);
 const f = formato(m.pais);
 const dia = diaDe(m.zona.id, fecha);
 const fuente = dia?.fuente ?? "ENTSO-E";
-const ruta = Astro.url.pathname;
-const cuando = pag === "hoy" ? L.hoy : pag === "manana" ? L.manana : "";
+const ruta = rutaPublica ?? Astro.url.pathname;
+// Fecha de hoy o de mañana: canónica a «hoy» / «mañana» (es la misma página). Días antiguos o de zonas
+// secundarias: noindex (ver diaIndexable en lib/datos.ts).
+const canonica = pag === "fecha" ? canonicaDia(m, fecha) : null;
+const noindex = pag === "fecha" ? !canonica && !diaIndexable(m, fecha) : !zonaIndexable(m);
 const z = etiquetaZona(m);
-const h1 = [L.precio, z, cuando].filter(Boolean).join(" ");
+const h1 = cabeceraDia(m, pag);
 const tit = i ? titulo(i, pag) : `${h1} ${fechaLocal(fecha, m.pais.locale)}`;
 const desc = i ? descripcion(i, pag) : recortarFrases(`${h1} ${fechaLocal(fecha, m.pais.locale)}. ${L.noPublicado}`, 158);
 const schema = i ? [esquemaDataset(i, ruta, fuente), esquemaFaq(preguntas(i))] : undefined;
@@ -48,7 +53,7 @@ const corta = (iso: string) => new Intl.DateTimeFormat(m.pais.locale, { day: "nu
 const datosCliente = JSON.stringify({ zona: m.zona.id, tz: m.pais.tz, modo: pag, f });
 ---
 
-<Base titulo={tit} descripcion={desc} lang={m.pais.lang} locale={m.pais.locale} schema={schema} alternativas={m.principal && pag !== "fecha" ? alternativas(pag) : []}>
+<Base titulo={tit} descripcion={desc} lang={m.pais.lang} locale={m.pais.locale} schema={schema} ruta={ruta} canonica={canonica ?? undefined} noindex={noindex} alternativas={m.principal && pag !== "fecha" ? alternativas(pag) : []}>
   <section class="hero hero--compacto">
     <div class="wrap">
       <span class="eyebrow">{m.pais.nombre}{z && ` · ${m.zona.nombre}`}</span>

@@ -4,7 +4,7 @@ import Base from "../layouts/Base.astro";
 import Anuncio from "./Anuncio.astro";
 import { TEXTOS } from "../lib/textos";
 import { fechaLocal, valor } from "../lib/bloque";
-import { recortarFrases, etiquetaZona, formato, urlFecha, conPagina, MERCADOS, esquemaFaq, type Mercado } from "../lib/datos";
+import { recortarFrases, detalleIndexable, mesIndexable, etiquetaZona, formato, urlFecha, conPagina, MERCADOS, esquemaFaq, type Mercado } from "../lib/datos";
 import { enPais } from "../lib/textos-carburantes";
 import { tieneMix, textosE, meses, nombreMes, urlMes, urlMeses, urlMix, urlNegativos, type Mes } from "../lib/energia";
 import { graficaLineas } from "../../../web/src/lib/compartido/grafica-svg";
@@ -39,11 +39,12 @@ const preguntas = x ? [{ p: T.pMes(nm(x)), r: textoMes(x) }] : todos.slice(0, 2)
 const h1 = x ? T.mesT(nm(x), lugar) : `${T.mesesT} ${lugar}`;
 const titulo = x ? [`${h1}${sep}${valor(f, x.media)}`, h1].find((t) => t.length <= 70) ?? h1.slice(0, 70) : h1;
 const lead = x ? textoMes(x) : textoMes(todos[0]);
-const desc = recortarFrases(lead, 158);
+// El índice empieza por su título: si no, su descripción sería la misma que la del mes en curso.
+const desc = recortarFrases(x ? lead : `${h1}. ${lead}`, 158);
 const serie = [...todos].reverse();
 ---
 
-<Base titulo={titulo} descripcion={desc} lang={m.pais.lang} locale={m.pais.locale} schema={esquemaFaq(preguntas)}>
+<Base titulo={titulo} descripcion={desc} lang={m.pais.lang} locale={m.pais.locale} schema={esquemaFaq(preguntas)} noindex={mes ? !mesIndexable(m, mes) : !detalleIndexable(m)}>
   <section class="hero hero--compacto">
     <div class="wrap">
       <p class="breadcrumbs">{x ? <a href={urlMeses(m)}>{T.mesesT}</a> : T.mesesT}</p>

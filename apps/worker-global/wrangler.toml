@@ -12,3 +12,6 @@ workers_dev = true
 directory = "../global/dist"
 binding = "ASSETS"
 not_found_handling = "404-page"
+# «Hoy» y «mañana» de cada zona pasan por el Worker para servir desde la medianoche del país la versión del día
+# siguiente (src/index.js). scripts/test/dia-siguiente.test.ts comprueba que la lista está completa.
+run_worker_first = ["/no/","/no/i-morgen/","/no/no2/","/no/no2/i-morgen/","/no/no3/","/no/no3/i-morgen/","/no/no4/","/no/no4/i-morgen/","/no/no5/","/no/no5/i-morgen/","/se/","/se/imorgon/","/se/se1/","/se/se1/imorgon/","/se/se2/","/se/se2/imorgon/","/se/se4/","/se/se4/imorgon/","/dk/","/dk/i-morgen/","/dk/dk1/","/dk/dk1/i-morgen/","/fi/","/fi/huomenna/","/de/","/de/morgen/","/at/","/at/morgen/","/pt/","/pt/amanha/","/fr/","/fr/demain/","/it/","/it/domani/","/it/centro-nord/","/it/centro-nord/domani/","/it/centro-sud/","/it/centro-sud/domani/","/it/sud/","/it/sud/domani/","/it/sicilia/","/it/sicilia/domani/","/it/sardegna/","/it/sardegna/domani/","/nl/","/nl/morgen/","/be/","/be/morgen/","/dia-siguiente/*"]

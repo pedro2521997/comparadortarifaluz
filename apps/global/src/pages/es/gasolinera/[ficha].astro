@@ -9,7 +9,7 @@ import { insignia, marca } from "../../../lib/marcas";
 import { slugFicha } from "../../../lib/fichas.mjs";
 import {
   ESTACIONES, FECHA, HORA, PRODUCTOS, stats, bonito, eurL, eurL2, ahorroDeposito, urlProvincia, urlMunicipio, urlEstacion, nombreEstacion, tieneFicha,
-  vecinasDeMunicipio, municipioDe, provinciaDe, cercanas, type Estacion, type Producto,
+  vecinasDeMunicipio, gemelaPrincipal, municipioDe, provinciaDe, cercanas, type Estacion, type Producto,
 } from "../../../lib/gasolineras";
 
 export function getStaticPaths() {
@@ -55,7 +55,11 @@ const mostrar: Producto[] = (["g95", "diesel"] as Producto[]).filter((k) => veci
 
 // Si en el mismo municipio hay otra con el mismo nombre, el título lleva la calle para no repetirse.
 const repetida = delMuni.some((x) => x !== e && nombreEstacion(x.rotulo) === nombre);
-const calle = dir.split(",")[0];
+// Con la calle sola puede seguir repitiéndose (dos de la misma marca en la misma avenida): entonces, con el número.
+const mismaCalle = (x: Estacion) => bonito(x.dir).split(",")[0] === dir.split(",")[0];
+const calle = delMuni.some((x) => x !== e && nombreEstacion(x.rotulo) === nombre && mismaCalle(x) && x.dir !== e.dir) ? dir : dir.split(",")[0];
+// Gemela (misma marca y dirección): la canónica es la ficha principal (ver gemelaPrincipal).
+const gemela = gemelaPrincipal(e);
 const quien = repetida ? `${nombre}, ${calle}` : nombre;
 const tituloLargo = `${quien} en ${e.mun}: precio de la gasolina y el diésel hoy`;
 const titulo = [tituloLargo, `${quien} en ${e.mun}: precios hoy`, `${quien}, ${e.mun}: precios hoy`].find((t) => t.length <= 70) ?? `${quien}`.slice(0, 70);
@@ -95,6 +99,7 @@ const llegar = [
 ---
 
 <Base lang="es" locale="es-ES"
+  canonica={gemela ? urlEstacion(gemela) : undefined}
   titulo={titulo}
   descripcion={recortarFrases(`Precio hoy en ${nombre}, ${dir} (${e.mun}): ${resumenPrecios}. Horario, cómo llegar y gasolineras más baratas cerca.`, 158)}
   schema={[esquema, esquemaFaq(preguntas)]}

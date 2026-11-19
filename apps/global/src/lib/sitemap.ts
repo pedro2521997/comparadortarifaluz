@@ -1,11 +1,11 @@
 // Páginas de la web global para los sitemaps, en grupos (un sitemap por grupo y un índice en /sitemap.xml):
 // así Search Console dice por separado cuántas páginas de cada tipo tiene indexadas.
-import { MERCADOS, diasDe, diasConPagina, hoyDe, urlManana, urlFecha, absoluta } from "./datos";
+import { MERCADOS, diasDe, diasConPagina, diaIndexable, zonaIndexable, detalleIndexable, mesIndexable, hoyDe, urlManana, urlFecha, absoluta } from "./datos";
 import { PAISES_C, CC, urlPrecios, urlCalefaccion, urlEuropa, urlDestino, destinos, hay } from "./carburantes";
 import { ACTUALIZADO } from "../../../web/src/lib/compartido/carburantes-ue";
 import { GUIAS, urlGuia, urlGuias } from "./guias";
 import { MAPAS, tieneMapas, urlMapa, estaciones } from "./mapa";
-import { HAY_GASOLINERAS, FECHA as FECHA_ES, PROVINCIAS, MUNICIPIOS, ESTACIONES, urlProvincia, urlMunicipio, urlEstacion, tieneFicha } from "./gasolineras";
+import { HAY_GASOLINERAS, FECHA as FECHA_ES, PROVINCIAS, MUNICIPIOS, ESTACIONES, urlProvincia, urlMunicipio, urlEstacion, tieneFicha, gemelaPrincipal } from "./gasolineras";
 import { tieneEnergia, tieneMix, mixDe, meses, urlMix, urlNegativos, urlMeses, urlMes } from "./energia";
 import { PAISES_Z, zonas, urlZonas, urlRegion, urlCiudad } from "./zonas";
 
@@ -20,13 +20,16 @@ export function rutasSitemap(): Record<Grupo, Ruta[]> {
   const fichas: Ruta[] = [];
   for (const m of MERCADOS) {
     const ultimo = diasDe(m.zona.id).filter((d) => d.fecha <= hoyDe(m)).at(-1)?.fecha;
+    // Solo lo indexable (el resto lleva noindex): ver zonaIndexable, diaIndexable, detalleIndexable y mesIndexable.
+    if (!zonaIndexable(m)) continue;
     rutas.push([m.ruta, ultimo], [urlManana(m), diasDe(m.zona.id).at(-1)?.fecha]);
-    for (const d of diasConPagina(m)) rutas.push([urlFecha(m, d.fecha), d.fecha]);
-    if (!tieneEnergia(m)) continue;
+    // Solo los días que se dejan indexar (los demás llevan noindex o su canónica es «hoy»/«mañana»).
+    for (const d of diasConPagina(m)) if (diaIndexable(m, d.fecha)) rutas.push([urlFecha(m, d.fecha), d.fecha]);
+    if (!tieneEnergia(m) || !detalleIndexable(m)) continue;
     if (tieneMix(m)) rutas.push([urlMix(m), mixDe(m.zona.id).at(-1)?.fecha]);
     rutas.push([urlNegativos(m), ultimo]);
     const ms = meses(m);
-    if (ms.length) rutas.push([urlMeses(m), ultimo], ...ms.map((x): [string, string?] => [urlMes(m, x.mes), x.completo ? undefined : ultimo]));
+    if (ms.length) rutas.push([urlMeses(m), ultimo], ...ms.filter((x) => mesIndexable(m, x.mes)).map((x): [string, string?] => [urlMes(m, x.mes), x.completo ? undefined : ultimo]));
   }
   for (const p of PAISES_C) {
     rutas.push([urlPrecios(p), ACTUALIZADO], [urlEuropa(p), ACTUALIZADO]);
@@ -44,7 +47,7 @@ export function rutasSitemap(): Record<Grupo, Ruta[]> {
     zonasR.push(["/es/gasolineras-baratas/", FECHA_ES]);
     for (const p of PROVINCIAS) zonasR.push([urlProvincia(p), FECHA_ES]);
     for (const m of MUNICIPIOS) zonasR.push([urlMunicipio(m), FECHA_ES]);
-    for (const e of ESTACIONES) if (tieneFicha(e)) fichas.push([urlEstacion(e), FECHA_ES]);
+    for (const e of ESTACIONES) if (tieneFicha(e) && !gemelaPrincipal(e)) fichas.push([urlEstacion(e), FECHA_ES]);
   }
   for (const cc of PAISES_Z) {
     const z = zonas(cc);

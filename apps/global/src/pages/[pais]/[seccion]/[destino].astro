@@ -5,7 +5,7 @@ import Base from "../../../layouts/Base.astro";
 import Anuncio from "../../../components/Anuncio.astro";
 import { graficaLineas } from "../../../../../web/src/lib/compartido/grafica-svg";
 import { ultimo, ultimas, ranking, nombrePais, FUENTE_UE } from "../../../../../web/src/lib/compartido/carburantes-ue";
-import { PAISES_C, textosC, CC, urlPrecios, urlEuropa, urlDestino, destinos, en, litro, dinero, fechaC, mesC, PRODUCTOS, hay, slugTexto, VECINOS } from "../../../lib/carburantes";
+import { PAISES_C, textosC, CC, urlPrecios, urlEuropa, urlDestino, alternativasEuropa, destinos, en, litro, dinero, fechaC, mesC, PRODUCTOS, hay, slugTexto, VECINOS } from "../../../lib/carburantes";
 import { esquemaFaq, recortarFrases, type Pais } from "../../../lib/datos";
 import { lista, semanaIso } from "../../../lib/textos-carburantes";
 import { MAPAS, tieneMapas, urlMapa } from "../../../lib/mapa";
@@ -46,7 +46,7 @@ const desc = recortarFrases(`${lead} (${semana})`.length <= 158 ? `${lead} (${se
 const recorta = (t: string, n: number) => (t.length <= n ? t : t.slice(0, t.lastIndexOf(" ", n - 1)) + "…");
 ---
 
-<Base titulo={recorta(titulo, 70)} descripcion={recorta(desc, 158)} lang={p.lang} locale={p.locale} schema={esquemaFaq(preguntas)}>
+<Base titulo={recorta(titulo, 70)} descripcion={recorta(desc, 158)} lang={p.lang} locale={p.locale} schema={esquemaFaq(preguntas)} alternativas={alternativasEuropa(d)}>
   <section class="hero hero--compacto">
     <div class="wrap">
       <p class="breadcrumbs"><a href={urlEuropa(p)}>{T.tituloEuropa}</a> / {nombreD}</p>

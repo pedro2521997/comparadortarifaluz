@@ -2,7 +2,7 @@
 // Los datos (semanales, Comisión Europea) los comparte con la web española: web/src/lib/compartido/carburantes-ue.ts.
 
 import fxJson from "../../../../data/global/fx.json";
-import { PAISES, type Pais } from "./datos";
+import { PAISES, absoluta, type Pais } from "./datos";
 import { TEXTOS_C, enPais, type TextosCarburantes } from "./textos-carburantes";
 import { PAISES_UE, nombrePais, ultimo, type ProductoUE } from "../../../web/src/lib/compartido/carburantes-ue";
 
@@ -31,6 +31,13 @@ export const urlDestino = (p: Pais, cc: string) => `/${p.cc}/${textosC(p).slugEu
 
 /** Destinos de cada país (todos los de la UE con dato, menos él mismo). */
 export const destinos = (p: Pais) => PAISES_UE.filter((cc) => cc !== CC(p));
+
+/**
+ * hreflang de «carburantes en Europa» (o de un país de destino) en todos los idiomas. Sin él, /at/… y /de/…
+ * (o /be/… y /nl/…) son la misma página en el mismo idioma y Google se queda solo con una.
+ */
+export const alternativasEuropa = (destino?: string) =>
+  PAISES_C.filter((p) => !destino || destinos(p).includes(destino)).map((p) => ({ lang: p.locale, href: absoluta(destino ? urlDestino(p, destino) : urlEuropa(p)) }));
 
 /** «in Deutschland», «au Portugal»… */
 export const en = (p: Pais, cc: string) => enPais(p.lang, cc, nombrePais(cc, p.locale));

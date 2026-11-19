@@ -6,7 +6,7 @@ import Anuncio from "./Anuncio.astro";
 import BloquePrevision from "./BloquePrevision.astro";
 import { TEXTOS } from "../lib/textos";
 import { fechaLocal, sumarDias } from "../lib/bloque";
-import { recortarFrases, etiquetaZona, hoyDe, MERCADOS, urlManana, esquemaFaq, type Mercado } from "../lib/datos";
+import { recortarFrases, detalleIndexable, etiquetaZona, hoyDe, MERCADOS, urlManana, esquemaFaq, type Mercado } from "../lib/datos";
 import { textosE, mixUltimo, mixCompletoUltimo, totales, renovable30, urlNegativos, urlMeses, urlMix, previsionDe } from "../lib/energia";
 import { barrasApiladas, barraReparto } from "../lib/grafica-mix";
 import { lista } from "../lib/textos-carburantes";
@@ -46,7 +46,7 @@ const lead = T.rMix(pct(t.renovable), top);
 const desc = recortarFrases(lead, 158);
 ---
 
-<Base titulo={titulo} descripcion={desc} lang={m.pais.lang} locale={m.pais.locale} schema={esquemaFaq(preguntas)}>
+<Base titulo={titulo} descripcion={desc} lang={m.pais.lang} locale={m.pais.locale} schema={esquemaFaq(preguntas)} noindex={!detalleIndexable(m)}>
   <section class="hero hero--compacto">
     <div class="wrap">
       <span class="eyebrow">{m.pais.nombre}{z && ` · ${m.zona.nombre}`} · {fechaL}{esHoy && t.horas < 24 && ` · ${T.hasta(L.reloj(t.horas))}`}</span>

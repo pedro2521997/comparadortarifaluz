@@ -176,3 +176,22 @@ export function cercanas(e: Estacion, n: number, radio = 20): { e: Estacion; km:
       }
   return r.sort((a, b) => a.km - b.km).slice(0, n);
 }
+
+/**
+ * Gasolineras «gemelas»: mismo nombre, misma dirección y mismo municipio (suele ser la misma estación registrada
+ * dos veces, p. ej. la parte atendida y la de 24 horas, a pocos metros y con los mismos precios). Sus fichas
+ * serían casi iguales: la de id más bajo es la principal y las demás llevan su canónica y no van al sitemap.
+ */
+const claveGemela = (e: Estacion) => `${nombreEstacion(e.rotulo)}|${e.idMun}|${e.dir.trim().toUpperCase()}`;
+const PRINCIPALES = new Map<string, Estacion>();
+for (const e of ESTACIONES) {
+  if (!tieneFicha(e)) continue;
+  const k = claveGemela(e);
+  const p = PRINCIPALES.get(k);
+  if (!p || Number(e.id) < Number(p.id)) PRINCIPALES.set(k, e);
+}
+/** La ficha principal si esta es una gemela (null si es la principal o no tiene gemelas). */
+export const gemelaPrincipal = (e: Estacion): Estacion | null => {
+  const p = PRINCIPALES.get(claveGemela(e));
+  return p && p !== e ? p : null;
+};

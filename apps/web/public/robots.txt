@@ -2,6 +2,8 @@
 User-agent: *
 Allow: /
 Disallow: /api/
+# Google necesita el precio del día para pintar las páginas de precio igual que las ve un visitante.
+Allow: /api/precios/
 
 User-agent: GPTBot
 Allow: /

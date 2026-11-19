@@ -73,7 +73,10 @@ const lead =
       : T.hubLead({ ...datosLead, n: nf.format(filas.length) });
 const desc = g && d ? T.desc({ donde, gN: minus(M.comb[k]), g: eurZ(z, g.min), dN: minus(M.comb[kd]), d: eurZ(z, d.min), n: nf.format(filas.length) }) : lead;
 const h1 = c ? T.ciudadH1(donde) : r ? T.regionH1(r.nombre, r.codigo) : T.hubH1;
-const titulo = c ? (T.ciudadT(donde).length <= 65 ? T.ciudadT(donde) : T.ciudadTCorto(donde)) : r ? T.regionT(r.nombre, r.codigo) : T.hubT;
+// Dos communes con el mismo nombre (Valence en Drôme y en Tarn-et-Garonne): el título lleva el departamento.
+const homonima = !!c && !!r && z.ciudades.some((o) => o !== c && o.nombre === c.nombre);
+const dondeT = homonima ? `${donde} (${r!.codigo})` : donde;
+const titulo = c ? (T.ciudadT(dondeT).length <= 65 ? T.ciudadT(dondeT) : T.ciudadTCorto(dondeT)) : r ? T.regionT(r.nombre, r.codigo) : T.hubT;
 const migas: [string, string?][] = [[T.miga, c || r ? urlZonas(z) : undefined]];
 if (r) migas.push([T.regionNombre(r.nombre, r.codigo), c ? urlRegion(z, r) : undefined]);
 if (c) migas.push([c.nombre]);

@@ -1,0 +1,127 @@
+---
+import Base from "../../layouts/Base.astro";
+import Anuncio from "../../components/Anuncio.astro";
+import PrecioDia from "../../components/PrecioDia.astro";
+import AvisoDiario from "../../components/AvisoDiario.astro";
+import ExtrasDia from "../../components/ExtrasDia.astro";
+import ComparaDias from "../../components/ComparaDias.astro";
+import PlanDia from "../../components/PlanDia.astro";
+import MasSobrePrecio from "../../components/MasSobrePrecio.astro";
+import { fechaLarga, fechaMedia, sumarDias, fechaCorta, ekwh, hh } from "../../lib/formato";
+import { infoDia, tituloDia, descripcionDia } from "../../lib/dia";
+import { entradillaVivo, preguntasVivo, compararDias, rotulo } from "../../lib/dia-vivo";
+import { esquemaFaq } from "../../lib/faq";
+import { alternativas } from "../../lib/hreflang";
+
+interface Props {
+  /** Día que la página trata como «hoy»: el del build, o el siguiente en la versión que sirve el Worker a medianoche. */
+  hoy: string;
+}
+const { hoy } = Astro.props;
+const manana = sumarDias(hoy, 1);
+const i = infoDia(manana);
+// Red Eléctrica publica mañana hacia las 20:15 y el build de las 00:05 aún no lo tiene: casi todo el día
+// la página no tendría más que un aviso, y Google la daba por vacía («Rastreada: sin indexar»).
+// Mientras no está, se enseña cómo vienen los últimos días y unas preguntas fijas; se ocultan al llegar el dato.
+const iHoy = i ? null : infoDia(hoy);
+// Mientras tanto, la tendencia de los últimos días (no el análisis de hoy, que ya está en sus páginas).
+const recientes = iHoy ? compararDias([3, 2, 1, 0].map((n): [string, string] => { const f = sumarDias(hoy, -n); return [f, rotulo(n === 0 ? "Hoy" : n === 1 ? "Ayer" : `Hace ${n} días`, f)]; }), sumarDias(hoy, -1), hoy, "Hoy, frente a ayer,") : null;
+const PREGUNTAS = [
+  { p: "¿A qué hora se publica el precio de la luz de mañana?", r: "Red Eléctrica publica el PVPC del día siguiente cada tarde, normalmente a partir de las 20:15. Esta página lo muestra en cuanto está disponible, sin tener que recargarla." },
+  { p: "¿Se puede saber antes cómo será el precio de mañana?", r: "Sí, aproximadamente. El mercado mayorista (OMIE) fija hacia las 13:00 el precio de la energía de cada hora del día siguiente, y es lo que más mueve el PVPC. Si el mercado sale más barato que hoy, mañana la luz suele bajar." },
+  { p: "¿Por qué la luz de mañana puede costar distinto que hoy?", r: "Por el mercado mayorista, que depende del sol, el viento, la demanda y el precio del gas, y por los peajes: los sábados, domingos y festivos nacionales todas las horas tienen el peaje más barato." },
+  { p: "¿Le afecta el precio de mañana a mi factura?", r: "Solo si tienes la tarifa regulada PVPC o una tarifa indexada al mercado. Con un precio fijo pagas lo mismo a cualquier hora, aunque el precio de mañana suba o baje." },
+];
+const titulo = i ? tituloDia(i, "mañana") : `Precio de la luz mañana ${fechaMedia(manana)} por horas`;
+const descripcion = i
+  ? descripcionDia(i, "mañana")
+  : `Precio de la luz de mañana, ${fechaMedia(manana)}, hora a hora en cuanto lo publica Red Eléctrica (hacia las 20:15), con las mejores horas para la lavadora.`;
+// Sin el Dataset del día (lo lleva la página fija de la fecha): solo las preguntas propias de «mañana».
+const schema = [esquemaFaq(i ? [...preguntasVivo(i, "mañana"), ...PREGUNTAS] : PREGUNTAS)];
+const comp = i ? compararDias([[hoy, rotulo("Hoy", hoy)], [manana, rotulo("Mañana", manana)]], hoy, manana, "Mañana,") : null;
+---
+
+<Base ruta="/precio-luz-manana/" hoy={hoy} titulo={titulo} descripcion={descripcion} schema={schema} alternativas={alternativas("manana")} migas={[["Precio de la luz", "/precio-luz/"], ["Mañana"]]}>
+  <section class="hero hero--compacto">
+    <div class="wrap">
+      <span class="eyebrow">Precio de la luz mañana</span>
+      <h1>Precio de la luz mañana, <span data-fecha-texto>{fechaLarga(manana)}</span></h1>
+      {
+        i ? (
+          <p class="lead" data-dia-fijo={manana}>{entradillaVivo(i, "mañana")}</p>
+        ) : (
+          <p class="lead">Red Eléctrica publica el precio del día siguiente cada tarde. Planifica la lavadora, el lavavajillas o la carga del coche antes de irte a dormir.</p>
+        )
+      }
+      <div class="btn-row">
+        <a class="btn btn--ghost" href="/precio-luz-hoy/">Precio de hoy</a>
+        <a class="btn btn--ghost" href="/precio-luz/">Días anteriores</a>
+      </div>
+    </div>
+  </section>
+  <section class="section section--tight">
+    <div class="wrap">
+      <PrecioDia fecha={manana} modo="manana" />
+      {i && <p class="caption" data-dia-fijo={manana} style="margin-top:12px">Por qué la luz costará esto y cómo queda en el mes: <a href={`/precio-luz/${manana}/`}>análisis del {fechaCorta(manana)}</a>.</p>}
+    </div>
+  </section>
+  <Anuncio tipo="horizontal" seccion />
+  {comp && <ComparaDias c={comp} titulo="¿Sube o baja mañana? Comparado con hoy" fecha={manana} />}
+  {i && <PlanDia i={i} modo="mañana" />}
+  <ExtrasDia modo="manana" />
+  <Anuncio tipo="horizontal" seccion />
+  {
+    iHoy && (
+      <div data-mientras>
+        <section class="section section--tight">
+          <div class="wrap">
+            <h2 class="pm-h">Mientras se publica: cómo viene la luz estos días</h2>
+            <p>Hoy, {fechaMedia(hoy)}, el PVPC está a {ekwh(iHoy.r.media)} de media, con la hora más barata a las {hh(iHoy.r.min.h)}. Si el mercado mayorista de mañana sale parecido, mañana se moverá en valores cercanos. <a href="/precio-luz-hoy/">Ver el precio de hoy hora a hora</a>.</p>
+          </div>
+        </section>
+        {recientes && <ComparaDias c={recientes} titulo="Los últimos días por tramos" fecha={hoy} />}
+      </div>
+    )
+  }
+  <section class="section section--white section--tight">
+    <div class="wrap" style="max-width:780px">
+      <h2 class="pm-h">Preguntas sobre el precio de mañana</h2>
+      {
+        PREGUNTAS.map((q) => (
+          <details class="pm-faq">
+            <summary>{q.p}</summary>
+            <p>{q.r}</p>
+          </details>
+        ))
+      }
+    </div>
+  </section>
+  <MasSobrePrecio fecha={manana} vivo />
+  <AvisoDiario />
+</Base>
+
+<script>
+  // En cuanto llega el precio de mañana (antes del build de la noche), sobra el análisis de hoy.
+  document.addEventListener("precios-dia", (e) => {
+    const d = (e as CustomEvent).detail;
+    if (d.modo === "manana" && d.precios) for (const el of document.querySelectorAll<HTMLElement>("[data-mientras]")) el.hidden = true;
+  });
+</script>
+
+<style>
+  .pm-h {
+    font-size: 22px;
+    margin-bottom: 12px;
+  }
+  .pm-faq {
+    border-bottom: 1px solid var(--color-pale-sage);
+    padding: 6px 0;
+  }
+  .pm-faq summary {
+    color: var(--color-bark);
+    cursor: pointer;
+  }
+  .pm-faq p {
+    padding: 4px 0 12px 20px;
+  }
+</style>

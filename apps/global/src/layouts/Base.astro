@@ -31,10 +31,13 @@ interface Props {
   noindex?: boolean;
   /** Migas de pan para Google: [nombre, ruta] y la última sin ruta. */
   migas?: [string, string?][];
+  /** Canónica si no es la propia página (p. ej. la fecha de hoy apunta a la página de «hoy»). */
+  canonica?: string;
+  /** Ruta pública si no es la del fichero (versiones del día siguiente que sirve el Worker). */
+  ruta?: string;
 }
-const { titulo, descripcion, lang, locale = "en", schema, alternativas = [], anuncioFinal = true, noindex = false, migas = [] } = Astro.props;
-const canonical = new URL(Astro.url.pathname, SITIO.url).href;
-const tituloCompleto = titulo.length > 50 ? titulo : `${titulo} | ${SITIO.nombre}`;
+const { titulo, descripcion, lang, locale = "en", schema, alternativas = [], anuncioFinal = true, noindex = false, migas = [], canonica, ruta: rutaPublica } = Astro.props;
+const canonical = new URL(canonica ?? rutaPublica ?? Astro.url.pathname, SITIO.url).href;
 const esquemas = schema ? (Array.isArray(schema) ? schema : [schema]) : [];
 if (migas.length)
   esquemas.push({
@@ -43,12 +46,17 @@ if (migas.length)
     itemListElement: migas.map(([nombre, r], i) => ({ "@type": "ListItem", position: i + 1, name: nombre, ...(r ? { item: absoluta(r) } : {}) })),
   });
 const L = TEXTOS[lang];
-const ruta = Astro.url.pathname;
+const ruta = rutaPublica ?? Astro.url.pathname;
 const PRERENDER = { prerender: [{ where: { and: [{ href_matches: "/*" }, { not: { href_matches: "/data/*" } }, { not: { selector_matches: "[rel~=nofollow]" } }] }, eagerness: "moderate" }] };
 
 // Menú de la sección del país en que se está (/de/…, /es/…): luz, carburantes, mapa, Europa y guías, en su idioma.
 const sec = PAISES.find((p) => ruta.startsWith(`/${p.cc}/`));
 const Ls = sec ? TEXTOS[sec.lang] : L;
+// Alemania y Austria (o Países Bajos y Bélgica) comparten idioma y muchas páginas (Europa, mapas, guías):
+// el título lleva el país para que /at/… y /de/… no tengan el mismo. Si ya lo nombra, no se repite.
+const conPais = sec && PAISES.some((x) => x !== sec && x.lang === sec.lang && x.zonas.length) && !titulo.includes(sec.nombre) ? `${titulo} · ${sec.nombre}` : titulo;
+const tituloCompleto = conPais.length > 50 ? conPais : `${conPais} | ${SITIO.nombre}`;
+const descripcionPais = conPais !== titulo && !descripcion.includes(sec!.nombre) ? `${sec!.nombre}: ${descripcion}` : descripcion;
 const guiaCc = sec ? GUIAS.find((g) => g.lang === sec.lang)?.cc : undefined;
 const tieneLuz = sec && MERCADOS.some((m) => m.pais.cc === sec.cc && m.principal);
 // «externo»: la luz de España está en ComparadorTarifaLuz.es; se abre en otra pestaña y lleva su símbolo.
@@ -79,7 +87,7 @@ const paisesMenu = PAISES.filter((p) => PAISES_CON_DATOS.includes(p) || p.cc ===
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{tituloCompleto}</title>
     <link rel="preload" href={fuente} as="font" type="font/woff2" crossorigin />
-    <meta name="description" content={descripcion} />
+    <meta name="description" content={descripcionPais} />
     {/* Las páginas noindex (la 404) no llevan canónica: apuntaría a una URL que no existe. */}
     {!noindex && <link rel="canonical" href={canonical} />}
     {noindex && <meta name="robots" content="noindex" />}
@@ -93,7 +101,7 @@ const paisesMenu = PAISES.filter((p) => PAISES_CON_DATOS.includes(p) || p.cc ===
     <meta property="og:locale" content={locale.replace("-", "_")} />
     <meta property="og:site_name" content={SITIO.nombre} />
     <meta property="og:title" content={titulo} />
-    <meta property="og:description" content={descripcion} />
+    <meta property="og:description" content={descripcionPais} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={absoluta("/logo.png")} />
     <meta name="twitter:card" content="summary" />

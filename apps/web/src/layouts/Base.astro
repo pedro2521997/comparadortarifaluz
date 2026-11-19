@@ -22,8 +22,12 @@ interface Props {
   migas?: [string, string?][];
   /** hreflang con las páginas equivalentes de otros países (web hermana PowerPriceNow). */
   alternativas?: { lang: string; href: string }[];
+  /** Ruta pública si no es la del fichero (las versiones del día siguiente se sirven en otra dirección). */
+  ruta?: string;
+  /** «Hoy» de la página, si no es el día del build (versiones del día siguiente). */
+  hoy?: string;
 }
-const { titulo, descripcion = SITIO.descripcion, schema, noindex = false, anuncioFinal = true, migas, alternativas = [] } = Astro.props;
+const { titulo, descripcion = SITIO.descripcion, schema, noindex = false, anuncioFinal = true, migas, alternativas = [], ruta: rutaPublica, hoy = hoyMadrid() } = Astro.props;
 const adsense = codigoAdsense();
 // Datos estructurados comunes: la web y, si hay, las migas de pan (ayudan a Google y a los buscadores con IA).
 const esquemas = [
@@ -50,10 +54,10 @@ const esquemas = [
       }]
     : []),
 ];
-const canonical = new URL(Astro.url.pathname, SITIO.url).href;
+const canonical = new URL(rutaPublica ?? Astro.url.pathname, SITIO.url).href;
 // Los títulos largos ya dicen lo que importa: la marca solo se añade si cabe (unos 60 caracteres en Google).
 const tituloCompleto = titulo.includes(SITIO.nombre) || titulo.length > 42 ? titulo : `${titulo} | ${SITIO.nombre}`;
-const ruta = Astro.url.pathname;
+const ruta = rutaPublica ?? Astro.url.pathname;
 
 // Barra de aviso: el último día publicado, siempre con su fecha para no presentar un dato viejo como nuevo.
 const ultimo = dias[dias.length - 1];
@@ -61,7 +65,7 @@ const aviso = ultimo
   ? {
       texto: `${fechaCorta(ultimo.fecha)}: ${frase(ultimo.precios)}`,
       fecha: ultimo.fecha,
-      href: ultimo.fecha > hoyMadrid() ? "/precio-luz-manana/" : `/precio-luz/${ultimo.fecha}/`,
+      href: ultimo.fecha > hoy ? "/precio-luz-manana/" : `/precio-luz/${ultimo.fecha}/`,
     }
   : null;
 ---

@@ -4,7 +4,7 @@ import Base from "../layouts/Base.astro";
 import Anuncio from "./Anuncio.astro";
 import { TEXTOS } from "../lib/textos";
 import { fechaLocal, valor } from "../lib/bloque";
-import { recortarFrases, etiquetaZona, formato, urlFecha, conPagina, MERCADOS, esquemaFaq, type Mercado } from "../lib/datos";
+import { recortarFrases, detalleIndexable, etiquetaZona, formato, urlFecha, conPagina, MERCADOS, esquemaFaq, type Mercado } from "../lib/datos";
 import { enPais } from "../lib/textos-carburantes";
 import { tieneMix, textosE, negativos, nombreMes, urlNegativos, urlMix, urlMeses } from "../lib/energia";
 
@@ -36,7 +36,7 @@ const preguntas = [
 ];
 ---
 
-<Base titulo={titulo} descripcion={recortarFrases(texto, 158)} lang={m.pais.lang} locale={m.pais.locale} schema={esquemaFaq(preguntas)}>
+<Base titulo={titulo} descripcion={recortarFrases(texto, 158)} lang={m.pais.lang} locale={m.pais.locale} schema={esquemaFaq(preguntas)} noindex={!detalleIndexable(m)}>
   <section class="hero hero--compacto">
     <div class="wrap">
       <span class="eyebrow">{m.pais.nombre}{z && ` · ${m.zona.nombre}`}</span>

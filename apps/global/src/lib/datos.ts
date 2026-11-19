@@ -56,6 +56,40 @@ export const DIAS_PAGINA = 60;
 export const conPagina = (m: Mercado, fecha: string) => fecha >= sumarDias(hoyDe(m), -DIAS_PAGINA);
 export const diasConPagina = (m: Mercado) => diasDe(m.zona.id).filter((d) => conPagina(m, d.fecha));
 
+/**
+ * Días con página que se dejan indexar: solo la zona principal de cada país y los últimos DIAS_INDEXABLES
+ * días, sin contar hoy ni mañana. Los demás siguen existiendo para quien llega a ellos, pero con noindex y
+ * fuera del sitemap: cientos de páginas casi iguales (mismo texto con otros números) hacen que Google valore
+ * peor toda la web y deje sin indexar también las buenas. La fecha de hoy y la de mañana son la misma página
+ * que «hoy» y «mañana», así que llevan su canónica (canonicaDia).
+ */
+export const DIAS_INDEXABLES = 7;
+
+/**
+ * Zonas secundarias que se dejan indexar: las nórdicas (SE1–SE4, NO1–NO5, DK1–DK2), que la gente busca por su
+ * nombre. Las de Italia casi siempre tienen el mismo precio que el país y sus páginas salían casi idénticas.
+ */
+const ZONAS_BUSCADAS = new Set(["se", "no", "dk"]);
+export const zonaIndexable = (m: Mercado) => m.principal || ZONAS_BUSCADAS.has(m.pais.cc);
+/** Mix, precios negativos y medias mensuales: solo la zona principal (en las demás, el mismo texto con otros números). */
+export const detalleIndexable = (m: Mercado) => m.principal;
+/** Medias de un mes concreto: solo los últimos MESES_INDEXABLES (el índice de meses, siempre). */
+export const MESES_INDEXABLES = 3;
+export const mesIndexable = (m: Mercado, mes: string) => {
+  const [y, mm] = hoyDe(m).split("-").map(Number);
+  const d = new Date(Date.UTC(y, mm - 1 - MESES_INDEXABLES, 1)).toISOString().slice(0, 7);
+  return detalleIndexable(m) && mes >= d;
+};
+export const diaIndexable = (m: Mercado, fecha: string) => {
+  const hoy = hoyDe(m);
+  return m.principal && fecha < hoy && fecha >= sumarDias(hoy, -DIAS_INDEXABLES);
+};
+/** Canónica de la página de una fecha: la de «hoy» o «mañana» si es ese día; si no, ella misma (null). */
+export const canonicaDia = (m: Mercado, fecha: string): string | null => {
+  const hoy = hoyDe(m);
+  return fecha === hoy ? m.ruta : fecha === sumarDias(hoy, 1) ? urlManana(m) : null;
+};
+
 /** Nombre de la zona para títulos: solo si el país tiene varias («NO2», «Sicilia»). */
 export const etiquetaZona = (m: Mercado) => (m.principal ? "" : m.zona.id.startsWith("IT-") ? m.zona.nombre : m.zona.id);
 /** «: » (y « : » en francés) */
@@ -98,12 +132,20 @@ export function info(m: Mercado, fecha: string): Info | null {
   return { m, fecha, fechaL: fechaLocal(fecha, m.pais.locale), f, precios: d.precios, cuando, r, b2: mejorFranja(d.precios, 2), vsAyer, tramos };
 }
 
-function cabecera(i: Info, pag: Pagina) {
-  const L = TEXTOS[i.m.pais.lang];
-  const z = etiquetaZona(i.m);
+/**
+ * Nombre del país en los títulos cuando otro país tiene el mismo idioma (Deutschland/Österreich,
+ * Nederland/België): sin él, /de/ y /at/ tendrían exactamente el mismo título y H1.
+ */
+const IDIOMAS_COMPARTIDOS = new Set(PAISES.filter((p) => p.zonas.length).map((p) => p.lang).filter((l, k, a) => a.indexOf(l) !== k));
+export const paisEnTitulo = (m: Mercado) => (IDIOMAS_COMPARTIDOS.has(m.pais.lang) ? m.pais.nombre : "");
+
+/** «Strompreis Österreich heute», «Strompris NO2 i dag»… */
+export function cabeceraDia(m: Mercado, pag: Pagina) {
+  const L = TEXTOS[m.pais.lang];
   const cuando = pag === "hoy" ? L.hoy : pag === "manana" ? L.manana : "";
-  return [L.precio, z, cuando].filter(Boolean).join(" ");
+  return [L.precio, paisEnTitulo(m), etiquetaZona(m), cuando].filter(Boolean).join(" ");
 }
+const cabecera = (i: Info, pag: Pagina) => cabeceraDia(i.m, pag);
 
 export function titulo(i: Info, pag: Pagina): string {
   const L = TEXTOS[i.m.pais.lang];

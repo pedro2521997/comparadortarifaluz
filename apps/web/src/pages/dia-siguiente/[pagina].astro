@@ -1,0 +1,25 @@
+---
+// Las páginas de hoy, mañana y ayer tal como serán el día siguiente al del build. El build de la tarde
+// (con el precio de mañana ya publicado) las deja listas y, desde medianoche, el Worker las sirve en
+// /precio-luz-hoy/, /precio-luz-manana/ y /precio-luz-ayer/ (apps/worker/src/index.ts). Así no hay horas
+// con la página de ayer haciéndose pasar por la de hoy aunque el build de medianoche llegue tarde o falle.
+// No se pueden visitar en esta dirección (el Worker responde 404) y su canónica es la de la página real.
+import PaginaHoy from "../../components/vivo/PaginaHoy.astro";
+import PaginaManana from "../../components/vivo/PaginaManana.astro";
+import PaginaAyer from "../../components/vivo/PaginaAyer.astro";
+import { hoyMadrid, sumarDias } from "../../lib/formato";
+import { preciosDe } from "../../lib/datos";
+
+export function getStaticPaths() {
+  // Solo si ya está el precio de mañana: sin él, la versión de mañana no tendría nada que enseñar.
+  if (!preciosDe(sumarDias(hoyMadrid(), 1))) return [];
+  return ["precio-luz-hoy", "precio-luz-manana", "precio-luz-ayer"].map((pagina) => ({ params: { pagina } }));
+}
+
+const { pagina } = Astro.params;
+const hoy = sumarDias(hoyMadrid(), 1);
+---
+
+{pagina === "precio-luz-hoy" && <PaginaHoy hoy={hoy} />}
+{pagina === "precio-luz-manana" && <PaginaManana hoy={hoy} />}
+{pagina === "precio-luz-ayer" && <PaginaAyer hoy={hoy} />}

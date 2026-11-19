@@ -1,0 +1,25 @@
+---
+// Las páginas de «hoy» y «mañana» de cada zona tal como serán al día siguiente (en la hora del país). Los builds
+// de las 12:15 y las 19:45 UTC ya tienen el precio de mañana y las dejan listas; desde la medianoche de cada
+// país, el Worker (apps/worker-global/src/index.js) las sirve en la dirección real. Así no hay horas con la
+// página de ayer haciéndose pasar por la de hoy aunque el build de medianoche llegue tarde (GitHub lo lanza
+// con horas de retraso) o falle. Aquí no se pueden visitar (el Worker responde 404) y su canónica es la real.
+import PaginaDia from "../../components/PaginaDia.astro";
+import { MERCADOS, diaDe, hoyDe, urlManana, type Mercado } from "../../lib/datos";
+import { sumarDias } from "../../lib/bloque";
+
+export function getStaticPaths() {
+  const quitar = (r: string) => r.replace(/^\/|\/$/g, "");
+  return MERCADOS.flatMap((m) => {
+    const manana = sumarDias(hoyDe(m), 1);
+    if (!diaDe(m.zona.id, manana)) return [];
+    return [
+      { params: { ruta: quitar(m.ruta) }, props: { m, pag: "hoy" as const, fecha: manana, publica: m.ruta } },
+      { params: { ruta: quitar(urlManana(m)) }, props: { m, pag: "manana" as const, fecha: sumarDias(manana, 1), publica: urlManana(m) } },
+    ];
+  });
+}
+const { m, pag, fecha, publica } = Astro.props as { m: Mercado; pag: "hoy" | "manana"; fecha: string; publica: string };
+---
+
+<PaginaDia m={m} pag={pag} fecha={fecha} rutaPublica={publica} />

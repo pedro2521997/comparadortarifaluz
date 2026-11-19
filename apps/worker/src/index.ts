@@ -229,6 +229,26 @@ async function panel(req: Request, env: Env): Promise<Response> {
   return new Response(html, { headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" } });
 }
 
+// ---------------- Hoy, mañana y ayer desde medianoche ----------------
+// El build de la tarde deja en /dia-siguiente/ esas tres páginas tal como serán al día siguiente, con la
+// fecha en /dia-siguiente/fecha.txt. Cuando en Madrid ya es ese día, se sirven en lugar de las del build,
+// que hablarían de ayer como si fuera hoy hasta que llegue el build de medianoche (GitHub lo lanza con
+// horas de retraso). /dia-siguiente/ no se puede visitar directamente.
+
+const VIVAS = new Set(["/precio-luz-hoy/", "/precio-luz-manana/", "/precio-luz-ayer/"]);
+
+async function paginaViva(req: Request, url: URL, env: Env): Promise<Response | null> {
+  if (url.pathname.startsWith("/dia-siguiente/")) {
+    const no = await env.ASSETS.fetch(new Request(new URL("/404.html", url)));
+    return new Response(no.body, { status: 404, headers: { "Content-Type": "text/html; charset=utf-8" } });
+  }
+  if (!VIVAS.has(url.pathname) || (req.method !== "GET" && req.method !== "HEAD")) return null;
+  const f = await env.ASSETS.fetch(new Request(new URL("/dia-siguiente/fecha.txt", url)));
+  if (!f.ok || (await f.text()).trim() !== hoyMadrid()) return null;
+  const r = await env.ASSETS.fetch(new Request(new URL(`/dia-siguiente${url.pathname}`, url), req));
+  return r.ok || r.status === 304 ? r : null;
+}
+
 // ---------------- Entrada ----------------
 
 export default {
@@ -245,6 +265,8 @@ export default {
       if (url.pathname === "/api/contacto" && req.method === "POST") return await contacto(req, env);
       if (url.pathname.startsWith("/panel")) return await panel(req, env);
       if (url.pathname.startsWith("/api/")) return json({ error: "No encontrado" }, 404);
+      const viva = await paginaViva(req, url, env);
+      if (viva) return viva;
     } catch (e) {
       return json({ error: "Error interno" }, 500);
     }
