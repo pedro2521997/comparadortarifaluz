@@ -1049,6 +1049,7 @@
   position: absolute;
   top: 0;
   transform: translateX(-50%);
+  white-space: nowrap;
 }
 .gb__ejex .gb__ini {
   transform: none;
@@ -1073,6 +1074,9 @@
 .gb__rej {
   stroke: var(--color-pale-sage);
   stroke-width: 1;
+}
+.gb__cero {
+  stroke: var(--color-slate);
 }
 .gb__hit {
   fill: transparent;
@@ -1357,4 +1361,45 @@
   .ilus-tema {
     max-height: 120px;
   }
+}
+
+/* Ilustración en la cabecera (web global): a la derecha del título en pantallas anchas, debajo en el móvil. */
+.hero-ilus {
+  display: block;
+  width: 100%;
+  max-width: 520px;
+  height: auto;
+  border-radius: 20px;
+  margin-top: 24px;
+}
+@media (min-width: 960px) {
+  .hero .wrap:has(> .hero-ilus) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 400px;
+    column-gap: 48px;
+    align-content: center;
+  }
+  .hero .wrap:has(> .hero-ilus) > * {
+    grid-column: 1;
+  }
+  .hero .wrap > .hero-ilus {
+    grid-column: 2;
+    grid-row: 1 / span 8;
+    align-self: center;
+    margin-top: 0;
+  }
+  /* En las cabeceras estrechas (guías) la ilustración va debajo del texto, no al lado. */
+  .hero .wrap.wrap--narrow:has(> .hero-ilus) {
+    display: block;
+  }
+  .hero .wrap--narrow > .hero-ilus {
+    margin-top: 28px;
+  }
+}
+.bandera {
+  display: block;
+  width: 48px;
+  height: 32px;
+  border-radius: 6px;
+  box-shadow: 0 0 0 1px rgba(16, 31, 30, 0.15);
 }

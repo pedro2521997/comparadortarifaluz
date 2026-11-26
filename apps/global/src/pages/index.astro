@@ -4,13 +4,20 @@ import Base from "../layouts/Base.astro";
 import Anuncio from "../components/Anuncio.astro";
 import MarcaCtl from "../components/MarcaCtl.astro";
 import { SITIO } from "../config";
-import { MERCADOS, info, hoyDe, alternativas } from "../lib/datos";
+import Tarjeta from "../../../web/src/components/Tarjeta.astro";
+import IlusHero from "../components/IlusHero.astro";
+import { MERCADOS, info, hoyDe, alternativas, urlManana } from "../lib/datos";
+import { bandera, TEXTOS_V } from "../lib/textos-visual";
 import { TEXTOS } from "../lib/textos";
 import { valor } from "../lib/bloque";
 import { PAISES_C, textosC, urlPrecios, litro, CC } from "../lib/carburantes";
 import { ultimo } from "../../../web/src/lib/compartido/carburantes-ue";
 
 const filas = MERCADOS.filter((m) => m.principal).map((m) => ({ m, i: info(m, hoyDe(m)) }));
+const V = TEXTOS_V.en;
+const TONOS = ["menta", "salvia", "lavanda"] as const;
+/** «Media: 4,2 c/kWh» con el separador de cada idioma (el francés lleva espacio antes de los dos puntos). */
+const dato = (lang: string, etiqueta: string, v: string) => `${etiqueta}${lang === "fr" ? " : " : ": "}${v}`;
 ---
 
 <Base
@@ -24,40 +31,83 @@ const filas = MERCADOS.filter((m) => m.principal).map((m) => ({ m, i: info(m, ho
       <span class="eyebrow">{SITIO.nombre}</span>
       <h1>Electricity prices today, country by country</h1>
       <p class="lead">Hourly day-ahead spot prices in each country's own language and currency, with the cheapest hours to run the washing machine or charge the car. Updated every day.</p>
+      <IlusHero tipo="electricidad" lang="en" />
     </div>
   </section>
   <section class="section section--tight">
-    <div class="wrap grid grid--3">
-      {
-        filas.map(({ m, i }) => (
-          <a class="card card--link" href={m.ruta} hreflang={m.pais.locale}>
-            <strong>{m.pais.nombre} <span class="muted small">· {m.pais.nombreEn}</span></strong>
-            <span>{TEXTOS[m.pais.lang].precio} {TEXTOS[m.pais.lang].hoy}</span>
-            {i && <span class="caption">{`${TEXTOS[m.pais.lang].media}${m.pais.lang === "fr" ? " : " : ": "}${valor(i.f, i.r.media)} · ${TEXTOS[m.pais.lang].horaBarata}${m.pais.lang === "fr" ? " : " : ": "}${TEXTOS[m.pais.lang].reloj(i.r.min.h)}`}</span>}
+    <div class="wrap">
+      <p class="muted" style="margin-bottom:16px">Tap a country to flip its card and see today's prices at a glance.</p>
+      <ul class="flip-rejilla">
+        {
+          filas.map(({ m, i }, k) => {
+            const L = TEXTOS[m.pais.lang];
+            return (
+              <li lang={m.pais.locale}>
+                <Tarjeta etiqueta={m.pais.nombreEn} tono={TONOS[k % 3]} ver={V.ver} volver={V.volver}>
+                  <Fragment slot="frente">
+                    <span class="flip__img" aria-hidden="true" set:html={bandera(m.pais.cc)} />
+                    <span class="flip__t">{m.pais.nombre}</span>
+                    <span class="flip__dato">{m.pais.nombreEn} · {L.precio} {L.hoy}</span>
+                    {i && <span class="flip__dato">{dato(m.pais.lang, L.media, valor(i.f, i.r.media))}</span>}
+                  </Fragment>
+                  <Fragment slot="dorso">
+                    <span class="flip__t">{m.pais.nombre}</span>
+                    {i ? (
+                      <>
+                        <span class="flip__grande">{valor(i.f, i.r.media)}</span>
+                        <span class="flip__dato">{dato(m.pais.lang, L.horaBarata, `${L.reloj(i.r.min.h)} · ${valor(i.f, i.r.min.p)}`)}</span>
+                        <span class="flip__dato">{dato(m.pais.lang, L.horaCara, `${L.reloj(i.r.max.h)} · ${valor(i.f, i.r.max.p)}`)}</span>
+                      </>
+                    ) : (
+                      <span class="flip__dato">{L.noPublicado}</span>
+                    )}
+                    <a href={m.ruta} hreflang={m.pais.locale}>{L.precio} {L.hoy} →</a>
+                    <a href={urlManana(m)} hreflang={m.pais.locale}>{L.precio} {L.manana} →</a>
+                  </Fragment>
+                </Tarjeta>
+              </li>
+            );
+          })
+        }
+        <li>
+          <a class="card card--link" href={SITIO.espana} hreflang="es-ES" target="_blank" rel="noopener" style="height:100%">
+            <strong><MarcaCtl />España <span class="muted small">· Spain</span> <span aria-hidden="true">↗</span></strong>
+            <span>Precio de la luz hoy (PVPC)</span>
+            <span class="caption">comparadortarifaluz.es</span>
           </a>
-        ))
-      }
-      <a class="card card--link" href={SITIO.espana} hreflang="es-ES" target="_blank" rel="noopener">
-        <strong><MarcaCtl />España <span class="muted small">· Spain</span> <span aria-hidden="true">↗</span></strong>
-        <span>Precio de la luz hoy (PVPC)</span>
-        <span class="caption">comparadortarifaluz.es</span>
-      </a>
+        </li>
+      </ul>
     </div>
   </section>
   <section class="section section--white section--tight">
     <div class="wrap">
       <h2 style="font-size:28px;margin-bottom:16px">Fuel prices: petrol, diesel and heating oil</h2>
-      <div class="grid grid--3">
+      <ul class="flip-rejilla">
         {
-          PAISES_C.map((p) => (
-            <a class="card card--link" href={urlPrecios(p)} hreflang={p.locale}>
-              <strong>{p.nombre} <span class="muted small">· {p.nombreEn}</span></strong>
-              <span>{`${textosC(p).productos.euro95}${p.lang === "fr" ? " : " : ": "}${litro(p, ultimo(CC(p), "euro95")!.valor)}`}</span>
-              <span class="caption">{`${textosC(p).productos.diesel}${p.lang === "fr" ? " : " : ": "}${litro(p, ultimo(CC(p), "diesel")!.valor)}`}</span>
-            </a>
-          ))
+          PAISES_C.map((p, k) => {
+            const T = textosC(p);
+            return (
+              <li lang={p.locale}>
+                <Tarjeta etiqueta={p.nombreEn} tono={TONOS[(k + 1) % 3]} ver={V.ver} volver={V.volver}>
+                  <Fragment slot="frente">
+                    <span class="flip__img" aria-hidden="true" set:html={bandera(p.cc)} />
+                    <span class="flip__t">{p.nombre}</span>
+                    <span class="flip__dato">{p.nombreEn}</span>
+                    <span class="flip__dato">{dato(p.lang, T.productos.euro95, litro(p, ultimo(CC(p), "euro95")!.valor))}</span>
+                  </Fragment>
+                  <Fragment slot="dorso">
+                    <span class="flip__t">{p.nombre}</span>
+                    <span class="flip__dato">{T.productos.euro95}</span>
+                    <span class="flip__grande">{litro(p, ultimo(CC(p), "euro95")!.valor)}</span>
+                    <span class="flip__dato">{dato(p.lang, T.productos.diesel, litro(p, ultimo(CC(p), "diesel")!.valor))}</span>
+                    <a href={urlPrecios(p)} hreflang={p.locale}>{T.productos.euro95} · {T.productos.diesel} →</a>
+                  </Fragment>
+                </Tarjeta>
+              </li>
+            );
+          })
         }
-      </div>
+      </ul>
     </div>
   </section>
   <Anuncio tipo="horizontal" seccion />

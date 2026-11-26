@@ -1,4 +1,5 @@
 ---
+import IlusHero from "../../../components/IlusHero.astro";
 // Ficha de cada gasolinera de España: precios de hoy de todos sus carburantes comparados con su municipio y su
 // provincia, horario, cómo llegar y las gasolineras de alrededor (más baratas o no) con su distancia.
 import Base from "../../../layouts/Base.astro";
@@ -133,6 +134,7 @@ const llegar = [
         {llegar.map((x, k) => <a class:list={["btn", { "btn--ghost": k > 0 }]} href={x.u} rel="noopener nofollow" target="_blank">{x.n}</a>)}
         <a class="btn btn--ghost" href={mapaUrl}>Ver en el mapa</a>
       </div>
+      <IlusHero tipo={"mapa"} lang={"es"} />
     </div>
   </section>
 

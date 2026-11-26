@@ -1,0 +1,15 @@
+---
+// Ilustración de la cabecera de cada tipo de página (scripts/ilustraciones.py → public/ilustraciones/).
+// En el ordenador va a la derecha del título; en el móvil, debajo. El texto alternativo va en el idioma
+// de la página.
+import { TEXTOS_V, type Ilus } from "../lib/textos-visual";
+import type { Idioma } from "../lib/textos";
+
+interface Props {
+  tipo: Ilus;
+  lang: Idioma;
+}
+const { tipo, lang } = Astro.props;
+---
+
+<img class="hero-ilus" src={`/ilustraciones/${tipo}.svg`} alt={TEXTOS_V[lang].alt[tipo]} width="960" height="320" decoding="async" fetchpriority="low" />

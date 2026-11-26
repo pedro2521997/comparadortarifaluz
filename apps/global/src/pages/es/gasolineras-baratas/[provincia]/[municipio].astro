@@ -1,4 +1,5 @@
 ---
+import IlusHero from "../../../../components/IlusHero.astro";
 // Todas las gasolineras de un municipio con sus precios de hoy, ordenadas de la más barata a la más cara.
 import Base from "../../../../layouts/Base.astro";
 import Anuncio from "../../../../components/Anuncio.astro";
@@ -56,6 +57,7 @@ const titulo = g ? `Gasolineras en ${m.nombre}: precio hoy desde ${eurL(g.min)}`
         {d && <> Diésel: <strong>{eurL(d.media)}</strong>.</>}
       </p>
       <div class="btn-row"><a class="btn btn--ghost" href={urlEnMapa(m.estaciones)}>Ver en el mapa</a></div>
+      <IlusHero tipo={"mapa"} lang={"es"} />
     </div>
   </section>
 

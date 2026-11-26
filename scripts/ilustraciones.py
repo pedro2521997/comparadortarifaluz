@@ -308,7 +308,100 @@ ESCENAS["exterior"] = ("Piscina con la depuradora y el sol", f"""
 """)
 
 
+# ---------- Web global (powerpricenow.com) ----------
+# Sin textos ni cifras dentro del dibujo: valen para los 11 idiomas. Los textos alternativos traducidos
+# están en apps/global/src/lib/textos-visual.ts; el <title> del SVG va en inglés.
+
+DESTINO_GLOBAL = os.path.join(os.path.dirname(__file__), "..", "apps", "global", "public", "ilustraciones")
+
+
+def aerogenerador(x, y, alto=150):
+    return (
+        f'<path d="M{x - 5} {y}l3-{alto}h4l3 {alto}z" fill="{W}" stroke="{PS}" stroke-width="2"/>'
+        f'<g transform="translate({x} {y - alto})">'
+        + "".join(f'<path transform="rotate({a})" d="M-5 0Q-4-60 0-70Q4-60 5 0z" fill="{W}" stroke="{PS}" stroke-width="2"/>' for a in (0, 120, 240))
+        + f'<circle r="7" fill="{C}"/></g>'
+    )
+
+
+def chincheta(x, y, fill):
+    return f'<path d="M{x} {y}c-16-22-26-34-26-48a26 26 0 0 1 52 0c0 14-10 26-26 48z" fill="{fill}"/><circle cx="{x}" cy="{y - 48}" r="10" fill="{W}"/>'
+
+
+GLOBAL = {
+    "electricidad": ("Chart of the electricity price for each hour, with cheap and expensive hours", ESCENAS["precio-y-mercado"][1]),
+    "coche": ("Electric car charging at night from a wall charger", ESCENAS["coche-electrico"][1]),
+    "mix": ("Wind turbines, solar panels and a hydroelectric dam producing electricity", f"""
+{sol(830, 80, 34)}
+{aerogenerador(200, 272, 170)}{aerogenerador(300, 272, 130)}
+<g transform="skewX(-18) translate(90 0)">
+{"".join(f'<rect x="{390 + c * 52}" y="{196 + r * 34}" width="48" height="30" fill="#2b4c8c" stroke="{W}" stroke-width="2"/>' for c in range(3) for r in range(2))}
+</g>
+<rect x="440" y="264" width="8" height="10" fill="{SG}"/><rect x="560" y="264" width="8" height="10" fill="{SG}"/>
+<path d="M640 272V150h150v122z" fill="{SG}"/><path d="M650 272V164h130v108z" fill="{PS}"/>
+<path d="M650 272c30-30 100-30 130 0z" fill="{AZ}"/><rect x="700" y="200" width="30" height="72" fill="{AZ}" opacity=".7"/>
+<path d="M590 150h60" stroke="{C}" stroke-width="4"/><path d="M590 150v-60M590 90l-20 30M590 90l20 30" stroke="{C}" stroke-width="4" fill="none"/>
+{rayo(470, 70, 3.4, M)}
+"""),
+    "negativos": ("Sun and wind pushing the electricity price below zero", f"""
+{sol(170, 90, 40)}
+{aerogenerador(820, 250, 150)}
+<rect x="300" y="60" width="420" height="212" rx="18" fill="{W}" stroke="{PS}" stroke-width="3"/>
+<line x1="320" y1="170" x2="700" y2="170" stroke="{BK}" stroke-width="3"/>
+{"".join(f'<rect x="{330 + i * 30}" y="{170 - h if h > 0 else 170}" width="20" height="{abs(h)}" rx="3" fill="{(V if h > 70 else SG) if h > 0 else M}"/>' for i, h in enumerate([60, 70, 40, 10, -30, -60, -76, -50, -20, 30, 80, 90, 64]))}
+<path d="M520 120v-40m-14 14 14-14 14 14" fill="none" stroke="{C}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" transform="rotate(180 520 100)"/>
+"""),
+    "meses": ("Calendar and line chart of the monthly average electricity price", f"""
+<rect x="200" y="60" width="230" height="200" rx="16" fill="{W}" stroke="{PS}" stroke-width="3"/>
+<rect x="200" y="60" width="230" height="44" rx="16" fill="{C}"/><rect x="200" y="86" width="230" height="18" fill="{C}"/>
+<rect x="240" y="44" width="12" height="32" rx="6" fill="{SG}"/><rect x="378" y="44" width="12" height="32" rx="6" fill="{SG}"/>
+{"".join(f'<rect x="{220 + c * 40}" y="{120 + r * 34}" width="30" height="24" rx="5" fill="{M if (c, r) == (2, 1) else HW}"/>' for c in range(5) for r in range(4))}
+<rect x="470" y="60" width="300" height="200" rx="16" fill="{W}" stroke="{PS}" stroke-width="3"/>
+<polyline points="495,200 535,170 575,185 615,120 655,140 695,95 745,110" fill="none" stroke="{V}" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"/>
+{"".join(f'<circle cx="{x}" cy="{y}" r="8" fill="{W}" stroke="{V}" stroke-width="5"/>' for x, y in [(495, 200), (535, 170), (575, 185), (615, 120), (655, 140), (695, 95), (745, 110)])}
+<line x1="490" y1="232" x2="750" y2="232" stroke="{PS}" stroke-width="3"/>
+"""),
+    "carburantes": ("Fuel pump next to a car", f"""
+<rect x="250" y="70" width="120" height="202" rx="14" fill="{C}"/><rect x="268" y="90" width="84" height="54" rx="8" fill="{BK}"/>
+<rect x="276" y="100" width="68" height="14" rx="3" fill="{M}"/><rect x="276" y="122" width="44" height="12" rx="3" fill="{SG}"/>
+<rect x="268" y="160" width="84" height="12" rx="6" fill="#2f7a5f"/><rect x="236" y="262" width="148" height="14" rx="6" fill="{SG}"/>
+<path d="M370 120h30c14 0 20 8 20 20v80c0 12 8 18 18 18" fill="none" stroke="{BK}" stroke-width="8" stroke-linecap="round"/>
+<path d="M428 222l30-10 8 20-30 10z" fill="{BK}"/>
+<circle cx="300" cy="216" r="22" fill="{AM}"/><path d="M300 200c-8 12-12 16-12 22a12 12 0 0 0 24 0c0-6-4-10-12-22z" fill="{RJ}"/>
+<path d="M480 236c0-30 20-44 50-48l50-44c14-12 30-18 50-18h90c20 0 36 8 48 22l40 44c40 4 60 18 60 44v14H480z" fill="{V}" transform="translate(0 0) scale(.92) translate(52 22)"/>
+<circle cx="580" cy="256" r="26" fill="{BK}"/><circle cx="580" cy="256" r="10" fill="{SG}"/>
+<circle cx="760" cy="256" r="26" fill="{BK}"/><circle cx="760" cy="256" r="10" fill="{SG}"/>
+<path d="M600 158c10-8 18-10 30-10h40v42h-96z" fill="{HW}"/><path d="M682 148h20c12 0 22 6 30 14l22 28h-72z" fill="{HW}"/>
+"""),
+    "mapa": ("Map with petrol stations marked", f"""
+<path d="M220 70l170-30 180 40 170-30v210l-170 30-180-40-170 30z" fill="{W}" stroke="{PS}" stroke-width="3"/>
+<path d="M390 40v210M570 80v210" stroke="{PS}" stroke-width="3"/>
+<path d="M240 200c60-40 120 10 180-30s130-10 190-40 100-10 130-30" fill="none" stroke="{AM}" stroke-width="10" stroke-linecap="round"/>
+<path d="M260 110c40 20 80-10 120 20" fill="none" stroke="{SG}" stroke-width="6" stroke-linecap="round"/>
+<circle cx="680" cy="230" r="34" fill="{AZ}" opacity=".5"/>
+{chincheta(330, 200, M)}{chincheta(500, 150, V)}{chincheta(640, 140, C)}{chincheta(450, 250, M)}
+"""),
+    "tarifa": ("Smart meter and a phone app showing a dynamic electricity tariff", f"""
+<rect x="230" y="70" width="150" height="200" rx="18" fill="{W}" stroke="{PS}" stroke-width="3"/>
+<rect x="252" y="96" width="106" height="48" rx="8" fill="{BK}"/><rect x="262" y="110" width="86" height="20" rx="4" fill="{M}" opacity=".9"/>
+<circle cx="275" cy="176" r="10" fill="{M}"/><circle cx="305" cy="176" r="10" fill="{SG}"/><circle cx="335" cy="176" r="10" fill="{SG}"/>
+<rect x="262" y="210" width="86" height="10" rx="5" fill="{PS}"/><rect x="262" y="230" width="60" height="10" rx="5" fill="{PS}"/>
+<path d="M400 160q40-40 80 0" fill="none" stroke="{C}" stroke-width="6" stroke-linecap="round" stroke-dasharray="2 12"/>
+<rect x="500" y="40" width="140" height="240" rx="24" fill="{BK}"/><rect x="510" y="62" width="120" height="196" rx="12" fill="{W}"/>
+{barras(520, 240, [40, 34, 30, 52, 90, 120, 70, 44], 10, 4, [M, M, M, SG, V, V, SG, M])}
+<rect x="550" y="48" width="40" height="6" rx="3" fill="#333"/>
+{rayo(700, 100, 3.6, C)}
+<circle cx="770" cy="220" r="40" fill="{W}" stroke="{C}" stroke-width="7"/><line x1="770" y1="220" x2="770" y2="194" stroke="{C}" stroke-width="6" stroke-linecap="round"/><line x1="770" y1="220" x2="790" y2="230" stroke="{V}" stroke-width="6" stroke-linecap="round"/>
+"""),
+}
+
+
 if __name__ == "__main__":
+    os.makedirs(DESTINO_GLOBAL, exist_ok=True)
+    for nombre, (titulo, cuerpo) in GLOBAL.items():
+        with open(os.path.join(DESTINO_GLOBAL, f"{nombre}.svg"), "w", encoding="utf-8", newline="\n") as f:
+            f.write(svg(cuerpo.strip(), titulo))
+    print(len(GLOBAL), "ilustraciones en", os.path.normpath(DESTINO_GLOBAL))
     os.makedirs(DESTINO, exist_ok=True)
     for nombre, (titulo, cuerpo) in ESCENAS.items():
         with open(os.path.join(DESTINO, f"{nombre}.svg"), "w", encoding="utf-8", newline="\n") as f:

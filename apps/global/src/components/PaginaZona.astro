@@ -1,4 +1,5 @@
 ---
+import IlusHero from "./IlusHero.astro";
 // Gasolineras baratas de un país con mapa (lib/zonas.ts), en su idioma, a tres niveles:
 //  - país: medias, las más baratas del país y todas las regiones;
 //  - región (departamento, distrito): medias frente al país, las más baratas y todas sus ciudades;
@@ -120,6 +121,7 @@ const schema = [
         <a class="btn btn--mint" href={c || r ? urlEnMapaZ(z, filas) : urlMapa(p)}>{T.verMapa}</a>
         {(r || c) && <a class="btn btn--ghost" href={urlZonas(z)}>{T.verRegiones}</a>}
       </div>
+      <IlusHero tipo={"mapa"} lang={p.lang} />
     </div>
   </section>
 

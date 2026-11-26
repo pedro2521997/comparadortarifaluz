@@ -1,4 +1,5 @@
 ---
+import IlusHero from "../../../components/IlusHero.astro";
 // Índice de gasolineras baratas: todas las provincias con su media de gasolina y gasóleo de hoy.
 import Base from "../../../layouts/Base.astro";
 import Anuncio from "../../../components/Anuncio.astro";
@@ -32,6 +33,7 @@ const d = HAY_GASOLINERAS ? stats(ESTACIONES, "diesel") : null;
             <a class="btn btn--ghost" href="/es/precio-gasoil-hoy/">Precio del gasoil hoy</a>
             <a class="btn btn--ghost" href="/es/precio-glp-hoy/">GLP</a>
           </div>
+          <IlusHero tipo={"mapa"} lang={"es"} />
         </div>
       </section>
       <section class="section section--tight">

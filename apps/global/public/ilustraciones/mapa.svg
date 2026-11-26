@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 320" width="960" height="320" role="img" aria-label="Map with petrol stations marked">
+<title>Map with petrol stations marked</title>
+<defs><clipPath id="r"><rect width="960" height="320" rx="24"/></clipPath></defs>
+<g clip-path="url(#r)">
+<rect width="960" height="320" fill="#f3f1ec"/>
+<circle cx="110" cy="40" r="120" fill="#e8e7f5"/>
+<circle cx="880" cy="300" r="140" fill="#dcfde9"/>
+<circle cx="800" cy="50" r="10" fill="#afc4bf"/><circle cx="170" cy="270" r="7" fill="#afc4bf"/><circle cx="60" cy="200" r="5" fill="#7c18d3" opacity=".35"/>
+<rect y="272" width="960" height="48" fill="#e4ebe7"/>
+<path d="M220 70l170-30 180 40 170-30v210l-170 30-180-40-170 30z" fill="#ffffff" stroke="#c2cec8" stroke-width="3"/>
+<path d="M390 40v210M570 80v210" stroke="#c2cec8" stroke-width="3"/>
+<path d="M240 200c60-40 120 10 180-30s130-10 190-40 100-10 130-30" fill="none" stroke="#ffd166" stroke-width="10" stroke-linecap="round"/>
+<path d="M260 110c40 20 80-10 120 20" fill="none" stroke="#afc4bf" stroke-width="6" stroke-linecap="round"/>
+<circle cx="680" cy="230" r="34" fill="#5bc0eb" opacity=".5"/>
+<path d="M330 200c-16-22-26-34-26-48a26 26 0 0 1 52 0c0 14-10 26-26 48z" fill="#0fff87"/><circle cx="330" cy="152" r="10" fill="#ffffff"/><path d="M500 150c-16-22-26-34-26-48a26 26 0 0 1 52 0c0 14-10 26-26 48z" fill="#7c18d3"/><circle cx="500" cy="102" r="10" fill="#ffffff"/><path d="M640 140c-16-22-26-34-26-48a26 26 0 0 1 52 0c0 14-10 26-26 48z" fill="#104336"/><circle cx="640" cy="92" r="10" fill="#ffffff"/><path d="M450 250c-16-22-26-34-26-48a26 26 0 0 1 52 0c0 14-10 26-26 48z" fill="#0fff87"/><circle cx="450" cy="202" r="10" fill="#ffffff"/>
+</g>
+</svg>

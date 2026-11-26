@@ -1,4 +1,5 @@
 ---
+import IlusHero from "../../../components/IlusHero.astro";
 // Mapas de gasolineras en el idioma de cada sección: /fr/carte-stations-service/ (mapa de Francia),
 // /de/tankstellen-karte/ (índice, porque Alemania no tiene mapa) y /de/tankstellen-karte/frankreich/ (para viajar).
 import Base from "../../../layouts/Base.astro";
@@ -37,6 +38,7 @@ const lead = T.indiceLead(nombres, enes);
         <div class="wrap">
           <h1>{T.indiceT}</h1>
           <p class="lead">{lead}</p>
+          <IlusHero tipo={"mapa"} lang={p.lang} />
         </div>
       </section>
       <section class="section section--tight">

@@ -1,4 +1,5 @@
 ---
+import IlusHero from "./IlusHero.astro";
 // Página del precio de un día en una zona: hoy, mañana o una fecha fija. Mismo esquema que la web española:
 // el dato arriba (sin anuncios encima), anuncio, precio por tramos y preguntas, anuncio, otros días y zonas.
 // En «hoy» y «mañana» el navegador comprueba que el día del build sigue siendo el que toca y, si no, carga
@@ -67,6 +68,7 @@ const datosCliente = JSON.stringify({ zona: m.zona.id, tz: m.pais.tz, modo: pag,
         {PAISES_C.includes(m.pais) && <a class="btn btn--ghost btn--small" href={urlPrecios(m.pais)}>{L.carburantes}</a>}
         {PAISES_C.includes(m.pais) && hay(CC(m.pais), "calefaccion") && <a class="btn btn--ghost btn--small" href={urlCalefaccion(m.pais)}>{textosC(m.pais).productos.calefaccion}</a>}
       </div>
+      <IlusHero tipo={"electricidad"} lang={m.pais.lang} />
     </div>
   </section>
 

@@ -1,4 +1,6 @@
 ---
+import IlusHero from "../../../components/IlusHero.astro";
+import { ilusGuia } from "../../../lib/textos-visual";
 // Una guía en su idioma, con hreflang a sus traducciones y las demás guías del mismo idioma.
 import Base from "../../../layouts/Base.astro";
 import Anuncio from "../../../components/Anuncio.astro";
@@ -34,6 +36,7 @@ const esquemas = g.faq?.length ? [schema, esquemaFaq(g.faq)] : schema;
       <p class="breadcrumbs"><a href={urlGuias(g.cc)}>{TITULO_GUIAS[g.lang]}</a></p>
       <h1 style="font-size:clamp(30px,5vw,44px)">{g.titulo}</h1>
       <p class="lead">{g.resumen}</p>
+      <IlusHero tipo={ilusGuia(g.clave)} lang={g.lang} />
     </div>
   </section>
   <section class="section section--white section--tight">

@@ -1,4 +1,5 @@
 ---
+import IlusHero from "./IlusHero.astro";
 // Precio de hoy de un carburante en España: media nacional, gasolineras más baratas, provincias, evolución
 // diaria y semanal, y comparación con Europa. La usan /precio-gasolina-hoy/, /precio-gasoil-hoy/ y /precio-glp-hoy/.
 import Base from "../layouts/Base.astro";
@@ -66,6 +67,7 @@ const schema = [
         <a class="btn btn--ghost" href="/es/gasolineras-baratas/">Gasolineras baratas en tu provincia</a>
         <a class="btn btn--ghost" href="/es/carburantes-europa/">Precios en Europa</a>
       </div>
+      <IlusHero tipo={"carburantes"} lang={"es"} />
     </div>
   </section>
 

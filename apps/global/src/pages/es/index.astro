@@ -1,4 +1,5 @@
 ---
+import IlusHero from "../../components/IlusHero.astro";
 // Portada de España en la web global: carburantes (precio de hoy, mapa, gasolineras baratas, Europa) y guías.
 // El precio de la luz de España está en la web española (comparadortarifaluz.es), a la que se enlaza.
 import Base from "../../layouts/Base.astro";
@@ -41,6 +42,7 @@ const desc = g && d ? `Precio de la gasolina y el gasóleo hoy en España (gasol
         <a class="btn btn--mint" href={urlMapa(es)}>Abrir el mapa de gasolineras</a>
         <a class="btn btn--ghost" href="/es/gasolineras-baratas/">Gasolineras baratas en tu provincia</a>
       </div>
+      <IlusHero tipo={"carburantes"} lang={"es"} />
     </div>
   </section>
   <section class="section section--tight">

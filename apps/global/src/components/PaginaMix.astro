@@ -1,4 +1,5 @@
 ---
+import IlusHero from "./IlusHero.astro";
 // Mix de generación de una zona: de dónde viene la electricidad hoy (ENTSO-E, generación real por tecnología),
 // % renovable, CO₂ estimado, producción hora a hora, últimos 30 días y previsión de eólica y solar para mañana.
 import Base from "../layouts/Base.astro";
@@ -58,6 +59,7 @@ const desc = recortarFrases(lead, 158);
         <a class="btn btn--ghost btn--small" href={urlNegativos(m)}>{T.negativosT}</a>
         <a class="btn btn--ghost btn--small" href={urlMeses(m)}>{T.mesesT}</a>
       </div>
+      <IlusHero tipo={"mix"} lang={m.pais.lang} />
     </div>
   </section>
 

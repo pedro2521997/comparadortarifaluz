@@ -1,4 +1,5 @@
 ---
+import IlusHero from "../../../../components/IlusHero.astro";
 // Gasolineras baratas de una provincia: medias frente a España, las más baratas de gasolina y de diésel
 // y todos los municipios con su media (enlazan a la página de cada municipio).
 import Base from "../../../../layouts/Base.astro";
@@ -51,6 +52,7 @@ const titulo = g ? `Gasolineras baratas en ${p.nombre} hoy: gasolina desde ${eur
         Precios de hoy, {fecha} ({HORA}), en las {p.estaciones.length} gasolineras de la provincia.{g && <> Gasolina 95: <strong>{eurL(g.media)}</strong> de media, {comp(g.media, se("g95")!.media)}.</>}
       </p>
       <div class="btn-row"><a class="btn btn--ghost" href={urlEnMapa(p.estaciones)}>Ver en el mapa</a></div>
+      <IlusHero tipo={"mapa"} lang={"es"} />
     </div>
   </section>
 

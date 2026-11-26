@@ -3,6 +3,7 @@
 // Usa las mismas clases CSS que la web española (apps/web/src/styles/componentes.css).
 
 import { TEXTOS, type Idioma, type Textos } from "./textos";
+import { TEXTOS_V } from "./textos-visual";
 
 export type Precios = (number | null)[];
 
@@ -91,8 +92,77 @@ export function bloque(f: Formato, fecha: string, p: Precios, ahora: number | nu
 <h2 class="h-sec">${L.mejoresHoras}</h2>
 <ul class="usos">${usos}${evitar}</ul>
 <h2 class="h-sec">${L.porHora}</h2>
+${grafico(f, p, ahora)}
 <p class="leyenda caption">${L.leyenda(L.niveles.barata, L.niveles.cara)}</p>
 <ol class="horas" data-fecha="${fecha}">${filas}</ol>`;
+}
+
+// ---------- Gráfico de barras interactivo ----------
+// El mismo dibujo que en la web española (clases .gb de componentes.css), con precios negativos y la unidad
+// de cada país. Cada barra lleva su lectura ya traducida (data-l): el script del navegador solo la copia.
+
+const GW = 720, GH = 200, GMT = 8;
+const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+
+/** Paso «bonito» (1, 2, 2,5 o 5 × 10^n) para unas 4–5 líneas en las unidades que se muestran. */
+function pasoBonito(rango: number): number {
+  const bruto = rango / 4;
+  const pot = 10 ** Math.floor(Math.log10(bruto));
+  return ([1, 2, 2.5, 5, 10].find((k) => k * pot >= bruto) ?? 10) * pot;
+}
+
+export function grafico(f: Formato, p: Precios, ahora: number | null = null): string {
+  const L = TEXTOS[f.lang];
+  const V = TEXTOS_V[f.lang];
+  const vals = p.filter((x): x is number => x !== null);
+  if (!vals.length) return "";
+  const niv = niveles(p);
+  const r = resumen(p);
+  // Escala en las unidades que ve el usuario (c/kWh, øre/kWh…), para que las líneas caigan en cifras redondas.
+  const d = (x: number) => x * f.mult;
+  const bajo = d(Math.min(...vals, 0)), alto = d(Math.max(...vals, 0));
+  const paso = pasoBonito(Math.max(alto - bajo, 1e-6));
+  const yMin = Math.floor(bajo / paso) * paso;
+  const yMax = Math.max(Math.ceil((alto * 1.04) / paso) * paso, yMin + paso);
+  const ph = GH - GMT;
+  const y = (v: number) => GMT + ph - ((v - yMin) / (yMax - yMin)) * ph;
+  const slot = GW / p.length;
+  const pct = (v: number, total: number) => `${((v / total) * 100).toFixed(2)}%`;
+  const dec = Math.max(0, -Math.floor(Math.log10(paso) + 1e-9) + (paso / 10 ** Math.floor(Math.log10(paso)) === 2.5 ? 1 : 0));
+  const num = new Intl.NumberFormat(f.locale, { minimumFractionDigits: 0, maximumFractionDigits: dec });
+  const lineas: string[] = [];
+  const etiquetas: string[] = [];
+  for (let k = 0; yMin + k * paso <= yMax + paso / 1000; k++) {
+    const v = yMin + k * paso;
+    const esCero = Math.abs(v) < paso / 1000;
+    const yy = y(v).toFixed(1);
+    lineas.push(`<line class="gb__rej${esCero ? " gb__cero" : ""}" x1="0" x2="${GW}" y1="${yy}" y2="${yy}" vector-effect="non-scaling-stroke"/>`);
+    etiquetas.push(`<span style="top:${pct(Number(yy), GH)}">${num.format(esCero ? 0 : v).replace(/^-/, "−")}</span>`);
+  }
+  const ejeX = Array.from({ length: p.length / 3 + 1 }, (_, k) => k * 3)
+    .map((h) => {
+      const c = [h === p.length ? "gb__fin" : h === 0 ? "gb__ini" : "", h % 6 === 3 ? "gb__medio" : ""].filter(Boolean).join(" ");
+      return `<span${c ? ` class="${c}"` : ""} style="left:${pct(h, p.length)}">${L.reloj(h)}</span>`;
+    })
+    .join("");
+  const cero = y(0);
+  const lectura = (h: number) => `${L.reloj(h)}–${L.reloj(h + 1)}: ${valor(f, p[h]!)} (${L.niveles[niv[h] as "barata"]})`;
+  const barras = p
+    .map((x, h) => {
+      const hit = `<rect class="gb__hit" data-h="${h}" x="${(h * slot).toFixed(1)}" y="0" width="${slot.toFixed(1)}" height="${GH}"/>`;
+      if (x === null) return hit;
+      const yv = y(d(x));
+      const top = Math.min(yv, cero), altura = Math.max(Math.abs(cero - yv), 1);
+      return `<rect class="gb__b gb__b--${niv[h]}${ahora === h ? " gb__b--ahora" : ""}" data-h="${h}" data-l="${esc(lectura(h))}" x="${(h * slot + slot * 0.14).toFixed(1)}" y="${top.toFixed(1)}" width="${(slot * 0.72).toFixed(1)}" height="${altura.toFixed(1)}" vector-effect="non-scaling-stroke"/>${hit}`;
+    })
+    .join("");
+  const inicial = ahora != null && p[ahora] != null ? ahora : r.min.h;
+  return `<figure class="gb" tabindex="0" data-sel="${inicial}" data-t-ahora="${esc(L.ahora)}" data-t-elegida="${esc(V.elegida)}" aria-label="${esc(V.aria)}">
+<p class="gb__lectura" aria-live="polite"><span class="gb__tit">${esc(inicial === ahora ? L.ahora : L.horaBarata)}</span> <span class="gb__txt">${esc(lectura(inicial))}</span></p>
+<div class="gb__area"><div class="gb__ejey" aria-hidden="true">${etiquetas.join("")}</div><svg viewBox="0 0 ${GW} ${GH}" preserveAspectRatio="none" aria-hidden="true" focusable="false">${lineas.join("")}${barras}<line class="gb__guia" x1="0" x2="0" y1="0" y2="${GH}" vector-effect="non-scaling-stroke"/></svg></div>
+<div class="gb__ejex" aria-hidden="true">${ejeX}</div>
+<figcaption class="gb__pie"><span><i class="gb__c gb__c--barata"></i>${esc(L.niveles.barata)}</span><span><i class="gb__c gb__c--normal"></i>${esc(L.niveles.normal)}</span><span><i class="gb__c gb__c--cara"></i>${esc(L.niveles.cara)}</span><span class="gb__ayuda">${esc(V.ayuda)}</span></figcaption>
+</figure>`;
 }
 
 export function noPublicado(lang: Idioma): string {

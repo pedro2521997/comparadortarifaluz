@@ -1,4 +1,5 @@
 ---
+import IlusHero from "./IlusHero.astro";
 // Mapa de gasolineras de un país (FR, ES, IT, PT) en el idioma de una sección de la web global: mapa con
 // buscador, «cerca de mí» y lista de las más baratas de la zona (en el navegador), y debajo las cifras del día
 // en HTML para quien no tiene JavaScript y para los buscadores.
@@ -88,6 +89,7 @@ const tituloProvincias = z ? z.T.regionesT : "Gasolineras baratas por provincia"
       <span class="eyebrow">{nombrePais(cc, p.locale)} · {hora}</span>
       <h1>{T.titulo(enX)}</h1>
       <p class="lead">{lead}</p>
+      <IlusHero tipo={"mapa"} lang={p.lang} />
     </div>
   </section>
 

@@ -7,8 +7,11 @@ interface Props {
   etiqueta: string;
   /** Color de fondo de la cara delantera. */
   tono?: "menta" | "salvia" | "lavanda" | "blanco";
+  /** Textos de los botones en el idioma de la página (la web global los traduce). */
+  ver?: string;
+  volver?: string;
 }
-const { etiqueta, tono = "blanco" } = Astro.props;
+const { etiqueta, tono = "blanco", ver = "Ver detalles de", volver = "Volver" } = Astro.props;
 ---
 
 <div class:list={["flip", `flip--${tono}`]} data-flip>
@@ -16,14 +19,14 @@ const { etiqueta, tono = "blanco" } = Astro.props;
     <div class="flip__cara flip__frente">
       <slot name="frente" />
       <button type="button" class="flip__girar" aria-expanded="false" data-girar>
-        <span class="sr-only">Ver detalles de {etiqueta}</span>
+        <span class="sr-only">{ver} {etiqueta}</span>
         <span class="flip__icono" aria-hidden="true">↻</span>
       </button>
     </div>
     <div class="flip__cara flip__dorso">
       <slot name="dorso" />
       <button type="button" class="flip__volver" data-girar>
-        <span aria-hidden="true">↺</span> Volver<span class="sr-only"> a {etiqueta}</span>
+        <span aria-hidden="true">↺</span> {volver}<span class="sr-only">: {etiqueta}</span>
       </button>
     </div>
   </div>

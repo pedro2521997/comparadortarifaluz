@@ -1,4 +1,5 @@
 ---
+import IlusHero from "../../../components/IlusHero.astro";
 // Precio de los carburantes en otro país de la UE visto desde el país de origen y en su idioma
 // (/de/spritpreise-europa/italien/ = «Spritpreise in Italien»): para viajar en coche.
 import Base from "../../../layouts/Base.astro";
@@ -53,6 +54,7 @@ const recorta = (t: string, n: number) => (t.length <= n ? t : t.slice(0, t.last
       <h1>{T.tituloDestino(enD)}</h1>
       <p class="lead">{lead}</p>
       {tieneMapas(p) && MAPAS.includes(d) && <div class="btn-row"><a class="btn btn--mint btn--small" href={urlMapa(p, d)}>{TEXTOS_M[p.lang]!.titulo(enD)}</a></div>}
+      <IlusHero tipo={"carburantes"} lang={p.lang} />
     </div>
   </section>
   <section class="section section--tight">

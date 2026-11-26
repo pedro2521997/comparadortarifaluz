@@ -1,4 +1,5 @@
 ---
+import IlusHero from "./IlusHero.astro";
 // Precios negativos de una zona en los últimos 12 meses: cuántas horas y días, el más bajo, el último y por mes.
 import Base from "../layouts/Base.astro";
 import Anuncio from "./Anuncio.astro";
@@ -47,6 +48,7 @@ const preguntas = [
         {tieneMix(m) && <a class="btn btn--ghost btn--small" href={urlMix(m)}>{T.mix}</a>}
         <a class="btn btn--ghost btn--small" href={urlMeses(m)}>{T.mesesT}</a>
       </div>
+      <IlusHero tipo={"negativos"} lang={m.pais.lang} />
     </div>
   </section>
   <section class="section section--tight">
