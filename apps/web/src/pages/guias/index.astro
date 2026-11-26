@@ -3,7 +3,7 @@ import Base from "../../layouts/Base.astro";
 import Anuncio from "../../components/Anuncio.astro";
 import Tarjeta from "../../components/Tarjeta.astro";
 import { guias, CATEGORIAS } from "../../lib/guias";
-import { ICONO_CATEGORIA } from "../../lib/iconos";
+import { ICONO_CATEGORIA, ilustracion } from "../../lib/iconos";
 import { fechaCorta } from "../../lib/formato";
 
 const grupos = CATEGORIAS.map((c) => ({ c, lista: guias.filter((g) => (g.categoria ?? "Tu factura") === c) })).filter((g) => g.lista.length);
@@ -38,6 +38,10 @@ const schema = {
           <>
             <div id={g.c.toLowerCase().replace(/[^a-záéíóúñ]+/g, "-")}>
               <h2 class="g-cat">{g.c}</h2>
+              {(() => {
+                const il = ilustracion(g.c);
+                return il && <img class="ilus-tema" src={il.src} alt={il.alt} width="960" height="320" loading="lazy" decoding="async" />;
+              })()}
               <ul class="flip-rejilla g-rejilla">
                 {g.lista.map((x) => (
                   <li>

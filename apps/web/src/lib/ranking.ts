@@ -92,9 +92,15 @@ export function logoHtml(t: Tarifa): string {
 }
 
 /** Logo grande para las tarjetas de compañías (o sus iniciales si no tenemos logo). */
+// Logotipos apaisados (texto): en las tarjetas se muestran a lo ancho en lugar de en un cuadrado.
+const LOGOS_ANCHOS: Record<string, [number, number]> = { "masnorte.es": [150, 25] };
+
 export function logoGrande(t: Tarifa): string {
   const m = marca(t.comercializadora);
-  const src = LOGOS[dominio(t.url_contratar || t.url_fuente || "")];
+  const d = dominio(t.url_contratar || t.url_fuente || "");
+  const src = LOGOS[d];
+  const ancho = LOGOS_ANCHOS[d];
+  if (src && ancho) return `<img class="logo-grande logo-grande--ancho" src="${src}" alt="Logo de ${esc(m)}" width="${ancho[0]}" height="${ancho[1]}" loading="lazy" decoding="async" />`;
   return src
     ? `<img class="logo-grande" src="${src}" alt="Logo de ${esc(m)}" width="56" height="56" loading="lazy" decoding="async" />`
     : `<span class="logo-grande logo-grande--txt" aria-hidden="true">${esc(iniciales(m))}</span>`;

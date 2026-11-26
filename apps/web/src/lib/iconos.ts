@@ -1,4 +1,7 @@
-// Imagen (emoji) de cada aparato y de cada tema de las guías, para las tarjetas.
+// Imagen (emoji) de cada aparato y de cada tema de las guías, para las tarjetas, y las ilustraciones
+// de cada tema y grupo de aparatos.
+
+import ilustracionesJson from "../../../../data/ilustraciones.json";
 
 export const ICONO_APARATO: Record<string, string> = {
   "aire-acondicionado": "❄️", "bomba-de-calor": "🌡️", "radiador-de-aceite": "♨️", calefactor: "🔥", "estufa-infrarrojos": "☀️",
@@ -25,3 +28,21 @@ export const ICONO_CATEGORIA: Record<string, string> = {
   "Contratos y trámites": "✍️",
   "Gas y otros": "🔥",
 };
+
+// ---------- Ilustraciones (scripts/ilustraciones.py) ----------
+
+const ALT = ilustracionesJson as Record<string, string>;
+const aSlug = (s: string) =>
+  s
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+
+/** Ilustración de un tema de guías o de un grupo de aparatos (null si no hay). */
+export function ilustracion(tema: string | undefined | null): { src: string; alt: string } | null {
+  if (!tema) return null;
+  const s = aSlug(tema);
+  return ALT[s] ? { src: `/ilustraciones/${s}.svg`, alt: ALT[s] } : null;
+}

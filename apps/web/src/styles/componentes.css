@@ -1324,9 +1324,37 @@
   object-fit: contain;
   padding: 6px;
 }
+.logo-grande--ancho {
+  width: auto;
+  max-width: 170px;
+  height: 56px;
+  padding: 14px 10px;
+}
 .logo-grande--txt {
   background: var(--color-canopy);
   color: var(--color-mint-pulse);
   font-weight: 700;
   font-size: 18px;
+}
+
+/* Ilustraciones (scripts/ilustraciones.py) */
+.ilus {
+  margin: 0 0 24px;
+}
+.ilus img,
+.ilus-tema {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 20px;
+}
+.ilus-tema {
+  max-height: 180px;
+  object-fit: cover;
+  margin-bottom: 20px;
+}
+@media (max-width: 560px) {
+  .ilus-tema {
+    max-height: 120px;
+  }
 }

@@ -6,6 +6,7 @@ import { aparatos, articulo, dias, factorImpuestos, guiaAparato, kwhMesAparato, 
 import { graficoBarras, mejorFranja, resumen, textoFranjas } from "../../lib/grafico";
 import { eur2, kwh, num, hoyMadrid, fechaCorta } from "../../lib/formato";
 import { AMAZON_TAG } from "../../config";
+import { ilustracion } from "../../lib/iconos";
 
 export function getStaticPaths() {
   return aparatos.map((aparato) => ({ params: { slug: aparato.slug }, props: { aparato } }));
@@ -25,6 +26,7 @@ const tituloBase = `Cuánto gasta ${articulo(aparato)} ${nombreMin}: ${eur2(cost
 const tituloAparato = tituloBase.length <= 45 ? `${tituloBase} con el precio de hoy` : tituloBase;
 const relacionados = aparatos.filter((a) => a.grupo === aparato.grupo && a.slug !== aparato.slug).slice(0, 4);
 const guia = guiaAparato(aparato);
+const ilus = ilustracion(aparato.grupo);
 const tituloTruco = aparato.truco.split(":")[0].split(".")[0];
 
 // Lo que cambia la factura según el aparato sea eficiente o no y lo uses poco o mucho: el mismo cálculo
@@ -100,6 +102,13 @@ const faq = {
   </section>
 
   <section class="section section--white">
+    {
+      ilus && (
+        <figure class="wrap ilus" style="margin-bottom:40px">
+          <img src={ilus.src} alt={ilus.alt} width="960" height="320" loading="lazy" decoding="async" />
+        </figure>
+      )
+    }
     <div class="wrap grid grid--2" style="gap:48px">
       <div class="stack" style="--stack:16px">
         <span class="eyebrow">De qué depende</span>

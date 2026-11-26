@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 320" width="960" height="320" role="img" aria-label="Aire acondicionado en la pared enfriando una habitación">
+<title>Aire acondicionado en la pared enfriando una habitación</title>
+<defs><clipPath id="r"><rect width="960" height="320" rx="24"/></clipPath></defs>
+<g clip-path="url(#r)">
+<rect width="960" height="320" fill="#f3f1ec"/>
+<circle cx="110" cy="40" r="120" fill="#e8e7f5"/>
+<circle cx="880" cy="300" r="140" fill="#dcfde9"/>
+<circle cx="800" cy="50" r="10" fill="#afc4bf"/><circle cx="170" cy="270" r="7" fill="#afc4bf"/><circle cx="60" cy="200" r="5" fill="#7c18d3" opacity=".35"/>
+<rect y="272" width="960" height="48" fill="#e4ebe7"/>
+<rect x="300" y="60" width="360" height="90" rx="22" fill="#ffffff" stroke="#c2cec8" stroke-width="3"/>
+<rect x="330" y="120" width="300" height="10" rx="5" fill="#afc4bf"/><circle cx="620" cy="88" r="6" fill="#0fff87"/><rect x="330" y="82" width="80" height="10" rx="5" fill="#c2cec8"/>
+<path d="M360 170q20 20 0 40t0 40M430 170q20 20 0 40t0 40M500 170q20 20 0 40t0 40M570 170q20 20 0 40t0 40" fill="none" stroke="#5bc0eb" stroke-width="6" stroke-linecap="round"/>
+<g stroke="#5bc0eb" stroke-width="6" stroke-linecap="round"><line x1="160" y1="110" x2="160" y2="210"/><line x1="117" y1="135" x2="203" y2="185"/><line x1="117" y1="185" x2="203" y2="135"/></g>
+<rect x="736" y="70" width="34" height="160" rx="17" fill="#ffffff" stroke="#104336" stroke-width="6"/><circle cx="753" cy="236" r="28" fill="#5bc0eb" stroke="#104336" stroke-width="6"/><rect x="746" y="170" width="14" height="60" rx="7" fill="#5bc0eb"/>
+<text x="800" y="140" font-family="Arial, sans-serif" font-size="34" font-weight="700" fill="#104336">26°</text>
+</g>
+</svg>

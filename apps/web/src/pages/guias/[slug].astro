@@ -5,6 +5,7 @@ import { guias, preguntasDe, relacionadas, conAnuncios, minutosLectura, type Gui
 import { anuncioHtml } from "../../lib/anuncios-html.mjs";
 import { fechaMedia } from "../../lib/formato";
 import { SITIO } from "../../config";
+import { ilustracion } from "../../lib/iconos";
 
 export function getStaticPaths() {
   return guias.map((g) => ({ params: { slug: g.slug }, props: { g } }));
@@ -17,6 +18,7 @@ const indice = g.md.getHeadings().filter((h) => h.depth === 2);
 const faqs = preguntasDe(g);
 const otras = relacionadas(g);
 const url = new URL(`/guias/${g.slug}/`, SITIO.url).href;
+const ilus = ilustracion(g.categoria ?? "Tu factura");
 
 const articulo = {
   "@context": "https://schema.org",
@@ -50,6 +52,13 @@ const schema = faqs.length && g.faq !== true
   <section class="section section--white section--tight">
     <div class="wrap guia-grid">
       <article class="guia-art">
+        {
+          ilus && (
+            <figure class="ilus">
+              <img src={ilus.src} alt={ilus.alt} width="960" height="320" decoding="async" />
+            </figure>
+          )
+        }
         {
           g.respuesta && (
             <div class="respuesta" role="note">

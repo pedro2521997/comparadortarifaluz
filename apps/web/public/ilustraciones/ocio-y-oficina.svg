@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 320" width="960" height="320" role="img" aria-label="Escritorio con monitor, ordenador, mando de consola y router">
+<title>Escritorio con monitor, ordenador, mando de consola y router</title>
+<defs><clipPath id="r"><rect width="960" height="320" rx="24"/></clipPath></defs>
+<g clip-path="url(#r)">
+<rect width="960" height="320" fill="#f3f1ec"/>
+<circle cx="110" cy="40" r="120" fill="#e8e7f5"/>
+<circle cx="880" cy="300" r="140" fill="#dcfde9"/>
+<circle cx="800" cy="50" r="10" fill="#afc4bf"/><circle cx="170" cy="270" r="7" fill="#afc4bf"/><circle cx="60" cy="200" r="5" fill="#7c18d3" opacity=".35"/>
+<rect y="272" width="960" height="48" fill="#e4ebe7"/>
+<rect x="200" y="226" width="560" height="14" rx="6" fill="#104336"/>
+<rect x="320" y="60" width="280" height="160" rx="12" fill="#101f1e"/><rect x="334" y="74" width="252" height="132" rx="6" fill="#e8e7f5"/>
+<rect x="350" y="166" width="22" height="30" rx="3" fill="#0fff87"/><rect x="382" y="146" width="22" height="50" rx="3" fill="#0fff87"/><rect x="414" y="154" width="22" height="42" rx="3" fill="#afc4bf"/><rect x="446" y="126" width="22" height="70" rx="3" fill="#7c18d3"/><rect x="478" y="136" width="22" height="60" rx="3" fill="#afc4bf"/><rect x="510" y="106" width="22" height="90" rx="3" fill="#7c18d3"/><rect x="542" y="116" width="22" height="80" rx="3" fill="#7c18d3"/>
+<rect x="446" y="220" width="28" height="8" fill="#afc4bf"/>
+<rect x="640" y="120" width="70" height="106" rx="8" fill="#ffffff" stroke="#c2cec8" stroke-width="3"/><circle cx="675" cy="150" r="8" fill="#0fff87"/><rect x="656" y="176" width="38" height="6" rx="3" fill="#c2cec8"/><rect x="656" y="190" width="38" height="6" rx="3" fill="#c2cec8"/>
+<path d="M230 196c0-16 14-24 30-24h40c16 0 30 8 30 24l6 20c2 10-12 16-20 8l-14-14h-44l-14 14c-8 8-22 2-20-8z" fill="#7c18d3"/>
+<circle cx="258" cy="190" r="5" fill="#ffffff"/><circle cx="306" cy="186" r="5" fill="#0fff87"/><circle cx="318" cy="196" r="5" fill="#ffd166"/>
+<rect x="140" y="140" width="80" height="26" rx="8" fill="#ffffff" stroke="#c2cec8" stroke-width="3"/><circle cx="160" cy="153" r="4" fill="#0fff87"/><circle cx="174" cy="153" r="4" fill="#0fff87"/>
+<path d="M162 124q18-18 36 0M150 112q30-30 60 0" fill="none" stroke="#104336" stroke-width="5" stroke-linecap="round"/>
+</g>
+</svg>

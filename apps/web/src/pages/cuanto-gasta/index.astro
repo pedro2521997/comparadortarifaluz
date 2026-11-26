@@ -5,7 +5,7 @@ import CalculadoraAparato from "../../components/CalculadoraAparato.astro";
 import Tarjeta from "../../components/Tarjeta.astro";
 import { aparatos, dias, factorImpuestos, kwhMesAparato } from "../../lib/datos";
 import { resumen } from "../../lib/grafico";
-import { ICONO_APARATO } from "../../lib/iconos";
+import { ICONO_APARATO, ilustracion } from "../../lib/iconos";
 import { eur2, fechaCorta, hoyMadrid, kwh } from "../../lib/formato";
 
 const hoy = hoyMadrid();
@@ -44,6 +44,10 @@ const grupos = [...new Set(aparatos.map((a) => a.grupo))].map((g) => ({ nombre: 
         grupos.map((g) => (
           <div>
             <h3 class="grupo">{g.nombre}</h3>
+            {(() => {
+              const il = ilustracion(g.nombre);
+              return il && <img class="ilus-tema" src={il.src} alt={il.alt} width="960" height="320" loading="lazy" decoding="async" />;
+            })()}
             <ul class="flip-rejilla">
               {g.lista.map((a, k) => (
                 <li>

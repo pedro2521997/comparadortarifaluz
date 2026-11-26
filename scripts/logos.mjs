@@ -24,11 +24,17 @@ const dominios = [...new Set(tarifas.map((t) => dominio(t.url_contratar || t.url
 // Revisados a mano: webs que bloquean la portada o cuyo icono no es su marca.
 const MANUAL = {
   "endesa.com": "https://www.endesa.com/content/dam/endesa-com/endesa_logo.svg",
-  "chcenergia.es": "https://www.chcenergia.es/themes/custom/chc/favicon.svg",
   "inerenergia.es": "https://www.inerenergia.es/static/img/favicon/favicon.ico",
 };
 // Su icono no los identifica (el de WordPress por defecto, un recorte o un círculo vacío): mejor las iniciales.
-const EXCLUIR = new Set(["adxenergia.es", "hscomercializadora.com", "masnorte.es"]);
+const EXCLUIR = new Set(["adxenergia.es", "hscomercializadora.com"]);
+// Preparados a mano y guardados en el repositorio; el script no los toca ni con --forzar:
+// - chcenergia.es: su favicon.svg oficial pesa 3,9 MB (lleva imágenes dentro); se pasó a PNG de 180 px.
+// - iberdrola.es: su web bloquea las descargas automáticas; es su isotipo oficial (Wikimedia Commons,
+//   «Isotipo Iberdrola (2023).svg») pasado a PNG de 180 px.
+// - masnorte.es: su favicon es solo la «O» amarilla del logotipo; se usa el logotipo completo
+//   (masnorte_logo.svg de su web) en PNG de 360×61.
+const A_MANO = new Set(["chcenergia.es", "iberdrola.es", "masnorte.es"]);
 
 const indice = existsSync(INDICE) ? JSON.parse(readFileSync(INDICE, "utf8")) : {};
 for (const d of EXCLUIR) delete indice[d];
@@ -93,7 +99,7 @@ async function candidatos(d) {
 }
 
 for (const d of dominios) {
-  if ((indice[d] && !forzar) || EXCLUIR.has(d)) continue;
+  if ((indice[d] && !forzar) || EXCLUIR.has(d) || A_MANO.has(d)) continue;
   let guardado = null;
   for (const c of MANUAL[d] ? [{ url: MANUAL[d], prioridad: 9999 }] : await candidatos(d)) {
     try {
