@@ -1,7 +1,9 @@
 ---
 import Base from "../../layouts/Base.astro";
 import Anuncio from "../../components/Anuncio.astro";
+import Tarjeta from "../../components/Tarjeta.astro";
 import { guias, CATEGORIAS } from "../../lib/guias";
+import { ICONO_CATEGORIA } from "../../lib/iconos";
 import { fechaCorta } from "../../lib/formato";
 
 const grupos = CATEGORIAS.map((c) => ({ c, lista: guias.filter((g) => (g.categoria ?? "Tu factura") === c) })).filter((g) => g.lista.length);
@@ -23,7 +25,7 @@ const schema = {
     <div class="wrap">
       <span class="eyebrow">Guías</span>
       <h1>Todo lo que rodea a tu factura, sin relleno</h1>
-      <p class="lead">{guias.length} guías con datos y ejemplos en euros. Cada una termina en una herramienta o en una decisión, con fuentes oficiales y fecha de revisión.</p>
+      <p class="lead">{guias.length} guías con datos y ejemplos en euros. Cada una termina en una herramienta o en una decisión, con fuentes oficiales y fecha de revisión. Pulsa una tarjeta para ver la respuesta corta.</p>
       <nav class="cats" aria-label="Temas">
         {grupos.map((g) => <a class="pill" href={`#${g.c.toLowerCase().replace(/[^a-záéíóúñ]+/g, "-")}`}>{g.c}</a>)}
       </nav>
@@ -36,16 +38,25 @@ const schema = {
           <>
             <div id={g.c.toLowerCase().replace(/[^a-záéíóúñ]+/g, "-")}>
               <h2 class="g-cat">{g.c}</h2>
-              <div class="grid grid--3">
+              <ul class="flip-rejilla g-rejilla">
                 {g.lista.map((x) => (
-                  <a class="card card--link" href={`/guias/${x.slug}/`}>
-                    <h3 class="g__t">{x.titulo}</h3>
-                    <p class="muted small">{x.resumen}</p>
-                    <span class="caption">Revisada el {fechaCorta(x.revisado)}</span>
-                    <span class="arrow">Leer →</span>
-                  </a>
+                  <li>
+                    <Tarjeta etiqueta={x.titulo} tono="salvia">
+                      <Fragment slot="frente">
+                        <span class="flip__img" aria-hidden="true">{ICONO_CATEGORIA[g.c] ?? "📘"}</span>
+                        <h3 class="g__t">{x.titulo}</h3>
+                        <p class="muted small">{x.resumen}</p>
+                        <span class="caption g__rev">Revisada el {fechaCorta(x.revisado)}</span>
+                      </Fragment>
+                      <Fragment slot="dorso">
+                        <span class="flip__dato">En pocas palabras</span>
+                        <p class="g__resp">{x.respuesta ?? x.resumen}</p>
+                        <a href={`/guias/${x.slug}/`}>Leer la guía completa →</a>
+                      </Fragment>
+                    </Tarjeta>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
             {i % 2 === 1 && i < grupos.length - 1 && <Anuncio tipo="horizontal" />}
           </>
@@ -77,5 +88,15 @@ const schema = {
     color: var(--color-bark);
     letter-spacing: 0;
     line-height: 1.3;
+  }
+  .g-rejilla {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+  .g__rev {
+    margin-top: auto;
+  }
+  .g__resp {
+    font-size: 15px;
+    line-height: 1.45;
   }
 </style>

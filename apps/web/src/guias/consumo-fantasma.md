@@ -3,7 +3,7 @@ titulo: "Consumo fantasma: lo que gastan los aparatos en espera"
 resumen: "Cuánto consumen la tele, el decodificador o la consola apagados, cómo medirlo y qué merece la pena desenchufar."
 respuesta: "Los aparatos en espera pueden sumar 50–100 € al año en una casa con aparatos antiguos: decodificadores, consolas con encendido instantáneo y equipos de sonido. Una regleta con interruptor lo soluciona; los cargadores modernos apenas gastan."
 categoria: "Ahorrar luz"
-revisado: "2026-10-21"
+revisado: "2026-11-26"
 orden: 15
 herramienta: { href: "/cuanto-gasta/", texto: "Pon los vatios en espera de tu aparato (24 horas al día) y te decimos cuánto te cuesta al año." }
 fuentes:
@@ -38,3 +38,27 @@ En un hogar con varios aparatos antiguos, la espera puede sumar **50–100 € a
 - Desactiva el **encendido instantáneo** de consolas y televisores.
 - No te obsesiones con los cargadores modernos: gastan casi nada.
 - El **router** gasta poco y apagarlo puede darte problemas: no merece la pena.
+
+## Un ejemplo de casa
+
+| En espera, todo el año | Vatios |
+|---|---|
+| Tele, decodificador y barra de sonido | 8 W |
+| Consola en encendido instantáneo | 12 W |
+| Ordenador e impresora en suspensión | 5 W |
+| Microondas, horno y vitro con reloj | 4 W |
+| Router y repetidor wifi | 14 W |
+| **Total** | **43 W** |
+
+43 W durante todo el año son unos **375 kWh**, alrededor de **60 €**. Con dos regletas y desactivando el encendido instantáneo de la consola se ahorra más de la mitad.
+
+## Lo que mejor no desenchufar
+
+- **Nevera y congelador**, por supuesto.
+- **Caldera, termostato y alarma**, que necesitan estar siempre encendidos.
+- **Router**, si de él dependen el teléfono, la alarma o la domótica.
+- **Decodificadores** que tardan mucho en arrancar o pierden la programación.
+
+## Cómo verlo en tu factura
+
+Si tienes tu fichero de consumos, busca las horas de madrugada de un día laborable: eso es tu **consumo de fondo**. Multiplícalo por 8.760 horas y tendrás cuánto gasta tu casa al año sin que hagas nada. En el [analizador de consumo](/analizador-consumo/) lo verás en una gráfica.

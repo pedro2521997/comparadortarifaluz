@@ -1,0 +1,455 @@
+{
+  "_nota": "Contenido propio de cada página /cuanto-gasta/<slug>/: de qué depende el consumo, más trucos y preguntas frecuentes. Los números de consumo están en aparatos.json.",
+  "aparatos": {
+    "aire-acondicionado": {
+      "intro": "Un split no gasta lo mismo cada hora: arranca fuerte hasta llegar a la temperatura y luego el compresor inverter baja de ritmo. Por eso dos casas con el mismo aparato pueden pagar el doble una que otra, según el aislamiento, la orientación y a qué temperatura lo pongan.",
+      "factores": ["La diferencia entre la temperatura de fuera y la que pides: cada grado de menos en el termostato se nota en la factura.", "El aislamiento y el sol directo: una habitación orientada a poniente con ventanas sin toldo obliga a trabajar al compresor toda la tarde.", "La clase energética (SEER): un equipo A+++ gasta bastante menos que uno antiguo sin inverter para enfriar lo mismo."],
+      "trucos": ["Limpia los filtros cada dos o tres semanas en verano: sucios, el aparato mueve menos aire y tarda más en enfriar.", "Enciéndelo con la casa cerrada y a 25–26 °C; poner 18 °C no enfría más rápido, solo hace que el compresor no pare.", "Si te vas pocas horas, súbelo a 28 °C en vez de apagarlo del todo en los días de mucho calor."],
+      "preguntas": [
+        { "p": "¿A qué temperatura gasta menos el aire acondicionado?", "r": "Entre 25 y 26 °C en verano es lo recomendado por el IDAE. Cada grado por debajo aumenta el consumo en torno a un 7 %." },
+        { "p": "¿Gasta más encenderlo y apagarlo o dejarlo puesto?", "r": "Con un equipo inverter suele salir mejor dejarlo a una temperatura moderada que apagarlo y volver a enfriar la casa desde cero cada pocas horas." }
+      ]
+    },
+    "bomba-de-calor": {
+      "intro": "La bomba de calor no fabrica calor con una resistencia: lo saca del aire de fuera. Por eso da tres o cuatro veces más calor que la electricidad que consume, y es la calefacción eléctrica más barata. Su rendimiento baja cuando fuera hace mucho frío.",
+      "factores": ["La temperatura exterior: con heladas el rendimiento (COP) baja y el equipo consume más para dar el mismo calor.", "Las horas que la tengas encendida y la temperatura que pidas: de 20 a 22 °C el gasto sube bastante.", "El tamaño de la estancia frente a la potencia del equipo: si se queda corto, trabaja siempre al máximo."],
+      "trucos": ["Mantén las puertas de las habitaciones que no usas cerradas para calentar solo lo necesario.", "Revisa que la unidad exterior no esté tapada por plantas, hojas o un toldo: necesita mover aire.", "Por la noche, baja a 16–17 °C en vez de apagarla si la casa se enfría mucho."],
+      "preguntas": [
+        { "p": "¿Es más barata la bomba de calor que un radiador eléctrico?", "r": "Sí. Para dar el mismo calor, una bomba de calor gasta unas tres veces menos electricidad que un radiador de aceite o un calefactor." },
+        { "p": "¿Cuánto gasta la bomba de calor en invierno?", "r": "Con los valores típicos de esta página, unas 6 horas al día a 800 W de media. En días muy fríos puede gastar más porque su rendimiento baja." }
+      ]
+    },
+    "radiador-de-aceite": {
+      "intro": "El radiador de aceite convierte toda la electricidad en calor con una resistencia, sin multiplicarla como la bomba de calor. El aceite guarda el calor y lo suelta despacio, así que es agradable, pero el gasto por hora es de los más altos de la casa.",
+      "factores": ["La posición del selector: a máxima potencia puede pasar de 2.000 W.", "El termostato: si está bien ajustado, la resistencia se apaga a ratos y el consumo medio baja.", "El tamaño y el aislamiento de la habitación: en una estancia grande no llega a la temperatura y no para nunca."],
+      "trucos": ["Ponlo en la posición media y deja que el termostato trabaje; la alta solo sirve para calentar rápido al principio.", "No lo tapes con ropa para secarla: pierde calor, gasta lo mismo y es peligroso.", "Apágalo un rato antes de salir de la habitación: el aceite sigue dando calor."],
+      "preguntas": [
+        { "p": "¿Cuánto gasta un radiador de aceite de 2.000 W en una hora?", "r": "A máxima potencia, 2 kWh por hora. Con el termostato cortando, la media suele quedarse entre 1 y 1,5 kWh." },
+        { "p": "¿Es mejor un radiador de aceite o un calefactor?", "r": "Gastan lo mismo por kWh de calor. El calefactor calienta antes y sirve para ratos cortos; el de aceite mantiene mejor el calor en una habitación durante horas." }
+      ]
+    },
+    "calefactor": {
+      "intro": "El calefactor o termoventilador sopla aire caliente con una resistencia. Calienta en un par de minutos, pero gasta lo mismo que un horno encendido: está pensado para dar un golpe de calor, no para tenerlo horas.",
+      "factores": ["La posición: la mayoría tienen 1.000 y 2.000 W; la alta dobla el gasto.", "El tiempo de uso: diez minutos en el baño cuestan céntimos, toda la tarde puede costar más de un euro.", "Si tiene termostato: sin él, la resistencia no se apaga nunca."],
+      "trucos": ["Úsalo en estancias pequeñas y cerradas, como el baño, y apágalo en cuanto se caliente.", "Elige uno con termostato y temporizador para que no se quede encendido por olvido.", "Si lo usas a diario más de una hora, una bomba de calor o un radiador con termostato te saldrá más barato."],
+      "preguntas": [
+        { "p": "¿Cuánto cuesta tener un calefactor encendido una hora?", "r": "A 2.000 W son 2 kWh. Con un precio medio de la luz de 0,15 €/kWh, unos 30 céntimos por hora más impuestos." },
+        { "p": "¿Gastan menos los calefactores cerámicos?", "r": "No. El calor que dan depende solo de los vatios. El cerámico reparte el calor algo más suave, pero 2.000 W gastan lo mismo con cualquier tecnología." }
+      ]
+    },
+    "estufa-infrarrojos": {
+      "intro": "La estufa de infrarrojos o de cuarzo calienta los cuerpos y objetos que tiene delante, no el aire de la habitación. Por eso funciona bien en terrazas, garajes o para una persona sentada, y mal para calentar una casa entera.",
+      "factores": ["La distancia: a más de dos o tres metros apenas notas el calor y tiendes a subir la potencia.", "El número de barras o la posición elegida.", "Si la usas en un espacio abierto o con corrientes, donde el aire caliente se escapa enseguida."],
+      "trucos": ["Úsala a poca distancia y orientada hacia ti en lugar de intentar calentar toda la estancia.", "En el sofá, una manta eléctrica gasta mucho menos que una estufa encendida toda la tarde.", "Apágala al levantarte: el calor desaparece al momento, no se acumula."],
+      "preguntas": [
+        { "p": "¿Gasta mucho una estufa de infrarrojos?", "r": "Lo mismo que cualquier aparato de su potencia: una de 1.200 W gasta 1,2 kWh por hora. Lo que cambia es que el calor llega directo, así que puedes usarla menos rato." },
+        { "p": "¿Sirve para calentar una habitación?", "r": "Para una habitación entera no es la mejor opción. Rinde mejor para calentar a una persona en un punto concreto." }
+      ]
+    },
+    "termo-electrico": {
+      "intro": "El termo eléctrico calienta el agua con una resistencia y la mantiene caliente todo el día. Aunque no abras el grifo, pierde calor y la resistencia vuelve a encenderse, por eso suele ser uno de los aparatos que más pesan en la factura.",
+      "factores": ["Los litros de agua caliente que usáis: duchas largas y varias personas multiplican el gasto.", "La temperatura del termostato: a 70 °C pierde más calor que a 55–60 °C.", "El aislamiento del termo y su edad: los antiguos o con cal en la resistencia gastan más."],
+      "trucos": ["Con un temporizador de 10–15 €, calienta solo en las horas valle y llega con agua caliente a la mañana.", "Si te vas varios días, apágalo; al volver tarda un par de horas en calentar.", "Revisa el ánodo de magnesio y la cal cada pocos años: alarga su vida y mantiene el rendimiento."],
+      "preguntas": [
+        { "p": "¿Es mejor tener el termo encendido todo el día?", "r": "No. Con un temporizador que lo encienda de madrugada, el agua aguanta caliente casi todo el día y pagas esas horas al precio más bajo." },
+        { "p": "¿Cuánto gasta un termo de 80 litros?", "r": "Para dos o tres personas, unas 3 horas al día de resistencia a 1.500 W: alrededor de 4,5 kWh diarios." }
+      ]
+    },
+    "lavadora": {
+      "intro": "Casi todo lo que gasta una lavadora es calentar el agua. El motor y el centrifugado gastan poco en comparación, así que la temperatura del programa decide la mayor parte del consumo de cada lavado.",
+      "factores": ["La temperatura: un lavado a 90 °C gasta más del triple que uno en frío.", "La carga: media carga gasta casi lo mismo que la carga completa.", "La clase energética y el programa: los programas eco duran más pero calientan menos el agua."],
+      "trucos": ["Usa el inicio diferido para que termine en las horas más baratas del día.", "Llena el tambor sin apretar la ropa: dos lavados a media carga gastan casi el doble que uno lleno.", "Limpia el filtro y usa la dosis justa de detergente; el exceso obliga a aclarar más."],
+      "preguntas": [
+        { "p": "¿Cuánto gasta una lavadora por lavado?", "r": "Un lavado a 40 °C ronda 0,9 kWh. En frío baja de 0,4 kWh y a 90 °C puede superar 1,5 kWh." },
+        { "p": "¿Por qué el programa eco tarda tanto si gasta menos?", "r": "Porque compensa con tiempo lo que no hace con calor: remoja la ropa más rato a menor temperatura, y calentar agua es lo que más gasta." }
+      ]
+    },
+    "secadora": {
+      "intro": "La secadora tiene que evaporar el agua que queda en la ropa, y eso requiere mucha energía. Las de condensación o evacuación lo hacen con una resistencia; las de bomba de calor reutilizan el calor y gastan aproximadamente la mitad.",
+      "factores": ["El tipo de secadora: bomba de calor, condensación o evacuación.", "Cuánta agua lleva la ropa al entrar, que depende del centrifugado de la lavadora.", "La carga y el tejido: toallas y vaqueros tardan mucho más que la ropa sintética."],
+      "trucos": ["Seca juntas prendas de tejido parecido para que el sensor de humedad corte antes.", "Programa el secado en horas baratas, como la lavadora.", "En verano o con buen tiempo, tender al aire cuesta cero."],
+      "preguntas": [
+        { "p": "¿Cuánto gasta una secadora de bomba de calor?", "r": "Entre 1,2 y 1,5 kWh por ciclo, frente a los 2,5–4 kWh de una de condensación. Cuesta más al comprarla y gasta menos al usarla." },
+        { "p": "¿Compensa poner la secadora por la noche?", "r": "Con PVPC o una tarifa por periodos, sí: entre las 0 y las 8 h el kWh suele ser de los más baratos del día." }
+      ]
+    },
+    "lavavajillas": {
+      "intro": "Como en la lavadora, lo que más gasta un lavavajillas es calentar el agua y secar la vajilla. Lavar a mano con agua caliente suele gastar más agua y más energía que un lavavajillas lleno en programa eco.",
+      "factores": ["El programa: intensivo a 65–70 °C frente a eco a 45–50 °C.", "Si lo pones lleno o a medias.", "La fase de secado: algunos calientan con resistencia y otros secan por condensación o abriendo la puerta."],
+      "trucos": ["No aclares los platos con agua caliente antes de meterlos: basta con quitar los restos.", "Si tiene opción de secado por apertura de puerta, actívala.", "Limpia el filtro cada semana para que no tenga que repetir aclarados."],
+      "preguntas": [
+        { "p": "¿Cuánto gasta un lavavajillas por lavado?", "r": "Alrededor de 1 kWh en programa eco con carga completa. Un programa intensivo puede pasar de 1,5 kWh." },
+        { "p": "¿Gasta menos lavar a mano?", "r": "Normalmente no. Un lavavajillas lleno en eco usa menos agua caliente que fregar la misma vajilla a mano con el grifo abierto." }
+      ]
+    },
+    "horno": {
+      "intro": "El horno tiene que calentar un espacio grande y sus paredes antes de cocinar, y mientras hornea la resistencia se enciende y se apaga para mantener la temperatura. Gasta mucho por hora, pero se usa pocos ratos.",
+      "factores": ["La temperatura y el tiempo de horneado.", "El precalentamiento: muchas recetas no lo necesitan.", "Abrir la puerta: cada vez se escapa calor y la resistencia vuelve a encenderse."],
+      "trucos": ["Usa la función con ventilador: cocina a unos 20 °C menos y acorta el tiempo.", "Aprovecha para hornear varias cosas a la vez.", "Para raciones pequeñas, la freidora de aire o el microondas gastan bastante menos."],
+      "preguntas": [
+        { "p": "¿Cuánto gasta un horno eléctrico en una hora?", "r": "Entre 1 y 2 kWh según la temperatura, porque la resistencia no está siempre encendida. El precalentamiento es lo que más gasta." },
+        { "p": "¿Hace falta precalentar el horno?", "r": "Para masas y bizcochos, sí. Para asados, gratinados o platos que pasan mucho rato dentro, puedes meterlos con el horno frío y ahorrarte esos minutos." }
+      ]
+    },
+    "placa-induccion": {
+      "intro": "La placa de inducción calienta directamente el fondo de la olla con un campo magnético, así que pierde muy poco calor por el camino. Por eso hierve antes y gasta menos que la vitrocerámica para cocinar lo mismo.",
+      "factores": ["La potencia elegida y el uso de la función «booster».", "El recipiente: tiene que ser ferromagnético y del tamaño de la zona.", "El tiempo de cocción: los guisos largos pesan más que freír un huevo."],
+      "trucos": ["Usa olla exprés para legumbres y guisos: reduce el tiempo a un tercio.", "Ajusta la potencia al mínimo en cuanto hierva; para mantener el hervor basta poco.", "Comprueba que el fondo de las sartenes es plano: si baila, calienta peor."],
+      "preguntas": [
+        { "p": "¿Gasta menos la inducción que la vitrocerámica?", "r": "Sí, en torno a un 20–30 % menos para la misma comida, porque calienta la olla directamente y no la placa." },
+        { "p": "¿Cuánto gasta una placa de inducción al mes?", "r": "Con una hora al día a potencia media, unos 45 kWh al mes. Depende mucho de cuánto cocines en casa." }
+      ]
+    },
+    "vitroceramica": {
+      "intro": "La vitrocerámica calienta una resistencia bajo el cristal, y ese cristal calienta la olla. Parte del calor se pierde por el camino y la placa tarda en enfriarse, lo que puedes aprovechar para terminar la comida.",
+      "factores": ["La potencia y el tiempo de cada zona.", "El ajuste entre olla y zona: si el recipiente es más pequeño se pierde mucho calor.", "Fondos deformados o sucios, que transmiten peor el calor."],
+      "trucos": ["Tapa las ollas: el agua hierve antes y puedes bajar la potencia.", "Mantén el cristal limpio de restos quemados, que hacen de aislante.", "Si vas a cambiar de placa, la inducción se paga con el ahorro en pocos años si cocinas a diario."],
+      "preguntas": [
+        { "p": "¿Cuánto gasta una vitrocerámica en una hora?", "r": "Una zona a potencia media ronda 1–1,8 kWh por hora. A máxima potencia una zona grande puede llegar a 2,5–3 kWh." },
+        { "p": "¿Se puede aprovechar el calor residual?", "r": "Sí. Apagar la zona 5 minutos antes de terminar deja que el cristal acabe la cocción sin gastar más." }
+      ]
+    },
+    "microondas": {
+      "intro": "El microondas calienta el agua de los alimentos directamente, sin calentar recipientes ni aire. Gasta mucho por minuto pero se usa poco rato, y para recalentar raciones es lo más barato de la cocina.",
+      "factores": ["Los minutos de uso al día.", "Si usas la función grill o convección, que gasta como un horno pequeño.", "El consumo en espera del reloj, unos pocos vatios todo el día."],
+      "trucos": ["Tapa los platos al calentar: el calor se reparte mejor y tardas menos.", "Para descongelar, sácalo la noche antes a la nevera y ahorras minutos de microondas.", "Si no usas el reloj, desenchúfalo o conéctalo a una regleta con interruptor."],
+      "preguntas": [
+        { "p": "¿Cuánto gasta un microondas en un minuto?", "r": "Un microondas de 1.000 W gasta unos 17 Wh por minuto: calentar un plato dos minutos cuesta menos de un céntimo." },
+        { "p": "¿Gasta menos el microondas que el horno?", "r": "Para raciones pequeñas, mucho menos: no tiene que calentar todo el espacio interior ni precalentarse." }
+      ]
+    },
+    "freidora-de-aire": {
+      "intro": "La freidora de aire es en realidad un horno pequeño con un ventilador potente. Como el espacio que calienta es reducido, se pone a temperatura en un par de minutos y para una o dos raciones gasta mucho menos que el horno grande.",
+      "factores": ["La temperatura y el tiempo de cada receta.", "La cantidad: si tienes que hacer varias tandas, se pierde la ventaja frente al horno.", "El tamaño de la cesta y la potencia del modelo."],
+      "trucos": ["No llenes la cesta en exceso: el aire tiene que circular o tendrás que alargar el tiempo.", "Sáltate el precalentamiento cuando la receta lo permita.", "Para muchas raciones a la vez, el horno grande con todo dentro puede salir igual o mejor."],
+      "preguntas": [
+        { "p": "¿Cuánto gasta una freidora de aire?", "r": "Una de 1.400 W gasta unos 0,5–0,7 kWh en media hora, porque no calienta a tope todo el tiempo. Son unos pocos céntimos por receta." },
+        { "p": "¿Es más barata que el horno?", "r": "Para raciones pequeñas sí, porque calienta antes y menos espacio. Para comida de toda la familia la diferencia se reduce." }
+      ]
+    },
+    "nevera": {
+      "intro": "La nevera es de los pocos aparatos que funcionan las 24 horas, los 365 días. Su compresor se enciende y apaga para mantener el frío, así que su consumo anual depende sobre todo de su eficiencia y de cómo se use.",
+      "factores": ["La etiqueta energética y los años: una nevera de hace 15 años puede gastar el doble que una actual.", "La temperatura de la cocina: junto al horno o al sol trabaja más.", "Las veces que abres la puerta y el estado de las gomas."],
+      "trucos": ["Comprueba las gomas cerrando la puerta sobre un papel: si sale sin resistencia, no ajustan bien.", "Limpia el polvo de la rejilla trasera una o dos veces al año.", "Descongela en la nevera los alimentos congelados: aprovechas su frío."],
+      "preguntas": [
+        { "p": "¿Cuánto gasta una nevera al año?", "r": "Un combi moderno de 1,85 m ronda 150–300 kWh al año según su etiqueta. Los modelos antiguos pueden pasar de 400 kWh." },
+        { "p": "¿Merece la pena cambiar una nevera vieja?", "r": "Si tiene más de 15 años, el ahorro de luz puede ser de 100–200 kWh al año. No paga sola la nueva, pero ayuda si ya estaba pensando en cambiarla." }
+      ]
+    },
+    "congelador": {
+      "intro": "El congelador mantiene −18 °C de forma continua. Un arcón horizontal pierde menos frío al abrirse que un congelador vertical, porque el aire frío pesa y se queda dentro.",
+      "factores": ["La capa de hielo: actúa como aislante y obliga a trabajar más al compresor.", "Lo lleno que esté: un congelador lleno conserva mejor el frío.", "La temperatura de la estancia, por ejemplo en un garaje caluroso en verano."],
+      "trucos": ["Llénalo con botellas de agua si está medio vacío: guardan frío y el compresor se enciende menos.", "Etiqueta lo que congelas para no tener la puerta abierta buscando.", "No lo pongas junto a la caldera, el horno o una ventana con sol."],
+      "preguntas": [
+        { "p": "¿Cuánto gasta un congelador al mes?", "r": "Uno de consumo medio, unos 18 kWh al mes. Uno viejo con mucho hielo puede gastar bastante más." },
+        { "p": "¿Gasta menos un arcón que un congelador vertical?", "r": "Por lo general sí, porque al abrir la tapa se escapa menos frío." }
+      ]
+    },
+    "televisor": {
+      "intro": "Lo que gasta un televisor depende sobre todo del tamaño de la pantalla y del brillo. Un LED de 55 pulgadas gasta en torno a 100 W; los modelos OLED o con brillo muy alto en HDR pueden gastar bastante más.",
+      "factores": ["El tamaño y la tecnología de la pantalla.", "El modo de imagen: el brillo es lo que más consume.", "Las horas al día y el consumo en espera."],
+      "trucos": ["Activa el sensor de luz ambiental para que baje el brillo de noche.", "Apaga del todo la tele, el descodificador y la barra de sonido con una regleta cuando no los uses.", "Desactiva el «inicio rápido» si no te importa esperar unos segundos al encenderla."],
+      "preguntas": [
+        { "p": "¿Cuánto gasta una televisión al mes?", "r": "Un LED de 55 pulgadas viendo 4 horas al día gasta unos 12 kWh al mes, poco más de 2 € con impuestos." },
+        { "p": "¿Gasta mucho la tele en espera?", "r": "Las actuales gastan menos de 1 W en espera, pero si tienen funciones de encendido rápido o red activas pueden gastar más. Una regleta lo evita." }
+      ]
+    },
+    "consola": {
+      "intro": "Una consola actual gasta como un ordenador mientras juegas y, si tiene el modo de encendido instantáneo, sigue gastando cuando parece apagada para descargar actualizaciones.",
+      "factores": ["El tipo de juego: los títulos exigentes llevan la consola al máximo.", "El modo de reposo elegido.", "Las horas de juego y si usas la consola para ver vídeos, donde gasta más que una app de la tele."],
+      "trucos": ["Para ver series, usa la app del televisor: gasta mucho menos que la consola.", "Activa el apagado automático tras un rato sin uso.", "Si no necesitas descargas nocturnas, usa el modo de ahorro de energía."],
+      "preguntas": [
+        { "p": "¿Cuánto gasta una consola jugando?", "r": "Las de sobremesa actuales rondan 150–220 W mientras juegas. Dos horas al día son unos 12 kWh al mes." },
+        { "p": "¿Cuánto gasta en reposo?", "r": "En modo de encendido instantáneo puede gastar más de 10 W todo el día; en modo de ahorro baja a menos de 1 W." }
+      ]
+    },
+    "ordenador": {
+      "intro": "Un ordenador de sobremesa de oficina gasta poco trabajando con documentos, pero sumando el monitor y las horas de teletrabajo acaba siendo un consumo fijo apreciable en la factura.",
+      "factores": ["La potencia del procesador y de la tarjeta gráfica.", "El monitor: uno grande con brillo alto puede gastar casi como la torre.", "Las horas encendido sin uso real."],
+      "trucos": ["Configura la pantalla para que se apague a los 5 minutos y el equipo para suspenderse a los 15.", "Apaga la regleta del ordenador, la impresora y los altavoces al terminar.", "Si vas a renovarlo, un mini PC o un portátil gastan una fracción para tareas de oficina."],
+      "preguntas": [
+        { "p": "¿Cuánto gasta un ordenador de sobremesa?", "r": "Uno de oficina con monitor gasta unos 100–150 W trabajando. Ocho horas al día laborables son unos 26 kWh al mes." },
+        { "p": "¿Gasta mucho dejarlo encendido por la noche?", "r": "Encendido sin hacer nada puede gastar 50–80 W. En suspensión, 1–3 W. Apagarlo o suspenderlo siempre ahorra." }
+      ]
+    },
+    "router": {
+      "intro": "El router de fibra gasta muy poco por hora, pero está encendido todo el año. Al final suma unos 90 kWh anuales, parecido a una nevera pequeña durante unos meses.",
+      "factores": ["El modelo: los routers con wifi 6 y varios puertos gastan algo más.", "Equipos añadidos como repetidores, PLC o un descodificador de TV siempre encendido.", "Si tienes la ONT de fibra separada del router."],
+      "trucos": ["Si tienes repetidores wifi que apenas usas, desconéctalos: suman consumo fijo.", "Muchos routers permiten programar el apagado del wifi por la noche desde su configuración.", "No lo pongas dentro de un mueble cerrado: se calienta y funciona peor."],
+      "preguntas": [
+        { "p": "¿Cuánto gasta un router al año?", "r": "Unos 10 W todo el día son unos 88 kWh al año: entre 12 y 20 € según el precio de la luz." },
+        { "p": "¿Merece la pena apagar el router por la noche?", "r": "Ahorra unos pocos euros al año. Si dependes de él para alarmas, teléfono fijo o domótica, no compensa." }
+      ]
+    },
+    "deshumidificador": {
+      "intro": "El deshumidificador de compresor enfría el aire para que el agua se condense, como un pequeño aire acondicionado. Gasta según las horas que trabaje, y esas horas dependen de lo húmeda que esté la casa.",
+      "factores": ["La humedad de partida y el objetivo del higrostato.", "La temperatura: los de compresor rinden peor con frío; los desecantes gastan más pero funcionan mejor en invierno.", "Si la habitación está cerrada o entra aire húmedo de fuera."],
+      "trucos": ["Úsalo con puertas y ventanas cerradas y en la estancia más húmeda.", "Vacía el depósito o conéctalo a un desagüe para que no se pare a medias.", "Ventilar diez minutos al día y tender la ropa fuera reduce la humedad sin gastar."],
+      "preguntas": [
+        { "p": "¿Cuánto gasta un deshumidificador al día?", "r": "Uno de compresor de 250 W trabajando 8 horas gasta unos 2 kWh al día." },
+        { "p": "¿Qué humedad es la recomendable en casa?", "r": "Entre el 40 y el 60 %. Por debajo del 50 % el deshumidificador ya no aporta casi nada." }
+      ]
+    },
+    "cargador-coche-electrico": {
+      "intro": "Cargar el coche en casa suele ser el mayor consumo del hogar si lo usas a diario. Un coche medio gasta 15–20 kWh cada 100 km, así que la diferencia entre cargar en horas valle o en punta se nota mucho.",
+      "factores": ["Los kilómetros que haces al día.", "La potencia del cargador: no cambia la energía que necesitas, solo cuánto tarda.", "La tarifa y la hora de carga: valle frente a punta."],
+      "trucos": ["Programa la carga desde el coche o el cargador para que empiece pasada la medianoche.", "Mantén la batería entre el 20 y el 80 % en el día a día; carga al 100 % solo antes de viajes largos.", "Revisa tu potencia contratada: con la carga programada de noche puede que no necesites subirla."],
+      "preguntas": [
+        { "p": "¿Cuánto cuesta cargar un coche eléctrico en casa?", "r": "Con 15–20 kWh cada 100 km, entre 1,5 y 4 € según la hora y la tarifa. De noche puede salir a menos de la mitad que de tarde." },
+        { "p": "¿Necesito subir la potencia contratada?", "r": "No siempre. Si cargas de noche, cuando el resto de la casa gasta poco, a menudo basta con la potencia que ya tienes o una subida pequeña en el periodo valle." }
+      ]
+    },
+    "patinete-electrico": {
+      "intro": "Un patinete eléctrico tiene una batería pequeña: una carga completa gasta menos que una hora de horno. Es de los medios de transporte más baratos en coste de energía.",
+      "factores": ["La capacidad de la batería (voltios por amperios hora).", "Los kilómetros que haces y el peso que lleva.", "El frío, que reduce la autonomía y obliga a cargar más a menudo."],
+      "trucos": ["Mantén las ruedas con la presión correcta: con poca presión gasta más batería.", "Guarda el patinete en interior en invierno, la batería lo agradece.", "Si no lo vas a usar en semanas, déjalo con la batería a media carga."],
+      "preguntas": [
+        { "p": "¿Cuánto cuesta cargar un patinete eléctrico?", "r": "Una carga completa de 0,4–0,5 kWh cuesta menos de 10 céntimos con la mayoría de tarifas." },
+        { "p": "¿Cuánto gasta al mes?", "r": "Cargando tres veces a la semana, unos 6 kWh al mes: alrededor de un euro." }
+      ]
+    },
+    "plancha": {
+      "intro": "La plancha tiene una resistencia potente que se enciende y apaga para mantener la temperatura de la suela. Lo que más gasta es calentarla, por eso conviene planchar mucha ropa de una vez.",
+      "factores": ["La potencia y si es de vapor o centro de planchado.", "La temperatura elegida según el tejido.", "Las veces que la calientas a la semana."],
+      "trucos": ["Empieza por la ropa que necesita menos temperatura y sube después.", "Desconéctala unos minutos antes de acabar y termina con el calor residual.", "Tiende la ropa bien estirada y sácala de la lavadora al momento: tendrás mucho menos que planchar."],
+      "preguntas": [
+        { "p": "¿Cuánto gasta una plancha en una hora?", "r": "Una de 2.000 W gasta de media 1–1,5 kWh por hora, porque el termostato la va cortando." },
+        { "p": "¿Gasta más un centro de planchado?", "r": "La caldera consume algo más para producir vapor, pero planchas más rápido. En total la diferencia suele ser pequeña." }
+      ]
+    },
+    "aire-acondicionado-portatil": {
+      "intro": "El aire acondicionado portátil tiene todo el equipo dentro de la habitación y saca el calor por un tubo. Por eso es menos eficiente que un split: el propio aparato calienta la habitación y por el hueco de la ventana entra aire caliente.",
+      "factores": ["Cómo esté sellada la ventana por donde sale el tubo.", "Si es de un tubo o de dos tubos; los de dos tubos rinden mejor.", "El tamaño de la habitación y las horas de sol."],
+      "trucos": ["Usa un kit de sellado para ventana en lugar de dejarla entreabierta.", "Mantén el tubo lo más corto y recto posible.", "Si vas a usarlo cada verano, un split te saldrá más barato a los pocos años."],
+      "preguntas": [
+        { "p": "¿Gasta más un portátil que un split?", "r": "Sí. Para enfriar lo mismo suele gastar bastante más, porque es menos eficiente y entra aire caliente por la ventana." },
+        { "p": "¿Cuánto gasta un aire portátil al día?", "r": "Un modelo de 9.000 BTU, unos 1.100 W de media: 6 horas al día son unos 6,6 kWh." }
+      ]
+    },
+    "hervidor": {
+      "intro": "El hervidor de agua es muy potente pero trabaja muy pocos minutos. Calienta el agua directamente, así que es más eficiente que la vitrocerámica para hervir agua para el té, el café o la pasta.",
+      "factores": ["La cantidad de agua que hierves.", "La cal en la resistencia, que la hace menos eficiente.", "Si vuelves a hervir el agua varias veces."],
+      "trucos": ["Usa el hervidor para adelantar el agua de la pasta y termina en la placa.", "Quita la cal con vinagre cada pocos meses.", "Elige uno con indicador de nivel para hervir solo lo justo."],
+      "preguntas": [
+        { "p": "¿Cuánto cuesta hervir un litro de agua?", "r": "Alrededor de 0,1 kWh, un par de céntimos." },
+        { "p": "¿Gasta menos el hervidor que la vitrocerámica?", "r": "Sí, para hervir agua es más rápido y pierde menos calor." }
+      ]
+    },
+    "ventilador": {
+      "intro": "El ventilador no enfría el aire: lo mueve, y esa corriente hace que sientas menos calor. Por eso gasta muy poco, unas veinte veces menos que un aire acondicionado.",
+      "factores": ["La velocidad y el tipo: de pie, de techo o de torre.", "Los motores DC, que gastan bastante menos que los clásicos.", "Las horas encendido, incluso de noche."],
+      "trucos": ["Ponlo junto a una ventana abierta de noche para meter aire fresco.", "Un ventilador de techo en verano debe girar en sentido antihorario para empujar el aire hacia abajo.", "Apágalo al salir de la habitación: no enfría el aire, solo a quien está."],
+      "preguntas": [
+        { "p": "¿Cuánto gasta un ventilador toda la noche?", "r": "Unos 45 W durante 8 horas son 0,36 kWh: unos 6 céntimos." },
+        { "p": "¿Gasta menos que el aire acondicionado?", "r": "Muchísimo menos: unas 20 veces. Usar los dos a la vez permite subir el termostato del aire y ahorrar." }
+      ]
+    },
+    "cargador-movil": {
+      "intro": "Cargar el móvil es de lo que menos gasta en una casa. Aun cargándolo cada día del año, la energía cuesta poco más de un euro.",
+      "factores": ["La capacidad de la batería del móvil.", "Las pérdidas del cargador, sobre todo en los muy baratos.", "Las cargas extra, como cargar varias veces al día."],
+      "trucos": ["No te preocupes por la carga rápida: la energía que entra es casi la misma.", "Usa cargadores de calidad: los muy baratos pierden más energía y pueden dañar la batería.", "Desenchufa el cargador cuando ya no carga nada si está en una regleta con más equipos."],
+      "preguntas": [
+        { "p": "¿Cuánto cuesta cargar un móvil al año?", "r": "Una carga diaria son unos 8 kWh al año: menos de 2 € con impuestos." },
+        { "p": "¿Gasta el cargador enchufado sin móvil?", "r": "Muy poco, menos de 0,1 W en los modernos. Es más por seguridad que por ahorro." }
+      ]
+    },
+    "portatil": {
+      "intro": "El portátil está diseñado para durar con batería, así que su consumo es bajo. Para trabajar desde casa es la opción más barata frente a un ordenador de sobremesa con monitor.",
+      "factores": ["El brillo de la pantalla.", "Las tareas: videollamadas y vídeo en alta resolución gastan más que escribir.", "Si conectas un monitor externo, que añade su propio consumo."],
+      "trucos": ["Usa el modo de ahorro de energía cuando no necesites toda la potencia.", "Baja el brillo de la pantalla en interiores.", "Una vez cargado, puedes desconectarlo y usar la batería en horas caras."],
+      "preguntas": [
+        { "p": "¿Cuánto gasta un portátil al mes?", "r": "Seis horas al día los días laborables, unos 6 kWh al mes: alrededor de un euro." },
+        { "p": "¿Gasta lo que pone en el cargador?", "r": "No. El cargador indica el máximo, por ejemplo 65 W; en uso normal suele gastar entre 20 y 45 W." }
+      ]
+    },
+    "ordenador-gaming": {
+      "intro": "Un ordenador para juegos gasta poco navegando, pero con un juego exigente la tarjeta gráfica y el procesador trabajan al máximo. Sumado al monitor, puede gastar como un pequeño radiador.",
+      "factores": ["La tarjeta gráfica, que es la que más consume.", "La resolución y los fotogramas por segundo.", "Las horas de juego y si se queda encendido sin uso."],
+      "trucos": ["Ajusta el plan de energía de Windows a equilibrado cuando no juegues.", "Una fuente de alimentación con certificación 80 Plus pierde menos energía en calor.", "Activa la suspensión del equipo cuando no lo uses."],
+      "preguntas": [
+        { "p": "¿Cuánto gasta un PC gaming al mes?", "r": "A 400 W jugando 3 horas al día, unos 36 kWh al mes: entre 5 y 8 € según el precio de la luz." },
+        { "p": "¿Gasta lo que pone la fuente de alimentación?", "r": "No. Una fuente de 750 W es el máximo que puede dar; jugando el equipo suele gastar bastante menos." }
+      ]
+    },
+    "monitor": {
+      "intro": "El monitor gasta según su tamaño, su resolución y, sobre todo, su brillo. Para teletrabajar es un consumo pequeño pero diario.",
+      "factores": ["El tamaño de la pantalla y la tecnología del panel.", "El brillo y el modo HDR.", "Si se apaga solo o se queda encendido sin uso."],
+      "trucos": ["Configura el apagado de pantalla a los 5–10 minutos.", "Usa un tema oscuro en monitores OLED, donde los píxeles negros no gastan.", "Si tienes dos monitores, apaga el segundo cuando no lo necesites."],
+      "preguntas": [
+        { "p": "¿Cuánto gasta un monitor al mes?", "r": "Uno de 24–27 pulgadas, 8 horas al día laborables, unos 4,4 kWh al mes: menos de un euro." },
+        { "p": "¿Gasta más un monitor 4K?", "r": "Los grandes de alta resolución o alta frecuencia pueden gastar el doble que uno estándar, sobre todo con el brillo alto." }
+      ]
+    },
+    "bombilla-led": {
+      "intro": "Una bombilla LED de 9 W da la misma luz que una incandescente de 60 W. Su consumo es tan bajo que lo que más importa es cuántas tienes y cuántas horas están encendidas.",
+      "factores": ["Los vatios y los lúmenes de cada bombilla.", "El número de puntos de luz encendidos a la vez.", "Las horas al día, que en invierno son más."],
+      "trucos": ["Compara por lúmenes, no por vatios: 800 lúmenes equivalen a la antigua de 60 W.", "Pon detectores de presencia en pasillos, garaje y trasteros.", "Elige luz cálida (2.700–3.000 K) para el salón y neutra para la cocina: no cambia el gasto, pero sí el confort."],
+      "preguntas": [
+        { "p": "¿Cuánto gasta una bombilla LED al mes?", "r": "Una de 9 W encendida 5 horas al día gasta 1,35 kWh al mes: unos 25 céntimos." },
+        { "p": "¿Es verdad que encender y apagar los LED gasta más?", "r": "No. Encender una LED no tiene pico de consumo apreciable: apágala siempre que salgas de la habitación." }
+      ]
+    },
+    "bombilla-halogena": {
+      "intro": "Las halógenas son una versión mejorada de la incandescente, pero siguen convirtiendo casi toda la electricidad en calor. Dan la misma luz que un LED gastando cinco o seis veces más.",
+      "factores": ["Los vatios de cada bombilla y cuántas hay por lámpara.", "Las horas encendidas al día.", "Los focos GU10 y las lámparas de pie con halógenas de 200 W o más."],
+      "trucos": ["Empieza a cambiarlas por las lámparas que más horas usas: cocina, salón y pasillo.", "En los focos de techo GU10, el cambio a LED es directo sin tocar la instalación.", "Las lámparas de pie halógenas de alta potencia son las primeras que conviene sustituir."],
+      "preguntas": [
+        { "p": "¿Cuánto ahorro si cambio una halógena por LED?", "r": "Alrededor de un 80 % en esa bombilla. Con 5 horas al día, son unos 6–7 kWh al mes por cada bombilla." },
+        { "p": "¿Todavía se venden halógenas?", "r": "En la Unión Europea, la mayoría de halógenas para uso doméstico dejaron de venderse en 2018, pero quedan muchas instaladas." }
+      ]
+    },
+    "cafetera": {
+      "intro": "Una cafetera de espresso calienta el agua en pocos segundos, pero si se queda encendida mantiene el calentador caliente todo el rato. Gastan más las horas en espera que los propios cafés.",
+      "factores": ["El tipo de cafetera: cápsulas, superautomática o de goteo con placa calefactora.", "El tiempo que se queda encendida.", "El número de cafés al día."],
+      "trucos": ["Descalcifícala según indica el fabricante: la cal hace que tarde más en calentar.", "En las de goteo, pasa el café a un termo en vez de dejar la jarra en la placa.", "Apágala del todo si no la vas a usar en horas."],
+      "preguntas": [
+        { "p": "¿Cuánto gasta una cafetera de cápsulas?", "r": "Unos 40 Wh por café incluido el calentamiento. Dos cafés al día son unos 2,4 kWh al mes." },
+        { "p": "¿Gasta mucho la cafetera en espera?", "r": "Depende del modelo. Las que mantienen el agua caliente pueden gastar más al día que los cafés que haces." }
+      ]
+    },
+    "tostadora": {
+      "intro": "La tostadora es potente pero se usa pocos minutos al día. Su gasto mensual es de los más bajos de la cocina.",
+      "factores": ["La potencia y el nivel de tostado.", "El número de tandas al día.", "Si tostas pan congelado, que tarda más."],
+      "trucos": ["Tuesta las rebanadas a la vez en lugar de una a una.", "Limpia la bandeja de migas: además de ahorrar, evita olores y riesgo de incendio.", "Si solo calientas bollería, el microondas o la freidora de aire pueden servir."],
+      "preguntas": [
+        { "p": "¿Cuánto gasta una tostadora?", "r": "Una de 900 W usada 6 minutos al día gasta unos 2,3 kWh al mes: menos de 50 céntimos." },
+        { "p": "¿Es mejor tostar en el horno?", "r": "No. El horno gasta mucho más por tener que calentarse entero." }
+      ]
+    },
+    "secador-pelo": {
+      "intro": "El secador de pelo es de los aparatos más potentes de la casa, aunque se usa pocos minutos. El aire caliente es lo que más gasta; el motor gasta muy poco.",
+      "factores": ["La posición de temperatura y velocidad.", "El largo y el grosor del pelo.", "Lo mojado que esté el pelo al empezar."],
+      "trucos": ["Usa una toalla de microfibra o turbante unos minutos antes de secar.", "Seca con aire templado y termina con aire frío.", "Limpia la rejilla de entrada: si se tapa, el motor trabaja peor."],
+      "preguntas": [
+        { "p": "¿Cuánto gasta un secador de pelo?", "r": "Uno de 1.800 W gasta unos 0,27 kWh en 9 minutos: unos 8 kWh al mes con uso diario." },
+        { "p": "¿Gasta menos en frío?", "r": "Sí, mucho menos. La resistencia que calienta el aire es la que más consume." }
+      ]
+    },
+    "plancha-pelo": {
+      "intro": "La plancha de pelo tiene placas pequeñas que se calientan en pocos minutos. Su consumo es muy bajo; el principal riesgo es dejarla encendida.",
+      "factores": ["La temperatura elegida.", "El tiempo que tarda en calentarse.", "Si se queda encendida después de usarla."],
+      "trucos": ["Elige un modelo con apagado automático.", "Usa la temperatura adecuada para tu tipo de pelo: más no siempre es mejor.", "Desenchúfala nada más terminar."],
+      "preguntas": [
+        { "p": "¿Cuánto gasta una plancha de pelo?", "r": "Unos 50 W durante 20 minutos: alrededor de 0,45 kWh al mes." },
+        { "p": "¿Compensa comprar una más eficiente?", "r": "No por la luz: gasta tan poco que la diferencia es de céntimos al año." }
+      ]
+    },
+    "aspiradora": {
+      "intro": "La aspiradora de trineo tiene un motor potente que gasta mientras aspiras. Los modelos sin cable gastan menos porque funcionan con batería y tienen menos potencia.",
+      "factores": ["La potencia del motor y la posición elegida.", "El estado del filtro y la bolsa.", "La superficie de la casa y cuántas veces aspiras a la semana."],
+      "trucos": ["Usa la potencia baja en suelos duros y la alta solo en alfombras.", "Cambia la bolsa antes de que esté llena del todo.", "Un cepillo en buen estado recoge mejor y acabas antes."],
+      "preguntas": [
+        { "p": "¿Cuánto gasta una aspiradora?", "r": "Una de 800 W, media hora dos veces por semana, gasta unos 3 kWh al mes." },
+        { "p": "¿Gasta menos una aspiradora sin cable?", "r": "Sí, suele gastar menos por sesión porque es menos potente, aunque necesita cargar la batería." }
+      ]
+    },
+    "robot-aspirador": {
+      "intro": "El robot aspirador funciona con batería y una base de carga. Su consumo es bajo porque tiene un motor pequeño, aunque la base consume un poco todo el día.",
+      "factores": ["La superficie que limpia y cuántas veces a la semana.", "Si la base tiene autovaciado, que gasta en cada vaciado.", "El consumo de la base en espera."],
+      "trucos": ["Programa las limpiezas en horas baratas.", "Limpia los cepillos y sensores para que no repita zonas.", "Usa el mapa de la app para evitar habitaciones que no necesitan limpieza."],
+      "preguntas": [
+        { "p": "¿Cuánto gasta un robot aspirador?", "r": "Unos 40 Wh por limpieza más la base: alrededor de 1 kWh al mes." },
+        { "p": "¿Gasta más que una aspiradora normal?", "r": "Menos por sesión, aunque como suele pasar más veces, el total mensual puede ser parecido." }
+      ]
+    },
+    "campana-extractora": {
+      "intro": "La campana combina un motor que extrae el aire y luces. Gasta poco por hora, pero si usas siempre la velocidad alta o las luces son halógenas, su consumo se nota.",
+      "factores": ["La velocidad del motor.", "El tipo de luces.", "El estado de los filtros de grasa."],
+      "trucos": ["Limpia los filtros metálicos en el lavavajillas cada mes.", "Enciéndela al empezar a cocinar y apágala unos minutos después de terminar.", "Si es de recirculación, cambia el filtro de carbón cuando toque."],
+      "preguntas": [
+        { "p": "¿Cuánto gasta una campana extractora?", "r": "A velocidad media con luces, unos 150 W: una hora al día son 4,5 kWh al mes." },
+        { "p": "¿Gasta mucho la luz de la campana?", "r": "Si son halógenas de 20–40 W, sí comparado con el motor. Con LED baja a pocos vatios." }
+      ]
+    },
+    "depuradora-piscina": {
+      "intro": "La bomba de la depuradora mueve el agua por el filtro varias horas al día en temporada. Es un consumo grande y muy predecible, así que es ideal para programarlo en las horas más baratas.",
+      "factores": ["La potencia de la bomba y los caballos (CV).", "Las horas de filtrado al día, que dependen de la temperatura y del uso.", "El estado del filtro: si está sucio, la bomba trabaja más."],
+      "trucos": ["Las bombas de velocidad variable pueden gastar mucho menos filtrando más horas a baja velocidad.", "Limpia el prefiltro y los skimmers a menudo.", "Una cubierta reduce la suciedad y las horas de filtrado necesarias."],
+      "preguntas": [
+        { "p": "¿Cuánto gasta una depuradora de piscina?", "r": "Una bomba de 1 CV (750 W) seis horas al día gasta unos 135 kWh al mes en temporada." },
+        { "p": "¿Cuántas horas hay que filtrar?", "r": "Una regla habitual es filtrar en horas la mitad de la temperatura del agua: con agua a 26 °C, unas 13 horas repartidas. Ajusta según el agua y el uso." }
+      ]
+    },
+    "manta-electrica": {
+      "intro": "La manta eléctrica calienta directamente la cama o a la persona, por eso gasta muy poco comparada con calentar toda la habitación.",
+      "factores": ["La posición de calor.", "Si es individual o de matrimonio.", "Las horas encendida y si tiene apagado automático."],
+      "trucos": ["Enciéndela un rato antes de acostarte y apágala al meterte en la cama.", "Elige una con temporizador y apagado automático.", "Combínala con una temperatura más baja en el termostato de la casa por la noche."],
+      "preguntas": [
+        { "p": "¿Cuánto gasta una manta eléctrica?", "r": "Unos 60 W de media: dos horas al día son unos 3,6 kWh al mes, menos de un euro." },
+        { "p": "¿Es más barata que la calefacción?", "r": "Para calentar la cama o el sofá, sí. Gasta mucho menos que calentar toda la habitación." }
+      ]
+    },
+    "toallero-electrico": {
+      "intro": "El toallero eléctrico es un radiador pequeño para el baño. Si se deja encendido todo el día, su consumo puede ser alto para lo que aporta.",
+      "factores": ["La potencia del toallero.", "Las horas encendido.", "Si tiene termostato y temporizador."],
+      "trucos": ["Úsalo con un temporizador antes de la ducha.", "No lo cubras con muchas toallas si lo quieres para calentar el baño.", "Si está siempre encendido para secar toallas, prueba a reducirlo a unas horas."],
+      "preguntas": [
+        { "p": "¿Cuánto gasta un toallero eléctrico?", "r": "Uno de 400 W tres horas al día gasta unos 36 kWh al mes." },
+        { "p": "¿Conviene tenerlo siempre encendido?", "r": "No. Con un temporizador puedes tener el baño caliente y las toallas secas gastando bastante menos." }
+      ]
+    },
+    "purificador-aire": {
+      "intro": "El purificador mueve el aire a través de un filtro HEPA. Su consumo es bajo, pero suele estar encendido muchas horas.",
+      "factores": ["La velocidad del ventilador.", "El tamaño de la estancia.", "El estado del filtro."],
+      "trucos": ["Ponlo en la habitación donde pasas más tiempo y con la puerta cerrada.", "Cambia el filtro cuando lo indique el aparato.", "Apágalo si ventilas la casa: no tiene sentido filtrar con ventanas abiertas."],
+      "preguntas": [
+        { "p": "¿Cuánto gasta un purificador de aire?", "r": "Unos 30 W a velocidad media: 10 horas al día son unos 9 kWh al mes." },
+        { "p": "¿Gasta más el modo turbo?", "r": "Sí. A velocidad máxima puede gastar el doble o más que en modo automático." }
+      ]
+    },
+    "robot-cocina": {
+      "intro": "Un robot de cocina tipo Thermomix tiene un motor y una resistencia. Las recetas que calientan son las que más gastan; picar o amasar consume muy poco.",
+      "factores": ["La temperatura y la duración de cada receta.", "La cantidad de comida.", "Si combinas varias preparaciones en una misma tanda."],
+      "trucos": ["Usa la función de vapor para cocinar varias cosas a la vez.", "Para guisos largos, una olla exprés en la placa puede gastar menos.", "Aprovecha el robot para cocinar cantidades para varios días."],
+      "preguntas": [
+        { "p": "¿Cuánto gasta un robot de cocina?", "r": "Una receta media con calentamiento ronda 0,25 kWh. Cinco recetas a la semana son unos 5 kWh al mes." },
+        { "p": "¿Gasta más que la vitrocerámica?", "r": "Para recetas cortas suele gastar menos. Para guisos largos, la olla exprés puede ser más barata." }
+      ]
+    },
+    "olla-lenta": {
+      "intro": "La olla lenta cocina durante muchas horas a poca potencia. Aunque esté encendida mucho tiempo, gasta parecido a una bombilla antigua.",
+      "factores": ["La posición de calor: baja o alta.", "La cantidad de comida.", "Si levantas la tapa durante la cocción."],
+      "trucos": ["No abras la tapa: cada vez se pierde calor y se alarga la cocción.", "Programa la cocción para que trabaje en las horas baratas.", "Cocina raciones grandes y congela para otros días."],
+      "preguntas": [
+        { "p": "¿Cuánto gasta una olla lenta?", "r": "Unos 200 W durante seis horas son 1,2 kWh por guiso." },
+        { "p": "¿Gasta menos que la vitrocerámica?", "r": "Para un guiso largo, suele gastar menos porque usa poca potencia y está bien aislada." }
+      ]
+    },
+    "altavoz-inteligente": {
+      "intro": "El altavoz inteligente está siempre escuchando para reconocer la palabra de activación. Gasta poco por hora, pero lo hace todo el año.",
+      "factores": ["El modelo y si tiene pantalla.", "El volumen y las horas de música.", "Cuántos altavoces tienes en casa."],
+      "trucos": ["Desactiva la pantalla o bájale el brillo si tiene.", "Quita los altavoces que no uses.", "Si lo usas solo como despertador o radio, revisa si te compensa tenerlo siempre encendido."],
+      "preguntas": [
+        { "p": "¿Cuánto gasta un altavoz inteligente?", "r": "Alrededor de 3 W de media: unos 26 kWh al año, entre 4 y 6 €." },
+        { "p": "¿Gasta mucho con pantalla?", "r": "Los modelos con pantalla pueden gastar el doble o más, sobre todo con brillo alto." }
+      ]
+    },
+    "bicicleta-electrica": {
+      "intro": "La bicicleta eléctrica tiene una batería de unos 400–600 Wh. Cargarla cuesta muy poco, mucho menos que cualquier otro medio motorizado.",
+      "factores": ["La capacidad de la batería.", "El nivel de asistencia y el desnivel de tu recorrido.", "El peso y la presión de las ruedas."],
+      "trucos": ["Usa niveles de asistencia bajos en llano.", "Infla las ruedas con regularidad.", "Guarda la batería en interior en invierno."],
+      "preguntas": [
+        { "p": "¿Cuánto cuesta cargar una bicicleta eléctrica?", "r": "Una carga completa de 0,5 kWh cuesta unos 10 céntimos." },
+        { "p": "¿Cuántos kilómetros hace con una carga?", "r": "Depende del nivel de asistencia, el peso y el terreno. Con 500 Wh, muchas recorren entre 50 y 100 km." }
+      ]
+    },
+    "acuario": {
+      "intro": "Un acuario tropical funciona todo el año: calentador, filtro y luz. El calentador es lo que más gasta, sobre todo en invierno.",
+      "factores": ["La temperatura de la habitación.", "Los litros del acuario.", "La potencia de la luz y las horas encendida."],
+      "trucos": ["Usa luz LED con temporizador.", "Pon una tapa para reducir la evaporación y la pérdida de calor.", "Evita colocarlo cerca de ventanas o puertas."],
+      "preguntas": [
+        { "p": "¿Cuánto gasta un acuario de 100 litros?", "r": "Un acuario tropical medio puede gastar unos 400 kWh al año, sobre todo por el calentador." },
+        { "p": "¿Gasta menos un acuario de agua fría?", "r": "Sí, porque no necesita calentador. El filtro y la luz gastan bastante menos." }
+      ]
+    },
+    "frigorifico-americano": {
+      "intro": "El frigorífico americano tiene mucha capacidad, dos puertas y a menudo dispensador de agua y hielo. Todo ello hace que gaste más que un combi normal.",
+      "factores": ["La clase energética y el tamaño.", "El dispensador de hielo y agua.", "La temperatura y el estado de las juntas."],
+      "trucos": ["Desactiva el dispensador de hielo si no lo usas.", "Ajusta las temperaturas a 4 °C y −18 °C.", "No lo llenes en exceso: el aire frío tiene que circular."],
+      "preguntas": [
+        { "p": "¿Cuánto gasta un frigorífico americano?", "r": "Alrededor de 300–600 kWh al año según su etiqueta. Uno medio ronda 420 kWh." },
+        { "p": "¿Gasta mucho el dispensador de hielo?", "r": "Puede aumentar el consumo de forma apreciable. Si no lo usas, apágalo." }
+      ]
+    }
+  }
+}

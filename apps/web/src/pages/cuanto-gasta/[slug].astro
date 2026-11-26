@@ -2,8 +2,8 @@
 import Base from "../../layouts/Base.astro";
 import Anuncio from "../../components/Anuncio.astro";
 import CalculadoraAparato from "../../components/CalculadoraAparato.astro";
-import { aparatos, articulo, dias, factorImpuestos, kwhMesAparato, kwhUsoAparato, type Aparato } from "../../lib/datos";
-import { mejoresHoras, resumen } from "../../lib/grafico";
+import { aparatos, articulo, dias, factorImpuestos, guiaAparato, kwhMesAparato, kwhUsoAparato, type Aparato } from "../../lib/datos";
+import { graficoBarras, mejorFranja, resumen, textoFranjas } from "../../lib/grafico";
 import { eur2, kwh, num, hoyMadrid, fechaCorta } from "../../lib/formato";
 import { AMAZON_TAG } from "../../config";
 
@@ -24,6 +24,38 @@ const usoTexto = aparato.tipo === "ciclo" ? "cada uso" : aparato.tipo === "conti
 const tituloBase = `Cuánto gasta ${articulo(aparato)} ${nombreMin}: ${eur2(costeMes)} al mes`;
 const tituloAparato = tituloBase.length <= 45 ? `${tituloBase} con el precio de hoy` : tituloBase;
 const relacionados = aparatos.filter((a) => a.grupo === aparato.grupo && a.slug !== aparato.slug).slice(0, 4);
+const guia = guiaAparato(aparato);
+const tituloTruco = aparato.truco.split(":")[0].split(".")[0];
+
+// Lo que cambia la factura según el aparato sea eficiente o no y lo uses poco o mucho: el mismo cálculo
+// con los extremos del rango habitual.
+const conValor = (v: number): Aparato =>
+  aparato.tipo === "potencia" ? { ...aparato, potencia_w: v } : aparato.tipo === "ciclo" ? { ...aparato, kwh_ciclo: v } : { ...aparato, kwh_anual: v };
+const valorTipico = aparato.tipo === "potencia" ? aparato.potencia_w! : aparato.tipo === "ciclo" ? aparato.kwh_ciclo! : aparato.kwh_anual!;
+const escenarios = [
+  { nombre: "Eficiente o poco potente", valor: aparato.rango[0] },
+  { nombre: "Típico (el de esta página)", valor: valorTipico },
+  { nombre: "Potente o poco eficiente", valor: aparato.rango[1] },
+].map((e) => {
+  const k = kwhMesAparato(conValor(e.valor));
+  return { ...e, kwh: k, eur: k * r.media * factor };
+});
+const valorTexto = (v: number) => (aparato.tipo === "potencia" ? `${num(v, 0)} W` : aparato.tipo === "ciclo" ? `${num(v, 2)} kWh por uso` : `${num(v, 0)} kWh al año`);
+const diferencia = escenarios[2].eur - escenarios[0].eur;
+
+// Gráfico del día con la mejor franja para este aparato y lo que cuesta un uso a cada hora.
+const uso =
+  aparato.tipo === "ciclo"
+    ? { texto: `${articulo(aparato)} ${nombreMin} (un uso)`, kwh: aparato.kwh_ciclo!, factor }
+    : aparato.tipo === "potencia"
+      ? { texto: `${articulo(aparato)} ${nombreMin} durante una hora`, kwh: aparato.potencia_w! / 1000, factor }
+      : null;
+const opcionesGrafico = { ventana: aparato.ventana_h, uso };
+const grafico = graficoBarras(dia.precios, { resaltar: mejorFranja(dia.precios, aparato.ventana_h), uso });
+const textoHoras =
+  aparato.tipo === "continuo"
+    ? `${aparato.nombre} funciona todo el día, así que la hora no se puede elegir: lo que cuenta es el precio medio. Aun así, el gráfico muestra cuánto cambia el precio de una hora a otra.`
+    : `${textoFranjas(dia.precios, aparato.ventana_h)}${aparato.desplazable ? "" : " Con este aparato no siempre se puede elegir la hora, pero si puedes adelantarlo o retrasarlo un poco, se nota."}`;
 
 const faq = {
   "@context": "https://schema.org",
@@ -37,6 +69,7 @@ const faq = {
         text: `Con valores típicos, unos ${num(kwhMesAparato(aparato), 1)} kWh al mes. Con el PVPC del ${fechaCorta(dia.fecha)} son unos ${eur2(costeMes)} al mes, impuestos incluidos. ${aparato.nota}`,
       },
     },
+    ...guia.preguntas.map((q) => ({ "@type": "Question", name: q.p, acceptedAnswer: { "@type": "Answer", text: q.r } })),
   ],
 };
 ---
@@ -69,28 +102,70 @@ const faq = {
   <section class="section section--white">
     <div class="wrap grid grid--2" style="gap:48px">
       <div class="stack" style="--stack:16px">
-        <span class="eyebrow">Truco para gastar menos</span>
-        <h2 style="font-size:32px">{aparato.truco.split(":")[0].split(".")[0]}.</h2>
-        <p class="lead">{aparato.truco}</p>
+        <span class="eyebrow">De qué depende</span>
+        <h2 style="font-size:32px">Qué hace que {articulo(aparato)} {nombreMin} gaste más o menos</h2>
+        <p>{guia.intro}</p>
+        <ul class="ap-lista">
+          {guia.factores.map((f) => <li>{f}</li>)}
+        </ul>
       </div>
       <div class="stack" style="--stack:16px">
-        <span class="eyebrow">Mide tu dato real</span>
-        <h2 style="font-size:32px">Un enchufe medidor te dice lo que gasta el tuyo</h2>
-        <p class="muted">
-          Los valores típicos sirven para hacerse una idea, pero cada aparato es distinto. Un enchufe medidor de consumo (unos 10–20 €) te dice los kWh reales de tu {nombreMin} en unos días.
+        <span class="eyebrow">Del más eficiente al que más gasta</span>
+        <h2 style="font-size:32px">Lo que puede llegar a costarte al mes</h2>
+        <div class="table-wrap" tabindex="0" role="region" aria-label={`Coste al mes de ${articulo(aparato)} ${nombreMin}`}>
+          <table class="ap-tabla">
+            <thead><tr><th scope="col">Caso</th><th scope="col" class="num">kWh/mes</th><th scope="col" class="num">€/mes</th></tr></thead>
+            <tbody>
+              {escenarios.map((e) => (
+                <tr>
+                  <th scope="row">{e.nombre}<span class="caption ap-valor">{valorTexto(e.valor)}</span></th>
+                  <td class="num">{num(e.kwh, 1)}</td>
+                  <td class="num">{eur2(e.eur)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p class="caption">
+          Mismo uso en los tres casos y PVPC del {fechaCorta(dia.fecha)} con impuestos. Entre el modelo más eficiente y el que más gasta hay {eur2(diferencia)} al mes{diferencia * 12 >= 10 ? <>, unos {eur2(diferencia * 12)} al año si lo usas todos los meses</> : null}.
         </p>
-        {AMAZON_TAG === null && <p class="caption">Pronto recomendaremos modelos concretos. Si incluimos enlaces de afiliado, lo indicaremos.</p>}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap grid grid--2" style="gap:48px">
+      <div class="stack" style="--stack:16px">
+        <span class="eyebrow">Para gastar menos</span>
+        <h2 style="font-size:32px">{tituloTruco}.</h2>
+        <p class="lead">{aparato.truco}</p>
+        <ul class="ap-lista">
+          {guia.trucos.map((t) => <li>{t}</li>)}
+          <li>Para saber lo que gasta el tuyo, un enchufe medidor de consumo (10–20 €) te da los kWh reales en unos días.</li>
+        </ul>
+        {AMAZON_TAG === null && <p class="caption">Si algún día incluimos enlaces de afiliado, lo indicaremos.</p>}
+      </div>
+      <div class="stack" style="--stack:12px">
+        <span class="eyebrow">Preguntas frecuentes</span>
+        <h2 style="font-size:32px">Dudas sobre {articulo(aparato) === "una" ? "la" : "el"} {nombreMin}</h2>
+        {guia.preguntas.map((q) => (
+          <details class="ap-faq">
+            <summary>{q.p}</summary>
+            <p>{q.r}</p>
+          </details>
+        ))}
       </div>
     </div>
   </section>
   <Anuncio tipo="horizontal" seccion />
 
   <section class="section">
-    <div class="wrap">
-      <span class="eyebrow">Precio de hoy</span>
-      <h2 style="margin:12px 0 24px">Las mejores horas del {fechaCorta(dia.fecha)}</h2>
-      <div id="mejores-horas" set:html={mejoresHoras(dia.precios)} />
-      <p class="btn-row" style="margin-top:24px"><a class="btn btn--ghost" href="/precio-luz-hoy/">Ver el precio hora a hora</a></p>
+    <div class="wrap" style="max-width:900px">
+      <span class="eyebrow">Precio de hoy, hora a hora</span>
+      <h2 style="margin:12px 0 12px">Cuánto cuesta usar {articulo(aparato)} {nombreMin} según la hora</h2>
+      <p id="aparato-franjas" style="margin-bottom:16px">{textoHoras}</p>
+      <div id="aparato-grafico" data-opciones={JSON.stringify(opcionesGrafico)} data-continuo={aparato.tipo === "continuo" ? "1" : undefined} set:html={grafico} />
+      <p class="caption">PVPC del <span id="aparato-fecha">{fechaCorta(dia.fecha)}</span> sin impuestos; el coste de cada uso sí los incluye. <a href="/precio-luz-hoy/">Ver el precio de la luz de hoy</a></p>
     </div>
   </section>
 
@@ -114,10 +189,61 @@ const faq = {
   }
 </Base>
 
+<style>
+  .ap-lista {
+    display: grid;
+    gap: 10px;
+    padding-left: 20px;
+  }
+  .ap-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+  }
+  .ap-tabla th,
+  .ap-tabla td {
+    text-align: left;
+    padding: 8px 6px;
+    border-bottom: 1px solid var(--color-pale-sage);
+  }
+  .ap-tabla .num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .ap-tabla tbody th {
+    font-weight: 500;
+  }
+  .ap-valor {
+    display: block;
+    font-weight: 400;
+  }
+  .ap-faq {
+    border-bottom: 1px solid var(--color-pale-sage);
+    padding: 6px 0;
+  }
+  .ap-faq summary {
+    color: var(--color-bark);
+    cursor: pointer;
+  }
+  .ap-faq p {
+    padding: 4px 0 12px 20px;
+  }
+</style>
+
 <script>
-  import { mejoresHoras } from "../../lib/grafico";
+  import { graficoBarras, mejorFranja, textoFranjas } from "../../lib/grafico";
+  import { fechaCorta, hoyMadrid } from "../../lib/formato";
+  // Si el build es de otro día, la calculadora trae el precio de hoy y se repinta el gráfico con él.
   document.addEventListener("precios-hoy", (e) => {
-    const el = document.getElementById("mejores-horas");
-    if (el) el.innerHTML = mejoresHoras((e as CustomEvent).detail);
+    const precios = (e as CustomEvent).detail as (number | null)[];
+    const caja = document.getElementById("aparato-grafico");
+    if (!caja || !Array.isArray(precios)) return;
+    const o = JSON.parse(caja.dataset.opciones ?? "{}");
+    caja.innerHTML = graficoBarras(precios, { ahora: new Date().getHours(), resaltar: mejorFranja(precios, o.ventana), uso: o.uso });
+    const texto = document.getElementById("aparato-franjas");
+    if (texto && !caja.dataset.continuo) texto.textContent = textoFranjas(precios, o.ventana);
+    const fecha = document.getElementById("aparato-fecha");
+    if (fecha) fecha.textContent = fechaCorta(hoyMadrid());
   });
 </script>

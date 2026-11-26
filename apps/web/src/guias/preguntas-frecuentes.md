@@ -2,7 +2,7 @@
 titulo: "Preguntas frecuentes sobre la luz y sobre ComparadorTarifaLuz"
 resumen: "Respuestas cortas a lo que más nos preguntan: privacidad del fichero, de dónde salen los precios, cómo ganamos dinero y más."
 categoria: "Tu factura"
-revisado: "2026-10-21"
+revisado: "2026-11-26"
 orden: 20
 faq: true
 herramienta: { href: "/comparador/", texto: "La mejor respuesta a «¿estoy pagando de más?» es tu propio fichero de consumos." }
@@ -41,3 +41,23 @@ No. Ver [cambiar de compañía](/guias/cambiar-de-compania/).
 ### ¿Los cálculos son exactos?
 
 Son estimaciones con tus datos reales y los precios publicados. Antes de lanzar el comparador lo comprobamos con facturas reales (±2 %), pero tu consumo futuro no será igual al pasado y las tarifas cambian.
+
+### ¿Qué es el PVPC?
+
+Es la tarifa regulada de la luz (Precio Voluntario para el Pequeño Consumidor). El precio de la energía cambia cada hora según el mercado y una parte de precios a plazo. Solo la ofrecen las comercializadoras de referencia y es la única con la que se puede pedir el bono social. Lo explicamos en [PVPC o mercado libre](/guias/pvpc-o-mercado-libre/).
+
+### ¿Qué diferencia hay entre la distribuidora y la comercializadora?
+
+La **distribuidora** es dueña de los cables y del contador, y no la eliges: depende de dónde vives. La **comercializadora** es la empresa con la que firmas el contrato y que te factura, y esa sí puedes cambiarla cuando quieras. Si se va la luz, llamas a la distribuidora; si la factura está mal, a la comercializadora.
+
+### ¿Dónde encuentro mi CUPS?
+
+En cualquier factura de la luz, normalmente en el apartado de datos del contrato o del suministro. Empieza por «ES» y tiene 20 o 22 caracteres. Más detalles en [qué es el CUPS](/guias/que-es-el-cups/).
+
+### ¿Puedo volver a la PVPC si me paso al mercado libre?
+
+Sí, en cualquier momento: contratas la PVPC con una comercializadora de referencia y ella tramita el cambio. Solo tienes que mirar si tu tarifa del mercado libre tiene permanencia.
+
+### ¿Por qué el precio de mañana no aparece hasta la tarde?
+
+Porque el mercado eléctrico fija los precios del día siguiente a mediodía y Red Eléctrica calcula después el PVPC con peajes y cargos. Antes de esa publicación no hay un precio oficial; cualquier cifra sería una estimación.

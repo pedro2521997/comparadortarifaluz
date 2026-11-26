@@ -2,8 +2,16 @@
 import Base from "../../layouts/Base.astro";
 import Anuncio from "../../components/Anuncio.astro";
 import CalculadoraAparato from "../../components/CalculadoraAparato.astro";
-import { aparatos, kwhMesAparato } from "../../lib/datos";
-import { kwh } from "../../lib/formato";
+import Tarjeta from "../../components/Tarjeta.astro";
+import { aparatos, dias, factorImpuestos, kwhMesAparato } from "../../lib/datos";
+import { resumen } from "../../lib/grafico";
+import { ICONO_APARATO } from "../../lib/iconos";
+import { eur2, fechaCorta, hoyMadrid, kwh } from "../../lib/formato";
+
+const hoy = hoyMadrid();
+const dia = [...dias].reverse().find((d) => d.fecha <= hoy)!;
+const precioHoy = resumen(dia.precios).media * factorImpuestos(hoy);
+const TONOS = ["menta", "salvia", "lavanda"] as const;
 
 const grupos = [...new Set(aparatos.map((a) => a.grupo))].map((g) => ({ nombre: g, lista: aparatos.filter((a) => a.grupo === g) }));
 ---
@@ -30,18 +38,28 @@ const grupos = [...new Set(aparatos.map((a) => a.grupo))].map((g) => ({ nombre: 
       <div>
         <span class="eyebrow">Aparato por aparato</span>
         <h2 style="margin-top:12px">Valores típicos ya cargados</h2>
+        <p class="muted" style="margin-top:8px">Pulsa una tarjeta para darle la vuelta y ver lo que cuesta al mes con el precio de hoy.</p>
       </div>
       {
         grupos.map((g) => (
           <div>
             <h3 class="grupo">{g.nombre}</h3>
-            <ul class="aparatos">
-              {g.lista.map((a) => (
+            <ul class="flip-rejilla">
+              {g.lista.map((a, k) => (
                 <li>
-                  <a href={`/cuanto-gasta/${a.slug}/`}>
-                    <span class="aparatos__n">{a.nombre}</span>
-                    <span class="aparatos__k">≈ {kwh(kwhMesAparato(a))}/mes</span>
-                  </a>
+                  <Tarjeta etiqueta={a.nombre} tono={TONOS[k % 3]}>
+                    <Fragment slot="frente">
+                      <span class="flip__img" aria-hidden="true">{ICONO_APARATO[a.slug] ?? "🔌"}</span>
+                      <span class="flip__t">{a.nombre}</span>
+                      <span class="flip__dato">≈ {kwh(kwhMesAparato(a))} al mes</span>
+                    </Fragment>
+                    <Fragment slot="dorso">
+                      <span class="flip__dato">Con el precio del {fechaCorta(dia.fecha)}</span>
+                      <span class="flip__grande">{eur2(kwhMesAparato(a) * precioHoy)}<small> /mes</small></span>
+                      <span class="ap-truco">{a.truco.split(". ")[0].replace(/\.$/, "")}.</span>
+                      <a href={`/cuanto-gasta/${a.slug}/`}>Calcular mi caso →</a>
+                    </Fragment>
+                  </Tarjeta>
                 </li>
               ))}
             </ul>
@@ -56,36 +74,8 @@ const grupos = [...new Set(aparatos.map((a) => a.grupo))].map((g) => ({ nombre: 
   .grupo {
     margin-bottom: 16px;
   }
-  .aparatos {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    gap: 8px;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  }
-  .aparatos a {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-    min-height: 56px;
-    padding: 12px 16px;
-    border: 1px solid var(--color-sage-mist);
-    border-radius: var(--radius-buttons);
-    text-decoration: none;
-    color: var(--color-bark);
-    background: var(--color-sheet-white);
-  }
-  .aparatos a:hover {
-    border-color: var(--color-canopy);
-  }
-  .aparatos__n {
-    font-weight: 500;
-  }
-  .aparatos__k {
-    font-size: 13px;
-    color: var(--color-slate);
-    white-space: nowrap;
+  .ap-truco {
+    font-size: 14px;
+    line-height: 1.4;
   }
 </style>

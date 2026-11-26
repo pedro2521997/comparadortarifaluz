@@ -5,6 +5,7 @@ import tarifasManualesJson from "../../../../data/tarifas-manuales.json";
 import reguladosJson from "../../../../data/regulados.json";
 import festivosJson from "../../../../data/festivos.json";
 import aparatosJson from "../../../../data/aparatos.json";
+import aparatosGuiaJson from "../../../../data/aparatos-guia.json";
 import provinciasJson from "../../../../data/provincias.json";
 import ajustesJson from "../../../../data/mercado-ajustes.json";
 import type { Regulados, Tarifa } from "@lst/tarifa";
@@ -45,6 +46,20 @@ export const catalogoActualizado = tarifasJson.actualizado as string;
 export const regulados = reguladosJson as unknown as Regulados;
 export const festivos = festivosJson.fechas;
 export const aparatos = aparatosJson.aparatos as Aparato[];
+
+/** Texto propio de la página de cada aparato (data/aparatos-guia.json). */
+export interface GuiaAparato {
+  intro: string;
+  factores: string[];
+  trucos: string[];
+  preguntas: { p: string; r: string }[];
+}
+const guiasAparato = aparatosGuiaJson.aparatos as Record<string, GuiaAparato>;
+export function guiaAparato(a: Aparato): GuiaAparato {
+  const g = guiasAparato[a.slug];
+  if (!g) throw new Error(`Falta el texto de ${a.slug} en data/aparatos-guia.json`);
+  return g;
+}
 /** Coste de ajustes mensual (€/kWh) = precio final de la demanda − mercado diario (REData). */
 export const ajustesMercado: Record<string, number> = Object.fromEntries(
   Object.entries(ajustesJson.meses as Record<string, { ajuste_eur_kwh: number }>).map(([m, v]) => [m, v.ajuste_eur_kwh]),

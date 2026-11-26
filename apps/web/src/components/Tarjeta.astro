@@ -1,0 +1,30 @@
+---
+// Tarjeta que se da la vuelta al pulsarla: delante una imagen y el nombre, detrás el dato y el enlace.
+// Las dos caras están en el HTML (Google y los lectores de pantalla leen las dos); sin JavaScript se ven
+// una debajo de la otra. El giro lo controla scripts/tarjetas.ts.
+interface Props {
+  /** Nombre para el botón: «Ver detalles de <etiqueta>». */
+  etiqueta: string;
+  /** Color de fondo de la cara delantera. */
+  tono?: "menta" | "salvia" | "lavanda" | "blanco";
+}
+const { etiqueta, tono = "blanco" } = Astro.props;
+---
+
+<div class:list={["flip", `flip--${tono}`]} data-flip>
+  <div class="flip__in">
+    <div class="flip__cara flip__frente">
+      <slot name="frente" />
+      <button type="button" class="flip__girar" aria-expanded="false" data-girar>
+        <span class="sr-only">Ver detalles de {etiqueta}</span>
+        <span class="flip__icono" aria-hidden="true">↻</span>
+      </button>
+    </div>
+    <div class="flip__cara flip__dorso">
+      <slot name="dorso" />
+      <button type="button" class="flip__volver" data-girar>
+        <span aria-hidden="true">↺</span> Volver<span class="sr-only"> a {etiqueta}</span>
+      </button>
+    </div>
+  </div>
+</div>

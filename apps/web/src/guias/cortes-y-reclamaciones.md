@@ -3,7 +3,7 @@ titulo: "Cortes de luz y reclamaciones: a quién acudir"
 resumen: "Si se va la luz, te facturan mal o te cambian de compañía sin permiso: con quién hablar primero, plazos y dónde reclamar si no te hacen caso."
 respuesta: "Por cortes o averías llama a tu distribuidora (teléfono en la factura). Por la factura, a tu comercializadora, por escrito: tiene un mes para responder. Si no te hacen caso, acude a la oficina de consumo o al arbitraje de consumo."
 categoria: "Tu factura"
-revisado: "2026-10-21"
+revisado: "2026-11-26"
 orden: 18
 herramienta: { href: "/comparador/", texto: "¿Crees que te cobran de más? Calcula con tu fichero de consumos lo que deberías estar pagando." }
 fuentes:
@@ -40,3 +40,22 @@ Reclama a la compañía nueva y a la anterior: un cambio sin tu consentimiento n
 
 - Tu **fichero de consumos** de Datadis: prueba lo que has consumido de verdad.
 - Las facturas en PDF y el contrato con las condiciones.
+
+## Si un corte o una subida de tensión te estropea un aparato
+
+1. Anota la **fecha y la hora** del corte y qué aparatos se han dañado.
+2. Pide a un técnico un **informe** o un presupuesto de reparación que diga la causa.
+3. Reclama a la **distribuidora** (los daños por la red son suyos), con las facturas de compra si las tienes.
+4. Si tienes seguro de hogar, mira si cubre daños eléctricos: a veces es más rápido y el seguro reclama después.
+
+## Qué poner en una reclamación
+
+- Tu nombre, DNI, dirección del suministro y **CUPS**.
+- El número de la factura o del contrato.
+- Qué ha pasado, en pocas líneas y con fechas.
+- **Qué pides** exactamente: devolución de un importe, rectificar una factura, anular un contrato.
+- Copias de las facturas, capturas o el fichero de consumos.
+
+## Si no pagas una factura
+
+La compañía no puede cortar la luz de un día para otro: tiene que **requerirte el pago por escrito** y darte un plazo antes de pedir la suspensión a la distribuidora. Si estás pasando dificultades, pregunta por el [bono social](/guias/bono-social/) y por los servicios sociales de tu ayuntamiento: los hogares vulnerables tienen protecciones adicionales frente a los cortes.

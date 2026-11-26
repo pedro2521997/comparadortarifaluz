@@ -1,8 +1,9 @@
 ---
 import Base from "../../layouts/Base.astro";
 import Anuncio from "../../components/Anuncio.astro";
-import { ESCENARIOS, filaDe, marcas, urlMarca } from "../../lib/catalogo";
-import { logoHtml } from "../../lib/ranking";
+import Tarjeta from "../../components/Tarjeta.astro";
+import { ESCENARIOS, filaDe, marcas, urlMarca, tipoTexto } from "../../lib/catalogo";
+import { logoGrande, nombrePlan } from "../../lib/ranking";
 import { eur } from "../../lib/formato";
 import { SITIO } from "../../config";
 
@@ -10,6 +11,11 @@ const medio = ESCENARIOS[1];
 const lista = marcas()
   .map((m) => ({ m, mejor: m.tarifas.map((t) => filaDe(t, medio)).sort((a, b) => a.anual - b.anual)[0] }))
   .sort((a, b) => a.mejor.anual - b.mejor.anual);
+const resumenMarca = (m: (typeof lista)[number]["m"]) => ({
+  tipos: [...new Set(m.tarifas.map((t) => tipoTexto(t)))],
+  permanencia: m.tarifas.filter((t) => t.permanencia_meses > 0).length,
+  verdes: m.tarifas.filter((t) => t.info?.verde).length,
+});
 const schema = {
   "@context": "https://schema.org",
   "@type": "ItemList",
@@ -33,26 +39,41 @@ const schema = {
   </section>
   <section class="section section--tight">
     <div class="wrap">
-      <ol class="cm-lista">
+      <p class="muted" style="margin-bottom:16px">Pulsa una compañía para darle la vuelta y ver sus tarifas de un vistazo.</p>
+      <ol class="flip-rejilla">
         {
-          lista.map(({ m, mejor }, i) => (
-            <>
-              <li>
-                <a class="card card--link cm-item" href={urlMarca(m.marca)}>
-                  <span class="cm-item__pos">{i + 1}º</span>
-                  <Fragment set:html={logoHtml(mejor.tarifa)} />
-                  <span class="cm-item__n">
-                    <strong>{m.marca}</strong>
-                    <span class="caption">{m.tarifas.length} {m.tarifas.length === 1 ? "tarifa" : "tarifas"}</span>
-                  </span>
-                  <span class="cm-item__p">
-                    desde <strong>{eur(mejor.anual)}</strong>/año
-                  </span>
-                </a>
-              </li>
-              {i === 9 && <li class="cm-anuncio"><Anuncio tipo="horizontal" /></li>}
-            </>
-          ))
+          lista.map(({ m, mejor }, i) => {
+            const r = resumenMarca(m);
+            return (
+              <>
+                <li>
+                  <Tarjeta etiqueta={m.marca} tono={i < 3 ? "menta" : "blanco"}>
+                    <Fragment slot="frente">
+                      <span class="cm-pos">{i + 1}º</span>
+                      <Fragment set:html={logoGrande(mejor.tarifa)} />
+                      <span class="flip__t">{m.marca}</span>
+                      <span class="flip__dato">desde <strong>{eur(mejor.anual)}</strong> al año</span>
+                    </Fragment>
+                    <Fragment slot="dorso">
+                      <span class="flip__t">{m.marca}</span>
+                      <span class="flip__dato">
+                        {m.tarifas.length} {m.tarifas.length === 1 ? "tarifa" : "tarifas"}: {r.tipos.join(", ")}
+                      </span>
+                      <span class="flip__dato">
+                        La más barata: «{nombrePlan(mejor.tarifa.nombre)}»
+                      </span>
+                      <span class="flip__dato">
+                        {r.permanencia ? `${r.permanencia} con permanencia` : "Sin permanencia"}
+                        {r.verdes ? ` · ${r.verdes} con energía verde` : ""}
+                      </span>
+                      <a href={urlMarca(m.marca)}>Ver sus tarifas →</a>
+                    </Fragment>
+                  </Tarjeta>
+                </li>
+                {i === 9 && <li class="cm-anuncio"><Anuncio tipo="horizontal" /></li>}
+              </>
+            );
+          })
         }
       </ol>
       <p class="caption" style="margin-top:16px">Hogar medio: 3.000 kWh al año y 4,6 kW, con los precios de cada hora del último año, impuestos incluidos y sin promociones. <a href="/tarifas/">Ver el ranking de todas las tarifas</a></p>
@@ -61,41 +82,22 @@ const schema = {
 </Base>
 
 <style>
-  .cm-lista {
-    list-style: none;
-    padding: 0;
-    display: grid;
-    gap: 10px;
-  }
-  .cm-item {
-    display: grid;
-    grid-template-columns: 40px 44px 1fr auto;
-    align-items: center;
-    gap: 14px;
-    padding: 12px 16px;
-  }
-  .cm-item__pos {
-    font-weight: 500;
+  .cm-pos {
+    position: absolute;
+    top: 14px;
+    left: 16px;
+    font-weight: 600;
     color: var(--color-slate);
     font-variant-numeric: tabular-nums;
   }
-  .cm-item__n {
-    display: flex;
-    flex-direction: column;
+  :global(.flip__frente .logo-grande) {
+    margin: 22px auto 4px;
   }
-  .cm-item__p {
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
+  :global(.flip__frente) .flip__t,
+  :global(.flip__frente) .flip__dato {
+    text-align: center;
   }
   .cm-anuncio {
-    list-style: none;
-  }
-  @media (max-width: 480px) {
-    .cm-item {
-      grid-template-columns: 30px 44px 1fr;
-    }
-    .cm-item__p {
-      grid-column: 3;
-    }
+    grid-column: 1 / -1;
   }
 </style>

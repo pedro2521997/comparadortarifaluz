@@ -91,6 +91,15 @@ export function logoHtml(t: Tarifa): string {
     : `<span class="rk-logo" aria-hidden="true">${esc(iniciales(marca(t.comercializadora)))}</span>`;
 }
 
+/** Logo grande para las tarjetas de compañías (o sus iniciales si no tenemos logo). */
+export function logoGrande(t: Tarifa): string {
+  const m = marca(t.comercializadora);
+  const src = LOGOS[dominio(t.url_contratar || t.url_fuente || "")];
+  return src
+    ? `<img class="logo-grande" src="${src}" alt="Logo de ${esc(m)}" width="56" height="56" loading="lazy" decoding="async" />`
+    : `<span class="logo-grande logo-grande--txt" aria-hidden="true">${esc(iniciales(m))}</span>`;
+}
+
 // ---------- Direcciones de las fichas (también se usan en el navegador: sin datos del catálogo) ----------
 
 export const slug = (s: string) =>

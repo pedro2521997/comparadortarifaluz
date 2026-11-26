@@ -3,7 +3,7 @@ titulo: "Cambiar de compañía de luz: gratis, sin corte y sin permiso del caser
 resumen: "Cómo funciona el cambio de comercializadora, qué datos necesitas, cuánto tarda y qué mirar antes de firmar."
 respuesta: "Cambiar de compañía de luz es gratis, no corta el suministro y lo gestiona la nueva compañía: solo necesitas DNI, CUPS e IBAN. No necesitas permiso del casero si eres el titular. Antes de firmar, revisa permanencias y servicios añadidos."
 categoria: "Tarifas y compañías"
-revisado: "2026-10-21"
+revisado: "2026-11-26"
 orden: 6
 herramienta: { href: "/comparador/", texto: "Antes de cambiar, comprueba con tu consumo real cuánto ahorrarías con cada tarifa." }
 fuentes:
@@ -36,3 +36,19 @@ fuentes:
 ## Cuidado con las ventas puerta a puerta y por teléfono
 
 Nadie de «la compañía de la luz» tiene que ir a tu casa a revisar la factura. Si te llaman, pide la oferta por escrito y compárala antes de dar ningún dato. Tienes **14 días** para desistir de un contrato firmado a distancia o fuera del establecimiento.
+
+## Cómo es el proceso, paso a paso
+
+1. **Comparas** con tu consumo real y eliges tarifa en el [comparador](/comparador/).
+2. **Contratas** en la web o por teléfono con la compañía nueva. Te envían el contrato y las condiciones: guárdalos.
+3. La compañía nueva **pide el cambio a la distribuidora**. No tienes que llamar a la anterior.
+4. La distribuidora toma una **lectura** (en remoto si tienes contador inteligente) el día del cambio.
+5. La compañía anterior te envía una **última factura** hasta esa lectura, y a partir de ahí factura la nueva.
+
+## La luz y el gas, por separado
+
+Puedes tener la luz con una compañía y el gas con otra. Algunos paquetes de luz y gas tienen descuento, pero compara las dos tarifas por separado: a menudo sale mejor elegir la mejor de cada una.
+
+## Si te arrepientes
+
+Si contrataste por internet, por teléfono o fuera de una tienda, tienes **14 días naturales** para desistir sin dar explicaciones ni pagar nada. Si el cambio ya se ha hecho, puedes volver a la compañía anterior contratando de nuevo con ella.

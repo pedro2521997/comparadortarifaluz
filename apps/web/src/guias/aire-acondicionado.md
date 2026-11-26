@@ -3,7 +3,7 @@ titulo: "Aire acondicionado: cuánto gasta y cómo usarlo bien"
 resumen: "Cuánto cuesta una hora de aire acondicionado, por qué 26 °C es la temperatura clave y los trucos que más ahorran en verano."
 respuesta: "Un split de 3.000 frigorías consume de media 0,6–1 kW: unos 0,14 € por hora y 25–30 € al mes usándolo 6 horas al día. Ponerlo a 26 °C con un ventilador y bajar persianas es lo que más ahorra."
 categoria: "Ahorrar luz"
-revisado: "2026-10-21"
+revisado: "2026-11-26"
 orden: 14
 herramienta: { href: "/cuanto-gasta/aire-acondicionado/", texto: "Calcula cuánto te cuesta tu aire acondicionado al mes con el precio de hoy y en qué horas sale más barato." }
 fuentes:
@@ -36,3 +36,20 @@ Un **portátil** de tubo gasta algo más por el mismo frío, y un **ventilador**
 3. **Cierra puertas** de las habitaciones que no estás enfriando.
 4. Si tienes **PVPC**, el mediodía solar suele ser barato: enfría la casa antes de la tarde, que es cuando sube el precio.
 5. **Modo deshumidificar** los días húmedos y no muy calurosos: gasta menos y se nota igual.
+
+## Qué equipo elegir
+
+- **Potencia:** como orientación, unas **100 frigorías por metro cuadrado** en una habitación normal, algo más si da el sol de tarde o es un ático. Un equipo demasiado grande enfría a golpes y deshumidifica peor; uno pequeño no para nunca.
+- **Inverter:** imprescindible. Regula la velocidad del compresor en lugar de encenderse y apagarse.
+- **Eficiencia (SEER):** cuanto más alto, menos gasta. La diferencia entre un A+ y un A+++ puede ser de un 20–30 % en el consumo de verano.
+- **Bomba de calor:** casi todos los splits la tienen. En invierno es la calefacción eléctrica más barata, ver [calefacción](/guias/calefaccion/).
+
+## Mantenimiento cada año
+
+1. Limpia los **filtros** al empezar el verano y cada pocas semanas.
+2. Revisa que la **unidad exterior** no tenga hojas, polvo o plantas tapando la rejilla.
+3. Si gotea dentro o enfría peor que antes, puede faltarle gas o estar obstruido el desagüe: llama a un técnico.
+
+## ¿Necesito más potencia contratada?
+
+Un split normal gasta menos de 1 kW enfriando, así que con 3,45–4,6 kW suele bastar. Si lo usas a la vez que el horno o la vitrocerámica, puede saltar el limitador. Ver [potencia contratada](/guias/potencia-contratada/).

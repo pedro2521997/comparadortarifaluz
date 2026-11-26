@@ -1,7 +1,7 @@
 // Bloque completo de precios de un día (resumen + mejores horas + gráfico).
 // Se genera en el build y se regenera en el navegador si el dato del build ya no es el del día.
 
-import { graficoHoras, mejoresHoras, resumen, mediaHogar } from "./grafico";
+import { graficoBarras, graficoHoras, mejoresHoras, resumen, mediaHogar } from "./grafico";
 import { forma, esFinDeSemanaOFestivo } from "@lst/tarifa";
 import festivosJson from "../../../../data/festivos.json";
 import { ekwh, hh, fechaLarga } from "./formato";
@@ -29,6 +29,7 @@ export function bloquePrecios(fecha: string, precios: (number | null)[], ahora: 
 ${mejores ? `<h2 class="h-sec">Las mejores horas para…</h2>
 ${mejoresHoras(precios)}` : ""}
 <h2 class="h-sec">Precio hora a hora</h2>
+${graficoBarras(precios, { ahora })}
 <p class="leyenda"><span><span class="pill pill--barata">barata</span> tercio más barato del día</span><span><span class="pill">normal</span></span><span><span class="pill pill--cara">cara</span> tercio más caro</span></p>
 ${graficoHoras(precios, ahora)}
 <p class="fuente"><span>PVPC 2.0TD del ${fechaLarga(fecha)}, peajes y cargos incluidos, sin impuestos.</span><span>Fuente: <a href="https://www.ree.es/es/apidatos" rel="noopener">Red Eléctrica (REData)</a></span></p>`;

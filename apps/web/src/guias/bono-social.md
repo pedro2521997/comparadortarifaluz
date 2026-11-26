@@ -3,7 +3,7 @@ titulo: "Bono social de la luz: requisitos y cómo pedirlo"
 resumen: "Quién puede pedir el bono social eléctrico, qué descuento tiene en 2026 y los pasos para solicitarlo."
 respuesta: "El bono social de la luz descuenta un 42,5 % (vulnerables) o un 57,5 % (vulnerables severos) en 2026, solo con la PVPC de una comercializadora de referencia. Pueden pedirlo hogares con rentas bajas, familias numerosas, ciertos pensionistas y perceptores del Ingreso Mínimo Vital."
 categoria: "Tarifas y compañías"
-revisado: "2026-10-21"
+revisado: "2026-11-26"
 orden: 7
 herramienta: { href: "/herramientas/bono-social/", texto: "Comprueba en un minuto si tienes derecho al bono social y qué descuento te toca." }
 fuentes:
@@ -36,3 +36,19 @@ En general, el titular debe ser persona física, la vivienda ser la habitual y l
 3. Envíalo con el DNI o NIE de todos los miembros, el libro de familia o certificado de empadronamiento y, si aplica, el título de familia numerosa o el certificado de pensión.
 4. La comercializadora comprueba los datos con la Administración y te responde en unos 15 días hábiles.
 5. Se **renueva** cada dos años (o cuando caduque el título de familia numerosa).
+
+## Lo que no cubre
+
+- **No es gratis toda la luz:** el descuento se aplica hasta un límite de kWh al año. Lo que consumas por encima se paga a precio normal.
+- **Solo vale para la vivienda habitual** y para un contrato.
+- **No se aplica en el mercado libre.** Si te cambias de la PVPC a otra tarifa, lo pierdes.
+
+## Errores frecuentes que retrasan la solicitud
+
+1. Enviar la solicitud a una compañía que **no es de referencia**: solo las comercializadoras de referencia (como Curenergía, Energía XXI, Comercializadora Regulada o Baser COR) pueden tramitarlo.
+2. Olvidar la documentación de **algún miembro** de la unidad familiar.
+3. No **renovarlo** a tiempo: la compañía avisa antes de que caduque, pero si no respondes, se pierde y hay que volver a pedirlo.
+
+## También para la calefacción
+
+Si tienes el bono social eléctrico, cobras además el **bono social térmico**, una ayuda anual para calefacción, agua caliente o cocina, sin pedirla aparte. Lo explicamos en [bono social térmico](/guias/bono-social-termico/). Y si tienes dudas sobre si te corresponde, la [calculadora de bono social](/herramientas/bono-social/) lo comprueba en un minuto.
